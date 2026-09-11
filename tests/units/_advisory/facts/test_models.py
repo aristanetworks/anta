@@ -9,7 +9,17 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from anta._advisory.facts.models import Fact, FactDefinition, FactProblemKind, FactSource, FactSourceKind, FeatureName, FeatureState, FeatureValue
+from anta._advisory.facts.models import (
+    CollectedFact,
+    FactDefinition,
+    FactProblemKind,
+    FactSource,
+    FactSourceKind,
+    FeatureName,
+    FeatureState,
+    FeatureValue,
+    PendingFact,
+)
 
 if TYPE_CHECKING:
     from anta.device import AntaDevice
@@ -23,7 +33,7 @@ class ExampleFactDefinition(FactDefinition[FeatureValue]):
     label = "Example feature"
 
     @classmethod
-    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[FeatureValue]:
+    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> CollectedFact[FeatureValue]:
         """Return a stable value; derivation details are outside these model tests."""
         _ = device, commands
         return cls.available(ENABLED, SOURCE)
@@ -33,6 +43,13 @@ SOURCE = FactSource("show example", FactSourceKind.COMMAND)
 DEFINITION = ExampleFactDefinition
 ENABLED = FeatureValue(FeatureName.SECURE_BOOT, FeatureState.ENABLED)
 DISABLED = FeatureValue(FeatureName.SECURE_BOOT, FeatureState.DISABLED)
+
+
+def test_pending_fact_retains_typed_definition() -> None:
+    """Retain the runtime definition needed to collect a declared fact."""
+    pending = PendingFact(DEFINITION)
+
+    assert pending.definition is DEFINITION
 
 
 def test_fact_definition_constructs_available_and_unavailable_facts() -> None:

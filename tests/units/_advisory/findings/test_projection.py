@@ -11,8 +11,8 @@ from typing import TYPE_CHECKING, Any, cast
 import pytest
 
 from anta._advisory.facts.models import (
+    CollectedFact,
     ComponentSoftwareVersion,
-    Fact,
     FactDefinition,
     FactProblemKind,
     FactSource,
@@ -51,7 +51,7 @@ class ExampleFeatureFact(FactDefinition[FeatureValue]):
     label = "Example feature"
 
     @classmethod
-    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[FeatureValue]:
+    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> CollectedFact[FeatureValue]:
         """Reject derivation because these tests provide already normalized values."""
         _ = cls, device, commands
         pytest.fail("Projection tests do not derive facts")
@@ -64,7 +64,7 @@ class ExampleMitigationFact(FactDefinition[MitigationValue]):
     label = "Example mitigation"
 
     @classmethod
-    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[MitigationValue]:
+    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> CollectedFact[MitigationValue]:
         """Reject derivation because these tests provide already normalized values."""
         _ = cls, device, commands
         pytest.fail("Projection tests do not derive facts")
@@ -77,7 +77,7 @@ class ExampleComponentVersionFact(FactDefinition[ComponentSoftwareVersion]):
     label = "Example component version"
 
     @classmethod
-    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[ComponentSoftwareVersion]:
+    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> CollectedFact[ComponentSoftwareVersion]:
         """Reject derivation because these tests provide already normalized values."""
         _ = cls, device, commands
         pytest.fail("Projection tests do not derive facts")

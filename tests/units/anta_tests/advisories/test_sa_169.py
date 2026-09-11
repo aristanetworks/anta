@@ -14,7 +14,17 @@ from typing import TYPE_CHECKING, Any
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnsiAuthzFact, GnsiMultipleTransportsFact, GnsiTransportFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactProblemKind, FactSource, FactSourceKind, FeatureName, FeatureState, FeatureValue, SubFeature
+from anta._advisory.facts.models import (
+    AvailableFact,
+    CollectedFact,
+    FactProblemKind,
+    FactSource,
+    FactSourceKind,
+    FeatureName,
+    FeatureState,
+    FeatureValue,
+    SubFeature,
+)
 from anta._advisory.findings.models import AffectedResult, ErrorResult, InconclusiveResult, NotAffectedResult
 from anta._advisory.remediation import FixedRelease, software_version_plan
 from anta._eos.version import EOSVersion, parse_eos_version
@@ -97,7 +107,7 @@ _DATA: AntaUnitTestData = {
 }
 
 
-def version_fact(value: str) -> Fact[EOSVersion]:
+def version_fact(value: str) -> CollectedFact[EOSVersion]:
     """Build a version fact."""
     parsed = parse_eos_version(value).unwrap()
     return EosVersionFact.available(parsed, SOURCE)

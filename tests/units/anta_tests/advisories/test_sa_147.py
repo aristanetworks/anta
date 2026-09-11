@@ -15,8 +15,8 @@ from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.models import (
     AvailableFact,
+    CollectedFact,
     ComponentSoftwareVersion,
-    Fact,
     FactProblemKind,
     FactSource,
     FactSourceKind,
@@ -94,7 +94,7 @@ def sa147_eos_data(version: dict[str, Any], ssh_config: str) -> list[dict[str, A
 SOURCE = FactSource("unit test", FactSourceKind.DEVICE_METADATA)
 
 
-def eos_version_fact(version: str | None) -> Fact[EOSVersion]:
+def eos_version_fact(version: str | None) -> CollectedFact[EOSVersion]:
     """Build an EOS version fact for semantic assessment tests."""
     if version is None:
         return EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
@@ -105,14 +105,14 @@ def eos_version_fact(version: str | None) -> Fact[EOSVersion]:
 def component_version_fact(
     definition: type[OpenSshClientVersionFact | OpenSshServerVersionFact],
     version: str | None,
-) -> Fact[ComponentSoftwareVersion]:
+) -> CollectedFact[ComponentSoftwareVersion]:
     """Build an OpenSSH package-version fact for semantic assessment tests."""
     if version is None:
         return definition.unavailable(FactProblemKind.MISSING, SOURCE)
     return definition.available(ComponentSoftwareVersion(definition.component_name, version), SOURCE)
 
 
-def ssh_server_fact(config: str, *, unsupported: bool = False) -> Fact[FeatureValue]:
+def ssh_server_fact(config: str, *, unsupported: bool = False) -> CollectedFact[FeatureValue]:
     """Parse the SSH server fact from test configuration or an unsupported command."""
     command = SshServerFact.commands[0].model_copy()
     command.output = None if unsupported else config

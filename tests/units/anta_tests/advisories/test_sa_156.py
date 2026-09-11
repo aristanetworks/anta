@@ -33,7 +33,7 @@ from tests.units.anta_tests.advisories import build_expected_advisory_result
 from tests.units.anta_tests.advisories.fact_builders import assert_version_statuses, available_fact, eos_version_fact, unavailable_fact
 
 if TYPE_CHECKING:
-    from anta._advisory.facts.models import Fact
+    from anta._advisory.facts.models import CollectedFact
     from tests.units.anta_tests import AntaUnitTestData
 
 FIXED_RELEASES = (
@@ -90,11 +90,11 @@ def mitigation_fact(state: MitigationState) -> AvailableFact[MitigationValue]:
 def assess(
     version: str,
     *,
-    validation: Fact[FeatureValue],
-    mitigation: Fact[MitigationValue],
-    relay: Fact[FeatureValue] | None = None,
-    relay_scope: Fact[DhcpRelayScope] | None = None,
-    coverage: Fact[IpLockingCoverage] | None = None,
+    validation: CollectedFact[FeatureValue],
+    mitigation: CollectedFact[MitigationValue],
+    relay: CollectedFact[FeatureValue] | None = None,
+    relay_scope: CollectedFact[DhcpRelayScope] | None = None,
+    coverage: CollectedFact[IpLockingCoverage] | None = None,
 ) -> VulnerabilityResult:
     """Assess one concise direct-fact scenario."""
     return _assess_sa156(

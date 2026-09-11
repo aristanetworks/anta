@@ -13,7 +13,17 @@ from typing import TYPE_CHECKING
 
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import Fact, FactDefinition, FactProblemKind, FactSource, FactSourceKind, FeatureName, FeatureState, FeatureValue, SubFeature
+from anta._advisory.facts.models import (
+    CollectedFact,
+    FactDefinition,
+    FactProblemKind,
+    FactSource,
+    FactSourceKind,
+    FeatureName,
+    FeatureState,
+    FeatureValue,
+    SubFeature,
+)
 from anta._advisory.facts.network_services import MlagConfiguredFact
 from anta._advisory.facts.platform import PlatformIdentityFact
 from anta._advisory.facts.routing import PimSparseModeFact
@@ -114,14 +124,14 @@ _DATA: AntaUnitTestData = {
 }
 
 
-def version_fact(version: str | None) -> Fact[EOSVersion]:
+def version_fact(version: str | None) -> CollectedFact[EOSVersion]:
     """Build an EOS version fact."""
     if version is None:
         return EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
     return EosVersionFact.available(parse_eos_version(version).unwrap(), SOURCE)
 
 
-def platform_fact(model: str | None) -> Fact[PlatformIdentity]:
+def platform_fact(model: str | None) -> CollectedFact[PlatformIdentity]:
     """Build a platform identity fact."""
     if model is None:
         return PlatformIdentityFact.unavailable(FactProblemKind.MISSING, SOURCE)
@@ -130,7 +140,7 @@ def platform_fact(model: str | None) -> Fact[PlatformIdentity]:
     return PlatformIdentityFact.available(platform, SOURCE)
 
 
-def feature_fact(definition: type[FactDefinition[FeatureValue]], feature: SubFeature, state: FeatureState) -> Fact[FeatureValue]:
+def feature_fact(definition: type[FactDefinition[FeatureValue]], feature: SubFeature, state: FeatureState) -> CollectedFact[FeatureValue]:
     """Build one available feature fact."""
     return definition.available(FeatureValue(feature, state), SOURCE)
 

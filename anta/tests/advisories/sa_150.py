@@ -12,7 +12,7 @@ from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import Dot1xControlledAuthenticatorFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
+from anta._advisory.facts.models import AvailableFact, CollectedFact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
 from anta._advisory.facts.platform import PlatformIdentityFact
 from anta._advisory.findings.assessment import assess_eos_scope, assess_platform_scope
 from anta._advisory.findings.models import (
@@ -136,9 +136,9 @@ def _remediation_plan(vulnerability_id: str, fixed_releases: Sequence[FixedRelea
 def _assess_sa150_issue(
     *,
     vulnerability_id: str,
-    version: Fact[EOSVersion],
-    platform: Fact[PlatformIdentity],
-    dot1x: Fact[FeatureValue],
+    version: CollectedFact[EOSVersion],
+    platform: CollectedFact[PlatformIdentity],
+    dot1x: CollectedFact[FeatureValue],
     affected_versions: Sequence[VersionRule],
     unresolved: tuple[Unobservable, ...],
     fixed_releases: Sequence[FixedRelease],
@@ -167,7 +167,7 @@ def _assess_sa150_issue(
     )
 
 
-def _assess_cve_77191(version: Fact[EOSVersion], platform: Fact[PlatformIdentity], dot1x: Fact[FeatureValue]) -> VulnerabilityResult:
+def _assess_cve_77191(version: CollectedFact[EOSVersion], platform: CollectedFact[PlatformIdentity], dot1x: CollectedFact[FeatureValue]) -> VulnerabilityResult:
     """Assess CVE-2026-77191."""
     return _assess_sa150_issue(
         vulnerability_id=CVE_77191_ID,
@@ -180,7 +180,7 @@ def _assess_cve_77191(version: Fact[EOSVersion], platform: Fact[PlatformIdentity
     )
 
 
-def _assess_cve_75943(version: Fact[EOSVersion], platform: Fact[PlatformIdentity], dot1x: Fact[FeatureValue]) -> VulnerabilityResult:
+def _assess_cve_75943(version: CollectedFact[EOSVersion], platform: CollectedFact[PlatformIdentity], dot1x: CollectedFact[FeatureValue]) -> VulnerabilityResult:
     """Assess CVE-2026-75943."""
     return _assess_sa150_issue(
         vulnerability_id=CVE_75943_ID,
@@ -193,7 +193,7 @@ def _assess_cve_75943(version: Fact[EOSVersion], platform: Fact[PlatformIdentity
     )
 
 
-def _assess_cve_75944(version: Fact[EOSVersion], platform: Fact[PlatformIdentity], dot1x: Fact[FeatureValue]) -> VulnerabilityResult:
+def _assess_cve_75944(version: CollectedFact[EOSVersion], platform: CollectedFact[PlatformIdentity], dot1x: CollectedFact[FeatureValue]) -> VulnerabilityResult:
     """Assess CVE-2026-75944."""
     return _assess_sa150_issue(
         vulnerability_id=CVE_75944_ID,
@@ -209,7 +209,7 @@ def _assess_cve_75944(version: Fact[EOSVersion], platform: Fact[PlatformIdentity
     )
 
 
-def _assess_cve_75945(version: Fact[EOSVersion], platform: Fact[PlatformIdentity], dot1x: Fact[FeatureValue]) -> VulnerabilityResult:
+def _assess_cve_75945(version: CollectedFact[EOSVersion], platform: CollectedFact[PlatformIdentity], dot1x: CollectedFact[FeatureValue]) -> VulnerabilityResult:
     """Assess CVE-2026-75945."""
     return _assess_sa150_issue(
         vulnerability_id=CVE_75945_ID,

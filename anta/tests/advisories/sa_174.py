@@ -14,7 +14,7 @@ from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnsiAcctzFact, GnsiAuthzFact
 from anta._advisory.facts.models import (
     AvailableFact,
-    Fact,
+    CollectedFact,
     FactDefinition,
     FeatureState,
     FeatureValue,
@@ -76,19 +76,19 @@ ADVISORY = _AdvisoryMetadata(
 VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
-def _known_feature(fact: Fact[FeatureValue], state: FeatureState) -> bool:
+def _known_feature(fact: CollectedFact[FeatureValue], state: FeatureState) -> bool:
     """Return whether a feature fact is available in the requested state."""
     return not isinstance(fact, UnavailableFact) and fact.value.state is state
 
 
 # pylint: disable-next=too-many-return-statements
 def _assess_sa174(  # noqa: PLR0911
-    version: Fact[EOSVersion],
-    p4_runtime: Fact[FeatureValue],
-    mtls: Fact[FeatureValue],
-    p4_accounting: Fact[FeatureValue],
-    gnsi_acctz: Fact[FeatureValue],
-    authz: Fact[FeatureValue],
+    version: CollectedFact[EOSVersion],
+    p4_runtime: CollectedFact[FeatureValue],
+    mtls: CollectedFact[FeatureValue],
+    p4_accounting: CollectedFact[FeatureValue],
+    gnsi_acctz: CollectedFact[FeatureValue],
+    authz: CollectedFact[FeatureValue],
 ) -> VulnerabilityResult:
     """Assess P4Runtime transport security, accounting, Authz state, and policy observability."""
     if not isinstance(p4_runtime, UnavailableFact) and p4_runtime.value.state is not FeatureState.ENABLED:

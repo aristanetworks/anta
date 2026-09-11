@@ -13,9 +13,9 @@ from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.models import (
     AvailableFact,
+    CollectedFact,
     ConfigurationState,
     ConfigurationValue,
-    Fact,
     FactDefinition,
     FeatureState,
     FeatureValue,
@@ -97,11 +97,11 @@ BROADCAST_ID, SEGMENT_ROUTING_ID = (vulnerability.id for vulnerability in ADVISO
 
 def _assess_ospfv2_issue(
     vulnerability_id: str,
-    version: Fact[EOSVersion],
-    prerequisite: Fact[FeatureValue],
+    version: CollectedFact[EOSVersion],
+    prerequisite: CollectedFact[FeatureValue],
     affected_versions: tuple[VersionRule, ...],
     fixed_releases: tuple[FixedRelease, ...],
-    hotfix: Fact[MitigationValue] | None,
+    hotfix: CollectedFact[MitigationValue] | None,
     hotfix_releases: frozenset[str],
 ) -> VulnerabilityResult:
     """Assess one OSPFv2 issue using its independent version and feature prerequisite."""
@@ -134,10 +134,10 @@ def _assess_ospfv2_issue(
 
 
 def _assess_broadcast_issue(
-    version: Fact[EOSVersion],
-    prerequisite: Fact[FeatureValue],
-    configuration: Fact[ConfigurationValue],
-    hotfix: Fact[MitigationValue],
+    version: CollectedFact[EOSVersion],
+    prerequisite: CollectedFact[FeatureValue],
+    configuration: CollectedFact[ConfigurationValue],
+    hotfix: CollectedFact[MitigationValue],
 ) -> VulnerabilityResult:
     """Assess reported active broadcast authentication, falling back to configured-process state when inactive."""
     if not isinstance(prerequisite, UnavailableFact) and prerequisite.value.state is FeatureState.ENABLED:
@@ -166,9 +166,9 @@ def _assess_broadcast_issue(
 
 
 def _assess_inactive_broadcast_issue(
-    version: Fact[EOSVersion],
-    configuration: Fact[ConfigurationValue],
-    hotfix: Fact[MitigationValue],
+    version: CollectedFact[EOSVersion],
+    configuration: CollectedFact[ConfigurationValue],
+    hotfix: CollectedFact[MitigationValue],
 ) -> VulnerabilityResult:
     """Assess configured OSPFv2 when no qualifying broadcast interface is currently active."""
     eos_release = assess_eos_scope(BROADCAST_ID, version, BROADCAST_AFFECTED_VERSIONS)

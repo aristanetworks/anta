@@ -9,10 +9,10 @@ import re
 from typing import TYPE_CHECKING
 
 from anta._advisory.facts.models import (
+    CollectedFact,
     CommandsFactDefinition,
     ConfigurationState,
     ConfigurationValue,
-    Fact,
     FactProblemKind,
     FactSource,
     FactSourceKind,
@@ -101,7 +101,7 @@ class SharedSviIngressAclFact(CommandsFactDefinition[ConfigurationValue]):
     commands = (ACL_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[ConfigurationValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[ConfigurationValue]:
         """Normalize the unconverted Trident ACL output without retaining ACL inventories."""
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)

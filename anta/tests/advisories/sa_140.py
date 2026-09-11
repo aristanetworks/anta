@@ -12,7 +12,7 @@ from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact, SecureBootFact
 from anta._advisory.facts.models import (
-    Fact,
+    CollectedFact,
     FeatureState,
     FeatureValue,
     UnavailableFact,
@@ -76,8 +76,8 @@ VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
 def _assess_sa140(
-    version_fact: Fact[EOSVersion],
-    secure_boot: Fact[FeatureValue],
+    version_fact: CollectedFact[EOSVersion],
+    secure_boot: CollectedFact[FeatureValue],
 ) -> VulnerabilityResult:
     """Return a structured conclusion from normalized SA140 facts."""
     release = assess_eos_scope(VULNERABILITY_ID, version_fact, AFFECTED_VERSION_MATRIX)

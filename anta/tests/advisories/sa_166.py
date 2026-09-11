@@ -12,7 +12,7 @@ from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnmiTransportFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
+from anta._advisory.facts.models import AvailableFact, CollectedFact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
 from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import AffectedResult, EosReleaseAssessment, ErrorResult, NotAffectedResult, VulnerabilityResult
 from anta._advisory.findings.projection import project_vulnerability_result
@@ -56,7 +56,7 @@ ADVISORY = _AdvisoryMetadata(
 VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
-def _assess_sa166(version: Fact[EOSVersion], gnmi: Fact[FeatureValue]) -> VulnerabilityResult:
+def _assess_sa166(version: CollectedFact[EOSVersion], gnmi: CollectedFact[FeatureValue]) -> VulnerabilityResult:
     """Assess EOS scope and enabled gNMI transport exposure."""
     if not isinstance(gnmi, UnavailableFact) and gnmi.value.state is not FeatureState.ENABLED:
         return NotAffectedResult(vulnerability_id=VULNERABILITY_ID, decisive=(gnmi,))

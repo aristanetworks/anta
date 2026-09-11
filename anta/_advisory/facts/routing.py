@@ -10,13 +10,14 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 
 from anta._advisory.facts.models import (
+    CollectedFact,
     CommandsFactDefinition,
     ConfigurationState,
     ConfigurationValue,
-    Fact,
     FactProblemKind,
     FactSource,
     FactSourceKind,
+    FeatureFact,
     FeatureName,
     FeatureState,
     FeatureValue,
@@ -313,7 +314,7 @@ class Ospfv3ConfiguredFact(CommandsFactDefinition[FeatureValue]):
     commands = (OSPFV3_SUMMARY_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize current structured OSPFv3 summary output."""
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
@@ -335,7 +336,7 @@ class LegacyOspfv3ConfiguredFact(CommandsFactDefinition[FeatureValue]):
     commands = (LEGACY_OSPFV3_SUMMARY_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize legacy structured IPv6 OSPF summary output."""
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
@@ -449,7 +450,7 @@ class Ospfv2BroadcastAuthenticationFact(CommandsFactDefinition[FeatureValue]):
 
     @classmethod
     # pylint: disable-next=too-many-return-statements
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:  # noqa: PLR0911
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:  # noqa: PLR0911
         """Find cryptographic authentication on active OSPFv2 broadcast interfaces."""
         interface_command, summary_command = commands
         feature = SubFeature(FeatureName.OSPFV2, "broadcast cryptographic authentication")
@@ -487,7 +488,7 @@ class Ospfv2ProcessConfiguredFact(CommandsFactDefinition[ConfigurationValue]):
     commands = (OSPFV2_PROCESS_CONFIG_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[ConfigurationValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[ConfigurationValue]:
         """Return whether any OSPFv2 routing process is configured."""
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
@@ -527,7 +528,7 @@ class Ospfv2SegmentRoutingFact(CommandsFactDefinition[FeatureValue]):
     commands = (OSPFV2_SEGMENT_ROUTING_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize structured instance presence.
 
         An empty ``instList`` is disabled, including when EOS only reports that
@@ -552,7 +553,7 @@ class IsisNonPassiveBroadcastInterfaceFact(CommandsFactDefinition[FeatureValue])
     commands = (ISIS_INTERFACE_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize modeled interface, network-type, and per-level passive state."""
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
@@ -577,7 +578,7 @@ class IsisConfiguredFact(CommandsFactDefinition[FeatureValue]):
     commands = (ISIS_SUMMARY_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize an IS-IS summary or its established empty state."""
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
@@ -610,7 +611,7 @@ class IsisGracefulRestartFact(CommandsFactDefinition[FeatureValue]):
     commands = (ISIS_GRACEFUL_RESTART_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize the explicit graceful-restart status."""
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
@@ -644,7 +645,7 @@ class Ospfv3IpsecAuthenticationFact(CommandsFactDefinition[MitigationValue]):
     commands = (OSPFV3_CONFIG_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[MitigationValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[MitigationValue]:
         """Verify interface- or address-family-specific area authentication for every configured scope."""
         (config_command,) = commands
         config_source = FactSource(config_command.command, FactSourceKind.COMMAND)
@@ -667,7 +668,7 @@ class PimSparseModeFact(CommandsFactDefinition[FeatureValue]):
     commands = (PIM_SPARSE_MODE_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize canonical and legacy interface command syntax."""
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
@@ -689,7 +690,7 @@ class LooseUrpfFact(CommandsFactDefinition[FeatureValue]):
     commands = (LOOSE_URPF_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize the narrow loose-uRPF configuration output."""
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
@@ -701,7 +702,8 @@ class LooseUrpfFact(CommandsFactDefinition[FeatureValue]):
         return cls.available(FeatureValue(feature, state), source)
 
 
-class BfdAuthenticationFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class BfdAuthenticationFact(FeatureFact, CommandsFactDefinition["BfdAuthenticationFact"]):
     """Presence of configured BFD authentication while BFD is enabled."""
 
     key = "feature.bfd.authentication"
@@ -709,7 +711,7 @@ class BfdAuthenticationFact(CommandsFactDefinition[FeatureValue]):
     commands = (BFD_SUMMARY_COMMAND, BFD_GLOBAL_CONFIG_COMMAND, BFD_INTERFACE_AUTH_CONFIG_COMMAND)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[BfdAuthenticationFact]:
         """Combine BFD administrative state with global, peer-specific, and interface authentication configuration."""
         summary, global_config, interface_config = commands
         feature = SubFeature(FeatureName.BFD, "authentication")
@@ -722,7 +724,7 @@ class BfdAuthenticationFact(CommandsFactDefinition[FeatureValue]):
             if not isinstance(admin_down, bool):
                 return cls.unavailable(FactProblemKind.MISSING if admin_down is None else FactProblemKind.MALFORMED, summary_source)
             if admin_down:
-                return cls.available(FeatureValue(feature, FeatureState.DISABLED), summary_source)
+                return cls.available(cls(feature, FeatureState.DISABLED), summary_source)
 
             for command in (global_config, interface_config):
                 source = FactSource(command.command, FactSourceKind.COMMAND)
@@ -736,4 +738,4 @@ class BfdAuthenticationFact(CommandsFactDefinition[FeatureValue]):
                 return cls.unavailable(FactProblemKind.MALFORMED, FactSource(interface_config.command, FactSourceKind.COMMAND))
             state = FeatureState.ENABLED if global_configured or interface_configured else FeatureState.DISABLED
             source_command = global_config if global_configured else interface_config if interface_configured else summary
-        return cls.available(FeatureValue(feature, state), FactSource(source_command.command, FactSourceKind.COMMAND))
+        return cls.available(cls(feature, state), FactSource(source_command.command, FactSourceKind.COMMAND))

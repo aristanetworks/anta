@@ -15,9 +15,9 @@ from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.acl import SharedSviIngressAclFact
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.models import (
+    CollectedFact,
     ConfigurationState,
     ConfigurationValue,
-    Fact,
     FactProblemKind,
     FactSource,
     FactSourceKind,
@@ -94,7 +94,7 @@ _DATA: AntaUnitTestData = {
 }
 
 
-def version_fact(value: str) -> Fact[EOSVersion]:
+def version_fact(value: str) -> CollectedFact[EOSVersion]:
     """Build an EOS version fact."""
     parsed = parse_eos_version(value).unwrap()
     return EosVersionFact.available(parsed, SOURCE)

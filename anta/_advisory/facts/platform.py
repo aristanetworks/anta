@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from anta._advisory.facts.models import Fact, FactDefinition, FactProblemKind, FactSource, FactSourceKind
+from anta._advisory.facts.models import CollectedFact, FactDefinition, FactProblemKind, FactSource, FactSourceKind
 from anta._eos.platform import PlatformComponentIdentity, PlatformComponentRole, PlatformIdentity
 
 if TYPE_CHECKING:
@@ -22,7 +22,7 @@ class PlatformIdentityFact(FactDefinition[PlatformIdentity]):
     label = "platform identity"
 
     @classmethod
-    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[PlatformIdentity]:
+    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> CollectedFact[PlatformIdentity]:
         """Return the refreshed platform identity or a missing fact when unavailable."""
         _ = commands
         source = FactSource("device metadata", FactSourceKind.DEVICE_METADATA)
@@ -41,7 +41,7 @@ class SwitchCardIdentityFact(FactDefinition[PlatformComponentIdentity]):
     label = "switch-card platform identity"
 
     @classmethod
-    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[PlatformComponentIdentity]:
+    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> CollectedFact[PlatformComponentIdentity]:
         """Return the single switch card discovered during device refresh."""
         _ = commands
         source = FactSource("device metadata", FactSourceKind.DEVICE_METADATA)

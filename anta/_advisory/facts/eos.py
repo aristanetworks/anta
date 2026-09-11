@@ -8,8 +8,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from anta._advisory.facts.models import (
+    CollectedFact,
     CommandsFactDefinition,
-    Fact,
     FactDefinition,
     FactProblemKind,
     FactSource,
@@ -32,7 +32,7 @@ class EosVersionFact(FactDefinition[EOSVersion]):
     label = "EOS version"
 
     @classmethod
-    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[EOSVersion]:
+    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> CollectedFact[EOSVersion]:
         """Normalize the device version into an EOS version fact."""
         _ = commands
         source = FactSource("device metadata", FactSourceKind.DEVICE_METADATA)
@@ -53,7 +53,7 @@ class SecureBootFact(CommandsFactDefinition[FeatureValue]):
     commands = (AntaCommand(command="show boot", revision=1),)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize the collected command output into a Secure Boot fact.
 
         The structured fields prove the platform-support and configuration prerequisites

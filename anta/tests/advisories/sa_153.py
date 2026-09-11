@@ -11,7 +11,7 @@ from typing import Any, ClassVar
 from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import Fact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
+from anta._advisory.facts.models import CollectedFact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
 from anta._advisory.facts.tracing import (
     AaaPasswordTraceFact,
     AaaTacacsKeyTraceFact,
@@ -72,8 +72,8 @@ PRIVATE_KEY_ID, PASSWORD_ID, TACACS_KEY_ID = (vulnerability.id for vulnerability
 
 def _assess_sa153_issue(
     vulnerability_id: str,
-    version: Fact[EOSVersion],
-    risky_trace: Fact[FeatureValue],
+    version: CollectedFact[EOSVersion],
+    risky_trace: CollectedFact[FeatureValue],
 ) -> VulnerabilityResult:
     """Assess one independent trace-driven exposure."""
     if not isinstance(risky_trace, UnavailableFact) and risky_trace.value.state is not FeatureState.ENABLED:
@@ -95,24 +95,24 @@ def _assess_sa153_issue(
 
 
 def _assess_private_key(
-    version: Fact[EOSVersion],
-    risky_trace: Fact[FeatureValue],
+    version: CollectedFact[EOSVersion],
+    risky_trace: CollectedFact[FeatureValue],
 ) -> VulnerabilityResult:
     """Assess private-key exposure in ConfigAgent logs."""
     return _assess_sa153_issue(PRIVATE_KEY_ID, version, risky_trace)
 
 
 def _assess_password(
-    version: Fact[EOSVersion],
-    risky_trace: Fact[FeatureValue],
+    version: CollectedFact[EOSVersion],
+    risky_trace: CollectedFact[FeatureValue],
 ) -> VulnerabilityResult:
     """Assess user-password exposure in Aaa logs."""
     return _assess_sa153_issue(PASSWORD_ID, version, risky_trace)
 
 
 def _assess_tacacs_key(
-    version: Fact[EOSVersion],
-    risky_trace: Fact[FeatureValue],
+    version: CollectedFact[EOSVersion],
+    risky_trace: CollectedFact[FeatureValue],
 ) -> VulnerabilityResult:
     """Assess TACACS+ shared-key exposure in Aaa logs."""
     return _assess_sa153_issue(TACACS_KEY_ID, version, risky_trace)

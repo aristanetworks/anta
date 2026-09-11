@@ -16,6 +16,7 @@ from anta._advisory.facts.models import (
     ConfigurationValue,
     CredentialSyntaxState,
     CredentialSyntaxValue,
+    FeatureFact,
     FeatureState,
     FeatureValue,
     IndicatorState,
@@ -100,7 +101,7 @@ class PlatformAssessment:
     relation: PlatformRelation
 
 
-ExposureFact: TypeAlias = AvailableFact[FeatureValue] | AvailableFact[ConfigurationValue] | AvailableFact[CredentialSyntaxValue]
+ExposureFact: TypeAlias = AvailableFact[FeatureFact] | AvailableFact[ConfigurationValue] | AvailableFact[CredentialSyntaxValue]
 MitigatableCondition: TypeAlias = AffectedEosRelease | AffectedComponentVersion | AffectedFeatureState | AffectedIndicator | ExposureFact
 AffectedCondition: TypeAlias = MitigatableCondition | AvailableFact[MitigationValue]
 VersionAssessment: TypeAlias = EosReleaseAssessment | ComponentVersionAssessment
@@ -120,7 +121,7 @@ def _is_mitigatable_condition(value: object) -> bool:
         return True
     if not isinstance(value, AvailableFact):
         return False
-    if isinstance(value.value, FeatureValue):
+    if isinstance(value.value, FeatureFact):
         return value.value.state is FeatureState.ENABLED
     if isinstance(value.value, ConfigurationValue):
         return value.value.state is ConfigurationState.CONFIGURED

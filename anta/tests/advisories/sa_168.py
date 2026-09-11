@@ -12,7 +12,7 @@ from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnmiTransportFact, NetconfTransportFact, RestconfTransportFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
+from anta._advisory.facts.models import AvailableFact, CollectedFact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
 from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import AffectedResult, EosReleaseAssessment, ErrorResult, NotAffectedResult, VulnerabilityResult
 from anta._advisory.findings.projection import project_vulnerability_result
@@ -63,7 +63,7 @@ def _remediation_plan(current_version: EOSVersion) -> RemediationPlan:
     )
 
 
-def _assess_sa168(version: Fact[EOSVersion], services: tuple[Fact[FeatureValue], ...]) -> VulnerabilityResult:
+def _assess_sa168(version: CollectedFact[EOSVersion], services: tuple[CollectedFact[FeatureValue], ...]) -> VulnerabilityResult:
     """Assess the OR relationship across gNMI, RESTCONF, and NETCONF services."""
     enabled = tuple(fact for fact in services if isinstance(fact, AvailableFact) and fact.value.state is FeatureState.ENABLED)
     if not enabled and all(isinstance(fact, AvailableFact) for fact in services):

@@ -9,9 +9,9 @@ from collections.abc import Mapping
 from typing import ClassVar
 
 from anta._advisory.facts.models import (
+    CollectedFact,
     CommandsFactDefinition,
     ComponentSoftwareVersion,
-    Fact,
     FactProblemKind,
     FactSource,
     FactSourceKind,
@@ -33,7 +33,7 @@ class PackageVersionFact(CommandsFactDefinition[ComponentSoftwareVersion]):
 
     @classmethod
     # pylint: disable-next=too-many-return-statements
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[ComponentSoftwareVersion]:  # noqa: PLR0911
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[ComponentSoftwareVersion]:  # noqa: PLR0911
         """Extract and normalize the declared package version."""
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
@@ -99,7 +99,7 @@ class PersistentHotfixFact(CommandsFactDefinition[MitigationValue]):
     )
 
     @classmethod
-    def _installed_extension(cls, command: AntaCommand) -> Fact[MitigationValue] | Mapping[str, object]:
+    def _installed_extension(cls, command: AntaCommand) -> CollectedFact[MitigationValue] | Mapping[str, object]:
         """Return installed extension data or a result decided by extension state alone."""
         source = FactSource(command.command, FactSourceKind.COMMAND)
         if is_unsupported_optional_command(command):
@@ -118,7 +118,7 @@ class PersistentHotfixFact(CommandsFactDefinition[MitigationValue]):
         return extension
 
     @classmethod
-    def _boot_state(cls, command: AntaCommand) -> Fact[MitigationValue]:
+    def _boot_state(cls, command: AntaCommand) -> CollectedFact[MitigationValue]:
         """Return persistence state from boot-extension output."""
         source = FactSource(command.command, FactSourceKind.COMMAND)
         if is_unsupported_optional_command(command):
@@ -132,7 +132,7 @@ class PersistentHotfixFact(CommandsFactDefinition[MitigationValue]):
         return cls.available(MitigationValue(state), source)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[MitigationValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[MitigationValue]:
         """Verify that the advisory SWIX is installed and enabled for boot."""
         extensions_command, boot_extensions_command = commands
         extension = cls._installed_extension(extensions_command)

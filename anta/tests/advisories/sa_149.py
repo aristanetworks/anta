@@ -12,7 +12,7 @@ from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import Dot1xDynamicAuthorizationFact, RadiusProxyDynamicAuthorizationFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
+from anta._advisory.facts.models import AvailableFact, CollectedFact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
 from anta._advisory.facts.platform import PlatformIdentityFact
 from anta._advisory.findings.assessment import assess_eos_scope, assess_platform_scope
 from anta._advisory.findings.models import (
@@ -97,10 +97,10 @@ VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
 def _assess_sa149(
-    version: Fact[EOSVersion],
-    platform: Fact[PlatformIdentity],
-    dot1x: Fact[FeatureValue],
-    radius_proxy: Fact[FeatureValue],
+    version: CollectedFact[EOSVersion],
+    platform: CollectedFact[PlatformIdentity],
+    dot1x: CollectedFact[FeatureValue],
+    radius_proxy: CollectedFact[FeatureValue],
 ) -> VulnerabilityResult:
     """Assess the physical-platform, EOS, 802.1X, and RADIUS proxy conjunction."""
     for prerequisite in (dot1x, radius_proxy):

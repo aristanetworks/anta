@@ -15,7 +15,7 @@ from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.aaa import LoginAuthenticationFact
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management_access import PasswordManagementServiceFact
-from anta._advisory.facts.models import Fact, FactProblemKind, FactSource, FactSourceKind, FeatureName, FeatureState, FeatureValue, SubFeature
+from anta._advisory.facts.models import CollectedFact, FactProblemKind, FactSource, FactSourceKind, FeatureName, FeatureState, FeatureValue, SubFeature
 from anta._advisory.findings.models import AffectedResult, ErrorResult, NotAffectedResult
 from anta._advisory.remediation import FixedRelease, software_version_plan
 from anta._eos.version import EOSVersion, parse_eos_version
@@ -93,7 +93,7 @@ _DATA: AntaUnitTestData = {
 }
 
 
-def version_fact(value: str) -> Fact[EOSVersion]:
+def version_fact(value: str) -> CollectedFact[EOSVersion]:
     """Build an EOS version fact."""
     parsed = parse_eos_version(value).unwrap()
     return EosVersionFact.available(parsed, SOURCE)

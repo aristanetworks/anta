@@ -13,7 +13,7 @@ from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.aaa import LevelZeroCommandAuthorizationFact
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnmiMtlsAuthorizationFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactDefinition, FeatureState, FeatureValue, MitigationState, MitigationValue, UnavailableFact
+from anta._advisory.facts.models import AvailableFact, CollectedFact, FactDefinition, FeatureState, FeatureValue, MitigationState, MitigationValue, UnavailableFact
 from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import (
     AffectedResult,
@@ -70,7 +70,7 @@ ADVISORY = _AdvisoryMetadata(
 VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
-def _assess_sa163(version: Fact[EOSVersion], exposure: Fact[FeatureValue], mitigation: Fact[MitigationValue]) -> VulnerabilityResult:
+def _assess_sa163(version: CollectedFact[EOSVersion], exposure: CollectedFact[FeatureValue], mitigation: CollectedFact[MitigationValue]) -> VulnerabilityResult:
     """Assess EOS scope, exposed OpenConfig transport state, and the documented AAA mitigation."""
     if not isinstance(exposure, UnavailableFact) and exposure.value.state is not FeatureState.ENABLED:
         return NotAffectedResult(vulnerability_id=VULNERABILITY_ID, decisive=(exposure,))

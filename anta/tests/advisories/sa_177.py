@@ -12,7 +12,7 @@ from typing import Any, ClassVar
 from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import Fact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
+from anta._advisory.facts.models import CollectedFact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
 from anta._advisory.facts.network_services import MlagConfiguredFact
 from anta._advisory.facts.platform import PlatformIdentityFact
 from anta._advisory.facts.routing import PimSparseModeFact
@@ -97,10 +97,10 @@ VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
 def _assess_sa177(  # noqa: PLR0911
-    version: Fact[EOSVersion],
-    platform: Fact[PlatformIdentity],
-    sparse_mode: Fact[FeatureValue],
-    mlag: Fact[FeatureValue],
+    version: CollectedFact[EOSVersion],
+    platform: CollectedFact[PlatformIdentity],
+    sparse_mode: CollectedFact[FeatureValue],
+    mlag: CollectedFact[FeatureValue],
 ) -> VulnerabilityResult:
     """Assess EOS, platform, PIM sparse-mode, and configured MLAG exposure."""
     for prerequisite in (sparse_mode, mlag):

@@ -12,12 +12,12 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 
 from anta._advisory.facts.models import (
+    CollectedFact,
     CommandsFactDefinition,
     ConfigurationState,
     ConfigurationValue,
     CredentialSyntaxState,
     CredentialSyntaxValue,
-    Fact,
     FactProblemKind,
     FactSource,
     FactSourceKind,
@@ -248,7 +248,7 @@ class Dot1xControlledAuthenticatorFact(CommandsFactDefinition[FeatureValue]):
     commands = (DOT1X_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize system control and effective interface port-control state."""
         (command,) = commands
         source = _feature_source(command)
@@ -270,7 +270,7 @@ class Dot1xDynamicAuthorizationFact(CommandsFactDefinition[FeatureValue]):
     commands = (DOT1X_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize the structured global and interface prerequisites."""
         (command,) = commands
         feature = SubFeature(FeatureName.DOT1X, "dynamic authorization authenticator")
@@ -297,7 +297,7 @@ class RadiusProxyDynamicAuthorizationFact(CommandsFactDefinition[FeatureValue]):
     commands = (RADIUS_PROXY_CONFIG_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize the complete source-defined RADIUS proxy prerequisite."""
         (command,) = commands
         lines = tuple(line.strip() for line in command.text_output.splitlines() if line.strip() and line.strip() != "!")
@@ -315,7 +315,7 @@ class SnmpAgentFact(CommandsFactDefinition[FeatureValue]):
     commands = (SNMP_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize the structured top-level SNMP enablement flag."""
         (command,) = commands
         source = _feature_source(command)
@@ -338,7 +338,7 @@ class SnmpV3AuthenticationFact(CommandsFactDefinition[FeatureValue]):
 
     @classmethod
     # pylint: disable-next=too-many-return-statements
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:  # noqa: C901, PLR0911
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:  # noqa: C901, PLR0911
         """Normalize SNMPv3 authentication-key presence from structured operational state."""
         (command,) = commands
         source = _feature_source(command)
@@ -385,7 +385,7 @@ class SnmpV3CredentialSyntaxFact(CommandsFactDefinition[CredentialSyntaxValue]):
     commands = (SNMPV3_USER_CONFIG_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[CredentialSyntaxValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[CredentialSyntaxValue]:
         """Normalize credential syntax from the narrow SNMP user configuration output."""
         (command,) = commands
         source = _feature_source(command)
@@ -404,7 +404,7 @@ class GnsiTransportFact(CommandsFactDefinition[FeatureValue]):
     commands = (GNSI_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize whether at least one configured gNSI transport is enabled."""
         (command,) = commands
         source = _feature_source(command)
@@ -435,7 +435,7 @@ class GnsiMultipleTransportsFact(CommandsFactDefinition[FeatureValue]):
     commands = (GNSI_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize whether at least two configured gNSI transports are enabled."""
         (command,) = commands
         source = _feature_source(command)
@@ -466,7 +466,7 @@ class GnsiCertzFact(CommandsFactDefinition[FeatureValue]):
     commands = (GNSI_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize the top-level Certz enablement flag."""
         (command,) = commands
         source = _feature_source(command)
@@ -491,7 +491,7 @@ class GnsiCredentialzFact(CommandsFactDefinition[FeatureValue]):
     commands = (GNSI_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize the top-level Credentialz enablement flag."""
         (command,) = commands
         source = _feature_source(command)
@@ -515,7 +515,7 @@ class GnsiAuthzFact(CommandsFactDefinition[FeatureValue]):
     commands = (GNSI_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize the top-level Authz enablement flag."""
         (command,) = commands
         source = _feature_source(command)
@@ -540,7 +540,7 @@ class GnsiAcctzFact(CommandsFactDefinition[FeatureValue]):
     commands = (GNSI_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize the top-level Acctz enablement flag."""
         (command,) = commands
         source = _feature_source(command)
@@ -564,7 +564,7 @@ class GnsiPathzFact(CommandsFactDefinition[FeatureValue]):
     commands = (GNSI_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize the top-level Pathz enablement flag."""
         (command,) = commands
         source = _feature_source(command)
@@ -628,7 +628,7 @@ class GnsiPathzPolicyOverlapFact(CommandsFactDefinition[FeatureValue]):
     commands = (PATHZ_POLICY_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize the persisted Pathz policy without retaining policy contents."""
         (command,) = commands
         source = _feature_source(command)
@@ -653,7 +653,7 @@ class GnmiTransportFact(CommandsFactDefinition[FeatureValue]):
     commands = (GNMI_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         (command,) = commands
         source = _feature_source(command)
         if is_unsupported_optional_command(command):
@@ -710,7 +710,7 @@ class GnmiAccountingFact(CommandsFactDefinition[FeatureValue]):
         return FactProblemKind.MISSING if unknown else FeatureState.DISABLED
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         (command,) = commands
         source = _feature_source(command)
         feature = SubFeature(FeatureName.GNMI, "transport accounting")
@@ -733,7 +733,7 @@ class GnmiAuthorizationFact(CommandsFactDefinition[FeatureValue]):
     commands = (GNMI_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize authorization state across enabled transports."""
         (command,) = commands
         source = _feature_source(command)
@@ -769,7 +769,7 @@ class RestconfTransportFact(CommandsFactDefinition[FeatureValue]):
     commands = (RESTCONF_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize structured RESTCONF enablement."""
         (command,) = commands
         source = _feature_source(command)
@@ -791,7 +791,7 @@ class NetconfTransportFact(CommandsFactDefinition[FeatureValue]):
     commands = (NETCONF_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize structured NETCONF enablement."""
         (command,) = commands
         source = _feature_source(command)
@@ -813,7 +813,7 @@ class GnpsiTransportFact(CommandsFactDefinition[FeatureValue]):
     commands = (GNPSI_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize enabled transports and the explicit disabled state."""
         (command,) = commands
         source = _feature_source(command)
@@ -838,7 +838,7 @@ class GnpsiAuthenticationExposureFact(CommandsFactDefinition[FeatureValue]):
 
     @classmethod
     # pylint: disable-next=too-many-return-statements
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:  # noqa: C901, PLR0911
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:  # noqa: C901, PLR0911
         """Normalize TLS metadata and mTLS common-name authentication paths."""
         (command,) = commands
         source = _feature_source(command)
@@ -882,7 +882,7 @@ class GnpsiMutualTlsSpiffeMitigationFact(CommandsFactDefinition[MitigationValue]
 
     @classmethod
     # pylint: disable-next=too-many-return-statements
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[MitigationValue]:  # noqa: C901, PLR0911
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[MitigationValue]:  # noqa: C901, PLR0911
         """Verify the exact authentication control across every enabled transport."""
         (command,) = commands
         source = _feature_source(command)
@@ -922,7 +922,7 @@ class GnpsiEosRpcAuthTraceFact(CommandsFactDefinition[FeatureValue]):
     commands = (GNPSI_TRACE_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize the explicit trace-facility status."""
         (command,) = commands
         source = _feature_source(command)
@@ -975,7 +975,7 @@ class GnmiMtlsAuthorizationFact(CommandsFactDefinition[FeatureValue]):
     commands = (GNMI_COMMAND, SSL_PROFILE_COMMAND)
 
     @classmethod
-    def _candidates(cls, gnmi: AntaCommand) -> Fact[FeatureValue] | _GnmiAuthorizationCandidates:
+    def _candidates(cls, gnmi: AntaCommand) -> CollectedFact[FeatureValue] | _GnmiAuthorizationCandidates:
         """Return candidate profiles or a result decided by gNMI output alone."""
         source = _feature_source(gnmi)
         feature = SubFeature(FeatureName.GNMI, "mTLS request authorization")
@@ -1002,7 +1002,7 @@ class GnmiMtlsAuthorizationFact(CommandsFactDefinition[FeatureValue]):
         return cls.available(FeatureValue(feature, FeatureState.DISABLED), source)
 
     @classmethod
-    def _evaluate_candidates(cls, candidates: _GnmiAuthorizationCandidates, ssl: AntaCommand, gnmi: AntaCommand) -> Fact[FeatureValue]:
+    def _evaluate_candidates(cls, candidates: _GnmiAuthorizationCandidates, ssl: AntaCommand, gnmi: AntaCommand) -> CollectedFact[FeatureValue]:
         """Evaluate candidate profiles and retain the command causing uncertainty."""
         ssl_source = _feature_source(ssl)
         feature = SubFeature(FeatureName.GNMI, "mTLS request authorization")
@@ -1019,7 +1019,7 @@ class GnmiMtlsAuthorizationFact(CommandsFactDefinition[FeatureValue]):
         return cls.available(FeatureValue(feature, FeatureState.DISABLED), ssl_source)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize exposure without combining state from different transports."""
         gnmi, ssl = commands
         candidates = cls._candidates(gnmi)
@@ -1036,7 +1036,7 @@ class RiskyOpenConfigTraceFact(CommandsFactDefinition[ConfigurationValue]):
     commands = (TRACE_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[ConfigurationValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[ConfigurationValue]:
         (command,) = commands
         source = _feature_source(command)
         if is_unsupported_optional_command(command):
@@ -1063,7 +1063,7 @@ class GribiTransportFact(CommandsFactDefinition[FeatureValue]):
     commands = (GRIBI_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         (command,) = commands
         source = _feature_source(command)
         if is_unsupported_optional_command(command):
@@ -1128,7 +1128,7 @@ class GnmiMtlsFact(CommandsFactDefinition[MitigationValue]):
         return tuple(transports)
 
     @classmethod
-    def _profile_names(cls, gnmi: AntaCommand) -> Fact[MitigationValue] | tuple[str, ...]:
+    def _profile_names(cls, gnmi: AntaCommand) -> CollectedFact[MitigationValue] | tuple[str, ...]:
         """Return configured gNMI SSL profiles or a result decided by gNMI output alone."""
         source = _feature_source(gnmi)
         if is_unsupported_optional_command(gnmi):
@@ -1148,7 +1148,7 @@ class GnmiMtlsFact(CommandsFactDefinition[MitigationValue]):
         return tuple(profile_name for profile_name in profile_names if isinstance(profile_name, str))
 
     @classmethod
-    def _evaluate_profiles(cls, profile_names: tuple[str, ...], ssl: AntaCommand) -> Fact[MitigationValue]:
+    def _evaluate_profiles(cls, profile_names: tuple[str, ...], ssl: AntaCommand) -> CollectedFact[MitigationValue]:
         """Evaluate configured gNMI profiles using SSL-profile output."""
         source = _feature_source(ssl)
         if is_unsupported_optional_command(ssl):
@@ -1162,7 +1162,7 @@ class GnmiMtlsFact(CommandsFactDefinition[MitigationValue]):
         return cls.available(MitigationValue(MitigationState.EFFECTIVE), source)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[MitigationValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[MitigationValue]:
         gnmi, ssl = commands
         profile_names = cls._profile_names(gnmi)
         if not isinstance(profile_names, tuple):
@@ -1178,7 +1178,7 @@ class GribiMtlsFact(CommandsFactDefinition[MitigationValue]):
     commands = (GRIBI_COMMAND, SSL_PROFILE_COMMAND)
 
     @classmethod
-    def _profile_name(cls, gribi: AntaCommand) -> Fact[MitigationValue] | str:
+    def _profile_name(cls, gribi: AntaCommand) -> CollectedFact[MitigationValue] | str:
         """Return the gRIBI SSL profile or a result decided by gRIBI output alone."""
         source = _feature_source(gribi)
         if is_unsupported_optional_command(gribi):
@@ -1197,7 +1197,7 @@ class GribiMtlsFact(CommandsFactDefinition[MitigationValue]):
         return profile_name
 
     @classmethod
-    def _evaluate_profile(cls, profile_name: str, ssl: AntaCommand) -> Fact[MitigationValue]:
+    def _evaluate_profile(cls, profile_name: str, ssl: AntaCommand) -> CollectedFact[MitigationValue]:
         """Evaluate the configured gRIBI profile using SSL-profile output."""
         source = _feature_source(ssl)
         if is_unsupported_optional_command(ssl):
@@ -1209,7 +1209,7 @@ class GribiMtlsFact(CommandsFactDefinition[MitigationValue]):
         return cls.available(MitigationValue(state), source)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[MitigationValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[MitigationValue]:
         gribi, ssl = commands
         profile_name = cls._profile_name(gribi)
         if not isinstance(profile_name, str):

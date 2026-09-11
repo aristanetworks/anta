@@ -17,9 +17,9 @@ from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnmiAccountingFact, GnmiTransportFact, RiskyOpenConfigTraceFact
 from anta._advisory.facts.models import (
     AvailableFact,
+    CollectedFact,
     ConfigurationState,
     ConfigurationValue,
-    Fact,
     FactProblemKind,
     FactSource,
     FactSourceKind,
@@ -72,7 +72,7 @@ def _command(command: AntaCommand, output: dict[str, object] | str) -> AntaComma
     return populated
 
 
-def _feature_bool(fact: Fact[FeatureValue]) -> bool | None:
+def _feature_bool(fact: CollectedFact[FeatureValue]) -> bool | None:
     """Project a feature fact to the legacy truth table used by parser cases."""
     if isinstance(fact, UnavailableFact):
         return None
@@ -320,7 +320,7 @@ class TestSA117Assessment(unittest.TestCase):
         output = {"transports": {"default": {"enabled": True, "accounting": False}}} if gnmi is None else gnmi
         source = FactSource("unit test", FactSourceKind.DEVICE_METADATA)
         if version is None:
-            version_fact: Fact[EOSVersion] = EosVersionFact.unavailable(FactProblemKind.MISSING, source)
+            version_fact: CollectedFact[EOSVersion] = EosVersionFact.unavailable(FactProblemKind.MISSING, source)
         else:
             parsed_version = parse_eos_version(version if isinstance(version, str) else str(version)).unwrap_or_none()
             version_fact = (
@@ -330,7 +330,7 @@ class TestSA117Assessment(unittest.TestCase):
         gnmi_fact = GnmiTransportFact.parse((gnmi_command,))
         accounting_fact = GnmiAccountingFact.parse((gnmi_command,))
         trace_feature = SubFeature(FeatureName.TRACE, "advisory-identified selector")
-        trace_fact: Fact[ConfigurationValue] = (
+        trace_fact: CollectedFact[ConfigurationValue] = (
             RiskyOpenConfigTraceFact.unavailable(FactProblemKind.UNSUPPORTED, source)
             if trace is None
             else RiskyOpenConfigTraceFact.available(

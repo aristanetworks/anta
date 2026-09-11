@@ -11,7 +11,7 @@ from typing import Any, ClassVar, cast
 from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
+from anta._advisory.facts.models import AvailableFact, CollectedFact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
 from anta._advisory.facts.network_services import MlagDualPrimaryErrdisableFact
 from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import (
@@ -58,7 +58,7 @@ ADVISORY = _AdvisoryMetadata(
 VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
-def _assess_sa161(version: Fact[EOSVersion], local_mlag: Fact[FeatureValue]) -> VulnerabilityResult:
+def _assess_sa161(version: CollectedFact[EOSVersion], local_mlag: CollectedFact[FeatureValue]) -> VulnerabilityResult:
     """Assess EOS scope and the stable local MLAG configuration."""
     if not isinstance(local_mlag, UnavailableFact) and local_mlag.value.state is not FeatureState.ENABLED:
         return NotAffectedResult(vulnerability_id=VULNERABILITY_ID, decisive=(local_mlag,))

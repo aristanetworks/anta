@@ -12,7 +12,7 @@ from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnmiAuthorizationFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
+from anta._advisory.facts.models import AvailableFact, CollectedFact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
 from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import AffectedResult, EosReleaseAssessment, ErrorResult, NotAffectedResult, VulnerabilityResult
 from anta._advisory.findings.projection import project_vulnerability_result
@@ -52,7 +52,7 @@ ADVISORY = _AdvisoryMetadata(
 VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
-def _assess_sa170(version: Fact[EOSVersion], authorization: Fact[FeatureValue]) -> VulnerabilityResult:
+def _assess_sa170(version: CollectedFact[EOSVersion], authorization: CollectedFact[FeatureValue]) -> VulnerabilityResult:
     """Assess EOS scope and enabled gNMI request authorization."""
     if not isinstance(authorization, UnavailableFact) and authorization.value.state is not FeatureState.ENABLED:
         return NotAffectedResult(vulnerability_id=VULNERABILITY_ID, decisive=(authorization,))

@@ -11,7 +11,7 @@ from typing import Any, ClassVar, cast
 from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
+from anta._advisory.facts.models import AvailableFact, CollectedFact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
 from anta._advisory.facts.network_services import DhcpOption82Fact
 from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import AffectedResult, EosReleaseAssessment, ErrorResult, NotAffectedResult, VulnerabilityResult
@@ -50,7 +50,7 @@ ADVISORY = _AdvisoryMetadata(
 VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
-def _assess_sa155(version: Fact[EOSVersion], option82: Fact[FeatureValue]) -> VulnerabilityResult:
+def _assess_sa155(version: CollectedFact[EOSVersion], option82: CollectedFact[FeatureValue]) -> VulnerabilityResult:
     """Assess EOS scope and the three DHCP Option 82 exposure alternatives."""
     if not isinstance(option82, UnavailableFact) and option82.value.state is not FeatureState.ENABLED:
         return NotAffectedResult(vulnerability_id=VULNERABILITY_ID, decisive=(option82,))
