@@ -216,7 +216,7 @@ class VerifyAuthenMethods(AntaTest):
                 if sorted(auth_details["methods"]) != sorted(self.inputs.methods):
                     self.result.is_failure(f"AAA authentication methods {', '.join(self.inputs.methods)} are not matching for login console")
                     continue
-            if any(methods["methods"] != self.inputs.methods for methods in v.values()):
+            if any(sorted(methods["methods"]) != sorted(self.inputs.methods) for methods in v.values()):
                 not_matching.append(auth_type)
 
         if not_matching:
