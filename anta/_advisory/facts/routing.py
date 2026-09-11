@@ -17,6 +17,7 @@ from anta._advisory.facts.models import (
     FactProblemKind,
     FactSource,
     FactSourceKind,
+    FeatureFact,
     FeatureName,
     FeatureState,
     FeatureValue,
@@ -701,7 +702,8 @@ class LooseUrpfFact(CommandsFactDefinition[FeatureValue]):
         return cls.available(FeatureValue(feature, state), source)
 
 
-class BfdAuthenticationFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class BfdAuthenticationFact(FeatureFact, CommandsFactDefinition["BfdAuthenticationFact"]):
     """Presence of configured BFD authentication while BFD is enabled."""
 
     key = "feature.bfd.authentication"
@@ -709,7 +711,7 @@ class BfdAuthenticationFact(CommandsFactDefinition[FeatureValue]):
     commands = (BFD_SUMMARY_COMMAND, BFD_GLOBAL_CONFIG_COMMAND, BFD_INTERFACE_AUTH_CONFIG_COMMAND)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[BfdAuthenticationFact]:
         """Combine BFD administrative state with global, peer-specific, and interface authentication configuration."""
         summary, global_config, interface_config = commands
         feature = SubFeature(FeatureName.BFD, "authentication")
@@ -722,7 +724,7 @@ class BfdAuthenticationFact(CommandsFactDefinition[FeatureValue]):
             if not isinstance(admin_down, bool):
                 return cls.unavailable(FactProblemKind.MISSING if admin_down is None else FactProblemKind.MALFORMED, summary_source)
             if admin_down:
-                return cls.available(FeatureValue(feature, FeatureState.DISABLED), summary_source)
+                return cls.available(cls(feature, FeatureState.DISABLED), summary_source)
 
             for command in (global_config, interface_config):
                 source = FactSource(command.command, FactSourceKind.COMMAND)
@@ -736,4 +738,4 @@ class BfdAuthenticationFact(CommandsFactDefinition[FeatureValue]):
                 return cls.unavailable(FactProblemKind.MALFORMED, FactSource(interface_config.command, FactSourceKind.COMMAND))
             state = FeatureState.ENABLED if global_configured or interface_configured else FeatureState.DISABLED
             source_command = global_config if global_configured else interface_config if interface_configured else summary
-        return cls.available(FeatureValue(feature, state), FactSource(source_command.command, FactSourceKind.COMMAND))
+        return cls.available(cls(feature, state), FactSource(source_command.command, FactSourceKind.COMMAND))

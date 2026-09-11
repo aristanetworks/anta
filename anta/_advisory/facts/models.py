@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from anta.models import AntaCommand
 
 T = TypeVar("T")
+T_co = TypeVar("T_co", covariant=True)
 MIN_CONTRADICTORY_OBSERVATIONS = 2
 
 
@@ -85,22 +86,22 @@ class FactDefinition(ABC, Generic[T]):
 
 
 @dataclass(frozen=True, slots=True)
-class AvailableFact(Generic[T]):
+class AvailableFact(Generic[T_co]):
     """A typed fact whose normalized value is known."""
 
-    definition: type[FactDefinition[T]]
-    value: T
+    definition: type[FactDefinition[T_co]]
+    value: T_co
     source: FactSource
 
 
 @dataclass(frozen=True, slots=True)
-class UnavailableFact(Generic[T]):
+class UnavailableFact(Generic[T_co]):
     """A requested typed fact whose normalized value cannot be established."""
 
-    definition: type[FactDefinition[T]]
+    definition: type[FactDefinition[T_co]]
     problem: FactProblemKind
     source: FactSource
-    observations: tuple[T, ...] = ()
+    observations: tuple[T_co, ...] = ()
 
     def __post_init__(self) -> None:
         if self.problem is FactProblemKind.CONTRADICTORY and len(self.observations) < MIN_CONTRADICTORY_OBSERVATIONS:
@@ -192,11 +193,16 @@ class FeatureState(str, Enum):
 
 
 @dataclass(frozen=True, slots=True)
-class FeatureValue:
-    """Normalized state of one EOS feature."""
+class FeatureFact:
+    """Common value and finding semantics for a feature fact."""
 
     feature: FeatureRef
     state: FeatureState
+
+
+@dataclass(frozen=True, slots=True)
+class FeatureValue(FeatureFact):
+    """Legacy non-nominal state of one EOS feature."""
 
 
 class ConfigurationState(str, Enum):

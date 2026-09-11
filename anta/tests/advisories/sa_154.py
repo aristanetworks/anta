@@ -6,12 +6,12 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import Any, ClassVar, cast
+from typing import Any, ClassVar
 
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
+from anta._advisory.facts.models import Fact, FactDefinition, FeatureState, UnavailableFact
 from anta._advisory.facts.routing import BfdAuthenticationFact
 from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import AffectedResult, EosReleaseAssessment, ErrorResult, NotAffectedResult, VulnerabilityResult
@@ -58,7 +58,7 @@ ADVISORY = _AdvisoryMetadata(
 VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
-def _assess_sa154(version: Fact[EOSVersion], bfd: Fact[FeatureValue]) -> VulnerabilityResult:
+def _assess_sa154(version: Fact[EOSVersion], bfd: Fact[BfdAuthenticationFact]) -> VulnerabilityResult:
     """Assess EOS applicability and configured BFD authentication exposure."""
     if not isinstance(bfd, UnavailableFact) and bfd.value.state is not FeatureState.ENABLED:
         return NotAffectedResult(vulnerability_id=VULNERABILITY_ID, decisive=(bfd,))
@@ -70,7 +70,7 @@ def _assess_sa154(version: Fact[EOSVersion], bfd: Fact[FeatureValue]) -> Vulnera
     return AffectedResult(
         vulnerability_id=VULNERABILITY_ID,
         context=(eos_release,),
-        conditions=(cast("AvailableFact[FeatureValue]", bfd),),
+        conditions=(bfd,),
         remediation=software_version_plan(FIXED_RELEASES, current_version=eos_release.fact.value),
     )
 
