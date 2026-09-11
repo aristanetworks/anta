@@ -25,7 +25,7 @@ These reports are generated with the `anta psirt` command. See the [ANTA PSIRT C
 
 An advisory may contain zero or more vulnerabilities. Each vulnerability has one identifier, a description, and a manually assigned normalized severity. The generic model accepts identifiers from CVE, the GitHub Advisory Database, Google Threat Intelligence, and other providers without provider-specific subclasses or validation.
 
-Severity can be `unknown`, `none`, `low`, `medium`, `high`, or `critical`. Advisory authors select the appropriate value from the source material.
+Severity can be `unknown`, `none`, `low`, `medium`, `high`, or `critical`. Advisory authors select the appropriate value from the source material. When multiple CVSS versions are published, use the severity explicitly assigned by the Arista advisory. For SA149 through SA178, this is the severity in SA148's CVSS 3.1 table.
 
 ## Markdown report
 
@@ -37,32 +37,33 @@ Every Markdown report ends with a **Run Overview** containing one vertical table
 
 The overview describes the execution context. `--hide` filters displayed findings without changing the assessment counts; when it hides every finding, the report still contains the run overview.
 
-Device findings use the atomic results produced by every security advisory test:
+Device findings primarily use the atomic results produced by security advisory tests. When a test ends with `error`, `skipped`, or `unset` before producing an atomic result, the report emits one parent lifecycle row so the device and execution outcome remain visible:
 
-- Each row is one vulnerability assessment for one device. `Vulnerability` lists the associated identifier prefixed by its severity icon. A detailed result associated with multiple vulnerabilities is emitted once for each identifier. An unassociated result uses `-`.
+- Each atomic row is one vulnerability assessment for one device. `Vulnerability` lists the associated identifier prefixed by its severity icon. A detailed result associated with multiple vulnerabilities is emitted once for each identifier. An unassociated result uses `-`.
 - `Result` and `Findings` contain the final semantic conclusion and decisive device evidence for that assessment.
 - `Remediations` contains the rendered structured remediation plan for an atomic issue when that issue is affected, mitigated, or inconclusive. Error and skipped issues may carry an operational plan that restores reachability or the missing evidence. Not-affected results do not carry remediation plans.
-- Multiple independent issues associated with the same vulnerability remain separate rows.
+- A parent lifecycle row uses `-` for the vulnerability and remediation and reports the parent status and messages in `Result` and `Findings`.
 
 Advisory severity is derived from the highest normalized severity among its vulnerabilities. It is `unknown` when the advisory has no vulnerabilities or every vulnerability has unknown severity.
 
 ## CSV report
 
-The security advisory CSV uses one row for one atomic vulnerability assessment, matching the Markdown device findings. `Vulnerability Result`, `Vulnerability Result Messages`, and `Vulnerability Remediation` contain that atomic result. `Vulnerability ID`, `Vulnerability Description`, and `Vulnerability Severity` contain published metadata rather than device evidence.
+The security advisory CSV normally uses one row for one atomic vulnerability assessment, matching the Markdown device findings. `Vulnerability Result`, `Vulnerability Result Messages`, and `Vulnerability Remediation` contain that atomic result. `Vulnerability ID`, `Vulnerability Description`, and `Vulnerability Severity` contain published metadata rather than device evidence. A test that ends with `error`, `skipped`, or `unset` without atomic results instead emits one parent lifecycle row with empty vulnerability metadata and remediation fields.
 
 `Advisory Result` is the authoritative result of the complete advisory test for the device and is repeated on every row. Use it to answer questions about the advisory as a whole; consumers do not need to aggregate the individual rows to recover that conclusion.
 
-Results use advisory-facing lowercase wording: `affected`, `not affected`, `mitigated`, `inconclusive`, and `error`. Results that were not evaluated retain the explicit execution states `skipped` or `unset`. `unset` is the status of tests that were prepared but not executed, which is the dry-run path; `anta psirt --dry-run` exits before writing CSV or Markdown reports. MITIGATED is projected to native `inconclusive` until the semantic state is retained on the atomic result; reporters follow that native status and do not recover mitigation from inconclusive message text. A successful result is `mitigated` when its message contains the required "The device is affected but mitigated because ..." clause and `not affected` otherwise.
+Results use advisory-facing lowercase wording: `affected`, `not affected`, `mitigated`, `inconclusive`, and `error`. Results that were not evaluated retain the explicit execution states `skipped` or `unset`. `unset` is the status of tests that were prepared but not executed, which is the dry-run path; `anta psirt --dry-run` exits before writing CSV or Markdown reports. Advisory-specific reporters use the retained semantic status rather than inferring it from the generic result or message text.
 
 ### Row selection
 
 The reporter selects rows as follows:
 
-- Each row is one vulnerability assessment emitted by the advisory test.
+- Each atomic row is one vulnerability assessment emitted by the advisory test.
 - A detailed result associated with multiple vulnerabilities is emitted once for each vulnerability.
-- Multiple independent detailed results for the same vulnerability remain separate rows.
 - A detailed result without a vulnerability association is emitted with empty vulnerability fields.
 - An advisory without vulnerabilities emits its unassociated detailed rows.
+- An `error`, `skipped`, or `unset` parent result without detailed results is emitted once with empty vulnerability fields.
+- A `failure` parent result without detailed results is currently omitted; support is postponed until its advisory-facing semantics, including known EOS command errors, are defined.
 
 ### Columns
 
@@ -72,8 +73,8 @@ The reporter selects rows as follows:
 | `Test Name` | Advisory test class name. |
 | `Advisory Result` | Authoritative, aggregated result of the complete advisory test. |
 | `Advisory Result Messages` | Parent result messages, joined with newline characters. |
-| `Vulnerability Result` | Result of the atomic issue result for this row. |
-| `Vulnerability Result Messages` | Messages belonging to `Vulnerability Result`, joined with newline characters. |
+| `Vulnerability Result` | Result of the atomic issue result, or the parent lifecycle result when no atomic result exists. |
+| `Vulnerability Result Messages` | Messages belonging to `Vulnerability Result`, joined with newline characters. Parent messages are used for a lifecycle row. |
 | `Vulnerability Remediation` | Rendered structured remediation plan belonging to `Vulnerability Result`, or empty when that result has no plan. |
 | `Advisory Remediation` | Stable, deduplicated aggregation of the structured remediation plans from the advisory's detailed issue results. |
 | `Advisory ID` | Textual identifier such as `SA0117`; the prefix preserves leading zeroes in spreadsheet applications. |

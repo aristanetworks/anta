@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from datetime import date
 from typing import Any, ClassVar
 
-from anta._advisory.base import _AntaAdvisoryTest
+from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import (
     AffectedStatus,
     VersionRule,
@@ -70,7 +70,7 @@ from anta._eos.version import EOSVersion
 from anta.decorators import preview_test_class
 
 REDIRECT_AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
-    VersionRule(major=4, minor=36, patch_eq=0, hotfix_lte=1),
+    VersionRule(major=4, minor=36, patch_eq=0),
     VersionRule(major=4, minor=35, patch_lte=3),
     VersionRule(major=4, minor=34, patch_lte=5),
     VersionRule(major=4, minor=33, patch_lte=7),
@@ -168,7 +168,7 @@ TRAFFIC_POLICY_PATH = ExposurePath(
         PlatformFamily.SERIES_720_D,
         PlatformFamily.SERIES_720_XP,
         PlatformFamily.SERIES_722_XPM,
-        PlatformFamily.SERIES_755_758,
+        PlatformFamily.SERIES_750,
         PlatformFamily.SERIES_7010_X,
         PlatformFamily.SERIES_7020_R,
         PlatformFamily.SERIES_7050_X3,
@@ -198,7 +198,7 @@ DIRECTFLOW_PATH = ExposurePath(
     name="DirectFlow",
     platform_families=(
         PlatformFamily.SERIES_720_XP,
-        PlatformFamily.SERIES_755_758,
+        PlatformFamily.SERIES_750,
         PlatformFamily.SERIES_7010_X,
         PlatformFamily.SERIES_7050_X3,
         PlatformFamily.SERIES_7050_X4,
@@ -221,7 +221,7 @@ SEGMENT_SECURITY_PATH = ExposurePath(
         PlatformFamily.SERIES_720_D,
         PlatformFamily.SERIES_720_XP,
         PlatformFamily.SERIES_722_XPM,
-        PlatformFamily.SERIES_755_758,
+        PlatformFamily.SERIES_750,
         PlatformFamily.SERIES_7010_X,
         PlatformFamily.SERIES_7050_X3,
         PlatformFamily.SERIES_7280_R3,
@@ -426,9 +426,9 @@ def _assess_sa142(  # noqa: C901, PLR0911, PLR0912, PLR0915
     return NotAffectedResult(vulnerability_id=vulnerability_id, decisive=tuple(decisive))
 
 
-@preview_test_class
-class VerifySA142(OptionalCommandsMixin, _AntaAdvisoryTest):
-    """Verify that Security Advisory 142 next-hop redirects are fully remediated.
+@preview_test_class(warning_message=_PREVIEW_WARNING)
+class SA142(OptionalCommandsMixin, _AntaAdvisoryTest):
+    """Verify whether the device is impacted by Security Advisory 0142.
 
     Notes
     -----
@@ -445,8 +445,8 @@ class VerifySA142(OptionalCommandsMixin, _AntaAdvisoryTest):
     Examples
     --------
     ```yaml
-    anta.tests.advisories.sa_142:
-      - VerifySA142:
+    anta.tests.advisories:
+      - SA142:
     ```
     """
 
@@ -461,7 +461,7 @@ class VerifySA142(OptionalCommandsMixin, _AntaAdvisoryTest):
         SegmentSecurityRedirectFact,
         MtuDropMitigationFact,
     )
-    description = "Verify whether the device is impacted by SA 0142."
+    description = "Verify whether the device is impacted by Security Advisory 0142."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test

@@ -247,6 +247,23 @@ DATA: AntaUnitTestData = {
         "inputs": {"methods": ["tacacs+", "local"], "types": ["login", "enable"]},
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["AAA authentication methods group tacacs+, local are not matching for login"]},
     },
+    (VerifyAuthenMethods, "failure-login-console-missing-does-not-skip-enable"): {
+        "eos_data": [
+            {
+                "loginAuthenMethods": {"default": {"methods": ["group tacacs+", "local"]}},
+                "enableAuthenMethods": {"default": {"methods": ["group radius", "local"]}},
+                "dot1xAuthenMethods": {"default": {"methods": ["group radius"]}},
+            }
+        ],
+        "inputs": {"methods": ["tacacs+", "local"], "types": ["login", "enable"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "AAA authentication methods are not configured for login console",
+                "AAA authentication methods group tacacs+, local are not matching for enable",
+            ],
+        },
+    },
     (VerifyAuthzMethods, "success"): {
         "eos_data": [
             {

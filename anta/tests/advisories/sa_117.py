@@ -9,11 +9,12 @@ from __future__ import annotations
 from datetime import date
 from typing import Any, ClassVar
 
-from anta._advisory.base import _AntaAdvisoryTest
-from anta._advisory.eos_versions import AffectedStatus, VersionRule, evaluate_version
+from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
+from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnmiAccountingFact, GnmiTransportFact, RiskyOpenConfigTraceFact
 from anta._advisory.facts.models import ConfigurationState, ConfigurationValue, Fact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
+from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import (
     EosReleaseAssessment,
     ErrorResult,
@@ -21,7 +22,6 @@ from anta._advisory.findings.models import (
     NotAffectedResult,
     Unobservable,
     UnobservableKind,
-    VersionRelation,
     VulnerabilityResult,
 )
 from anta._advisory.findings.projection import project_vulnerability_result
@@ -82,22 +82,16 @@ def _assess_sa117(  # noqa: PLR0911
 ) -> VulnerabilityResult:
     """Assess CVE-2025-0936 from normalized facts."""
     vulnerability_id = ADVISORY.vulnerabilities[0].id
-    if isinstance(version, UnavailableFact):
-        return ErrorResult(vulnerability_id=vulnerability_id, problems=(version,))
-    version_evaluation = evaluate_version(version.value, AFFECTED_VERSION_MATRIX)
-    if version_evaluation.affected_status is AffectedStatus.NOT_AFFECTED:
-        return NotAffectedResult(
-            vulnerability_id=vulnerability_id,
-            decisive=(EosReleaseAssessment(version, VersionRelation.OUTSIDE_SCOPE),),
-        )
+    release = assess_eos_scope(vulnerability_id, version, AFFECTED_VERSION_MATRIX)
+    if not isinstance(release, EosReleaseAssessment):
+        return release
 
     if isinstance(gnmi, UnavailableFact):
         return ErrorResult(vulnerability_id=vulnerability_id, problems=(gnmi,))
     if gnmi.value.state is not FeatureState.ENABLED:
         return NotAffectedResult(vulnerability_id=vulnerability_id, decisive=(gnmi,))
 
-    release = EosReleaseAssessment(version, VersionRelation.AFFECTED)
-    remediation = software_version_plan(FIXED_RELEASES, current_version=version.value)
+    remediation = software_version_plan(FIXED_RELEASES, current_version=release.fact.value)
     if not isinstance(accounting, UnavailableFact) and accounting.value.state is FeatureState.ENABLED:
         # We are not able to resolve the gNOI File and effective gNSI Authz controls
         # for possible mitigation so we say inconclusive.
@@ -129,9 +123,9 @@ def _assess_sa117(  # noqa: PLR0911
     return NotAffectedResult(vulnerability_id=vulnerability_id, decisive=(accounting, trace))
 
 
-@preview_test_class
-class VerifySA117(OptionalCommandsMixin, _AntaAdvisoryTest):
-    """Assess SA117 credential exposure through OpenConfig accounting or tracing.
+@preview_test_class(warning_message=_PREVIEW_WARNING)
+class SA117(OptionalCommandsMixin, _AntaAdvisoryTest):
+    """Verify whether the device is impacted by Security Advisory 0117.
 
     Notes
     -----
@@ -148,8 +142,8 @@ class VerifySA117(OptionalCommandsMixin, _AntaAdvisoryTest):
     Examples
     --------
     ```yaml
-    anta.tests.advisories.sa_117:
-      - VerifySA117:
+    anta.tests.advisories:
+      - SA117:
     ```
     """
 
@@ -160,7 +154,7 @@ class VerifySA117(OptionalCommandsMixin, _AntaAdvisoryTest):
         GnmiAccountingFact,
         RiskyOpenConfigTraceFact,
     )
-    description = "Verify whether the device is impacted by SA 0117."
+    description = "Verify whether the device is impacted by Security Advisory 0117."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test

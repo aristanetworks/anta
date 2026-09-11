@@ -14,8 +14,12 @@ from anta._advisory.facts.models import (
     ComponentSoftwareVersion,
     ConfigurationState,
     ConfigurationValue,
+    CredentialSyntaxState,
+    CredentialSyntaxValue,
     FeatureState,
     FeatureValue,
+    IndicatorState,
+    IndicatorValue,
     MitigationState,
     MitigationValue,
     UnavailableFact,
@@ -23,7 +27,7 @@ from anta._advisory.facts.models import (
 
 if TYPE_CHECKING:
     from anta._advisory.remediation import RemediationPlan
-    from anta._eos.platform import PlatformIdentity
+    from anta._eos.platform import PlatformComponentIdentity, PlatformIdentity
     from anta._eos.version import EOSVersion
 
 
@@ -66,6 +70,21 @@ class AffectedComponentVersion(ComponentVersionAssessment):
     relation: VersionRelation = field(default=VersionRelation.AFFECTED, init=False)
 
 
+@dataclass(frozen=True, slots=True)
+class AffectedIndicator(AvailableFact[IndicatorValue]):
+    """An observed indicator that positively confirms an affected condition."""
+
+    def __post_init__(self) -> None:
+        if self.value.state is not IndicatorState.PRESENT:
+            msg = "Affected indicators must be present"
+            raise ValueError(msg)
+
+
+@dataclass(frozen=True, slots=True)
+class AffectedFeatureState(AvailableFact[FeatureValue]):
+    """A feature state explicitly classified as an affected condition."""
+
+
 class PlatformRelation(str, Enum):
     """Relationship between observed platform identity and advisory scope."""
 
@@ -77,15 +96,15 @@ class PlatformRelation(str, Enum):
 class PlatformAssessment:
     """Advisory-specific interpretation of observed platform identity."""
 
-    fact: AvailableFact[PlatformIdentity]
+    fact: AvailableFact[PlatformIdentity] | AvailableFact[PlatformComponentIdentity]
     relation: PlatformRelation
 
 
-ExposureFact: TypeAlias = AvailableFact[FeatureValue] | AvailableFact[ConfigurationValue]
-MitigatableCondition: TypeAlias = AffectedEosRelease | AffectedComponentVersion | ExposureFact
+ExposureFact: TypeAlias = AvailableFact[FeatureValue] | AvailableFact[ConfigurationValue] | AvailableFact[CredentialSyntaxValue]
+MitigatableCondition: TypeAlias = AffectedEosRelease | AffectedComponentVersion | AffectedFeatureState | AffectedIndicator | ExposureFact
 AffectedCondition: TypeAlias = MitigatableCondition | AvailableFact[MitigationValue]
 VersionAssessment: TypeAlias = EosReleaseAssessment | ComponentVersionAssessment
-FindingEvidence: TypeAlias = VersionAssessment | PlatformAssessment | ExposureFact | AvailableFact[MitigationValue]
+FindingEvidence: TypeAlias = VersionAssessment | PlatformAssessment | ExposureFact | AvailableFact[IndicatorValue] | AvailableFact[MitigationValue]
 
 
 def _is_affected_condition(value: object) -> bool:
@@ -97,7 +116,7 @@ def _is_affected_condition(value: object) -> bool:
 
 def _is_mitigatable_condition(value: object) -> bool:
     """Return whether a runtime value is an exposure that a mitigation can cover."""
-    if isinstance(value, (AffectedEosRelease, AffectedComponentVersion)):
+    if isinstance(value, (AffectedEosRelease, AffectedComponentVersion, AffectedFeatureState, AffectedIndicator)):
         return True
     if not isinstance(value, AvailableFact):
         return False
@@ -105,6 +124,8 @@ def _is_mitigatable_condition(value: object) -> bool:
         return value.value.state is FeatureState.ENABLED
     if isinstance(value.value, ConfigurationValue):
         return value.value.state is ConfigurationState.CONFIGURED
+    if isinstance(value.value, CredentialSyntaxValue):
+        return value.value.state in {CredentialSyntaxState.LEGACY, CredentialSyntaxState.MIXED}
     return False
 
 

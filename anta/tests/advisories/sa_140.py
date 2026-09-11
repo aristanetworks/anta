@@ -8,8 +8,8 @@ from __future__ import annotations
 
 from datetime import date
 
-from anta._advisory.base import _AntaAdvisoryTest
-from anta._advisory.eos_versions import AffectedStatus, VersionRule, evaluate_version
+from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
+from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact, SecureBootFact
 from anta._advisory.facts.models import (
     Fact,
@@ -17,12 +17,12 @@ from anta._advisory.facts.models import (
     FeatureValue,
     UnavailableFact,
 )
+from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import (
     AffectedResult,
     EosReleaseAssessment,
     ErrorResult,
     NotAffectedResult,
-    VersionRelation,
     VulnerabilityResult,
 )
 from anta._advisory.findings.projection import project_vulnerability_result
@@ -80,17 +80,9 @@ def _assess_sa140(
     secure_boot: Fact[FeatureValue],
 ) -> VulnerabilityResult:
     """Return a structured conclusion from normalized SA140 facts."""
-    if isinstance(version_fact, UnavailableFact):
-        return ErrorResult(
-            vulnerability_id=VULNERABILITY_ID,
-            problems=(version_fact,),
-        )
-    version_evaluation = evaluate_version(version_fact.value, AFFECTED_VERSION_MATRIX)
-    if version_evaluation.affected_status is AffectedStatus.NOT_AFFECTED:
-        return NotAffectedResult(
-            vulnerability_id=VULNERABILITY_ID,
-            decisive=(EosReleaseAssessment(version_fact, VersionRelation.OUTSIDE_SCOPE),),
-        )
+    release = assess_eos_scope(VULNERABILITY_ID, version_fact, AFFECTED_VERSION_MATRIX)
+    if not isinstance(release, EosReleaseAssessment):
+        return release
 
     if isinstance(secure_boot, UnavailableFact):
         return ErrorResult(
@@ -106,15 +98,15 @@ def _assess_sa140(
 
     return AffectedResult(
         vulnerability_id=VULNERABILITY_ID,
-        context=(EosReleaseAssessment(version_fact, VersionRelation.AFFECTED),),
+        context=(release,),
         conditions=(secure_boot,),
-        remediation=software_version_plan(FIXED_RELEASES, current_version=version_fact.value),
+        remediation=software_version_plan(FIXED_RELEASES, current_version=release.fact.value),
     )
 
 
-@preview_test_class
-class VerifySA140(_AntaAdvisoryTest):
-    """Verify that the advisory 140 Secure Boot exposure is absent.
+@preview_test_class(warning_message=_PREVIEW_WARNING)
+class SA140(_AntaAdvisoryTest):
+    """Verify whether the device is impacted by Security Advisory 0140.
 
     Expected Results
     ----------------
@@ -125,14 +117,14 @@ class VerifySA140(_AntaAdvisoryTest):
     Examples
     --------
     ```yaml
-    anta.tests.advisories.sa_140:
-      - VerifySA140:
+    anta.tests.advisories:
+      - SA140:
     ```
     """
 
     advisory = ADVISORY
     required_facts = (EosVersionFact, SecureBootFact)
-    description = "Verify whether the device is impacted by SA 0140."
+    description = "Verify whether the device is impacted by Security Advisory 0140."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test

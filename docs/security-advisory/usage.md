@@ -44,7 +44,7 @@ Use `--test` to filter the built-in catalog and run only selected security
 advisories. Provide the advisory test class name:
 
 ```bash
-anta psirt --inventory inventory.yml --test VerifySA117 md-report --md-output sa117-report.md
+anta psirt --inventory inventory.yml --test SA117 md-report --md-output sa117-report.md
 ```
 
 Repeat `--test` to assess multiple selected advisories.
@@ -78,8 +78,9 @@ anta psirt --inventory inventory.yml md-report --md-output sa-report.md
 anta psirt --inventory inventory.yml tpl-report --template report.j2 --output sa-report.txt
 ```
 
-The Markdown report always renders one Device Findings row per vulnerability
-assessment. It does not accept `--expand`.
+The Markdown report renders one Device Findings row per vulnerability
+assessment. It also renders one parent lifecycle row when a test ends before
+producing a vulnerability assessment.
 
 See the [NRFU documentation](../cli/nrfu.md) for shared filters and dry-run
 behavior.
