@@ -8,14 +8,20 @@
 from __future__ import annotations
 
 from ipaddress import IPv4Address
-from typing import TYPE_CHECKING, ClassVar, Literal
+from typing import TYPE_CHECKING, Any, ClassVar, Literal
+
+from pydantic import Field
 
 from anta.custom_types import AAAAuthMethod
+from anta.decorators import deprecated_test_class
+from anta.input_models.aaa import AAAAccounting
 from anta.models import AntaCommand, AntaTest
+from anta.result_manager.models import AntaTestStatus
 from anta.tools import get_value
 
 if TYPE_CHECKING:
     from anta.models import AntaTemplate
+    from anta.result_manager.models import AtomicTestResult
 
 
 class VerifyTacacsSourceIntf(AntaTest):
@@ -275,6 +281,7 @@ class VerifyAuthzMethods(AntaTest):
             self.result.is_failure(f"AAA authorization methods {', '.join(self.inputs.methods)} are not matching for {', '.join(not_matching)}")
 
 
+@deprecated_test_class(new_tests=["VerifyAcctMethods"], removal_in_version="v2.0.0")
 class VerifyAcctDefaultMethods(AntaTest):
     """Verifies the AAA accounting default method lists for different accounting types (system, exec, commands, dot1x).
 
@@ -336,6 +343,7 @@ class VerifyAcctDefaultMethods(AntaTest):
             self.result.is_failure(f"AAA accounting default methods {', '.join(self.inputs.methods)} are not matching for {', '.join(not_matching)}")
 
 
+@deprecated_test_class(new_tests=["VerifyAcctMethods"], removal_in_version="v2.0.0")
 class VerifyAcctConsoleMethods(AntaTest):
     """Verifies the AAA accounting console method lists for different accounting types (system, exec, commands, dot1x).
 
@@ -395,3 +403,89 @@ class VerifyAcctConsoleMethods(AntaTest):
             self.result.is_success()
         else:
             self.result.is_failure(f"AAA accounting console methods {', '.join(self.inputs.methods)} are not matching for {', '.join(not_matching)}")
+
+
+class VerifyAcctMethods(AntaTest):
+    """Verifies the AAA accounting method lists for different accounting types (commands, exec, system, dot1x).
+
+    This test verifies both the default and console accounting planes for each specified method list.
+
+    Expected Results
+    ----------------
+    * Success: All specified accounting method lists match the expected default and/or console methods.
+    * Failure: At least one method list is not found, not configured, or has methods that do not match.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.aaa:
+      - VerifyAcctMethods:
+          accounting:
+            - acct_type: commands
+              method_configs:
+                - name: all
+                  default_methods:
+                    - tacacs+
+                    - logging
+                  console_methods:
+                    - tacacs+
+                    - logging
+            - acct_type: exec
+              method_configs:
+                - name: exec
+                  default_methods:
+                    - tacacs+
+                    - logging
+            - acct_type: system
+              method_configs:
+                - name: system
+                  default_methods:
+                    - tacacs+
+                    - logging
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["aaa"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show aaa methods accounting", revision=1)]
+    _atomic_support: ClassVar[bool] = True
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyAcctMethods test."""
+
+        accounting: list[AAAAccounting] = Field(min_length=1)
+        """List of AAA accounting type configurations to verify."""
+
+    def _check_accounting_plane(self, atomic: AtomicTestResult, method_list_data: dict[str, Any], plane: str, expected: list[str]) -> None:
+        """Check one accounting plane (default or console) against the expected methods."""
+        if f"{plane}Action" not in method_list_data:
+            atomic.is_failure(f"{plane.capitalize()} methods - Not configured")
+        elif (actual := method_list_data[f"{plane}Methods"]) != expected:
+            atomic.is_failure(f"{plane.capitalize()} methods - Mismatch - Expected: {', '.join(expected)}, Actual: {', '.join(actual)}")
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyAcctMethods."""
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output
+
+        for acct_entry in self.inputs.accounting:
+            acct_type = acct_entry.acct_type
+            # EOS key format: "commands" -> "commandsAcctMethods".
+            methods = command_output.get(f"{acct_type}AcctMethods", {})
+
+            for method_config in acct_entry.method_configs:
+                # name is normalized by the input model, e.g. "all" -> "privilege0-15".
+                name = str(method_config.name)
+                # Omit name when it equals the type (exec/system/dot1x); include it for commands privilege ranges.
+                name_label = f" - {name}" if name != acct_type else ""
+                atomic = self.result.add(description=f"AAA {acct_type} accounting{name_label}", status=AntaTestStatus.SUCCESS)
+
+                method_list_data = methods.get(name)
+                if method_list_data is None:
+                    atomic.is_failure("Not found")
+                    continue
+
+                if method_config.default_methods is not None:
+                    self._check_accounting_plane(atomic, method_list_data, "default", method_config.default_methods)
+                if method_config.console_methods is not None:
+                    self._check_accounting_plane(atomic, method_list_data, "console", method_config.console_methods)
