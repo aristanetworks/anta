@@ -7,10 +7,10 @@ from __future__ import annotations
 
 import re
 from datetime import date
-from typing import Any, ClassVar, cast
+from typing import Any, ClassVar
 
-from anta._advisory.base import _AntaAdvisoryTest
-from anta._advisory.eos_versions import AffectedStatus, VersionRule, evaluate_version
+from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
+from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.models import (
     ComponentSoftwareVersion,
@@ -25,15 +25,17 @@ from anta._advisory.facts.models import (
 )
 from anta._advisory.facts.software import OpenSshClientVersionFact, OpenSshServerVersionFact
 from anta._advisory.facts.ssh import SshServerFact, StrictHostKeyCheckingFact
+from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import (
     AffectedComponentVersion,
     AffectedResult,
     ComponentVersionAssessment,
     EosReleaseAssessment,
     ErrorResult,
-    MitigatedCondition,
-    MitigatedResult,
+    InconclusiveResult,
     NotAffectedResult,
+    Unobservable,
+    UnobservableKind,
     VersionRelation,
     VulnerabilityResult,
 )
@@ -57,11 +59,17 @@ CVE_60002_FIXED_RELEASES = (
     FixedRelease(EOSVersion(4, 35, 6, suffix="M")),
     FixedRelease(EOSVersion(4, 34, 8, suffix="M")),
 )
-EOS_AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
+CVE_59995_59996_60001_AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
+    VersionRule(major=4, minor=36, patch_lte=2),
+    VersionRule(major=4, minor=35, patch_lte=6),
+    VersionRule(major=4, minor=34, patch_lte=8),
+    VersionRule(major=4, minor=33, patch_lte=10),
+    VersionRule(major=4, minor_lt=33),
+)
+CVE_60002_AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
     VersionRule(major=4, minor=36, patch_lte=2),
     VersionRule(major=4, minor=35, patch_lte=5),
-    VersionRule(major=4, minor=34, patch_lt=7),
-    VersionRule(major=4, minor=34, patch_eq=7, hotfix_lte=1),
+    VersionRule(major=4, minor=34, patch_lte=7),
     VersionRule(major=4, minor=33, patch_lte=10),
     VersionRule(major=4, minor_lt=33),
 )
@@ -110,30 +118,19 @@ def _is_openssh_before_10_4(version_string: str) -> bool | None:
     return (int(match.group("major")), int(match.group("minor"))) < (10, 4)
 
 
-def _eos_scope_result(vulnerability_id: str, version: Fact[EOSVersion]) -> tuple[VulnerabilityResult | None, EosReleaseAssessment | None]:
-    """Return an early result or affected EOS context for one SA147 vulnerability."""
-    if isinstance(version, UnavailableFact):
-        return ErrorResult(vulnerability_id=vulnerability_id, problems=(version,)), None
-    evaluation = evaluate_version(version.value, EOS_AFFECTED_VERSION_MATRIX)
-    relation = VersionRelation.AFFECTED if evaluation.affected_status is AffectedStatus.AFFECTED else VersionRelation.OUTSIDE_SCOPE
-    assessment = EosReleaseAssessment(version, relation)
-    if relation is VersionRelation.OUTSIDE_SCOPE:
-        return NotAffectedResult(vulnerability_id=vulnerability_id, decisive=(assessment,)), None
-    return None, assessment
-
-
 def _assess_client_issue(  # noqa: PLR0911
     *,
     vulnerability_id: str,
     eos_version: Fact[EOSVersion],
+    affected_versions: tuple[VersionRule, ...],
     package_version: Fact[ComponentSoftwareVersion],
     fixed_releases: tuple[FixedRelease, ...] = (),
     mitigation: Fact[MitigationValue] | None = None,
 ) -> VulnerabilityResult:
     """Assess one OpenSSH client vulnerability from normalized facts."""
-    scope_result, eos_context = _eos_scope_result(vulnerability_id, eos_version)
-    if scope_result is not None:
-        return scope_result
+    eos_release = assess_eos_scope(vulnerability_id, eos_version, affected_versions)
+    if not isinstance(eos_release, EosReleaseAssessment):
+        return eos_release
     if isinstance(package_version, UnavailableFact):
         return ErrorResult(vulnerability_id=vulnerability_id, problems=(package_version,))
     affected = _is_openssh_before_10_4(package_version.value.version)
@@ -146,21 +143,20 @@ def _assess_client_issue(  # noqa: PLR0911
             decisive=(ComponentVersionAssessment(package_version, VersionRelation.FIXED),),
         )
     affected_component = AffectedComponentVersion(package_version)
-    affected_eos = cast("EosReleaseAssessment", eos_context)
-    remediation = software_version_plan(fixed_releases, current_version=affected_eos.fact.value)
+    remediation = software_version_plan(fixed_releases, current_version=eos_release.fact.value)
     if mitigation is not None:
         if isinstance(mitigation, UnavailableFact):
             return ErrorResult(vulnerability_id=vulnerability_id, problems=(mitigation,))
         if mitigation.value.state is MitigationState.EFFECTIVE:
-            return MitigatedResult(
+            return InconclusiveResult(
                 vulnerability_id=vulnerability_id,
-                context=(affected_eos,),
-                mitigated_conditions=(MitigatedCondition(affected_component, (mitigation,)),),
+                indications=(eos_release, affected_component, mitigation),
+                unresolved=(Unobservable(UnobservableKind.EXTERNAL_STATE, "SSH server trustworthiness"),),
                 remediation=remediation,
             )
     return AffectedResult(
         vulnerability_id=vulnerability_id,
-        context=(affected_eos,),
+        context=(eos_release,),
         conditions=(affected_component,),
         remediation=remediation,
     )
@@ -170,13 +166,14 @@ def _assess_server_issue(  # noqa: PLR0911
     *,
     vulnerability_id: str,
     eos_version: Fact[EOSVersion],
+    affected_versions: tuple[VersionRule, ...],
     package_version: Fact[ComponentSoftwareVersion],
     ssh_server: Fact[FeatureValue],
 ) -> VulnerabilityResult:
     """Assess the OpenSSH server vulnerability from normalized facts."""
-    scope_result, eos_context = _eos_scope_result(vulnerability_id, eos_version)
-    if scope_result is not None:
-        return scope_result
+    eos_release = assess_eos_scope(vulnerability_id, eos_version, affected_versions)
+    if not isinstance(eos_release, EosReleaseAssessment):
+        return eos_release
     if not isinstance(ssh_server, UnavailableFact) and ssh_server.value.state is FeatureState.DISABLED:
         return NotAffectedResult(vulnerability_id=vulnerability_id, decisive=(ssh_server,))
     if isinstance(package_version, UnavailableFact):
@@ -192,30 +189,32 @@ def _assess_server_issue(  # noqa: PLR0911
         )
     if isinstance(ssh_server, UnavailableFact):
         return ErrorResult(vulnerability_id=vulnerability_id, problems=(ssh_server,))
-    affected_eos = cast("EosReleaseAssessment", eos_context)
     return AffectedResult(
         vulnerability_id=vulnerability_id,
-        context=(affected_eos, ComponentVersionAssessment(package_version, VersionRelation.AFFECTED)),
+        context=(eos_release, ComponentVersionAssessment(package_version, VersionRelation.AFFECTED)),
         conditions=(ssh_server,),
-        remediation=software_version_plan((), current_version=affected_eos.fact.value),
+        remediation=software_version_plan((), current_version=eos_release.fact.value),
     )
 
 
-@preview_test_class
-class VerifySA147(OptionalCommandsMixin, _AntaAdvisoryTest):
-    """Verify the four independent OpenSSH issues in Security Advisory 147.
+@preview_test_class(warning_message=_PREVIEW_WARNING)
+class SA147(OptionalCommandsMixin, _AntaAdvisoryTest):
+    """Verify whether the device is impacted by Security Advisory 0147.
+
+    Strict host-key checking is an observable identity control for CVE-2026-60002, but it does not establish that operators connect only to trusted
+    servers as required by the advisory. An affected release with strict host-key checking is therefore inconclusive rather than mitigated.
 
     Expected Results
     ----------------
     * Success: The test will pass if every vulnerability is not affected.
-    * Failure: The test will fail if any vulnerability is affected.
+    * Failure: The test will fail if any vulnerability is affected or inconclusive.
     * Error: The test will error if evidence required for a vulnerability is invalid.
 
     Examples
     --------
     ```yaml
-    anta.tests.advisories.sa_147:
-      - VerifySA147:
+    anta.tests.advisories:
+      - SA147:
     ```
     """
 
@@ -227,7 +226,7 @@ class VerifySA147(OptionalCommandsMixin, _AntaAdvisoryTest):
         SshServerFact,
         StrictHostKeyCheckingFact,
     )
-    description = "Verify whether the device is impacted by SA 0147."
+    description = "Verify whether the device is impacted by Security Advisory 0147."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test
@@ -243,22 +242,26 @@ class VerifySA147(OptionalCommandsMixin, _AntaAdvisoryTest):
             _assess_client_issue(
                 vulnerability_id=vulnerability_ids[0],
                 eos_version=eos_version,
+                affected_versions=CVE_59995_59996_60001_AFFECTED_VERSION_MATRIX,
                 package_version=client_version,
             ),
             _assess_client_issue(
                 vulnerability_id=vulnerability_ids[1],
                 eos_version=eos_version,
+                affected_versions=CVE_59995_59996_60001_AFFECTED_VERSION_MATRIX,
                 package_version=client_version,
             ),
             _assess_server_issue(
                 vulnerability_id=vulnerability_ids[2],
                 eos_version=eos_version,
+                affected_versions=CVE_59995_59996_60001_AFFECTED_VERSION_MATRIX,
                 package_version=server_version,
                 ssh_server=ssh_server,
             ),
             _assess_client_issue(
                 vulnerability_id=vulnerability_ids[3],
                 eos_version=eos_version,
+                affected_versions=CVE_60002_AFFECTED_VERSION_MATRIX,
                 package_version=client_version,
                 fixed_releases=CVE_60002_FIXED_RELEASES,
                 mitigation=strict_host_key_checking,

@@ -15,7 +15,7 @@ from typing import TYPE_CHECKING, Any, ClassVar, Literal
 from pydantic import ValidationError
 from yaml import YAMLError, safe_load
 
-from anta.device import AntaDevice, AntaDeviceCapabilities, AsyncEOSDevice
+from anta.device import AntaDevice, AntaDeviceCapabilities, AsyncEOSDevice, SSLParameters
 from anta.inventory.exceptions import InventoryIncorrectSchemaError, InventoryRootKeyError
 from anta.inventory.models import AntaInventoryHost, AntaInventoryInput
 from anta.logger import anta_log_exception, exc_to_str
@@ -108,6 +108,24 @@ class AntaInventory(dict[str, AntaDevice]):
         return False
 
     @staticmethod
+    def _resolve_ssl_params(
+        device_name: str,
+        device_capabilities: AntaDeviceCapabilities,
+        ssl_params: SSLParameters | None,
+    ) -> SSLParameters | None:
+        """Return SSL parameters only when they are supported by the device implementation.
+
+        Inventory validation remains independent of the concrete device type. If a future
+        device implementation does not support SSL, its inventory still parses and the
+        unsupported parameters are ignored with a warning during device instantiation.
+        """
+        if ssl_params is None or device_capabilities.supports_ssl:
+            return ssl_params
+
+        logger.warning("Device '%s' does not support SSL; SSL parameters ignored for this device.", device_name)
+        return None
+
+    @staticmethod
     def _parse_hosts(
         inventory_input: AntaInventoryInput,
         inventory: AntaInventory,
@@ -146,6 +164,7 @@ class AntaInventory(dict[str, AntaDevice]):
                 host=str(host.host),
                 port=host.port,
                 tags=host.tags,
+                ssl_params=AntaInventory._resolve_ssl_params(device_name, AsyncEOSDevice.capabilities, host.ssl_params),
                 **updated_kwargs,
             )
             inventory.add_device(device)
@@ -190,7 +209,12 @@ class AntaInventory(dict[str, AntaDevice]):
                         use_session_auth_override=use_session_auth_override,
                         inventory_use_session_auth=network.use_session_auth,
                     )
-                    device = AsyncEOSDevice(host=str(host_ip), tags=network.tags, **updated_kwargs)
+                    device = AsyncEOSDevice(
+                        host=str(host_ip),
+                        tags=network.tags,
+                        ssl_params=AntaInventory._resolve_ssl_params(str(host_ip), AsyncEOSDevice.capabilities, network.ssl_params),
+                        **updated_kwargs,
+                    )
                     inventory.add_device(device)
         except ValueError as e:
             message = "Could not parse the network section in the inventory"
@@ -241,7 +265,12 @@ class AntaInventory(dict[str, AntaDevice]):
                         use_session_auth_override=use_session_auth_override,
                         inventory_use_session_auth=range_def.use_session_auth,
                     )
-                    device = AsyncEOSDevice(host=str(range_increment), tags=range_def.tags, **updated_kwargs)
+                    device = AsyncEOSDevice(
+                        host=str(range_increment),
+                        tags=range_def.tags,
+                        ssl_params=AntaInventory._resolve_ssl_params(str(range_increment), AsyncEOSDevice.capabilities, range_def.ssl_params),
+                        **updated_kwargs,
+                    )
                     inventory.add_device(device)
                     range_increment += 1
         except ValueError as e:
@@ -484,6 +513,7 @@ class AntaInventory(dict[str, AntaDevice]):
                 tags=device.tags,
                 disable_cache=device.cache is None,
                 use_session_auth=device.use_session_auth if isinstance(device, AsyncEOSDevice) else False,
+                **({"ssl_params": device.ssl_params} if isinstance(device, AsyncEOSDevice) and device.ssl_params is not None else {}),
             )
             for device in self.devices
         ]

@@ -37,21 +37,20 @@ logger = logging.getLogger(__name__)
 
 def run_tests(ctx: click.Context) -> AntaRunContext:
     """Run the tests."""
-    # Digging up the parameters from the parent context
+    # Report commands inherit the execution settings object from their parent group.
     if ctx.parent is None:
         ctx.exit()
-    nrfu_ctx_params = ctx.parent.params
-    tags = nrfu_ctx_params["tags"]
-    device = nrfu_ctx_params["device"] or None
-    test = nrfu_ctx_params["test"] or None
-    dry_run = nrfu_ctx_params["dry_run"]
-    disconnect = nrfu_ctx_params["disconnect"]
+    tags = ctx.obj["tags"]
+    device = ctx.obj["device"] or None
+    test = ctx.obj["test"] or None
+    dry_run = ctx.obj["dry_run"]
+    disconnect = ctx.obj["disconnect"]
 
     catalog: AntaCatalog = ctx.obj["catalog"]
     inventory: AntaInventory = ctx.obj["inventory"]
 
     print_settings(inventory, catalog)
-    with anta_progress_bar() as AntaTest.progress:
+    with anta_progress_bar(ctx.obj["progress_spinner"]) as AntaTest.progress:
         runner = AntaRunner()
         filters = AntaRunFilters(
             devices=set(device) if device else None,
@@ -234,11 +233,29 @@ SPINNERS["anta"] = {
     ],
 }
 
+# Adding our own security spinner
+SPINNERS["security"] = {
+    "interval": 150,
+    "frames": [
+        "(🔍   🥷)",
+        "( 🔍  🥷)",
+        "(  🔍 🥷)",
+        "(   🔍🥷)",
+        "(     💥)",
+        "(     🚨)",
+        "(    🛡️ )",
+        "(   🛡️  )",
+        "(  🛡️   )",
+        "( 🛡️    )",
+        "(🛡️     )",
+    ],
+}
 
-def anta_progress_bar() -> Progress:
+
+def anta_progress_bar(spinner_name: str = "anta") -> Progress:
     """Return a customized Progress for progress bar."""
     return Progress(
-        SpinnerColumn("anta"),
+        SpinnerColumn(spinner_name),
         TextColumn("•"),
         TextColumn("{task.description}[progress.percentage]{task.percentage:>3.0f}%"),
         BarColumn(bar_width=None),

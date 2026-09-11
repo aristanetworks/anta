@@ -15,6 +15,7 @@ from anta._advisory.remediation import AllOf, OperationalAction, RemediationPlan
 from anta._advisory.reporter.csv_reporter import SecurityAdvisoryReportCsv
 from anta._advisory.reporter.reporting import SecurityAdvisoryReport, generate_security_advisory_csv_report
 from anta._advisory.results import _AdvisoryTestResult
+from anta._advisory.status import AdvisoryStatus
 from anta.result_manager import ResultManager
 from anta.result_manager.models import AntaTestStatus
 from tests.units._advisory.conftest import ADVISORY
@@ -58,39 +59,30 @@ def test_security_advisory_csv_headers() -> None:
 
 
 @pytest.mark.parametrize(
-    ("status", "messages", "expected"),
+    ("status", "advisory_status", "expected"),
     [
-        pytest.param(AntaTestStatus.SUCCESS, ["The device is not affected because the fixed release is installed."], "not affected", id="not-affected"),
-        pytest.param(
-            AntaTestStatus.SUCCESS,
-            ["CVE-2026-0001 - The device is affected but mitigated because the vulnerable service is disabled."],
-            "mitigated",
-            id="mitigated",
-        ),
-        pytest.param(
-            AntaTestStatus.INCONCLUSIVE,
-            ["The device is affected but mitigated because the vulnerable service is disabled."],
-            "inconclusive",
-            id="projected-mitigated-is-inconclusive",
-        ),
-        pytest.param(AntaTestStatus.INCONCLUSIVE, [], "inconclusive", id="inconclusive"),
-        pytest.param(AntaTestStatus.FAILURE, [], "affected", id="affected"),
-        pytest.param(AntaTestStatus.ERROR, [], "error", id="error"),
-        pytest.param(AntaTestStatus.SKIPPED, [], "skipped", id="skipped"),
-        pytest.param(AntaTestStatus.UNSET, [], "unset", id="unset"),
+        pytest.param(AntaTestStatus.SUCCESS, AdvisoryStatus.NOT_AFFECTED, "not affected", id="not-affected"),
+        pytest.param(AntaTestStatus.SUCCESS, AdvisoryStatus.MITIGATED, "mitigated", id="mitigated"),
+        pytest.param(AntaTestStatus.FAILURE, AdvisoryStatus.INCONCLUSIVE, "inconclusive", id="inconclusive"),
+        pytest.param(AntaTestStatus.FAILURE, AdvisoryStatus.AFFECTED, "affected", id="affected"),
+        pytest.param(AntaTestStatus.ERROR, AdvisoryStatus.ERROR, "error", id="error"),
+        pytest.param(AntaTestStatus.SKIPPED, None, "skipped", id="skipped"),
+        pytest.param(AntaTestStatus.UNSET, None, "unset", id="unset"),
     ],
 )
-def test_security_advisory_csv_result_wording(status: AntaTestStatus, messages: list[str], expected: str) -> None:
-    """Verify ANTA statuses use advisory-facing result wording."""
+def test_security_advisory_csv_result_wording(status: AntaTestStatus, advisory_status: AdvisoryStatus | None, expected: str) -> None:
+    """Verify semantic and lifecycle statuses use advisory-facing result wording."""
     result = _AdvisoryTestResult(
         name="leaf1",
         test="VerifyAdvisory",
         categories=["advisories"],
         description="Test advisory metadata.",
         result=status,
-        messages=messages,
         advisory=ADVISORY,
     )
+    if advisory_status is not None and status is not AntaTestStatus.ERROR:
+        atomic_result = result.add("Assessment", status)
+        atomic_result.advisory_status = advisory_status
 
     assert SecurityAdvisoryReportCsv._format_result(result) == expected
 
@@ -106,25 +98,28 @@ def test_security_advisory_csv_detailed_and_unassociated_rows() -> None:
         messages=["The device is affected because parent evidence proves exposure.", "Additional parent evidence."],
         advisory=ADVISORY,
     )
-    result.add(
+    not_affected = result.add(
         "Vulnerable service",
         AntaTestStatus.SUCCESS,
         ["The device is not affected because the service is disabled."],
         vulnerability_ids=("CVE-2026-0001",),
     )
-    result.add(
+    not_affected.advisory_status = AdvisoryStatus.NOT_AFFECTED
+    inconclusive = result.add(
         "External condition",
-        AntaTestStatus.INCONCLUSIVE,
+        AntaTestStatus.FAILURE,
         ["The assessment is inconclusive and the device may be affected because external evidence is unavailable."],
         vulnerability_ids=("CVE-2026-0001",),
         remediation=RemediationPlan(AllOf((OperationalAction("Collect the missing external information."), OperationalAction("Rerun the test.")))),
     )
-    result.add(
+    inconclusive.advisory_status = AdvisoryStatus.INCONCLUSIVE
+    affected = result.add(
         "Unassociated issue",
         AntaTestStatus.FAILURE,
         ["The device is affected because an unassociated issue is present."],
         remediation=RemediationPlan(OperationalAction("Apply the issue-specific remediation.")),
     )
+    affected.advisory_status = AdvisoryStatus.AFFECTED
 
     rows = [dict(zip(SecurityAdvisoryReportCsv._advisory_headers(), row, strict=True)) for row in SecurityAdvisoryReportCsv._iter_result_rows(result, ADVISORY)]
 
@@ -148,6 +143,28 @@ def test_security_advisory_csv_detailed_and_unassociated_rows() -> None:
     assert {row["Advisory Remediation"] for row in rows} == {
         "CVE-2026-0001: Complete all of the following:\\n- Collect the missing external information.\\n- Rerun the test.\\nApply the issue-specific remediation."
     }
+
+
+@pytest.mark.parametrize("status", [AntaTestStatus.ERROR, AntaTestStatus.SKIPPED, AntaTestStatus.UNSET])
+def test_security_advisory_csv_renders_parent_lifecycle_result_without_atomic_results(status: AntaTestStatus) -> None:
+    """Emit a CSV row for an error, skip, or non-terminal result without atomic findings."""
+    result = _AdvisoryTestResult(
+        name="leaf1",
+        test="VerifyAdvisory",
+        categories=["advisories"],
+        description="Test advisory metadata.",
+        result=status,
+        messages=["Lifecycle result details."],
+        advisory=ADVISORY,
+    )
+
+    rows = [dict(zip(SecurityAdvisoryReportCsv._advisory_headers(), row, strict=True)) for row in SecurityAdvisoryReportCsv._iter_result_rows(result, ADVISORY)]
+
+    assert len(rows) == 1
+    assert rows[0]["Advisory Result"] == status.value
+    assert rows[0]["Vulnerability Result"] == status.value
+    assert rows[0]["Vulnerability Result Messages"] == "Lifecycle result details."
+    assert rows[0]["Vulnerability ID"] == ""
 
 
 def test_security_advisory_csv_multiline_messages(tmp_path: Path) -> None:

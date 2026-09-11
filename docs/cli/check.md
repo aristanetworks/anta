@@ -24,3 +24,11 @@ Only checking the catalog is currently supported.
 ```bash
 --8<-- "anta_check_catalog_help.txt"
 ```
+
+### Example
+
+```bash
+anta check catalog --catalog docs/snippets/getting-started/catalog.yml
+```
+
+![anta check catalog results](../imgs/anta_check_catalog_catalog_docs_snippets_gettingstarted_catalogyml.svg){ class="img_center" loading=lazy width="1600" }

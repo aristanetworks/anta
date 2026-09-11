@@ -35,7 +35,6 @@ class AtomicResult(TypedDict):
     description: str
     result: Literal[
         AntaTestStatus.SUCCESS,
-        AntaTestStatus.INCONCLUSIVE,
         AntaTestStatus.FAILURE,
         AntaTestStatus.ERROR,
         AntaTestStatus.SKIPPED,
@@ -51,7 +50,7 @@ class UnitTestResult(TypedDict):
     For our AntaTest unit tests we expect a terminal result, never unset.
     """
 
-    result: Literal[AntaTestStatus.SUCCESS, AntaTestStatus.INCONCLUSIVE, AntaTestStatus.FAILURE, AntaTestStatus.ERROR, AntaTestStatus.SKIPPED]
+    result: Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.ERROR, AntaTestStatus.SKIPPED]
     messages: NotRequired[list[str]]
     remediations: NotRequired[list[RemediationPlan]]
     atomic_results: NotRequired[list[AtomicResult]]

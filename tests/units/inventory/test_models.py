@@ -13,6 +13,7 @@ import pytest
 from pydantic import ValidationError
 from yaml import safe_load
 
+from anta.device import SSLParameters
 from anta.inventory.models import AntaInventoryHost, AntaInventoryInput, AntaInventoryNetwork, AntaInventoryRange
 
 if TYPE_CHECKING:
@@ -211,6 +212,28 @@ class TestAntaInventoryRange:
 
 class TestAntaInventoryInputs:
     """Test anta.inventory.models.AntaInventoryInputs."""
+
+    def test_ssl_parameters(self) -> None:
+        """Verify nested SSL parameters are parsed for every inventory entry type."""
+        inventory = AntaInventoryInput.model_validate(
+            {
+                "hosts": [{"host": "192.0.2.1", "ssl_params": {"ciphers": "AES256-SHA"}}],
+                "networks": [{"network": "192.0.2.0/31", "ssl_params": {"verify": True, "check_hostname": True}}],
+                "ranges": [{"start": "192.0.2.2", "end": "192.0.2.3", "ssl_params": {}}],
+            }
+        )
+
+        assert inventory.hosts is not None
+        assert inventory.networks is not None
+        assert inventory.ranges is not None
+        assert inventory.hosts[0].ssl_params == SSLParameters(ciphers="AES256-SHA")
+        assert inventory.networks[0].ssl_params == SSLParameters(verify=True, check_hostname=True)
+        assert inventory.ranges[0].ssl_params == SSLParameters()
+
+    def test_invalid_ssl_parameters(self) -> None:
+        """Verify invalid SSL parameter combinations fail inventory validation."""
+        with pytest.raises(ValidationError, match="SSL hostname checking requires certificate verification"):
+            AntaInventoryInput.model_validate({"hosts": [{"host": "192.0.2.1", "ssl_params": {"check_hostname": True}}]})
 
     def test_dump_to_json(self) -> None:
         """Load a YAML file, dump it to JSON and verify it works."""

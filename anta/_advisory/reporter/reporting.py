@@ -10,12 +10,12 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
 from anta._advisory.models import _ADVISORY_VULNERABILITY_SEVERITY_RANK, _AdvisoryVulnerabilitySeverity
-from anta._advisory.results import _get_advisory_metadata
+from anta._advisory.results import _get_advisory_metadata, _get_advisory_status
 from anta.logger import anta_log_exception
 from anta.result_manager.models import AntaTestStatus
 
 if TYPE_CHECKING:
-    from collections.abc import Generator, Sequence
+    from collections.abc import Generator, Iterator, Sequence
     from datetime import datetime, timedelta
     from pathlib import Path
 
@@ -26,31 +26,29 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-_ADVISORY_RESULT_RANK = {
-    AntaTestStatus.FAILURE: 0,
-    AntaTestStatus.INCONCLUSIVE: 1,
-    AntaTestStatus.SUCCESS: 2,
-    AntaTestStatus.ERROR: 3,
-    AntaTestStatus.SKIPPED: 4,
-    AntaTestStatus.UNSET: 5,
-}
+_ADVISORY_RESULT_RANK = {"affected": 0, "inconclusive": 1, "mitigated": 2, "not affected": 3, "error": 4, "skipped": 5, "unset": 6}
 
 
 def _get_advisory_result(result: TestResult | AtomicTestResult) -> str:
-    """Translate an ANTA status to advisory-facing result wording."""
-    # MITIGATED is projected to native INCONCLUSIVE until the semantic state is retained on the atomic
-    # result. Reporters follow that native status and do not recover mitigation from inconclusive
-    # message text. SUCCESS remains accepted for results that used the earlier success-based encoding.
-    if result.result is AntaTestStatus.SUCCESS:
-        mitigated_opening = "The device is affected but mitigated because "
-        return "mitigated" if any(mitigated_opening in message for message in result.messages) else "not affected"
+    """Translate retained advisory status or an ANTA lifecycle status to report wording."""
+    if (status := _get_advisory_status(result)) is not None:
+        return status.value.replace("_", " ")
     return {
         AntaTestStatus.UNSET: "unset",
-        AntaTestStatus.INCONCLUSIVE: "inconclusive",
+        AntaTestStatus.SUCCESS: "not affected",
         AntaTestStatus.FAILURE: "affected",
         AntaTestStatus.ERROR: "error",
         AntaTestStatus.SKIPPED: "skipped",
     }[result.result]
+
+
+def _iter_advisory_row_results(result: TestResult) -> Iterator[TestResult | AtomicTestResult]:
+    """Yield atomic findings, or a non-terminal/error/skip parent when no atomic finding exists."""
+    if result.atomic_results:
+        yield from result.atomic_results
+    # TODO: Support parent FAILURE results without atomic findings once their advisory-facing semantics are defined (for example, known EOS command errors).
+    elif result.result in {AntaTestStatus.ERROR, AntaTestStatus.SKIPPED, AntaTestStatus.UNSET}:
+        yield result
 
 
 @dataclass
@@ -169,7 +167,9 @@ def group_advisory_results(results: Sequence[TestResult]) -> tuple[AdvisoryResul
         else:
             group_results = []
             groups[advisory.sa_number] = (advisory, group_results)
-        sorted_result = result.model_copy(update={"atomic_results": sorted(result.atomic_results, key=lambda atomic: _ADVISORY_RESULT_RANK[atomic.result])})
+        sorted_result = result.model_copy(
+            update={"atomic_results": sorted(result.atomic_results, key=lambda atomic: _ADVISORY_RESULT_RANK[_get_advisory_result(atomic)])}
+        )
         group_results.append(sorted_result)
 
     result_groups = (
@@ -178,7 +178,7 @@ def group_advisory_results(results: Sequence[TestResult]) -> tuple[AdvisoryResul
             results=tuple(
                 sorted(
                     group_results,
-                    key=lambda result: (_ADVISORY_RESULT_RANK[result.result], result.name.casefold(), result.test.casefold()),
+                    key=lambda result: (_ADVISORY_RESULT_RANK[_get_advisory_result(result)], result.name.casefold(), result.test.casefold()),
                 )
             ),
         )

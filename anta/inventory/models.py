@@ -12,6 +12,7 @@ import yaml
 from pydantic import BaseModel, ConfigDict, FieldSerializationInfo, IPvAnyAddress, IPvAnyNetwork, field_serializer
 
 from anta.custom_types import Hostname, Port
+from anta.device import SSLParameters
 
 logger = logging.getLogger(__name__)
 
@@ -45,6 +46,8 @@ class AntaInventoryHost(AntaInventoryBaseModel):
         Disable cache for this device.
     use_session_auth : bool
         Use session based authentication for this device if supported.
+    ssl_params : SSLParameters | None
+        SSL parameters for this device.
 
     """
 
@@ -54,6 +57,7 @@ class AntaInventoryHost(AntaInventoryBaseModel):
     tags: set[str] | None = None
     disable_cache: bool = False
     use_session_auth: bool = False
+    ssl_params: SSLParameters | None = None
 
 
 class AntaInventoryNetwork(AntaInventoryBaseModel):
@@ -69,6 +73,8 @@ class AntaInventoryNetwork(AntaInventoryBaseModel):
         Disable cache for all devices in this network.
     use_session_auth : bool
         Use session based authentication for all devices if supported in this network.
+    ssl_params : SSLParameters | None
+        SSL parameters for all devices in this network.
 
     """
 
@@ -76,6 +82,7 @@ class AntaInventoryNetwork(AntaInventoryBaseModel):
     tags: set[str] | None = None
     disable_cache: bool = False
     use_session_auth: bool = False
+    ssl_params: SSLParameters | None = None
 
 
 class AntaInventoryRange(AntaInventoryBaseModel):
@@ -93,6 +100,8 @@ class AntaInventoryRange(AntaInventoryBaseModel):
         Disable cache for all devices in this IP range.
     use_session_auth : bool
         Use session based authentication for all devices if supported in this IP range.
+    ssl_params : SSLParameters | None
+        SSL parameters for all devices in this IP range.
 
     """
 
@@ -101,6 +110,7 @@ class AntaInventoryRange(AntaInventoryBaseModel):
     tags: set[str] | None = None
     disable_cache: bool = False
     use_session_auth: bool = False
+    ssl_params: SSLParameters | None = None
 
 
 class AntaInventoryInput(BaseModel):

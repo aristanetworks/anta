@@ -33,15 +33,6 @@ from tests.benchmark.utils import _has_error_result
             False,
             id="atomic-failure",
         ),
-        pytest.param({"result": AntaTestStatus.INCONCLUSIVE}, False, id="parent-inconclusive"),
-        pytest.param(
-            {
-                "result": AntaTestStatus.INCONCLUSIVE,
-                "atomic_results": [{"description": "check", "result": AntaTestStatus.INCONCLUSIVE}],
-            },
-            False,
-            id="atomic-inconclusive",
-        ),
         pytest.param({"result": AntaTestStatus.SUCCESS}, False, id="success-without-atomic-results"),
     ],
 )

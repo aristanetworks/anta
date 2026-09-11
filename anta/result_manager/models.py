@@ -27,7 +27,6 @@ class AntaTestStatus(str, Enum):
 
     UNSET = "unset"
     SUCCESS = "success"
-    INCONCLUSIVE = "inconclusive"
     FAILURE = "failure"
     ERROR = "error"
     SKIPPED = "skipped"
@@ -42,9 +41,8 @@ _STATUS_PRIORITY = {
     AntaTestStatus.UNSET: 0,
     AntaTestStatus.SKIPPED: 0,
     AntaTestStatus.SUCCESS: 1,
-    AntaTestStatus.INCONCLUSIVE: 2,
-    AntaTestStatus.FAILURE: 3,
-    AntaTestStatus.ERROR: 4,
+    AntaTestStatus.FAILURE: 2,
+    AntaTestStatus.ERROR: 3,
 }
 
 
@@ -76,19 +74,6 @@ class BaseTestResult(BaseModel, ABC):
 
         """
         self._set_status(AntaTestStatus.FAILURE, message)
-
-    def is_inconclusive(self, message: str | None = None) -> None:
-        """Set status to inconclusive.
-
-        Use this status when the available data is insufficient to determine whether the test succeeded or failed.
-
-        Parameters
-        ----------
-        message
-            Optional message related to the test.
-
-        """
-        self._set_status(AntaTestStatus.INCONCLUSIVE, message)
 
     def is_skipped(self, message: str | None = None) -> None:
         """Set status to skipped.
@@ -145,7 +130,7 @@ class AtomicTestResult(BaseTestResult):
         """Set status and insert optional message.
 
         The parent TestResult is updated according to the following precedence:
-        ERROR > FAILURE > INCONCLUSIVE > SUCCESS > SKIPPED/UNSET.
+        ERROR > FAILURE > SUCCESS > SKIPPED/UNSET.
 
         Parameters
         ----------
@@ -242,7 +227,6 @@ class DeviceStats:
 
     tests_success_count: int = 0
     tests_skipped_count: int = 0
-    tests_inconclusive_count: int = 0
     tests_failure_count: int = 0
     tests_error_count: int = 0
     tests_unset_count: int = 0
@@ -257,7 +241,6 @@ class CategoryStats:
 
     tests_success_count: int = 0
     tests_skipped_count: int = 0
-    tests_inconclusive_count: int = 0
     tests_failure_count: int = 0
     tests_error_count: int = 0
     tests_unset_count: int = 0
@@ -269,7 +252,6 @@ class TestStats:
 
     devices_success_count: int = 0
     devices_skipped_count: int = 0
-    devices_inconclusive_count: int = 0
     devices_failure_count: int = 0
     devices_error_count: int = 0
     devices_unset_count: int = 0

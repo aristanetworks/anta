@@ -114,22 +114,25 @@ For a first usage, `table` is recommended. By default, all test results for all 
 
 ```bash
 --8<-- "getting-started/anta_nrfu_table.sh"
---8<-- "getting-started/anta_nrfu_table.output"
 ```
+
+![anta nrfu table output](imgs/getting-started/anta_nrfu_table.svg){ class="img_center" loading=lazy width="1600" }
 
 #### Report in text mode
 
 ```bash
 --8<-- "getting-started/anta_nrfu_text.sh"
---8<-- "getting-started/anta_nrfu_text.output"
 ```
+
+![anta nrfu text output](imgs/getting-started/anta_nrfu_text.svg){ class="img_center" loading=lazy width="1600" }
 
 #### Report in JSON format
 
 ```bash
 --8<-- "getting-started/anta_nrfu_json.sh"
---8<-- "getting-started/anta_nrfu_json.output"
 ```
+
+![anta nrfu json output](imgs/getting-started/anta_nrfu_json.svg){ class="img_center" loading=lazy width="1600" }
 
 ### Basic usage in a Python script
 

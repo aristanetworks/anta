@@ -39,6 +39,7 @@ from anta._advisory.facts.models import (
 )
 from anta._advisory.facts.software import TerminAttrVersionFact
 from anta._advisory.facts.terminattr import TerminAttrGrpcFact, TerminAttrMtlsFact, _terminattr_grpc_arguments
+from anta._advisory.findings.assessment import assess_eos_version
 from anta._advisory.findings.models import AffectedResult, MitigatedResult, NotAffectedResult, VulnerabilityResult
 from anta._advisory.remediation import FixedRelease, SoftwareTarget, remediation_plan, software_version_action
 from anta._advisory.results import _get_atomic_vulnerability_ids
@@ -48,9 +49,8 @@ from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_146 import (
     ADVISORY,
     EOS_AFFECTED_VERSION_MATRIX,
-    VerifySA146,
+    SA146,
     _assess_sa146,
-    _eos_release_assessment,
     _GrpcPath,
     _is_affected_terminattr_version,
     _terminattr_version_assessment,
@@ -138,17 +138,19 @@ def gribi_output(*, enabled: bool, profile: str = "", mtls: bool = False) -> dic
     return {"enabled": enabled, "sslProfile": profile, "mTls": mtls}
 
 
-def ssl_profiles(*, valid: bool = True, trusted: bool = True) -> dict[str, Any]:
+def ssl_profiles(*, valid: bool = True, trusted: bool | None = True) -> dict[str, Any]:
     """Return compact SSL profile status using observed EOS field names."""
+    profile = {
+        "profileState": "valid" if valid else "invalid",
+        "profileError": [] if valid else [{"errorType": "invalid"}],
+        "certName": "target.crt",
+        "keyName": "target.key",
+    }
+    if trusted is not None:
+        profile["trustedCertificates"] = ["ca.crt"] if trusted else []
     return {
         "profileStatus": {
-            "mtls": {
-                "profileState": "valid" if valid else "invalid",
-                "profileError": [] if valid else [{"errorType": "invalid"}],
-                "certName": "target.crt",
-                "keyName": "target.key",
-                "trustedCertificates": ["ca.crt"] if trusted else [],
-            }
+            "mtls": profile,
         }
     }
 
@@ -194,7 +196,7 @@ expected_result = partial(build_expected_advisory_result, ADVISORY.vulnerabiliti
 
 
 _DATA: AntaUnitTestData = {
-    (VerifySA146, "failure-gnmi-without-mtls"): {
+    (SA146, "failure-gnmi-without-mtls"): {
         "version": build_eos_version("4.35.5M"),
         "eos_data": sa146_eos_data(gnmi=gnmi_output(enabled=True)),
         "expected": expected_result(
@@ -203,7 +205,19 @@ _DATA: AntaUnitTestData = {
             remediation_plan((EXPECTED_EOS_VERSION_CHANGE,)),
         ),
     },
-    (VerifySA146, "failure-gribi-without-mtls"): {
+    (SA146, "failure-gnmi-profile-without-trusted-certificates"): {
+        "version": build_eos_version("4.35.5M"),
+        "eos_data": sa146_eos_data(
+            gnmi=gnmi_output(enabled=True, profile="mtls"),
+            profiles=ssl_profiles(trusted=None),
+        ),
+        "expected": expected_result(
+            AntaTestStatus.FAILURE,
+            "The device is affected because EOS version '4.35.5M' is affected and the gNMI feature is enabled.",
+            remediation_plan((EXPECTED_EOS_VERSION_CHANGE,)),
+        ),
+    },
+    (SA146, "failure-gribi-without-mtls"): {
         "version": build_eos_version("4.35.5M"),
         "eos_data": sa146_eos_data(gribi=gribi_output(enabled=True)),
         "expected": expected_result(
@@ -212,7 +226,7 @@ _DATA: AntaUnitTestData = {
             remediation_plan((EXPECTED_EOS_VERSION_CHANGE,)),
         ),
     },
-    (VerifySA146, "failure-terminattr-without-mtls"): {
+    (SA146, "failure-terminattr-without-mtls"): {
         "version": build_eos_version("4.35.5M"),
         "eos_data": sa146_eos_data(
             terminattr=terminattr_output(enabled=True),
@@ -224,7 +238,7 @@ _DATA: AntaUnitTestData = {
             remediation_plan((EXPECTED_TERMINATTR_VERSION_CHANGE,)),
         ),
     },
-    (VerifySA146, "failure-mixed-eos-and-terminattr-paths"): {
+    (SA146, "failure-mixed-eos-and-terminattr-paths"): {
         "version": build_eos_version("4.35.5M"),
         "eos_data": sa146_eos_data(
             gnmi=gnmi_output(enabled=True),
@@ -238,7 +252,7 @@ _DATA: AntaUnitTestData = {
             remediation_plan((EXPECTED_EOS_VERSION_CHANGE, EXPECTED_TERMINATTR_VERSION_CHANGE)),
         ),
     },
-    (VerifySA146, "failure-known-path-with-malformed-sibling"): {
+    (SA146, "failure-known-path-with-malformed-sibling"): {
         "version": build_eos_version("4.35.5M"),
         "eos_data": sa146_eos_data(gnmi=gnmi_output(enabled=True), gribi={}),
         "expected": expected_result(
@@ -247,7 +261,7 @@ _DATA: AntaUnitTestData = {
             remediation_plan((EXPECTED_EOS_VERSION_CHANGE,)),
         ),
     },
-    (VerifySA146, "inconclusive-all-paths-mitigated"): {
+    (SA146, "inconclusive-all-paths-mitigated"): {
         "version": build_eos_version("4.35.5M"),
         "eos_data": sa146_eos_data(
             gnmi=gnmi_output(enabled=True, profile="mtls"),
@@ -256,14 +270,14 @@ _DATA: AntaUnitTestData = {
             grpcaddr=TERMINATTR_MTLS,
         ),
         "expected": expected_result(
-            AntaTestStatus.INCONCLUSIVE,
+            AntaTestStatus.SUCCESS,
             "The device is affected but mitigated because EOS version '4.35.5M' is affected, TerminAttr 'v1.45.0' is affected, "
             "the gNMI feature is enabled and gNMI mTLS is effective, the gRIBI feature is enabled and gRIBI mTLS is effective, "
             "and the TerminAttr feature is enabled and TerminAttr mTLS is effective.",
             remediation_plan((EXPECTED_EOS_VERSION_CHANGE, EXPECTED_TERMINATTR_VERSION_CHANGE)),
         ),
     },
-    (VerifySA146, "failure-terminattr-independent-of-fixed-eos"): {
+    (SA146, "failure-terminattr-independent-of-fixed-eos"): {
         "version": build_eos_version("4.36.2F"),
         "eos_data": sa146_eos_data(
             terminattr=terminattr_output(enabled=True),
@@ -276,7 +290,7 @@ _DATA: AntaUnitTestData = {
             remediation_plan((EXPECTED_TERMINATTR_VERSION_CHANGE,)),
         ),
     },
-    (VerifySA146, "success-fixed-eos-and-terminattr"): {
+    (SA146, "success-fixed-eos-and-terminattr"): {
         "version": build_eos_version("4.35.6M"),
         "eos_data": sa146_eos_data(
             gnmi=gnmi_output(enabled=True),
@@ -289,7 +303,7 @@ _DATA: AntaUnitTestData = {
             None,
         ),
     },
-    (VerifySA146, "success-terminattr-not-configured"): {
+    (SA146, "success-terminattr-not-configured"): {
         "version": build_eos_version("4.35.5M"),
         "eos_data": sa146_eos_data(terminattr={"daemons": {}}),
         "expected": expected_result(
@@ -298,7 +312,7 @@ _DATA: AntaUnitTestData = {
             None,
         ),
     },
-    (VerifySA146, "success-fixed-versions-ignore-malformed-service-output"): {
+    (SA146, "success-fixed-versions-ignore-malformed-service-output"): {
         "version": build_eos_version("4.35.6M"),
         "eos_data": sa146_eos_data(
             gnmi={},
@@ -312,7 +326,7 @@ _DATA: AntaUnitTestData = {
             None,
         ),
     },
-    (VerifySA146, "error-malformed-gnmi-enabled-state"): {
+    (SA146, "error-malformed-gnmi-enabled-state"): {
         "version": build_eos_version("4.35.5M"),
         "eos_data": sa146_eos_data(gnmi={}),
         "expected": expected_result(
@@ -321,7 +335,7 @@ _DATA: AntaUnitTestData = {
             None,
         ),
     },
-    (VerifySA146, "error-malformed-gnmi-mtls-state"): {
+    (SA146, "error-malformed-gnmi-mtls-state"): {
         "version": build_eos_version("4.35.5M"),
         "eos_data": sa146_eos_data(
             gnmi=gnmi_output(enabled=True, profile="mtls"),
@@ -348,7 +362,7 @@ class TestSA146EOSVersions(unittest.TestCase):
             ("4.34.6M", AffectedStatus.AFFECTED),
             ("4.34.7M", AffectedStatus.AFFECTED),
             ("4.34.7.1M", AffectedStatus.AFFECTED),
-            ("4.34.7.2M", AffectedStatus.NOT_AFFECTED),
+            ("4.34.7.99M", AffectedStatus.AFFECTED),
             ("4.34.8M", AffectedStatus.NOT_AFFECTED),
             ("4.33.8M", AffectedStatus.AFFECTED),
             ("4.33.9M", AffectedStatus.NOT_AFFECTED),
@@ -478,10 +492,11 @@ class TestSA146Evidence(unittest.TestCase):
         assert isinstance(TerminAttrVersionFact.parse((_command(TerminAttrVersionFact.commands[0], version_output(terminattr=None)),)), UnavailableFact)
 
     def test_ssl_profile_requires_valid_server_and_trust_material(self) -> None:
-        assert _ssl_profile_has_mtls("mtls", ssl_profiles())
-        assert not _ssl_profile_has_mtls("", ssl_profiles())
-        assert not _ssl_profile_has_mtls("mtls", ssl_profiles(valid=False))
-        assert not _ssl_profile_has_mtls("mtls", ssl_profiles(trusted=False))
+        assert _ssl_profile_has_mtls("mtls", ssl_profiles()) is True
+        assert _ssl_profile_has_mtls("", ssl_profiles()) is False
+        assert _ssl_profile_has_mtls("mtls", ssl_profiles(valid=False)) is False
+        assert _ssl_profile_has_mtls("mtls", ssl_profiles(trusted=False)) is False
+        assert _ssl_profile_has_mtls("mtls", ssl_profiles(trusted=None)) is False
         assert _ssl_profile_has_mtls("missing", ssl_profiles()) is None
         assert _ssl_profile_has_mtls("mtls", {}) is None
 
@@ -496,6 +511,7 @@ class TestSA146Evidence(unittest.TestCase):
         assert not _mitigation_bool(GnmiMtlsFact.parse((_command(GnmiMtlsFact.commands[0], gnmi), _command(GnmiMtlsFact.commands[1], ssl_profiles()))))
         gnmi["transports"]["other"]["sslProfile"] = "mtls"
         assert _mitigation_bool(GnmiMtlsFact.parse((_command(GnmiMtlsFact.commands[0], gnmi), _command(GnmiMtlsFact.commands[1], ssl_profiles()))))
+        assert not _mitigation_bool(GnmiMtlsFact.parse((_command(GnmiMtlsFact.commands[0], gnmi), _command(GnmiMtlsFact.commands[1], ssl_profiles(trusted=None)))))
 
         assert _mitigation_bool(
             GribiMtlsFact.parse(
@@ -510,6 +526,14 @@ class TestSA146Evidence(unittest.TestCase):
                 (
                     _command(GribiMtlsFact.commands[0], gribi_output(enabled=True, profile="mtls", mtls=False)),
                     _command(GribiMtlsFact.commands[1], ssl_profiles()),
+                )
+            )
+        )
+        assert not _mitigation_bool(
+            GribiMtlsFact.parse(
+                (
+                    _command(GribiMtlsFact.commands[0], gribi_output(enabled=True, profile="mtls", mtls=True)),
+                    _command(GribiMtlsFact.commands[1], ssl_profiles(trusted=None)),
                 )
             )
         )
@@ -596,14 +620,14 @@ class TestSA146Assessment(unittest.TestCase):
         return _assess_sa146(
             (
                 _GrpcPath(
-                    _eos_release_assessment(eos_version),
+                    assess_eos_version(eos_version, EOS_AFFECTED_VERSION_MATRIX),
                     feature(GnmiTransportFact, arguments["gnmi_enabled"]),
                     mitigation(GnmiMtlsFact, arguments["gnmi_mtls"]),
                     SoftwareTarget.EOS,
                     EXPECTED_EOS_FIXED_RELEASES,
                 ),
                 _GrpcPath(
-                    _eos_release_assessment(eos_version),
+                    assess_eos_version(eos_version, EOS_AFFECTED_VERSION_MATRIX),
                     feature(GribiTransportFact, arguments["gribi_enabled"]),
                     mitigation(GribiMtlsFact, arguments["gribi_mtls"]),
                     SoftwareTarget.EOS,
@@ -660,7 +684,7 @@ class TestSA146Assessment(unittest.TestCase):
         assert isinstance(finding, NotAffectedResult)
 
 
-class TestVerifySA146(unittest.IsolatedAsyncioTestCase):
+class TestSA146(unittest.IsolatedAsyncioTestCase):
     """Validate atomic projection and optional-command handling."""
 
     async def run_test(
@@ -672,7 +696,7 @@ class TestVerifySA146(unittest.IsolatedAsyncioTestCase):
         grpcaddr: str = "",
         profiles: dict[str, Any] | None = None,
         version: dict[str, Any] | None = None,
-    ) -> VerifySA146:
+    ) -> SA146:
         """Run the ANTA test with synthetic outputs in declaration order."""
         device = OfflineAntaDevice("unit-test")
         detail_output = version if version is not None else version_output()
@@ -680,7 +704,7 @@ class TestVerifySA146(unittest.IsolatedAsyncioTestCase):
         device.version = parse_eos_version(eos_version).unwrap() if isinstance(eos_version, str) else None
         await device.refresh()
         eos_data = sa146_eos_data(gnmi=gnmi, gribi=gribi, terminattr=terminattr, grpcaddr=grpcaddr, profiles=profiles, version=detail_output)
-        test = cast("Any", VerifySA146)(device=device, eos_data=eos_data)
+        test = cast("Any", SA146)(device=device, eos_data=eos_data)
         await test.test(eos_data=eos_data)
         return test
 
@@ -693,7 +717,7 @@ class TestVerifySA146(unittest.IsolatedAsyncioTestCase):
         device.version = parse_eos_version("4.35.5M").unwrap()
         await device.refresh()
         eos_data = sa146_eos_data(gribi={})
-        test = cast("Any", VerifySA146)(device=device, eos_data=eos_data)
+        test = cast("Any", SA146)(device=device, eos_data=eos_data)
         test.instance_commands[2].output = None
         test.instance_commands[2].errors = ["This command is not supported on this hardware platform"]
         test.collect = AsyncMock()
@@ -706,7 +730,7 @@ class TestVerifySA146(unittest.IsolatedAsyncioTestCase):
         device.version = parse_eos_version("4.35.5M").unwrap()
         await device.refresh()
         eos_data = sa146_eos_data(terminattr={}, grpcaddr=TERMINATTR_GRPC)
-        test = cast("Any", VerifySA146)(device=device, eos_data=eos_data)
+        test = cast("Any", SA146)(device=device, eos_data=eos_data)
         test.instance_commands[3].output = None
         test.instance_commands[3].errors = ["This command is not supported on this hardware platform"]
         test.collect = AsyncMock()
@@ -720,7 +744,7 @@ class TestVerifySA146(unittest.IsolatedAsyncioTestCase):
         device.version = parse_eos_version("4.35.5M").unwrap()
         await device.refresh()
         eos_data = sa146_eos_data(gnmi=gnmi_output(enabled=True, profile="mtls"), profiles={})
-        test = cast("Any", VerifySA146)(device=device, eos_data=eos_data)
+        test = cast("Any", SA146)(device=device, eos_data=eos_data)
         test.instance_commands[6].output = None
         test.instance_commands[6].errors = ["This command is not supported on this hardware platform"]
         test.collect = AsyncMock()

@@ -10,8 +10,8 @@ from dataclasses import dataclass
 from datetime import date
 from typing import Any, ClassVar
 
-from anta._advisory.base import _AntaAdvisoryTest
-from anta._advisory.eos_versions import AffectedStatus, VersionRule, evaluate_version
+from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
+from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnmiMtlsFact, GnmiTransportFact, GribiMtlsFact, GribiTransportFact
 from anta._advisory.facts.models import (
@@ -28,6 +28,7 @@ from anta._advisory.facts.models import (
 )
 from anta._advisory.facts.software import TerminAttrVersionFact
 from anta._advisory.facts.terminattr import TerminAttrGrpcFact, TerminAttrMtlsFact
+from anta._advisory.findings.assessment import assess_eos_version
 from anta._advisory.findings.models import (
     AffectedResult,
     ComponentVersionAssessment,
@@ -62,8 +63,7 @@ from anta.decorators import preview_test_class
 EOS_AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
     VersionRule(major=4, minor=36, patch_lte=1),
     VersionRule(major=4, minor=35, patch_lte=5),
-    VersionRule(major=4, minor=34, patch_lt=7),
-    VersionRule(major=4, minor=34, patch_eq=7, hotfix_lte=1),
+    VersionRule(major=4, minor=34, patch_lte=7),
     VersionRule(major=4, minor=33, patch_lte=8),
     VersionRule(major=4, minor_lt=33),
 )
@@ -131,15 +131,6 @@ def _is_affected_terminattr_version(version_string: str) -> bool | None:
     if (last_affected_patch := TERMINATTR_LAST_AFFECTED_PATCH.get(version.minor)) is not None:
         return version.patch <= last_affected_patch
     return any(first_minor <= version.minor <= last_minor for first_minor, last_minor in TERMINATTR_FULLY_AFFECTED_MINOR_RANGES)
-
-
-def _eos_release_assessment(fact: Fact[EOSVersion]) -> EosReleaseAssessment | UnavailableFact[EOSVersion]:
-    """Interpret the EOS version for SA146."""
-    if isinstance(fact, UnavailableFact):
-        return fact
-    evaluation = evaluate_version(fact.value, EOS_AFFECTED_VERSION_MATRIX)
-    relation = VersionRelation.AFFECTED if evaluation.affected_status is AffectedStatus.AFFECTED else VersionRelation.OUTSIDE_SCOPE
-    return EosReleaseAssessment(fact, relation)
 
 
 def _terminattr_version_assessment(fact: Fact[ComponentSoftwareVersion]) -> ComponentVersionAssessment | UnavailableFact[ComponentSoftwareVersion]:
@@ -250,22 +241,29 @@ def _assess_sa146(paths: tuple[_GrpcPath, ...]) -> VulnerabilityResult:  # noqa:
     return NotAffectedResult(vulnerability_id=vulnerability_id, decisive=tuple(decisive))
 
 
-@preview_test_class
-class VerifySA146(OptionalCommandsMixin, _AntaAdvisoryTest):
-    """Assess the SA146 HTTP/2 Rapid Reset exposure and documented mTLS control.
+@preview_test_class(warning_message=_PREVIEW_WARNING)
+class SA146(OptionalCommandsMixin, _AntaAdvisoryTest):
+    """Verify whether the device is impacted by Security Advisory 0146.
+
+    Notes
+    -----
+    TerminAttr validates its configured certificate, private key, and client CA files when it starts. A running TerminAttr
+    process configured with the complete mTLS arguments therefore has valid files and enforces mTLS. If file validation
+    prevents TerminAttr from starting, its gRPC service is not exposed. The TerminAttr mTLS path is therefore safely
+    classified as mitigated.
 
     Expected Results
     ----------------
     * Success: The test will pass if no affected gRPC service is enabled.
     * Failure: The test will fail if an affected gRPC service is enabled without mTLS.
-    * Inconclusive: The test is inconclusive if all affected services are mitigated with mTLS.
+    * Mitigated: The test is mitigated if all affected services are protected with mTLS.
     * Error: The test will error if a required service, EOS release, component version, or mTLS state cannot be determined.
 
     Examples
     --------
     ```yaml
-    anta.tests.advisories.sa_146:
-      - VerifySA146:
+    anta.tests.advisories:
+      - SA146:
     ```
     """
 
@@ -280,13 +278,13 @@ class VerifySA146(OptionalCommandsMixin, _AntaAdvisoryTest):
         GribiMtlsFact,
         TerminAttrMtlsFact,
     )
-    description = "Verify whether the device is impacted by SA 0146."
+    description = "Verify whether the device is impacted by Security Advisory 0146."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
         """Assess and project GHSA-hrxh-6v49-42gf."""
-        eos_release = _eos_release_assessment(self.fact(EosVersionFact))
+        eos_release = assess_eos_version(self.fact(EosVersionFact), EOS_AFFECTED_VERSION_MATRIX)
         terminattr_version = _terminattr_version_assessment(self.fact(TerminAttrVersionFact))
         finding = _assess_sa146(
             (
