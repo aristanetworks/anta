@@ -265,41 +265,19 @@ anta.tests.software:
 }
 ```
 
-The following example is a very minimal test catalog:
+The following example is the catalog used throughout this documentation:
 
 ```yaml
----
-# Load anta.tests.software
-anta.tests.software:
-  # Verifies the device is running one of the allowed EOS version.
-  - VerifyEOSVersion:
-      # List of allowed EOS versions.
-      versions:
-        - 4.25.4M
-        - 4.26.1F
-
-# Load anta.tests.system
-anta.tests.system:
-  # Verifies the device uptime is higher than a value.
-  - VerifyUptime:
-      minimum: 1
-
-# Load anta.tests.configuration
-anta.tests.configuration:
-  # Verifies ZeroTouch is disabled.
-  - VerifyZeroTouch:
-  - VerifyRunningConfigDiffs:
+--8<-- "getting-started/catalog.yml"
 ```
 
 ### Catalog with custom tests
 
 In case you want to leverage your own tests collection, use your own Python package in the test catalog.
-So for instance, if my custom tests are defined in the `custom.tests.system` Python module, the test catalog will be:
+For instance, if a custom test is defined in the importable `anta_custom.dc_project` Python module, the test catalog is:
 
 ```yaml
-custom.tests.system:
-  - VerifyPlatform:
-    type: ['cEOS-LAB']
+--8<-- "custom-tests-catalog.yml"
 ```
 
 !!! tip
@@ -311,30 +289,19 @@ custom.tests.system:
 
 It might be interesting to use your own categories and customized test description to build a better report for your environment. ANTA comes with a handy feature to define your own `categories` and `description` in the report.
 
-In your test catalog, use `result_overwrite` dictionary with `categories` and `description` to just overwrite these values in your report:
+In your test catalog, use the `result_overwrite` dictionary with `categories` and `description` to overwrite these values in your report:
 
 ```yaml
-anta.tests.configuration:
-  - VerifyZeroTouch: # Verifies ZeroTouch is disabled.
-      result_overwrite:
-        categories: ['demo', 'pr296']
-        description: A custom test
-  - VerifyRunningConfigDiffs:
-anta.tests.interfaces:
-  - VerifyInterfaceUtilization:
+--8<-- "result-overwrite-catalog.yml"
 ```
 
-Once you run `anta nrfu table`, you will see following output:
+Run the catalog against a device:
 
 ```bash
-┏━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓
-┃ Device IP ┃ Test Name                  ┃ Test Status ┃ Message(s) ┃ Test description                              ┃ Test category ┃
-┡━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━┩
-│ spine01   │ VerifyZeroTouch            │ success     │            │ A custom test                                 │ demo, pr296   │
-│ spine01   │ VerifyRunningConfigDiffs   │ success     │            │                                               │ configuration │
-│ spine01   │ VerifyInterfaceUtilization │ success     │            │ Verifies interfaces utilization is below 75%. │ interfaces    │
-└───────────┴────────────────────────────┴─────────────┴────────────┴───────────────────────────────────────────────┴───────────────┘
+anta nrfu --device dc1-spine1 --catalog docs/snippets/result-overwrite-catalog.yml table
 ```
+
+![ANTA table report with customized result fields](imgs/anta_nrfu_device_dc1spine1_catalog_docs_snippets_resultoverwritecatalogyml_table.svg){ class="img_center" loading=lazy width="1600" }
 
 ### Example script to merge catalogs
 
