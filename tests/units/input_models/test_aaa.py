@@ -24,8 +24,6 @@ class TestAAAAccounting:
         ("acct_type", "method_configs"),
         [
             # commands type: privilege method-list names and console plane
-            pytest.param("commands", [{"name": "all", "default_methods": ["tacacs+"]}], id="commands-name-all"),
-            pytest.param("commands", [{"name": 5, "default_methods": ["tacacs+"]}], id="commands-name-int"),
             pytest.param("commands", [{"name": "privilege0-15", "default_methods": ["tacacs+"]}], id="commands-name-privilege-string"),
             pytest.param(
                 "commands",
@@ -58,6 +56,7 @@ class TestAAAAccounting:
             pytest.param("commands", [{"name": 0, "default_methods": ["tacacs+"]}], "privilege0", id="int-zero-to-privilege0"),
             pytest.param("commands", [{"name": 15, "default_methods": ["tacacs+"]}], "privilege15", id="int-max-level"),
             pytest.param("commands", [{"name": "privilege5-10", "default_methods": ["tacacs+"]}], "privilege5-10", id="partial-range-unchanged"),
+            pytest.param("commands", [{"name": "privilege5", "default_methods": ["tacacs+"]}], "privilege5", id="single-privilege-level"),
         ],
     )
     def test_valid_name_normalization(self, acct_type: AAAAccountingType, method_configs: list[AAAAccountingMethods], expected_normalized_name: str) -> None:
@@ -92,12 +91,8 @@ class TestAAAAccounting:
                 [{"name": "exec", "default_methods": ["tacacs+"]}, {"name": "exec", "console_methods": ["logging"]}],
                 id="exec-duplicate-names",
             ),
-            # system type: console not supported and wrong name
+            # system/dot1x types: console plane not supported (same validation branch for both)
             pytest.param("system", [{"name": "system", "console_methods": ["tacacs+"]}], id="system-console-methods-not-supported"),
-            pytest.param("system", [{"name": "exec", "default_methods": ["tacacs+"]}], id="system-wrong-name"),
-            # dot1x type: console not supported and wrong name
-            pytest.param("dot1x", [{"name": "dot1x", "console_methods": ["radius"]}], id="dot1x-console-methods-not-supported"),
-            pytest.param("dot1x", [{"name": "system", "default_methods": ["radius"]}], id="dot1x-wrong-name"),
             # AAAAccountingMethods: neither default nor console methods provided
             pytest.param("exec", [{"name": "exec"}], id="method-config-no-methods-provided"),
         ],

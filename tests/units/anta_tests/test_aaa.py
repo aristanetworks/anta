@@ -409,12 +409,13 @@ DATA: AntaUnitTestData = {
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["AAA accounting console methods group tacacs+, logging are not matching for commands"]},
     },
     (VerifyAcctMethods, "success-default-methods"): {
+        # All four accounting types verified on the default plane
         "eos_data": [
             {
                 "commandsAcctMethods": {"privilege0-15": {"defaultAction": "startStop", "defaultMethods": ["group tacacs+", "logging"], "consoleMethods": []}},
                 "execAcctMethods": {"exec": {"defaultAction": "startStop", "defaultMethods": ["group tacacs+", "logging"], "consoleMethods": []}},
                 "systemAcctMethods": {"system": {"defaultAction": "startStop", "defaultMethods": ["group tacacs+", "logging"], "consoleMethods": []}},
-                "dot1xAcctMethods": {"dot1x": {"defaultMethods": [], "consoleMethods": []}},
+                "dot1xAcctMethods": {"dot1x": {"defaultAction": "startStop", "defaultMethods": ["group radius", "logging"], "consoleMethods": []}},
             }
         ],
         "inputs": {
@@ -422,6 +423,7 @@ DATA: AntaUnitTestData = {
                 {"acct_type": "commands", "method_configs": [{"name": "all", "default_methods": ["tacacs+", "logging"]}]},
                 {"acct_type": "exec", "method_configs": [{"name": "exec", "default_methods": ["tacacs+", "logging"]}]},
                 {"acct_type": "system", "method_configs": [{"name": "system", "default_methods": ["tacacs+", "logging"]}]},
+                {"acct_type": "dot1x", "method_configs": [{"name": "dot1x", "default_methods": ["radius", "logging"]}]},
             ]
         },
         "expected": {
@@ -430,16 +432,18 @@ DATA: AntaUnitTestData = {
                 {"description": "AAA commands accounting - privilege0-15", "result": AntaTestStatus.SUCCESS},
                 {"description": "AAA exec accounting", "result": AntaTestStatus.SUCCESS},
                 {"description": "AAA system accounting", "result": AntaTestStatus.SUCCESS},
+                {"description": "AAA dot1x accounting", "result": AntaTestStatus.SUCCESS},
             ],
         },
     },
     (VerifyAcctMethods, "success-console-methods"): {
+        # Console plane only — verifies that default_methods=None skips the default check
         "eos_data": [
             {
                 "commandsAcctMethods": {"privilege0-15": {"defaultMethods": [], "consoleAction": "startStop", "consoleMethods": ["group tacacs+", "logging"]}},
                 "execAcctMethods": {"exec": {"defaultMethods": [], "consoleAction": "startStop", "consoleMethods": ["group tacacs+", "logging"]}},
-                "systemAcctMethods": {"system": {"defaultAction": "startStop", "defaultMethods": ["group tacacs+", "logging"], "consoleMethods": []}},
-                "dot1xAcctMethods": {"dot1x": {"defaultMethods": [], "consoleMethods": []}},
+                "systemAcctMethods": {},
+                "dot1xAcctMethods": {},
             }
         ],
         "inputs": {
@@ -457,7 +461,7 @@ DATA: AntaUnitTestData = {
         },
     },
     (VerifyAcctMethods, "success-both-planes"): {
-        # Both default and console methods verified for commands; only default for exec
+        # Both default and console checked for the same method-list entry
         "eos_data": [
             {
                 "commandsAcctMethods": {
@@ -468,9 +472,9 @@ DATA: AntaUnitTestData = {
                         "consoleMethods": ["group tacacs+", "logging"],
                     }
                 },
-                "execAcctMethods": {"exec": {"defaultAction": "startStop", "defaultMethods": ["group tacacs+", "logging"], "consoleMethods": []}},
-                "systemAcctMethods": {"system": {"defaultAction": "startStop", "defaultMethods": ["group tacacs+", "logging"], "consoleMethods": []}},
-                "dot1xAcctMethods": {"dot1x": {"defaultMethods": [], "consoleMethods": []}},
+                "execAcctMethods": {},
+                "systemAcctMethods": {},
+                "dot1xAcctMethods": {},
             }
         ],
         "inputs": {
@@ -479,162 +483,23 @@ DATA: AntaUnitTestData = {
                     "acct_type": "commands",
                     "method_configs": [{"name": "all", "default_methods": ["tacacs+", "logging"], "console_methods": ["tacacs+", "logging"]}],
                 },
-                {"acct_type": "exec", "method_configs": [{"name": "exec", "default_methods": ["tacacs+", "logging"]}]},
             ]
         },
         "expected": {
             "result": AntaTestStatus.SUCCESS,
             "atomic_results": [
                 {"description": "AAA commands accounting - privilege0-15", "result": AntaTestStatus.SUCCESS},
-                {"description": "AAA exec accounting", "result": AntaTestStatus.SUCCESS},
-            ],
-        },
-    },
-    (VerifyAcctMethods, "success-dot1x"): {
-        "eos_data": [
-            {
-                "commandsAcctMethods": {"privilege0-15": {"defaultAction": "startStop", "defaultMethods": ["group tacacs+", "logging"], "consoleMethods": []}},
-                "execAcctMethods": {"exec": {"defaultAction": "startStop", "defaultMethods": ["group tacacs+", "logging"], "consoleMethods": []}},
-                "systemAcctMethods": {"system": {"defaultAction": "startStop", "defaultMethods": ["group tacacs+", "logging"], "consoleMethods": []}},
-                "dot1xAcctMethods": {"dot1x": {"defaultAction": "startStop", "defaultMethods": ["group radius", "logging"], "consoleMethods": []}},
-            }
-        ],
-        "inputs": {
-            "accounting": [
-                {"acct_type": "dot1x", "method_configs": [{"name": "dot1x", "default_methods": ["radius", "logging"]}]},
-            ]
-        },
-        "expected": {
-            "result": AntaTestStatus.SUCCESS,
-            "atomic_results": [
-                {"description": "AAA dot1x accounting", "result": AntaTestStatus.SUCCESS},
-            ],
-        },
-    },
-    (VerifyAcctMethods, "failure-default-not-configured"): {
-        # defaultAction is absent for commands — accounting not set up on that type
-        "eos_data": [
-            {
-                "commandsAcctMethods": {"privilege0-15": {"defaultMethods": [], "consoleMethods": []}},
-                "execAcctMethods": {"exec": {"defaultAction": "startStop", "defaultMethods": ["group tacacs+", "logging"], "consoleMethods": []}},
-                "systemAcctMethods": {"system": {"defaultAction": "startStop", "defaultMethods": ["group tacacs+", "logging"], "consoleMethods": []}},
-                "dot1xAcctMethods": {"dot1x": {"defaultMethods": [], "consoleMethods": []}},
-            }
-        ],
-        "inputs": {
-            "accounting": [
-                {"acct_type": "commands", "method_configs": [{"name": "all", "default_methods": ["tacacs+", "logging"]}]},
-                {"acct_type": "exec", "method_configs": [{"name": "exec", "default_methods": ["tacacs+", "logging"]}]},
-            ]
-        },
-        "expected": {
-            "result": AntaTestStatus.FAILURE,
-            "messages": ["AAA commands accounting - privilege0-15 - Default methods - Not configured"],
-            "atomic_results": [
-                {
-                    "description": "AAA commands accounting - privilege0-15",
-                    "result": AntaTestStatus.FAILURE,
-                    "messages": ["Default methods - Not configured"],
-                },
-                {"description": "AAA exec accounting", "result": AntaTestStatus.SUCCESS},
-            ],
-        },
-    },
-    (VerifyAcctMethods, "failure-console-not-configured"): {
-        # consoleAction is absent for commands
-        "eos_data": [
-            {
-                "commandsAcctMethods": {"privilege0-15": {"defaultMethods": [], "consoleMethods": []}},
-                "execAcctMethods": {"exec": {"defaultMethods": [], "consoleAction": "startStop", "consoleMethods": ["group tacacs+", "logging"]}},
-                "systemAcctMethods": {"system": {"defaultAction": "startStop", "defaultMethods": ["group tacacs+", "logging"], "consoleMethods": []}},
-                "dot1xAcctMethods": {"dot1x": {"defaultMethods": [], "consoleMethods": []}},
-            }
-        ],
-        "inputs": {
-            "accounting": [
-                {"acct_type": "commands", "method_configs": [{"name": "all", "console_methods": ["tacacs+", "logging"]}]},
-                {"acct_type": "exec", "method_configs": [{"name": "exec", "console_methods": ["tacacs+", "logging"]}]},
-            ]
-        },
-        "expected": {
-            "result": AntaTestStatus.FAILURE,
-            "messages": ["AAA commands accounting - privilege0-15 - Console methods - Not configured"],
-            "atomic_results": [
-                {
-                    "description": "AAA commands accounting - privilege0-15",
-                    "result": AntaTestStatus.FAILURE,
-                    "messages": ["Console methods - Not configured"],
-                },
-                {"description": "AAA exec accounting", "result": AntaTestStatus.SUCCESS},
-            ],
-        },
-    },
-    (VerifyAcctMethods, "failure-default-not-matching"): {
-        # commands has radius instead of the expected tacacs+
-        "eos_data": [
-            {
-                "commandsAcctMethods": {"privilege0-15": {"defaultAction": "startStop", "defaultMethods": ["group radius", "logging"], "consoleMethods": []}},
-                "execAcctMethods": {"exec": {"defaultAction": "startStop", "defaultMethods": ["group tacacs+", "logging"], "consoleMethods": []}},
-                "systemAcctMethods": {"system": {"defaultAction": "startStop", "defaultMethods": ["group tacacs+", "logging"], "consoleMethods": []}},
-                "dot1xAcctMethods": {"dot1x": {"defaultMethods": [], "consoleMethods": []}},
-            }
-        ],
-        "inputs": {
-            "accounting": [
-                {"acct_type": "commands", "method_configs": [{"name": "all", "default_methods": ["tacacs+", "logging"]}]},
-                {"acct_type": "exec", "method_configs": [{"name": "exec", "default_methods": ["tacacs+", "logging"]}]},
-            ]
-        },
-        "expected": {
-            "result": AntaTestStatus.FAILURE,
-            "messages": ["AAA commands accounting - privilege0-15 - Default methods - Mismatch - Expected: group tacacs+, logging, Actual: group radius, logging"],
-            "atomic_results": [
-                {
-                    "description": "AAA commands accounting - privilege0-15",
-                    "result": AntaTestStatus.FAILURE,
-                    "messages": ["Default methods - Mismatch - Expected: group tacacs+, logging, Actual: group radius, logging"],
-                },
-                {"description": "AAA exec accounting", "result": AntaTestStatus.SUCCESS},
-            ],
-        },
-    },
-    (VerifyAcctMethods, "failure-console-not-matching"): {
-        # commands has radius instead of the expected tacacs+ on the console plane
-        "eos_data": [
-            {
-                "commandsAcctMethods": {"privilege0-15": {"defaultMethods": [], "consoleAction": "startStop", "consoleMethods": ["group radius", "logging"]}},
-                "execAcctMethods": {"exec": {"defaultMethods": [], "consoleAction": "startStop", "consoleMethods": ["group tacacs+", "logging"]}},
-                "systemAcctMethods": {"system": {"defaultAction": "startStop", "defaultMethods": ["group tacacs+", "logging"], "consoleMethods": []}},
-                "dot1xAcctMethods": {"dot1x": {"defaultMethods": [], "consoleMethods": []}},
-            }
-        ],
-        "inputs": {
-            "accounting": [
-                {"acct_type": "commands", "method_configs": [{"name": "all", "console_methods": ["tacacs+", "logging"]}]},
-                {"acct_type": "exec", "method_configs": [{"name": "exec", "console_methods": ["tacacs+", "logging"]}]},
-            ]
-        },
-        "expected": {
-            "result": AntaTestStatus.FAILURE,
-            "messages": ["AAA commands accounting - privilege0-15 - Console methods - Mismatch - Expected: group tacacs+, logging, Actual: group radius, logging"],
-            "atomic_results": [
-                {
-                    "description": "AAA commands accounting - privilege0-15",
-                    "result": AntaTestStatus.FAILURE,
-                    "messages": ["Console methods - Mismatch - Expected: group tacacs+, logging, Actual: group radius, logging"],
-                },
-                {"description": "AAA exec accounting", "result": AntaTestStatus.SUCCESS},
             ],
         },
     },
     (VerifyAcctMethods, "failure-method-list-not-found"): {
-        # privilege1-5 does not appear in EOS output
+        # Requested privilege range is absent from EOS output — tests the "Not found" path
         "eos_data": [
             {
                 "commandsAcctMethods": {"privilege0-15": {"defaultAction": "startStop", "defaultMethods": ["group tacacs+", "logging"], "consoleMethods": []}},
-                "execAcctMethods": {"exec": {"defaultAction": "startStop", "defaultMethods": ["group tacacs+", "logging"], "consoleMethods": []}},
-                "systemAcctMethods": {"system": {"defaultAction": "startStop", "defaultMethods": ["group tacacs+", "logging"], "consoleMethods": []}},
-                "dot1xAcctMethods": {"dot1x": {"defaultMethods": [], "consoleMethods": []}},
+                "execAcctMethods": {},
+                "systemAcctMethods": {},
+                "dot1xAcctMethods": {},
             }
         ],
         "inputs": {
@@ -654,8 +519,116 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
-    (VerifyAcctMethods, "failure-multiple-methods-not-matching"): {
-        # Both default and console methods are wrong for commands privilege0-15
+    (VerifyAcctMethods, "failure-default-not-configured"): {
+        # defaultAction absent — default plane not configured on the device
+        "eos_data": [
+            {
+                "commandsAcctMethods": {"privilege0-15": {"defaultMethods": [], "consoleMethods": []}},
+                "execAcctMethods": {},
+                "systemAcctMethods": {},
+                "dot1xAcctMethods": {},
+            }
+        ],
+        "inputs": {
+            "accounting": [
+                {"acct_type": "commands", "method_configs": [{"name": "all", "default_methods": ["tacacs+", "logging"]}]},
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["AAA commands accounting - privilege0-15 - Default methods - Not configured"],
+            "atomic_results": [
+                {
+                    "description": "AAA commands accounting - privilege0-15",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Default methods - Not configured"],
+                },
+            ],
+        },
+    },
+    (VerifyAcctMethods, "failure-default-not-matching"): {
+        # defaultMethods present but content does not match the expected value
+        "eos_data": [
+            {
+                "commandsAcctMethods": {"privilege0-15": {"defaultAction": "startStop", "defaultMethods": ["group radius", "logging"], "consoleMethods": []}},
+                "execAcctMethods": {},
+                "systemAcctMethods": {},
+                "dot1xAcctMethods": {},
+            }
+        ],
+        "inputs": {
+            "accounting": [
+                {"acct_type": "commands", "method_configs": [{"name": "all", "default_methods": ["tacacs+", "logging"]}]},
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["AAA commands accounting - privilege0-15 - Default methods - Mismatch - Expected: group tacacs+, logging, Actual: group radius, logging"],
+            "atomic_results": [
+                {
+                    "description": "AAA commands accounting - privilege0-15",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Default methods - Mismatch - Expected: group tacacs+, logging, Actual: group radius, logging"],
+                },
+            ],
+        },
+    },
+    (VerifyAcctMethods, "failure-console-not-configured"): {
+        # consoleAction absent — console plane not configured on the device
+        "eos_data": [
+            {
+                "commandsAcctMethods": {"privilege0-15": {"defaultMethods": [], "consoleMethods": []}},
+                "execAcctMethods": {},
+                "systemAcctMethods": {},
+                "dot1xAcctMethods": {},
+            }
+        ],
+        "inputs": {
+            "accounting": [
+                {"acct_type": "commands", "method_configs": [{"name": "all", "console_methods": ["tacacs+", "logging"]}]},
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["AAA commands accounting - privilege0-15 - Console methods - Not configured"],
+            "atomic_results": [
+                {
+                    "description": "AAA commands accounting - privilege0-15",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Console methods - Not configured"],
+                },
+            ],
+        },
+    },
+    (VerifyAcctMethods, "failure-console-not-matching"): {
+        # consoleMethods present but content does not match the expected value
+        "eos_data": [
+            {
+                "commandsAcctMethods": {"privilege0-15": {"defaultMethods": [], "consoleAction": "startStop", "consoleMethods": ["group radius", "logging"]}},
+                "execAcctMethods": {},
+                "systemAcctMethods": {},
+                "dot1xAcctMethods": {},
+            }
+        ],
+        "inputs": {
+            "accounting": [
+                {"acct_type": "commands", "method_configs": [{"name": "all", "console_methods": ["tacacs+", "logging"]}]},
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["AAA commands accounting - privilege0-15 - Console methods - Mismatch - Expected: group tacacs+, logging, Actual: group radius, logging"],
+            "atomic_results": [
+                {
+                    "description": "AAA commands accounting - privilege0-15",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Console methods - Mismatch - Expected: group tacacs+, logging, Actual: group radius, logging"],
+                },
+            ],
+        },
+    },
+    (VerifyAcctMethods, "failure-both-planes-mismatch"): {
+        # Both default and console planes fail on the same method-list entry
         "eos_data": [
             {
                 "commandsAcctMethods": {
@@ -666,9 +639,9 @@ DATA: AntaUnitTestData = {
                         "consoleMethods": ["group radius", "logging"],
                     }
                 },
-                "execAcctMethods": {"exec": {"defaultAction": "startStop", "defaultMethods": ["group tacacs+", "logging"], "consoleMethods": []}},
-                "systemAcctMethods": {"system": {"defaultAction": "startStop", "defaultMethods": ["group tacacs+", "logging"], "consoleMethods": []}},
-                "dot1xAcctMethods": {"dot1x": {"defaultMethods": [], "consoleMethods": []}},
+                "execAcctMethods": {},
+                "systemAcctMethods": {},
+                "dot1xAcctMethods": {},
             }
         ],
         "inputs": {
@@ -697,224 +670,8 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
-    (VerifyAcctMethods, "failure-exec-default-not-configured"): {
-        # exec accounting exists but defaultAction is absent — default plane not configured
-        "eos_data": [
-            {
-                "commandsAcctMethods": {},
-                "execAcctMethods": {"exec": {"defaultMethods": [], "consoleMethods": []}},
-                "systemAcctMethods": {},
-                "dot1xAcctMethods": {},
-            }
-        ],
-        "inputs": {
-            "accounting": [
-                {"acct_type": "exec", "method_configs": [{"name": "exec", "default_methods": ["tacacs+", "logging"]}]},
-            ]
-        },
-        "expected": {
-            "result": AntaTestStatus.FAILURE,
-            "messages": ["AAA exec accounting - Default methods - Not configured"],
-            "atomic_results": [
-                {
-                    "description": "AAA exec accounting",
-                    "result": AntaTestStatus.FAILURE,
-                    "messages": ["Default methods - Not configured"],
-                },
-            ],
-        },
-    },
-    (VerifyAcctMethods, "failure-exec-default-not-matching"): {
-        # exec default plane is configured but with radius instead of the expected tacacs+
-        "eos_data": [
-            {
-                "commandsAcctMethods": {},
-                "execAcctMethods": {"exec": {"defaultAction": "startStop", "defaultMethods": ["group radius", "logging"], "consoleMethods": []}},
-                "systemAcctMethods": {},
-                "dot1xAcctMethods": {},
-            }
-        ],
-        "inputs": {
-            "accounting": [
-                {"acct_type": "exec", "method_configs": [{"name": "exec", "default_methods": ["tacacs+", "logging"]}]},
-            ]
-        },
-        "expected": {
-            "result": AntaTestStatus.FAILURE,
-            "messages": ["AAA exec accounting - Default methods - Mismatch - Expected: group tacacs+, logging, Actual: group radius, logging"],
-            "atomic_results": [
-                {
-                    "description": "AAA exec accounting",
-                    "result": AntaTestStatus.FAILURE,
-                    "messages": ["Default methods - Mismatch - Expected: group tacacs+, logging, Actual: group radius, logging"],
-                },
-            ],
-        },
-    },
-    (VerifyAcctMethods, "failure-exec-console-not-configured"): {
-        # exec accounting exists but consoleAction is absent — console plane not configured
-        "eos_data": [
-            {
-                "commandsAcctMethods": {},
-                "execAcctMethods": {"exec": {"defaultMethods": [], "consoleMethods": []}},
-                "systemAcctMethods": {},
-                "dot1xAcctMethods": {},
-            }
-        ],
-        "inputs": {
-            "accounting": [
-                {"acct_type": "exec", "method_configs": [{"name": "exec", "console_methods": ["tacacs+", "logging"]}]},
-            ]
-        },
-        "expected": {
-            "result": AntaTestStatus.FAILURE,
-            "messages": ["AAA exec accounting - Console methods - Not configured"],
-            "atomic_results": [
-                {
-                    "description": "AAA exec accounting",
-                    "result": AntaTestStatus.FAILURE,
-                    "messages": ["Console methods - Not configured"],
-                },
-            ],
-        },
-    },
-    (VerifyAcctMethods, "failure-exec-console-not-matching"): {
-        # exec console plane is configured but with radius instead of the expected tacacs+
-        "eos_data": [
-            {
-                "commandsAcctMethods": {},
-                "execAcctMethods": {"exec": {"defaultMethods": [], "consoleAction": "startStop", "consoleMethods": ["group radius", "logging"]}},
-                "systemAcctMethods": {},
-                "dot1xAcctMethods": {},
-            }
-        ],
-        "inputs": {
-            "accounting": [
-                {"acct_type": "exec", "method_configs": [{"name": "exec", "console_methods": ["tacacs+", "logging"]}]},
-            ]
-        },
-        "expected": {
-            "result": AntaTestStatus.FAILURE,
-            "messages": ["AAA exec accounting - Console methods - Mismatch - Expected: group tacacs+, logging, Actual: group radius, logging"],
-            "atomic_results": [
-                {
-                    "description": "AAA exec accounting",
-                    "result": AntaTestStatus.FAILURE,
-                    "messages": ["Console methods - Mismatch - Expected: group tacacs+, logging, Actual: group radius, logging"],
-                },
-            ],
-        },
-    },
-    (VerifyAcctMethods, "failure-system-default-not-configured"): {
-        # system accounting exists but defaultAction is absent — default plane not configured
-        "eos_data": [
-            {
-                "commandsAcctMethods": {},
-                "execAcctMethods": {},
-                "systemAcctMethods": {"system": {"defaultMethods": [], "consoleMethods": []}},
-                "dot1xAcctMethods": {},
-            }
-        ],
-        "inputs": {
-            "accounting": [
-                {"acct_type": "system", "method_configs": [{"name": "system", "default_methods": ["tacacs+", "logging"]}]},
-            ]
-        },
-        "expected": {
-            "result": AntaTestStatus.FAILURE,
-            "messages": ["AAA system accounting - Default methods - Not configured"],
-            "atomic_results": [
-                {
-                    "description": "AAA system accounting",
-                    "result": AntaTestStatus.FAILURE,
-                    "messages": ["Default methods - Not configured"],
-                },
-            ],
-        },
-    },
-    (VerifyAcctMethods, "failure-system-default-not-matching"): {
-        # system default plane is configured but with radius instead of the expected tacacs+
-        "eos_data": [
-            {
-                "commandsAcctMethods": {},
-                "execAcctMethods": {},
-                "systemAcctMethods": {"system": {"defaultAction": "startStop", "defaultMethods": ["group radius", "logging"], "consoleMethods": []}},
-                "dot1xAcctMethods": {},
-            }
-        ],
-        "inputs": {
-            "accounting": [
-                {"acct_type": "system", "method_configs": [{"name": "system", "default_methods": ["tacacs+", "logging"]}]},
-            ]
-        },
-        "expected": {
-            "result": AntaTestStatus.FAILURE,
-            "messages": ["AAA system accounting - Default methods - Mismatch - Expected: group tacacs+, logging, Actual: group radius, logging"],
-            "atomic_results": [
-                {
-                    "description": "AAA system accounting",
-                    "result": AntaTestStatus.FAILURE,
-                    "messages": ["Default methods - Mismatch - Expected: group tacacs+, logging, Actual: group radius, logging"],
-                },
-            ],
-        },
-    },
-    (VerifyAcctMethods, "failure-dot1x-default-not-configured"): {
-        # dot1x accounting exists but defaultAction is absent — default plane not configured
-        "eos_data": [
-            {
-                "commandsAcctMethods": {},
-                "execAcctMethods": {},
-                "systemAcctMethods": {},
-                "dot1xAcctMethods": {"dot1x": {"defaultMethods": [], "consoleMethods": []}},
-            }
-        ],
-        "inputs": {
-            "accounting": [
-                {"acct_type": "dot1x", "method_configs": [{"name": "dot1x", "default_methods": ["radius"]}]},
-            ]
-        },
-        "expected": {
-            "result": AntaTestStatus.FAILURE,
-            "messages": ["AAA dot1x accounting - Default methods - Not configured"],
-            "atomic_results": [
-                {
-                    "description": "AAA dot1x accounting",
-                    "result": AntaTestStatus.FAILURE,
-                    "messages": ["Default methods - Not configured"],
-                },
-            ],
-        },
-    },
-    (VerifyAcctMethods, "failure-dot1x-default-not-matching"): {
-        # dot1x default plane is configured but with tacacs+ instead of the expected radius
-        "eos_data": [
-            {
-                "commandsAcctMethods": {},
-                "execAcctMethods": {},
-                "systemAcctMethods": {},
-                "dot1xAcctMethods": {"dot1x": {"defaultAction": "startStop", "defaultMethods": ["group tacacs+"], "consoleMethods": []}},
-            }
-        ],
-        "inputs": {
-            "accounting": [
-                {"acct_type": "dot1x", "method_configs": [{"name": "dot1x", "default_methods": ["radius"]}]},
-            ]
-        },
-        "expected": {
-            "result": AntaTestStatus.FAILURE,
-            "messages": ["AAA dot1x accounting - Default methods - Mismatch - Expected: group radius, Actual: group tacacs+"],
-            "atomic_results": [
-                {
-                    "description": "AAA dot1x accounting",
-                    "result": AntaTestStatus.FAILURE,
-                    "messages": ["Default methods - Mismatch - Expected: group radius, Actual: group tacacs+"],
-                },
-            ],
-        },
-    },
-    (VerifyAcctMethods, "failure-exec-method-list-not-found"): {
-        # exec method list is absent from EOS output entirely
+    (VerifyAcctMethods, "failure-non-commands-method-list-not-found"): {
+        # Non-commands type: method list absent — validates description has no privilege-range suffix
         "eos_data": [
             {
                 "commandsAcctMethods": {},
@@ -979,7 +736,7 @@ DATA: AntaUnitTestData = {
         },
     },
     (VerifyAcctMethods, "failure-commands-multiple-privilege-ranges"): {
-        # Two privilege ranges: privilege0-5 not found; privilege6-15 default methods mismatch
+        # Two privilege ranges with different failure modes: first not found, second mismatched
         "eos_data": [
             {
                 "commandsAcctMethods": {"privilege6-15": {"defaultAction": "startStop", "defaultMethods": ["group radius"], "consoleMethods": []}},

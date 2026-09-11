@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     else:
         from typing_extensions import Self
 
-PRIVILEGE_METHOD_LIST_PATTERN = re.compile(r"^privilege(?P<start>[0-9]|1[0-5])(?:-(?P<end>[0-9]|1[0-5]))?$")
+PRIVILEGE_METHOD_LIST_PATTERN = re.compile(r"^privilege(?P<start>\d|1[0-5])(?:-(?P<end>\d|1[0-5]))?$")
 MAX_PRIVILEGE_LEVEL = 15
 
 
