@@ -29,10 +29,10 @@ Device tags can be defined in the inventory:
 Each device also has its own name automatically added as a tag:
 
 ```bash
-anta get inventory --tags spine
+anta get inventory --tags dc1-spine1
 ```
 
-![anta get inventory showing automatic device-name tags](../imgs/anta_get_inventory_tags_spine.svg){ class="img_center" loading=lazy width="1600" }
+![anta get inventory filtered by an automatic device-name tag](../imgs/anta_get_inventory_tags_dc1spine1.svg){ class="img_center" loading=lazy width="1600" }
 
 ### Test tags
 

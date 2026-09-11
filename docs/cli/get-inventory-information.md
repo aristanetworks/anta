@@ -36,7 +36,7 @@ Let's consider the following inventory:
 --8<-- "getting-started/inventory.yml"
 ```
 
-To retrieve a comprehensive list of all devices along with their details, execute the following command. It will provide all the data loaded into the ANTA inventory from your [inventory file](../usage-inventory-catalog.md).
+To retrieve a comprehensive list of all devices matching the `spine` tag along with their details, execute the following command. The output contains the data loaded for those devices from your [inventory file](../usage-inventory-catalog.md).
 
 ```bash
 anta get inventory --tags spine
