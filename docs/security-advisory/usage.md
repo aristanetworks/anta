@@ -69,27 +69,19 @@ security advisory catalog cannot be overridden.
 
 ## Reports
 
-CSV and Markdown use the security advisory reporters to include advisory and
-vulnerability metadata with per-device findings. Markdown reports also include
-a run overview with execution timing, inventory and filter details, and
-assessment counts. CSV also includes result remediation when provided by the
-advisory test. Jinja templates remain available for custom report formats.
+Choose Markdown for human review, CSV for automated processing, or a Jinja
+template for custom output. See [Security Advisory Reports](reports.md) for a
+format comparison, result interpretation, remediation guidance, and the CSV
+schema.
 
 !!! warning "Template reports"
     Template reports are intended for advanced customization. Reach out to the ANTA maintainers if you need help creating a template for your use case.
-
-See [Security Advisory Reports](reports.md) for the
-report schemas, result semantics, and detailed rendering behavior.
 
 ```bash
 anta psirt --inventory inventory.yml csv --csv-output sa-report.csv
 anta psirt --inventory inventory.yml md-report --md-output sa-report.md
 anta psirt --inventory inventory.yml tpl-report --template report.j2 --output sa-report.txt
 ```
-
-The Markdown report renders one Device Findings row per vulnerability
-assessment. It also renders one parent lifecycle row when a test ends before
-producing a vulnerability assessment.
 
 See the [NRFU documentation](../cli/nrfu.md) for shared filters and dry-run
 behavior.
