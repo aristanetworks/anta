@@ -88,7 +88,7 @@ anta_snapshot
     └── text
         └── show bfd peers.log
 
-6 directories, 4 files
+7 directories, 4 files
 ```
 
 ## Get Scheduled tech-support
@@ -159,7 +159,7 @@ tech-support/
 └── dc1-spine2
     └── dc1-spine2_tech-support_<date>.<time>.log.gz
 
-2 directories, 2 files
+3 directories, 2 files
 ```
 
 Each device has its own subdirectory containing the collected tech-support files.
