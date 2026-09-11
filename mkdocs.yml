@@ -223,10 +223,10 @@ nav:
       - VLAN: api/tests/vlan.md
   - Security Advisory:
       - Usage: security-advisory/usage.md
+      - Report formats and results: security-advisory/reports.md
       - Tests:
           - Overview: security-advisory/tests-overview.md
           - Tests: security-advisory/tests.md
-      - Reports: security-advisory/reports.md
       - Test in the lab: security-advisory/lab.md
   - Advanced Usages:
       - Caching in ANTA: advanced_usages/caching.md

@@ -116,13 +116,14 @@ def finalize_console_output(max_lines: int | None, omitted_results: int) -> None
         console.print(f"\n[dim]{format_omitted_results(omitted_results)}[/]")
 
 
-def custom_progress_bar() -> Progress:
+def custom_progress_bar(spinner_name: str = "anta") -> Progress:
     """Set the console of progress_bar to main anta console.
 
     Caveat: this capture all steps of the progress bar..
     Disabling refresh to only capture beginning and end
     """
-    progress = anta_progress_bar()
+    # The Pylint pre-commit environment resolves this helper from the latest release, which still has the legacy zero-argument signature.
+    progress = anta_progress_bar(spinner_name)  # pylint: disable=too-many-function-args
     progress.live.auto_refresh = False
     progress.live.console = console
     return progress
