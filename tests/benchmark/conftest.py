@@ -22,13 +22,13 @@ TEST_CASE_COUNT = None
 
 # Used to globally configure the benchmarks by specifying parameters for inventories
 BENCHMARK_PARAMETERS = [
-    pytest.param({"count": 1, "disable_cache": True, "reachable": True}, id="1-device"),
-    pytest.param({"count": 2, "disable_cache": True, "reachable": True}, id="2-devices"),
+    pytest.param({"count": 1, "disable_cache": True, "reachable": True, "version": None}, id="1-device"),
+    pytest.param({"count": 2, "disable_cache": True, "reachable": True, "version": None}, id="2-devices"),
 ]
 
 # Keep the expensive 5-device benchmarks out of CodSpeed's simulation pass.
 if os.environ.get("CODSPEED_RUNNER_MODE") == "memory":
-    BENCHMARK_PARAMETERS.append(pytest.param({"count": 5, "disable_cache": True, "reachable": True}, id="5-devices"))
+    BENCHMARK_PARAMETERS.append(pytest.param({"count": 5, "disable_cache": True, "reachable": True, "version": None}, id="5-devices"))
 
 
 @pytest.fixture(name="anta_mock_env", scope="session")  # We want this fixture to have a scope set to session to avoid reparsing all the unit tests data.
