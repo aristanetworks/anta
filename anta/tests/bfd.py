@@ -194,11 +194,15 @@ class VerifyBFDPeersIntervals(AntaTest):
                 self.result.is_failure(f"{bfd_peer} - Not found")
                 continue
 
+            if (peer_stats_detail := peer_stats.get("peerStatsDetail")) is None:
+                self.result.is_failure(f"{bfd_peer} - Peer stats detail not found")
+                continue
+
             # Convert interval timers into milliseconds to be consistent with the inputs
-            act_tx_interval = get_value(peer_stats, "peerStatsDetail.operTxInterval") // 1000
-            act_rx_interval = get_value(peer_stats, "peerStatsDetail.operRxInterval") // 1000
-            act_detect_time = get_value(peer_stats, "peerStatsDetail.detectTime") // 1000
-            act_detect_mult = get_value(peer_stats, "peerStatsDetail.detectMult")
+            act_tx_interval = peer_stats_detail["operTxInterval"] // 1000
+            act_rx_interval = peer_stats_detail["operRxInterval"] // 1000
+            act_detect_time = peer_stats_detail["detectTime"] // 1000
+            act_detect_mult = peer_stats_detail["detectMult"]
 
             if act_tx_interval != bfd_peer.tx_interval:
                 self.result.is_failure(f"{bfd_peer} - Incorrect Transmit interval - Expected: {bfd_peer.tx_interval} Actual: {act_tx_interval}")
