@@ -16,9 +16,9 @@ from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.models import (
     AvailableFact,
+    CollectedFact,
     ConfigurationState,
     ConfigurationValue,
-    Fact,
     FactProblemKind,
     FactSource,
     FactSourceKind,
@@ -641,7 +641,7 @@ class TestSA142Assessment(unittest.TestCase):
         self,
         states: tuple[bool | None, ...],
         *,
-        version: Fact[EOSVersion],
+        version: CollectedFact[EOSVersion],
         platform: str | None = precise_platform,
         mitigation: bool = False,
         mitigation_unsupported: bool = False,
@@ -662,7 +662,7 @@ class TestSA142Assessment(unittest.TestCase):
             for definition, state in zip(definitions, states, strict=True)
         )
         platform_value = platform_identity(platform)
-        platform_fact: Fact[PlatformIdentity] = (
+        platform_fact: CollectedFact[PlatformIdentity] = (
             PlatformIdentityFact.unavailable(FactProblemKind.MISSING, self.source)
             if platform_value is None
             else PlatformIdentityFact.available(platform_value, self.source)

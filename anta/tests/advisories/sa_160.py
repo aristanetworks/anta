@@ -11,7 +11,7 @@ from typing import Any, ClassVar, cast
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
+from anta._advisory.facts.models import AvailableFact, CollectedFact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
 from anta._advisory.facts.routing import IsisConfiguredFact, IsisGracefulRestartFact, IsisNonPassiveBroadcastInterfaceFact
 from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import (
@@ -76,8 +76,8 @@ BROADCAST_ID, LSP_ID, GRACEFUL_RESTART_ID = (vulnerability.id for vulnerability 
 
 def _assess_isis_issue(
     vulnerability_id: str,
-    version: Fact[EOSVersion],
-    prerequisite: Fact[FeatureValue],
+    version: CollectedFact[EOSVersion],
+    prerequisite: CollectedFact[FeatureValue],
     affected_versions: tuple[VersionRule, ...],
     fixed_releases: tuple[FixedRelease, ...],
 ) -> VulnerabilityResult:
@@ -98,9 +98,9 @@ def _assess_isis_issue(
 
 
 def _assess_broadcast_issue(
-    version: Fact[EOSVersion],
-    interface: Fact[FeatureValue],
-    isis: Fact[FeatureValue],
+    version: CollectedFact[EOSVersion],
+    interface: CollectedFact[FeatureValue],
+    isis: CollectedFact[FeatureValue],
 ) -> VulnerabilityResult:
     """Assess modeled broadcast-interface state, retaining unresolved inactive configurations."""
     if not isinstance(interface, UnavailableFact) and interface.value.state is FeatureState.ENABLED:

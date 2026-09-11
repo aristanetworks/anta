@@ -9,8 +9,8 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 from anta._advisory.facts.models import (
+    CollectedFact,
     CommandsFactDefinition,
-    Fact,
     FactProblemKind,
     FactSource,
     FactSourceKind,
@@ -106,7 +106,7 @@ class PasswordManagementServiceFact(CommandsFactDefinition[FeatureValue]):
     commands = (SSH_CONFIG_COMMAND, TELNET_CONFIG_COMMAND)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize SSH protocols and configured SSH/Telnet VRF scope."""
         ssh_command, telnet_command = commands
         for command in commands:

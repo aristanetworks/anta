@@ -76,7 +76,7 @@ class FactDefinition(ABC, Generic[T]):
 
     @classmethod
     @abstractmethod
-    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[T]:
+    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> CollectedFact[T]:
         """Derive this fact from its declared source."""
 
     @classmethod
@@ -112,7 +112,15 @@ class UnavailableFact(Generic[T_co]):
             raise ValueError(msg)
 
 
-Fact: TypeAlias = AvailableFact[T] | UnavailableFact[T]
+@dataclass(frozen=True, slots=True)
+class PendingFact(Generic[T]):
+    """A typed declaration of a fact that has not been collected yet."""
+
+    definition: type[FactDefinition[T]]
+
+
+CollectedFact: TypeAlias = AvailableFact[T] | UnavailableFact[T]
+Fact: TypeAlias = PendingFact[T] | CollectedFact[T]
 
 
 class CommandsFactDefinition(FactDefinition[T], ABC):
@@ -126,7 +134,7 @@ class CommandsFactDefinition(FactDefinition[T], ABC):
         return cls.commands
 
     @classmethod
-    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[T]:
+    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> CollectedFact[T]:
         """Validate the collected commands and normalize their output."""
         _ = device
         if len(commands) != len(cls.commands) or any(command.uid != declared.uid for command, declared in zip(commands, cls.commands, strict=True)):
@@ -136,7 +144,7 @@ class CommandsFactDefinition(FactDefinition[T], ABC):
 
     @classmethod
     @abstractmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[T]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[T]:
         """Normalize the collected outputs for this fact."""
 
 

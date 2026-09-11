@@ -11,7 +11,7 @@ from typing import Any, ClassVar
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactDefinition, FeatureState, FeatureValue, MitigationState, MitigationValue, UnavailableFact
+from anta._advisory.facts.models import AvailableFact, CollectedFact, FactDefinition, FeatureState, FeatureValue, MitigationState, MitigationValue, UnavailableFact
 from anta._advisory.facts.routing import LegacyOspfv3ConfiguredFact, Ospfv3ConfiguredFact, Ospfv3IpsecAuthenticationFact
 from anta._advisory.facts.software import SA173HotfixFact
 from anta._advisory.findings.assessment import assess_eos_scope
@@ -66,11 +66,11 @@ _EXPECTED_OBSERVATION_COUNT = 2
 
 
 def _assess_sa173(
-    version: Fact[EOSVersion],
-    current: Fact[FeatureValue],
-    legacy: Fact[FeatureValue],
-    ipsec_authentication: Fact[MitigationValue],
-    hotfix: Fact[MitigationValue],
+    version: CollectedFact[EOSVersion],
+    current: CollectedFact[FeatureValue],
+    legacy: CollectedFact[FeatureValue],
+    ipsec_authentication: CollectedFact[MitigationValue],
+    hotfix: CollectedFact[MitigationValue],
 ) -> VulnerabilityResult:
     """Assess persistent OSPFv3 configuration, complete IPsec coverage, and the persistent SWIX."""
     available = tuple(fact for fact in (current, legacy) if isinstance(fact, AvailableFact))

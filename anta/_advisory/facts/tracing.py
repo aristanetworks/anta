@@ -9,8 +9,8 @@ import re
 from typing import TYPE_CHECKING
 
 from anta._advisory.facts.models import (
+    CollectedFact,
     CommandsFactDefinition,
-    Fact,
     FactProblemKind,
     FactSource,
     FactSourceKind,
@@ -106,7 +106,7 @@ def _parse_agent_trace(
     facility: str,
     levels: tuple[int, ...],
     subfeature: str,
-) -> Fact[FeatureValue]:
+) -> CollectedFact[FeatureValue]:
     """Normalize one advisory-specific risky trace selection."""
     source = FactSource(command.command, FactSourceKind.COMMAND)
     if is_unsupported_optional_command(command):
@@ -127,7 +127,7 @@ class ConfigAgentPrivateKeyTraceFact(CommandsFactDefinition[FeatureValue]):
     commands = (TRACE_CONFIG_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize risky ConfigAgent private-key trace levels."""
         (command,) = commands
         return _parse_agent_trace(
@@ -148,7 +148,7 @@ class AaaPasswordTraceFact(CommandsFactDefinition[FeatureValue]):
     commands = (TRACE_CONFIG_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize the risky Aaa user-password trace level."""
         (command,) = commands
         return _parse_agent_trace(cls, command, agent="Aaa", facility="PyServer", levels=(4,), subfeature="risk for Aaa user passwords")
@@ -162,7 +162,7 @@ class AaaTacacsKeyTraceFact(CommandsFactDefinition[FeatureValue]):
     commands = (TRACE_CONFIG_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize the risky Aaa TACACS+ shared-key trace level."""
         (command,) = commands
         return _parse_agent_trace(cls, command, agent="Aaa", facility="Tacacs", levels=(6,), subfeature="risk for Aaa TACACS+ shared keys")

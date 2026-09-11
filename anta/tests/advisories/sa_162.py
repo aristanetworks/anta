@@ -12,7 +12,7 @@ from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnsiCertzFact, GnsiTransportFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
+from anta._advisory.facts.models import AvailableFact, CollectedFact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
 from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import (
     AffectedResult,
@@ -68,9 +68,9 @@ VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
 def _assess_sa162(
-    version: Fact[EOSVersion],
-    transport: Fact[FeatureValue],
-    certz: Fact[FeatureValue],
+    version: CollectedFact[EOSVersion],
+    transport: CollectedFact[FeatureValue],
+    certz: CollectedFact[FeatureValue],
 ) -> VulnerabilityResult:
     """Assess the Certz and historical Bootz exposure from normalized facts."""
     eos_release = assess_eos_scope(VULNERABILITY_ID, version, AFFECTED_VERSION_MATRIX)

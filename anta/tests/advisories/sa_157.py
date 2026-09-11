@@ -11,7 +11,7 @@ from typing import Any, ClassVar, cast
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.eos_versions import AffectedStatus, VersionRule, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
+from anta._advisory.facts.models import AvailableFact, CollectedFact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
 from anta._advisory.facts.network_services import VrrpAntiReplayFact, VrrpFact, VrrpV2IpAhFact
 from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import (
@@ -104,7 +104,7 @@ def _logging_remediation_plan(current_version: EOSVersion) -> RemediationPlan:
     )
 
 
-def _assess_bypass(version: Fact[EOSVersion], ip_ah: Fact[FeatureValue]) -> VulnerabilityResult:
+def _assess_bypass(version: CollectedFact[EOSVersion], ip_ah: CollectedFact[FeatureValue]) -> VulnerabilityResult:
     """Assess the VRRPv2 IP-AH authentication-bypass issue."""
     if not isinstance(ip_ah, UnavailableFact) and ip_ah.value.state is not FeatureState.ENABLED:
         return NotAffectedResult(vulnerability_id=BYPASS_ID, decisive=(ip_ah,))
@@ -131,7 +131,7 @@ def _replay_version_relation(version: AvailableFact[EOSVersion]) -> VersionRelat
 
 
 def _assess_replay(  # noqa: PLR0911  # pylint: disable=too-many-return-statements
-    version: Fact[EOSVersion], ip_ah: Fact[FeatureValue], anti_replay: Fact[FeatureValue]
+    version: CollectedFact[EOSVersion], ip_ah: CollectedFact[FeatureValue], anti_replay: CollectedFact[FeatureValue]
 ) -> VulnerabilityResult:
     """Require both fixed software and explicitly enabled VRRP replay protection."""
     if not isinstance(ip_ah, UnavailableFact) and ip_ah.value.state is not FeatureState.ENABLED:
@@ -161,7 +161,7 @@ def _assess_replay(  # noqa: PLR0911  # pylint: disable=too-many-return-statemen
     return AffectedResult(vulnerability_id=REPLAY_ID, conditions=(ip_ah,), context=(release,), remediation=plan)
 
 
-def _assess_logging(version: Fact[EOSVersion], vrrp: Fact[FeatureValue]) -> VulnerabilityResult:
+def _assess_logging(version: CollectedFact[EOSVersion], vrrp: CollectedFact[FeatureValue]) -> VulnerabilityResult:
     """Assess the VRRP credential-logging issue."""
     if not isinstance(vrrp, UnavailableFact) and vrrp.value.state is not FeatureState.ENABLED:
         return NotAffectedResult(vulnerability_id=LOGGING_ID, decisive=(vrrp,))

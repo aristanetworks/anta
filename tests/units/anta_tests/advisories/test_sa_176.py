@@ -15,7 +15,7 @@ from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.models import (
     AvailableFact,
-    Fact,
+    CollectedFact,
     FactProblemKind,
     FactSource,
     FactSourceKind,
@@ -143,7 +143,7 @@ DATA: AntaUnitTestData = {
 }
 
 
-def version_fact(version: str | None) -> Fact[EOSVersion]:
+def version_fact(version: str | None) -> CollectedFact[EOSVersion]:
     """Build an EOS version fact for assessment tests."""
     if version is None:
         return EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
@@ -151,7 +151,7 @@ def version_fact(version: str | None) -> Fact[EOSVersion]:
     return EosVersionFact.available(parsed, SOURCE)
 
 
-def platform_fact(model: str | None) -> Fact[PlatformIdentity]:
+def platform_fact(model: str | None) -> CollectedFact[PlatformIdentity]:
     """Build a platform identity fact."""
     if model is None:
         return PlatformIdentityFact.unavailable(FactProblemKind.MISSING, SOURCE)
@@ -160,7 +160,7 @@ def platform_fact(model: str | None) -> Fact[PlatformIdentity]:
     return PlatformIdentityFact.available(platform, SOURCE)
 
 
-def switch_card_fact(model: str | None) -> Fact[PlatformComponentIdentity]:
+def switch_card_fact(model: str | None) -> CollectedFact[PlatformComponentIdentity]:
     """Build a switch-card identity fact."""
     if model is None:
         return SwitchCardIdentityFact.unavailable(FactProblemKind.MISSING, SOURCE)

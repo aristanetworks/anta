@@ -17,7 +17,7 @@ from anta._advisory.facts.management import (
     GnpsiMutualTlsSpiffeMitigationFact,
     GnpsiTransportFact,
 )
-from anta._advisory.facts.models import AvailableFact, Fact, FactDefinition, FeatureState, FeatureValue, MitigationState, MitigationValue, UnavailableFact
+from anta._advisory.facts.models import AvailableFact, CollectedFact, FactDefinition, FeatureState, FeatureValue, MitigationState, MitigationValue, UnavailableFact
 from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import (
     AffectedResult,
@@ -88,9 +88,9 @@ def _logging_remediation_plan(current_version: EOSVersion) -> RemediationPlan:
 
 def _assess_gnpsi_issue(
     vulnerability_id: str,
-    version: Fact[EOSVersion],
-    transport: Fact[FeatureValue],
-    prerequisite: Fact[FeatureValue],
+    version: CollectedFact[EOSVersion],
+    transport: CollectedFact[FeatureValue],
+    prerequisite: CollectedFact[FeatureValue],
 ) -> VulnerabilityResult:
     """Assess one gNPSI issue after its independent prerequisite is normalized."""
     if not isinstance(prerequisite, UnavailableFact) and prerequisite.value.state is not FeatureState.ENABLED:
@@ -112,10 +112,10 @@ def _assess_gnpsi_issue(
 
 
 def _assess_logging_issue(
-    version: Fact[EOSVersion],
-    transport: Fact[FeatureValue],
-    trace: Fact[FeatureValue],
-    authentication_mitigation: Fact[MitigationValue],
+    version: CollectedFact[EOSVersion],
+    transport: CollectedFact[FeatureValue],
+    trace: CollectedFact[FeatureValue],
+    authentication_mitigation: CollectedFact[MitigationValue],
 ) -> VulnerabilityResult:
     """Assess credential logging and the exact source-defined authentication mitigation."""
     if not isinstance(trace, UnavailableFact) and trace.value.state is not FeatureState.ENABLED:

@@ -10,8 +10,8 @@ from collections.abc import Mapping, Sequence
 from typing import TYPE_CHECKING
 
 from anta._advisory.facts.models import (
+    CollectedFact,
     CommandsFactDefinition,
-    Fact,
     FactProblemKind,
     FactSource,
     FactSourceKind,
@@ -65,7 +65,7 @@ class TerminAttrGrpcFact(CommandsFactDefinition[FeatureValue]):
     commands = (TERMINATTR_DAEMON_COMMAND, TERMINATTR_CONFIG_COMMAND)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:  # noqa: PLR0911
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:  # noqa: PLR0911
         daemon, config = commands
         source = FactSource("show daemon and show running-config section grpcaddr", FactSourceKind.COMMAND)
         if is_unsupported_optional_command(config):
@@ -93,7 +93,7 @@ class TerminAttrMtlsFact(CommandsFactDefinition[MitigationValue]):
     commands = (TERMINATTR_CONFIG_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[MitigationValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[MitigationValue]:
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
         if is_unsupported_optional_command(command):

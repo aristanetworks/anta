@@ -11,7 +11,7 @@ from typing import Any, ClassVar
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.eos_versions import AffectedStatus, VersionRule, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactDefinition, FeatureState, FeatureValue, MitigationState, MitigationValue, UnavailableFact
+from anta._advisory.facts.models import AvailableFact, CollectedFact, FactDefinition, FeatureState, FeatureValue, MitigationState, MitigationValue, UnavailableFact
 from anta._advisory.facts.network_services import (
     DhcpRelayActiveFact,
     DhcpRelayScope,
@@ -123,12 +123,12 @@ def _remediation(version: AvailableFact[EOSVersion], relation: VersionRelation) 
 
 
 def _assess_sa156(  # noqa: C901, PLR0911  # pylint: disable=too-many-return-statements
-    version: Fact[EOSVersion],
-    relay: Fact[FeatureValue],
-    validation: Fact[FeatureValue],
-    ip_locking: Fact[MitigationValue],
-    relay_scope: Fact[DhcpRelayScope],
-    ip_locking_coverage: Fact[IpLockingCoverage],
+    version: CollectedFact[EOSVersion],
+    relay: CollectedFact[FeatureValue],
+    validation: CollectedFact[FeatureValue],
+    ip_locking: CollectedFact[MitigationValue],
+    relay_scope: CollectedFact[DhcpRelayScope],
+    ip_locking_coverage: CollectedFact[IpLockingCoverage],
 ) -> VulnerabilityResult:
     """Require the complete resolution or source-defined operational IP-locking coverage."""
     if not isinstance(relay, UnavailableFact) and relay.value.state is not FeatureState.ENABLED:

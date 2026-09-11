@@ -12,7 +12,7 @@ from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnmiTransportFact, GnsiPathzFact, GnsiPathzPolicyOverlapFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
+from anta._advisory.facts.models import AvailableFact, CollectedFact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
 from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import (
     AffectedResult,
@@ -62,10 +62,10 @@ VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
 def _assess_sa164(
-    version: Fact[EOSVersion],
-    gnmi_transport: Fact[FeatureValue],
-    pathz: Fact[FeatureValue],
-    policy_overlap: Fact[FeatureValue],
+    version: CollectedFact[EOSVersion],
+    gnmi_transport: CollectedFact[FeatureValue],
+    pathz: CollectedFact[FeatureValue],
+    policy_overlap: CollectedFact[FeatureValue],
 ) -> VulnerabilityResult:
     """Assess the observable Pathz prerequisites and persisted policy shape."""
     eos_release = assess_eos_scope(VULNERABILITY_ID, version, AFFECTED_VERSION_MATRIX)

@@ -10,10 +10,10 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 
 from anta._advisory.facts.models import (
+    CollectedFact,
     CommandsFactDefinition,
     ConfigurationState,
     ConfigurationValue,
-    Fact,
     FactProblemKind,
     FactSource,
     FactSourceKind,
@@ -314,7 +314,7 @@ class Ospfv3ConfiguredFact(CommandsFactDefinition[FeatureValue]):
     commands = (OSPFV3_SUMMARY_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize current structured OSPFv3 summary output."""
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
@@ -336,7 +336,7 @@ class LegacyOspfv3ConfiguredFact(CommandsFactDefinition[FeatureValue]):
     commands = (LEGACY_OSPFV3_SUMMARY_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize legacy structured IPv6 OSPF summary output."""
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
@@ -450,7 +450,7 @@ class Ospfv2BroadcastAuthenticationFact(CommandsFactDefinition[FeatureValue]):
 
     @classmethod
     # pylint: disable-next=too-many-return-statements
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:  # noqa: PLR0911
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:  # noqa: PLR0911
         """Find cryptographic authentication on active OSPFv2 broadcast interfaces."""
         interface_command, summary_command = commands
         feature = SubFeature(FeatureName.OSPFV2, "broadcast cryptographic authentication")
@@ -488,7 +488,7 @@ class Ospfv2ProcessConfiguredFact(CommandsFactDefinition[ConfigurationValue]):
     commands = (OSPFV2_PROCESS_CONFIG_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[ConfigurationValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[ConfigurationValue]:
         """Return whether any OSPFv2 routing process is configured."""
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
@@ -528,7 +528,7 @@ class Ospfv2SegmentRoutingFact(CommandsFactDefinition[FeatureValue]):
     commands = (OSPFV2_SEGMENT_ROUTING_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize structured instance presence.
 
         An empty ``instList`` is disabled, including when EOS only reports that
@@ -553,7 +553,7 @@ class IsisNonPassiveBroadcastInterfaceFact(CommandsFactDefinition[FeatureValue])
     commands = (ISIS_INTERFACE_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize modeled interface, network-type, and per-level passive state."""
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
@@ -578,7 +578,7 @@ class IsisConfiguredFact(CommandsFactDefinition[FeatureValue]):
     commands = (ISIS_SUMMARY_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize an IS-IS summary or its established empty state."""
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
@@ -611,7 +611,7 @@ class IsisGracefulRestartFact(CommandsFactDefinition[FeatureValue]):
     commands = (ISIS_GRACEFUL_RESTART_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize the explicit graceful-restart status."""
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
@@ -645,7 +645,7 @@ class Ospfv3IpsecAuthenticationFact(CommandsFactDefinition[MitigationValue]):
     commands = (OSPFV3_CONFIG_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[MitigationValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[MitigationValue]:
         """Verify interface- or address-family-specific area authentication for every configured scope."""
         (config_command,) = commands
         config_source = FactSource(config_command.command, FactSourceKind.COMMAND)
@@ -668,7 +668,7 @@ class PimSparseModeFact(CommandsFactDefinition[FeatureValue]):
     commands = (PIM_SPARSE_MODE_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize canonical and legacy interface command syntax."""
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
@@ -690,7 +690,7 @@ class LooseUrpfFact(CommandsFactDefinition[FeatureValue]):
     commands = (LOOSE_URPF_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize the narrow loose-uRPF configuration output."""
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
@@ -711,7 +711,7 @@ class BfdAuthenticationFact(FeatureFact, CommandsFactDefinition["BfdAuthenticati
     commands = (BFD_SUMMARY_COMMAND, BFD_GLOBAL_CONFIG_COMMAND, BFD_INTERFACE_AUTH_CONFIG_COMMAND)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[BfdAuthenticationFact]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[BfdAuthenticationFact]:
         """Combine BFD administrative state with global, peer-specific, and interface authentication configuration."""
         summary, global_config, interface_config = commands
         feature = SubFeature(FeatureName.BFD, "authentication")

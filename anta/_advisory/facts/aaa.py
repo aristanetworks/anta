@@ -9,8 +9,8 @@ import re
 from typing import TYPE_CHECKING
 
 from anta._advisory.facts.models import (
+    CollectedFact,
     CommandsFactDefinition,
-    Fact,
     FactProblemKind,
     FactSource,
     FactSourceKind,
@@ -60,7 +60,7 @@ class LevelZeroCommandAuthorizationFact(CommandsFactDefinition[MitigationValue])
     commands = (AAA_CONFIG_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[MitigationValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[MitigationValue]:
         """Normalize the effective default command-authorization method list for level zero."""
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
@@ -92,7 +92,7 @@ class LoginAuthenticationFact(CommandsFactDefinition[FeatureValue]):
     commands = (AAA_METHODS_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize whether the default login method list requires authentication."""
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)

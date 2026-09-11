@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING
 
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactProblemKind, FactSource, FactSourceKind, FeatureName, FeatureState, SubFeature
+from anta._advisory.facts.models import AvailableFact, CollectedFact, FactProblemKind, FactSource, FactSourceKind, FeatureName, FeatureState, SubFeature
 from anta._advisory.facts.routing import BfdAuthenticationFact
 from anta._advisory.findings.models import AffectedResult, ErrorResult, NotAffectedResult
 from anta._advisory.remediation import FixedRelease, software_version_plan
@@ -76,7 +76,7 @@ DATA: AntaUnitTestData = {
 }
 
 
-def version_fact(value: str | None) -> Fact[EOSVersion]:
+def version_fact(value: str | None) -> CollectedFact[EOSVersion]:
     """Build a version fact."""
     if value is None:
         return EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)

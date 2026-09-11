@@ -11,7 +11,7 @@ from typing import Any, ClassVar, cast
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
+from anta._advisory.facts.models import AvailableFact, CollectedFact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
 from anta._advisory.facts.routing import PimSparseModeFact
 from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import AffectedResult, EosReleaseAssessment, ErrorResult, NotAffectedResult, VulnerabilityResult
@@ -56,7 +56,7 @@ ADVISORY = _AdvisoryMetadata(
 VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
-def _assess_sa175(version: Fact[EOSVersion], sparse_mode: Fact[FeatureValue]) -> VulnerabilityResult:
+def _assess_sa175(version: CollectedFact[EOSVersion], sparse_mode: CollectedFact[FeatureValue]) -> VulnerabilityResult:
     """Assess EOS applicability and PIM sparse-mode exposure."""
     if not isinstance(sparse_mode, UnavailableFact) and sparse_mode.value.state is not FeatureState.ENABLED:
         return NotAffectedResult(vulnerability_id=VULNERABILITY_ID, decisive=(sparse_mode,))

@@ -9,8 +9,8 @@ from collections.abc import Mapping, Sequence
 from typing import TYPE_CHECKING
 
 from anta._advisory.facts.models import (
+    CollectedFact,
     CommandsFactDefinition,
-    Fact,
     FactProblemKind,
     FactSource,
     FactSourceKind,
@@ -41,7 +41,7 @@ class P4RuntimeFact(CommandsFactDefinition[FeatureValue]):
     commands = (P4_RUNTIME_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize the P4Runtime enablement flag."""
         (command,) = commands
         source = _source(command)
@@ -61,7 +61,7 @@ class P4RuntimeAccountingFact(CommandsFactDefinition[FeatureValue]):
     commands = (P4_RUNTIME_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize request accounting on the effective P4Runtime transport."""
         (command,) = commands
         source = _source(command)
@@ -86,7 +86,7 @@ class P4RuntimeMtlsFact(CommandsFactDefinition[FeatureValue]):
 
     @classmethod
     # pylint: disable-next=too-many-return-statements
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:  # noqa: PLR0911
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:  # noqa: PLR0911
         """Normalize whether P4Runtime uses an SSL profile with trusted certificates."""
         p4, ssl = commands
         p4_source = _source(p4)

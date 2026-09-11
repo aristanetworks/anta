@@ -8,6 +8,7 @@ from __future__ import annotations
 import sys
 from typing import TYPE_CHECKING, Any, ClassVar, TypeVar
 
+from anta._advisory.facts.models import PendingFact
 from anta._advisory.models import _AdvisoryMetadata
 from anta._advisory.results import _AdvisoryTestResult
 from anta.models import AntaCommand, AntaTemplate, AntaTest, _description_from_docstring
@@ -18,7 +19,7 @@ else:
     from typing_extensions import override
 
 if TYPE_CHECKING:
-    from anta._advisory.facts.models import Fact, FactDefinition
+    from anta._advisory.facts.models import CollectedFact, Fact, FactDefinition
 
 T = TypeVar("T")
 
@@ -51,7 +52,7 @@ class _AntaAdvisoryTest(AntaTest):
         """Derive commands, set subclass identity, and validate advisory attributes."""
         has_own_name = "name" in cls.__dict__
         has_own_description = "description" in cls.__dict__
-        required_facts = cls.__dict__.get("required_facts", ())
+        required_facts = cls._required_facts_for_subclass()
         if required_facts:
             if "commands" in cls.__dict__:
                 msg = f"Class {cls.__module__}.{cls.__name__} cannot define both 'required_facts' and 'commands'"
@@ -78,11 +79,27 @@ class _AntaAdvisoryTest(AntaTest):
             raise AttributeError(msg)
 
     @classmethod
+    def _required_facts_for_subclass(cls) -> tuple[type[FactDefinition[Any]], ...]:
+        """Return facts declared through either the legacy tuple or typed fields."""
+        required_facts = cls.__dict__.get("required_facts", ())
+        if not (facts_type := cls.__dict__.get("Facts")):
+            return required_facts
+        if required_facts:
+            msg = f"Class {cls.__module__}.{cls.__name__} cannot define both 'Facts' and 'required_facts'"
+            raise AttributeError(msg)
+        declared_facts = vars(facts_type())
+        if not declared_facts or any(not isinstance(fact, PendingFact) for fact in declared_facts.values()):
+            msg = f"Class {cls.__module__}.{cls.__name__}.Facts must declare one or more PendingFact defaults"
+            raise TypeError(msg)
+        cls.required_facts = tuple(fact.definition for fact in declared_facts.values())
+        return cls.required_facts
+
+    @classmethod
     def _commands_from_required_facts(cls, required_facts: tuple[type[FactDefinition[Any]], ...]) -> list[AntaCommand | AntaTemplate]:
         """Return the commands needed by the required facts in declaration order."""
         return [command for definition in required_facts for command in definition.required_commands()]
 
-    def fact(self, definition: type[FactDefinition[T]]) -> Fact[T]:
+    def fact(self, definition: type[FactDefinition[T]]) -> CollectedFact[T]:
         """Derive one required fact from device metadata or collected command data."""
         command_offset = 0
         for candidate in self.required_facts:
@@ -94,3 +111,9 @@ class _AntaAdvisoryTest(AntaTest):
 
         msg = f"Fact '{definition.key}' is not listed in required_facts for {self.__class__.__name__}"
         raise ValueError(msg)
+
+    def collect_fact(self, fact: Fact[T]) -> CollectedFact[T]:
+        """Collect a pending fact, or return an already collected fact unchanged."""
+        if isinstance(fact, PendingFact):
+            return self.fact(fact.definition)
+        return fact

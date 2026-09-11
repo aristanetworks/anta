@@ -13,7 +13,7 @@ from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.models import (
     AvailableFact,
-    Fact,
+    CollectedFact,
     FactDefinition,
     FactProblemKind,
     FeatureState,
@@ -69,8 +69,8 @@ VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 # pylint: disable-next=too-many-return-statements
 def _assess_platform(  # noqa: PLR0911
-    platform: Fact[PlatformIdentity],
-    switch_card: Fact[PlatformComponentIdentity],
+    platform: CollectedFact[PlatformIdentity],
+    switch_card: CollectedFact[PlatformComponentIdentity],
 ) -> tuple[VulnerabilityResult | None, PlatformAssessment | None]:
     """Return a terminal platform result or the affected platform context."""
     if not isinstance(switch_card, UnavailableFact):
@@ -97,10 +97,10 @@ def _assess_platform(  # noqa: PLR0911
 
 
 def _assess_sa176(
-    version: Fact[EOSVersion],
-    platform: Fact[PlatformIdentity],
-    switch_card: Fact[PlatformComponentIdentity],
-    loose_urpf: Fact[FeatureValue],
+    version: CollectedFact[EOSVersion],
+    platform: CollectedFact[PlatformIdentity],
+    switch_card: CollectedFact[PlatformComponentIdentity],
+    loose_urpf: CollectedFact[FeatureValue],
 ) -> VulnerabilityResult:
     """Assess EOS, platform, and loose-uRPF exposure."""
     if not isinstance(loose_urpf, UnavailableFact) and loose_urpf.value.state is not FeatureState.ENABLED:

@@ -11,8 +11,8 @@ from dataclasses import dataclass
 from enum import Enum
 
 from anta._advisory.facts.models import (
+    CollectedFact,
     CommandsFactDefinition,
-    Fact,
     FactProblemKind,
     FactSource,
     FactSourceKind,
@@ -121,7 +121,7 @@ class VrrpFact(CommandsFactDefinition[FeatureValue]):
     commands = (VRRP_CONFIG_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize VRRP presence from its configuration section."""
         (command,) = commands
         configured, _ = _vrrp_state(command.text_output)
@@ -137,7 +137,7 @@ class VrrpV2IpAhFact(CommandsFactDefinition[FeatureValue]):
     commands = (VRRP_CONFIG_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Correlate VRRP version and IP-AH authentication by interface and virtual-router ID."""
         (command,) = commands
         _, exposed = _vrrp_state(command.text_output)
@@ -154,7 +154,7 @@ class VrrpAntiReplayFact(CommandsFactDefinition[FeatureValue]):
     commands = (VRRP_ANTI_REPLAY_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize the exact global configuration line."""
         (command,) = commands
         lines = tuple(line.strip() for line in command.text_output.splitlines() if line.strip())
@@ -173,7 +173,7 @@ class DhcpRelayActiveFact(CommandsFactDefinition[FeatureValue]):
     commands = (DHCP_RELAY_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize the structured relay activity state."""
         (command,) = commands
         source = _source(command)
@@ -216,7 +216,7 @@ class DhcpRelayScopeFact(CommandsFactDefinition[DhcpRelayScope]):
     commands = (DHCP_RELAY_SCOPE_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[DhcpRelayScope]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[DhcpRelayScope]:
         """Normalize the interface and address-family blocks from relay output."""
         (command,) = commands
         source = _source(command)
@@ -290,7 +290,7 @@ class IpLockingMitigationFact(CommandsFactDefinition[MitigationValue]):
     commands = (IP_LOCKING_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[MitigationValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[MitigationValue]:
         """Normalize whether any operational scope uses enforcement-disabled mode."""
         (command,) = commands
         source = _source(command)
@@ -312,7 +312,7 @@ class IpLockingCoverageFact(CommandsFactDefinition[IpLockingCoverage]):
     commands = (IP_LOCKING_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[IpLockingCoverage]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[IpLockingCoverage]:
         """Normalize enforcement-disabled interface and VLAN address families."""
         (command,) = commands
         source = _source(command)
@@ -332,7 +332,7 @@ class DhcpReplySourceValidationFact(CommandsFactDefinition[FeatureValue]):
     commands = (DHCP_REPLY_VALIDATION_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Normalize the exact configuration line."""
         (command,) = commands
         lines = tuple(line.strip() for line in command.text_output.splitlines() if line.strip())
@@ -377,7 +377,7 @@ class DhcpOption82Fact(CommandsFactDefinition[FeatureValue]):
 
     @classmethod
     # pylint: disable-next=too-many-return-statements
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:  # noqa: PLR0911
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:  # noqa: PLR0911
         """Evaluate the three source-defined exposure alternatives."""
         config_command, relay_command = commands
         feature = SubFeature(FeatureName.DHCP, "Option 82 exposure")
@@ -409,7 +409,7 @@ class MlagDualPrimaryErrdisableFact(CommandsFactDefinition[FeatureValue]):
 
     @classmethod
     # pylint: disable-next=too-many-return-statements
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:  # noqa: PLR0911
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:  # noqa: PLR0911
         """Require the stable MLAG and dual-primary configuration prerequisites."""
         (command,) = commands
         source = _source(command)
@@ -449,7 +449,7 @@ class MlagConfiguredFact(CommandsFactDefinition[FeatureValue]):
     commands = (MLAG_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[FeatureValue]:
         """Require the MLAG domain, local interface, peer address, and peer link without considering operational state."""
         (command,) = commands
         source = _source(command)

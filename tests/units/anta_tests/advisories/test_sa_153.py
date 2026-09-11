@@ -14,7 +14,7 @@ from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.models import (
     AvailableFact,
-    Fact,
+    CollectedFact,
     FactProblemKind,
     FactSource,
     FactSourceKind,
@@ -191,7 +191,7 @@ DATA: AntaUnitTestData = {
 }
 
 
-def version_fact(version: str | None) -> Fact[EOSVersion]:
+def version_fact(version: str | None) -> CollectedFact[EOSVersion]:
     """Build an EOS version fact for assessment tests."""
     if version is None:
         return EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
@@ -232,7 +232,7 @@ class TestSA153Assessment(unittest.TestCase):
 
     ASSESSMENTS: tuple[
         tuple[
-            Callable[[Fact[EOSVersion], Fact[FeatureValue]], object],
+            Callable[[CollectedFact[EOSVersion], CollectedFact[FeatureValue]], object],
             str,
             type[CommandsFactDefinition[FeatureValue]],
         ],

@@ -20,7 +20,7 @@ from anta._eos.version import EOSVersion
 from anta.decorators import preview_test_class
 
 if TYPE_CHECKING:
-    from anta._advisory.facts.models import Fact, FactDefinition
+    from anta._advisory.facts.models import CollectedFact, FactDefinition
 
 # pylint: disable=duplicate-code  # Advisory version metadata stays local even when identical.
 AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
@@ -54,7 +54,7 @@ ADVISORY = _AdvisoryMetadata(
 VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
-def _assess_sa159(version: Fact[EOSVersion]) -> VulnerabilityResult:
+def _assess_sa159(version: CollectedFact[EOSVersion]) -> VulnerabilityResult:
     """Assess the version-only exposure because IGMP snooping requires no configuration."""
     eos_release = assess_eos_scope(VULNERABILITY_ID, version, AFFECTED_VERSION_MATRIX)
     if not isinstance(eos_release, EosReleaseAssessment):

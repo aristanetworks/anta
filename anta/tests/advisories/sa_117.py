@@ -13,7 +13,7 @@ from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnmiAccountingFact, GnmiTransportFact, RiskyOpenConfigTraceFact
-from anta._advisory.facts.models import ConfigurationState, ConfigurationValue, Fact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
+from anta._advisory.facts.models import CollectedFact, ConfigurationState, ConfigurationValue, FactDefinition, FeatureState, FeatureValue, UnavailableFact
 from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import (
     EosReleaseAssessment,
@@ -75,10 +75,10 @@ ADVISORY = _AdvisoryMetadata(
 
 # pylint: disable-next=too-many-return-statements
 def _assess_sa117(  # noqa: PLR0911
-    version: Fact[EOSVersion],
-    gnmi: Fact[FeatureValue],
-    accounting: Fact[FeatureValue],
-    trace: Fact[ConfigurationValue],
+    version: CollectedFact[EOSVersion],
+    gnmi: CollectedFact[FeatureValue],
+    accounting: CollectedFact[FeatureValue],
+    trace: CollectedFact[ConfigurationValue],
 ) -> VulnerabilityResult:
     """Assess CVE-2025-0936 from normalized facts."""
     vulnerability_id = ADVISORY.vulnerabilities[0].id

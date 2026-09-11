@@ -12,7 +12,7 @@ from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnsiAuthzFact, GnsiTransportFact
-from anta._advisory.facts.models import Fact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
+from anta._advisory.facts.models import CollectedFact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
 from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import (
     AffectedResult,
@@ -64,9 +64,9 @@ VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
 def _assess_sa167(
-    version: Fact[EOSVersion],
-    transport: Fact[FeatureValue],
-    authz: Fact[FeatureValue],
+    version: CollectedFact[EOSVersion],
+    transport: CollectedFact[FeatureValue],
+    authz: CollectedFact[FeatureValue],
 ) -> VulnerabilityResult:
     """Assess Authz Rotate exposure from normalized current state."""
     eos_release = assess_eos_scope(VULNERABILITY_ID, version, AFFECTED_VERSION_MATRIX)

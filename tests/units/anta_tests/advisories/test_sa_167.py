@@ -15,7 +15,17 @@ from unittest.mock import AsyncMock
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnsiAuthzFact, GnsiTransportFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactProblemKind, FactSource, FactSourceKind, FeatureName, FeatureState, FeatureValue, SubFeature
+from anta._advisory.facts.models import (
+    AvailableFact,
+    CollectedFact,
+    FactProblemKind,
+    FactSource,
+    FactSourceKind,
+    FeatureName,
+    FeatureState,
+    FeatureValue,
+    SubFeature,
+)
 from anta._advisory.findings.models import AffectedResult, ErrorResult, NotAffectedResult, VersionRelation
 from anta._advisory.remediation import FixedRelease, software_version_plan
 from anta._advisory.results import _get_atomic_vulnerability_ids
@@ -105,7 +115,7 @@ DATA: AntaUnitTestData = {
 }
 
 
-def version_fact(version: str | None) -> Fact[EOSVersion]:
+def version_fact(version: str | None) -> CollectedFact[EOSVersion]:
     """Build an EOS version fact for assessment tests."""
     if version is None:
         return EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)

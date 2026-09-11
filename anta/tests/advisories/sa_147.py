@@ -13,8 +13,8 @@ from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.models import (
+    CollectedFact,
     ComponentSoftwareVersion,
-    Fact,
     FactDefinition,
     FactProblemKind,
     FeatureState,
@@ -121,11 +121,11 @@ def _is_openssh_before_10_4(version_string: str) -> bool | None:
 def _assess_client_issue(  # noqa: PLR0911
     *,
     vulnerability_id: str,
-    eos_version: Fact[EOSVersion],
+    eos_version: CollectedFact[EOSVersion],
     affected_versions: tuple[VersionRule, ...],
-    package_version: Fact[ComponentSoftwareVersion],
+    package_version: CollectedFact[ComponentSoftwareVersion],
     fixed_releases: tuple[FixedRelease, ...] = (),
-    mitigation: Fact[MitigationValue] | None = None,
+    mitigation: CollectedFact[MitigationValue] | None = None,
 ) -> VulnerabilityResult:
     """Assess one OpenSSH client vulnerability from normalized facts."""
     eos_release = assess_eos_scope(vulnerability_id, eos_version, affected_versions)
@@ -165,10 +165,10 @@ def _assess_client_issue(  # noqa: PLR0911
 def _assess_server_issue(  # noqa: PLR0911
     *,
     vulnerability_id: str,
-    eos_version: Fact[EOSVersion],
+    eos_version: CollectedFact[EOSVersion],
     affected_versions: tuple[VersionRule, ...],
-    package_version: Fact[ComponentSoftwareVersion],
-    ssh_server: Fact[FeatureValue],
+    package_version: CollectedFact[ComponentSoftwareVersion],
+    ssh_server: CollectedFact[FeatureValue],
 ) -> VulnerabilityResult:
     """Assess the OpenSSH server vulnerability from normalized facts."""
     eos_release = assess_eos_scope(vulnerability_id, eos_version, affected_versions)

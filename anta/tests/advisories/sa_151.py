@@ -12,7 +12,7 @@ from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.acl import SharedSviIngressAclFact
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import ConfigurationState, ConfigurationValue, Fact, FactDefinition, UnavailableFact
+from anta._advisory.facts.models import CollectedFact, ConfigurationState, ConfigurationValue, FactDefinition, UnavailableFact
 from anta._advisory.facts.platform import PlatformIdentityFact
 from anta._advisory.findings.assessment import assess_eos_scope, assess_platform_scope
 from anta._advisory.findings.models import (
@@ -69,7 +69,7 @@ ADVISORY = _AdvisoryMetadata(
 VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
-def _assess_sa151(version: Fact[EOSVersion], platform: Fact[PlatformIdentity], acl: Fact[ConfigurationValue]) -> VulnerabilityResult:
+def _assess_sa151(version: CollectedFact[EOSVersion], platform: CollectedFact[PlatformIdentity], acl: CollectedFact[ConfigurationValue]) -> VulnerabilityResult:
     """Assess EOS, platform, and shared SVI ACL exposure."""
     if not isinstance(acl, UnavailableFact) and acl.value.state is ConfigurationState.NOT_CONFIGURED:
         return NotAffectedResult(vulnerability_id=VULNERABILITY_ID, decisive=(acl,))

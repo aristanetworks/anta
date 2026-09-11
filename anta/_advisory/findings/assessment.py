@@ -8,7 +8,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
-from anta._advisory.facts.models import Fact, FactProblemKind, UnavailableFact
+from anta._advisory.facts.models import CollectedFact, FactProblemKind, UnavailableFact
 from anta._advisory.findings.models import EosReleaseAssessment, ErrorResult, NotAffectedResult, PlatformAssessment, PlatformRelation, VersionRelation
 from anta._eos.platform import platform_matches_families
 
@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 
 def assess_eos_scope(
     vulnerability_id: str,
-    version: Fact[EOSVersion],
+    version: CollectedFact[EOSVersion],
     affected_versions: Sequence[VersionRule],
 ) -> EosReleaseAssessment | ErrorResult | NotAffectedResult:
     """Return an affected EOS assessment or a terminal error or not-affected result."""
@@ -35,7 +35,7 @@ def assess_eos_scope(
 
 
 def assess_eos_version(
-    version: Fact[EOSVersion],
+    version: CollectedFact[EOSVersion],
     affected_versions: Sequence[VersionRule],
 ) -> EosReleaseAssessment | UnavailableFact[EOSVersion]:
     """Interpret an EOS version fact without making a terminal vulnerability decision."""
@@ -52,7 +52,7 @@ def assess_eos_version(
 
 def assess_platform_scope(
     vulnerability_id: str,
-    platform: Fact[PlatformIdentity],
+    platform: CollectedFact[PlatformIdentity],
     families: Iterable[PlatformFamily],
     *,
     matched_relation: PlatformRelation = PlatformRelation.AFFECTED,

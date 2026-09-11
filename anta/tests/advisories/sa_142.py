@@ -18,9 +18,9 @@ from anta._advisory.eos_versions import (
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.models import (
     AvailableFact,
+    CollectedFact,
     ConfigurationState,
     ConfigurationValue,
-    Fact,
     FactDefinition,
     FactProblemKind,
     MitigationState,
@@ -317,10 +317,10 @@ def _configuration_remediation_plan() -> RemediationPlan:
 
 # pylint: disable-next=too-many-branches,too-many-locals,too-many-return-statements,too-many-statements
 def _assess_sa142(  # noqa: C901, PLR0911, PLR0912, PLR0915
-    path_facts: tuple[Fact[ConfigurationValue], ...],
-    version: Fact[EOSVersion],
-    platform: Fact[PlatformIdentity],
-    mitigation: Fact[MitigationValue],
+    path_facts: tuple[CollectedFact[ConfigurationValue], ...],
+    version: CollectedFact[EOSVersion],
+    platform: CollectedFact[PlatformIdentity],
+    mitigation: CollectedFact[MitigationValue],
 ) -> VulnerabilityResult:
     """Assess CVE-2026-12546 from normalized redirect-path facts."""
     vulnerability_id = ADVISORY.vulnerabilities[0].id

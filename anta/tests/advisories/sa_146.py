@@ -16,8 +16,8 @@ from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnmiMtlsFact, GnmiTransportFact, GribiMtlsFact, GribiTransportFact
 from anta._advisory.facts.models import (
     AvailableFact,
+    CollectedFact,
     ComponentSoftwareVersion,
-    Fact,
     FactDefinition,
     FactProblemKind,
     FeatureState,
@@ -133,7 +133,7 @@ def _is_affected_terminattr_version(version_string: str) -> bool | None:
     return any(first_minor <= version.minor <= last_minor for first_minor, last_minor in TERMINATTR_FULLY_AFFECTED_MINOR_RANGES)
 
 
-def _terminattr_version_assessment(fact: Fact[ComponentSoftwareVersion]) -> ComponentVersionAssessment | UnavailableFact[ComponentSoftwareVersion]:
+def _terminattr_version_assessment(fact: CollectedFact[ComponentSoftwareVersion]) -> ComponentVersionAssessment | UnavailableFact[ComponentSoftwareVersion]:
     """Interpret the TerminAttr package version for SA146."""
     if isinstance(fact, UnavailableFact):
         return fact
@@ -148,8 +148,8 @@ class _GrpcPath:
     """Facts and remediation scope for one independent gRPC server path."""
 
     version: VersionAssessment | UnavailableFact[Any]
-    service: Fact[FeatureValue]
-    mitigation: Fact[MitigationValue]
+    service: CollectedFact[FeatureValue]
+    mitigation: CollectedFact[MitigationValue]
     software: SoftwareTarget
     fixed_releases: tuple[FixedRelease, ...]
 

@@ -13,9 +13,9 @@ from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import SnmpV3AuthenticationFact, SnmpV3CredentialSyntaxFact
 from anta._advisory.facts.models import (
+    CollectedFact,
     CredentialSyntaxState,
     CredentialSyntaxValue,
-    Fact,
     FactDefinition,
     FeatureState,
     FeatureValue,
@@ -68,9 +68,9 @@ VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
 def _assess_sa178(  # pylint: disable=too-many-return-statements
-    version: Fact[EOSVersion],
-    authentication: Fact[FeatureValue],
-    credential_syntax: Fact[CredentialSyntaxValue],
+    version: CollectedFact[EOSVersion],
+    authentication: CollectedFact[FeatureValue],
+    credential_syntax: CollectedFact[CredentialSyntaxValue],
 ) -> VulnerabilityResult:
     """Assess EOS software and the legacy SNMPv3 credential-syntax prerequisite.
 
