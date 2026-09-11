@@ -12,6 +12,7 @@ from anta.cli.get.utils import create_inventory_from_ansible
 
 REPOSITORY_ROOT = Path(__file__).parents[2]
 README_HELP_PATTERN = re.compile(r"^Run the ANTA CLI:\n\n(?P<help>```bash\n.*?^```)", flags=re.DOTALL | re.MULTILINE)
+LOCAL_SVG_PATTERN = re.compile(r"!\[[^]]*\]\((?!https?://)[^)\n]+\.svg\)(?P<attributes>\{[^}\n]*\})?")
 
 
 def test_readme_help_matches_generated_snippet() -> None:
@@ -22,6 +23,21 @@ def test_readme_help_matches_generated_snippet() -> None:
 
     assert match is not None
     assert match.group("help") == f"```bash\n{generated_help}\n```"
+
+
+def test_documentation_svg_images_are_centered() -> None:
+    """Verify local SVG images use the shared centering class."""
+    missing_center_class = []
+
+    for markdown_path in (REPOSITORY_ROOT / "docs").rglob("*.md"):
+        for line_number, line in enumerate(markdown_path.read_text(encoding="utf-8").splitlines(), start=1):
+            missing_center_class.extend(
+                f"{markdown_path.relative_to(REPOSITORY_ROOT)}:{line_number}"
+                for match in LOCAL_SVG_PATTERN.finditer(line)
+                if 'class="img_center"' not in (match.group("attributes") or "")
+            )
+
+    assert not missing_center_class
 
 
 def test_ansible_inventory_example(tmp_path: Path) -> None:
