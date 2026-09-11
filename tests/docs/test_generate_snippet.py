@@ -11,10 +11,12 @@ from typing import TYPE_CHECKING
 
 import pytest
 from rich.console import Console
+from rich.progress import Progress
 
 from anta.result_manager import ResultManager
 from anta.result_manager.models import TestResult as AntaTestResult
 from docs.scripts.generate_snippet import (
+    custom_progress_bar,
     finalize_console_output,
     format_omitted_results,
     limit_result_manager,
@@ -95,3 +97,19 @@ def test_finalize_console_output(monkeypatch: pytest.MonkeyPatch) -> None:
     finalize_console_output(max_lines=2, omitted_results=2)
 
     assert test_console.export_text(clear=True) == "first\n\n... 1 line omitted ...\n\nthird\n\n... 2 results omitted ...\n"
+
+
+def test_custom_progress_bar_forwards_spinner_name(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Verify the capture progress bar preserves the command-specific spinner."""
+    progress = Progress()
+    requested_spinners = []
+
+    def progress_factory(spinner_name: str) -> Progress:
+        requested_spinners.append(spinner_name)
+        return progress
+
+    monkeypatch.setattr("docs.scripts.generate_snippet.anta_progress_bar", progress_factory)
+
+    assert custom_progress_bar("security") is progress
+    assert requested_spinners == ["security"]
+    assert progress.live.auto_refresh is False

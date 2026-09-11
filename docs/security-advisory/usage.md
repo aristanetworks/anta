@@ -31,21 +31,30 @@ behavior, and exit handling with [`anta nrfu`](../cli/nrfu.md).
 --8<-- "anta_psirt_help.txt"
 ```
 
-Provide an inventory and credentials as for NRFU and select a report format:
+Provide an inventory and credentials as for NRFU, either with command-line
+options or the shared ANTA environment variables. Then select a report format:
 
 ```bash
-anta psirt --inventory inventory.yml --username admin --prompt md-report --md-output sa-report.md
+anta psirt md-report --md-output psirt.md
 ```
+
+![anta psirt Markdown report](../imgs/anta_psirt_mdreport_mdoutput_psirtmd.svg){ class="img_center" loading=lazy width="1600" }
 
 By default, the command runs every test registered in the built-in
 `anta.tests.advisories` catalog.
+
+All security advisory tests share the same preview warning. ANTA logs
+`Security Advisory tests are in preview` once during a command invocation,
+regardless of how many advisory tests or devices are selected.
 
 Use `--test` to filter the built-in catalog and run only selected security
 advisories. Provide the advisory test class name:
 
 ```bash
-anta psirt --inventory inventory.yml --test SA117 md-report --md-output sa117-report.md
+anta psirt --test SA117 md-report --md-output sa117.md
 ```
+
+![anta psirt SA117 Markdown report](../imgs/anta_psirt_test_SA117_mdreport_mdoutput_sa117md.svg){ class="img_center" loading=lazy width="1600" }
 
 Repeat `--test` to assess multiple selected advisories.
 

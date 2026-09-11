@@ -24,7 +24,7 @@ setting up a local environment.
 The lab includes four cEOS-lab devices running EOS 4.33.0F and an ANTA
 release with `anta psirt` command support.
 
-![ANTA PSIRT lab topology](../imgs/anta-psirt.png){ loading=lazy width="713" }
+![ANTA PSIRT lab topology](../imgs/anta-psirt.png){ class="img_center" loading=lazy width="713" }
 
 The lab may cover only a limited number of security advisories available in the installed ANTA release and enabled by the lab configuration.
 The ANTA release installed in the lab may change over time without a notice. Please verify the lab before running a demo.
@@ -32,9 +32,9 @@ The ANTA release installed in the lab may change over time without a notice. Ple
 ## Launch the lab
 
 To get started, sign in at [labs.arista.com](https://labs.arista.com/) and
-confirm that you can access the service. Then launch the lab:
+confirm that you can access the service. Then launch the lab.
 
-[Start the ANTA PSIRT lab](https://labs.arista.com/launch?lab_type=anta-psirt&origin=tech-lib){ .md-button .md-button--primary target="_blank" rel="noopener" }
+[Start the ANTA PSIRT lab](https://labs.arista.com/launch?lab_type=anta-psirt&origin=tech-lib){ .md-button .md-button--primary .button_center target="_blank" rel="noopener" }
 
 Once the lab is ready, follow the walkthrough provided in the lab environment.
 
