@@ -66,6 +66,8 @@ tags:
 
     This might be due to the time the host on which ANTA is run takes to reach the target devices (for instance if going through firewalls, NATs, ...) or when a lot of tests are being run at the same time on a device (eAPI has a queue mechanism to avoid exhausting EOS resources because of a high number of simultaneous eAPI requests).
 
+    `--timeout` and `ANTA_TIMEOUT` configure the timeout used for eAPI command requests. They do not configure the preliminary eAPI endpoint check or session login, which each use a separate five-second HTTPX timeout setting. See [Device Connection and Refresh](usage-inventory-catalog.md#device-connection-and-refresh) for the complete request sequence.
+
     ### Solution
 
     Use the `timeout` option. As an example for the `nrfu` command:

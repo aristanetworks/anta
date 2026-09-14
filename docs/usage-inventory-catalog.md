@@ -96,6 +96,22 @@ anta_inventory:
     tags: ['fabric', 'l2leaf']
 ```
 
+### Device Connection and Refresh
+
+Before running tests or other eAPI commands, ANTA refreshes each device to verify its endpoint and collect platform information. ANTA refreshes inventory devices concurrently, while the requests shown below occur sequentially for each device.
+
+`--timeout` and `ANTA_TIMEOUT` configure the timeout used for eAPI command requests, including inventory refresh, tests, `anta exec`, and `anta debug`. They do not configure the preliminary eAPI endpoint check or session login, which use separate timeout settings.
+
+<textarea hidden class="mermaid-zoom-source timeout-sequence-diagram-source" data-title="ANTA Device Connection and Refresh">
+--8<-- "inventory-refresh.mmd"
+</textarea>
+
+```mermaid
+--8<-- "inventory-refresh.mmd"
+```
+
+With session authentication, login occurs before the endpoint check. The timeout values are independent and do not form a single overall deadline.
+
 ## Test Catalog
 
 A test catalog is an instance of the [AntaCatalog](./api/catalog.md#anta.catalog.AntaCatalog) class.
