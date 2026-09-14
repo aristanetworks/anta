@@ -100,7 +100,7 @@ anta_inventory:
 
 Before running tests or other eAPI commands, ANTA refreshes each device to verify its endpoint and collect platform information. ANTA refreshes inventory devices concurrently, while the requests shown below occur sequentially for each device.
 
-`--timeout` and `ANTA_TIMEOUT` configure the timeout used for eAPI command requests, including inventory refresh, tests, `anta exec`, and `anta debug`. They do not configure the preliminary eAPI endpoint check or session login, which use separate timeout settings.
+`--timeout` and `ANTA_TIMEOUT` configure the timeout used for eAPI command requests, including inventory refresh, tests, `anta exec`, and `anta debug`. They do not configure the preliminary eAPI endpoint check or session login; each of those requests gets its own fixed five-second HTTPX timeout window.
 
 <textarea hidden class="mermaid-zoom-source timeout-sequence-diagram-source" data-title="ANTA Device Connection and Refresh">
 --8<-- "inventory-refresh.mmd"
