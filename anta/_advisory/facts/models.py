@@ -201,15 +201,18 @@ class FeatureState(str, Enum):
 
 @dataclass(frozen=True, slots=True)
 class FeatureFact:
-    """Common value and finding semantics for a feature fact."""
+    """Common state and class-level identity for a nominal feature fact."""
 
-    feature: FeatureRef
+    feature: ClassVar[FeatureRef]
     state: FeatureState
 
 
 @dataclass(frozen=True, slots=True)
-class FeatureValue(FeatureFact):
+class FeatureValue:
     """Legacy non-nominal state of one EOS feature."""
+
+    feature: FeatureRef
+    state: FeatureState
 
 
 class ConfigurationState(str, Enum):

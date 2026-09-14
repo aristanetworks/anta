@@ -8,6 +8,7 @@ from __future__ import annotations
 import re
 from collections.abc import Mapping
 from dataclasses import dataclass
+from typing import ClassVar
 
 from anta._advisory.facts.models import (
     CommandsFactDefinition,
@@ -19,6 +20,7 @@ from anta._advisory.facts.models import (
     FactSourceKind,
     FeatureFact,
     FeatureName,
+    FeatureRef,
     FeatureState,
     FeatureValue,
     MitigationState,
@@ -706,6 +708,7 @@ class LooseUrpfFact(CommandsFactDefinition[FeatureValue]):
 class BfdAuthenticationFact(FeatureFact, CommandsFactDefinition["BfdAuthenticationFact"]):
     """Presence of configured BFD authentication while BFD is enabled."""
 
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.BFD, "authentication")
     key = "feature.bfd.authentication"
     label = "BFD authentication state"
     commands = (BFD_SUMMARY_COMMAND, BFD_GLOBAL_CONFIG_COMMAND, BFD_INTERFACE_AUTH_CONFIG_COMMAND)
@@ -714,7 +717,6 @@ class BfdAuthenticationFact(FeatureFact, CommandsFactDefinition["BfdAuthenticati
     def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[BfdAuthenticationFact]:
         """Combine BFD administrative state with global, peer-specific, and interface authentication configuration."""
         summary, global_config, interface_config = commands
-        feature = SubFeature(FeatureName.BFD, "authentication")
         summary_source = FactSource(summary.command, FactSourceKind.COMMAND)
         if is_unsupported_optional_command(summary):
             state = FeatureState.UNSUPPORTED
@@ -724,7 +726,7 @@ class BfdAuthenticationFact(FeatureFact, CommandsFactDefinition["BfdAuthenticati
             if not isinstance(admin_down, bool):
                 return cls.unavailable(FactProblemKind.MISSING if admin_down is None else FactProblemKind.MALFORMED, summary_source)
             if admin_down:
-                return cls.available(cls(feature, FeatureState.DISABLED), summary_source)
+                return cls.available(cls(FeatureState.DISABLED), summary_source)
 
             for command in (global_config, interface_config):
                 source = FactSource(command.command, FactSourceKind.COMMAND)
@@ -738,4 +740,4 @@ class BfdAuthenticationFact(FeatureFact, CommandsFactDefinition["BfdAuthenticati
                 return cls.unavailable(FactProblemKind.MALFORMED, FactSource(interface_config.command, FactSourceKind.COMMAND))
             state = FeatureState.ENABLED if global_configured or interface_configured else FeatureState.DISABLED
             source_command = global_config if global_configured else interface_config if interface_configured else summary
-        return cls.available(cls(feature, state), FactSource(source_command.command, FactSourceKind.COMMAND))
+        return cls.available(cls(state), FactSource(source_command.command, FactSourceKind.COMMAND))
