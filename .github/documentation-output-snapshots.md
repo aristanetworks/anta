@@ -6,7 +6,7 @@
 
 # Regenerating documentation output snapshots
 
-This maintainer runbook describes how to refresh ANTA CLI output embedded in the documentation. It is intentionally kept outside the public documentation because the private lab paths and capture workflow are not user-facing ANTA guidance.
+This maintainer runbook describes how to refresh ANTA CLI output embedded in the documentation. It is intentionally kept outside the public documentation because its private lab paths and capture workflow are intended for maintainers, not ANTA users.
 
 ## Choose the capture type
 
