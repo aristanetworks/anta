@@ -3273,19 +3273,28 @@ Commands:
 <span class="w">  </span>md-report<span class="w">   </span>Generate<span class="w"> </span>a<span class="w"> </span>detailed<span class="w"> </span>security<span class="w"> </span>advisory<span class="w"> </span>Markdown<span class="w"> </span>report.
 <span class="w">  </span>tpl-report<span class="w">  </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>state<span class="w"> </span>with<span class="w"> </span>templated<span class="w"> </span>report.
 </code></pre></div>
-<p>Provide an inventory and credentials as for NRFU and select a report format:</p>
-<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>psirt<span class="w"> </span>--inventory<span class="w"> </span>inventory.yml<span class="w"> </span>--username<span class="w"> </span>admin<span class="w"> </span>--prompt<span class="w"> </span>md-report<span class="w"> </span>--md-output<span class="w"> </span>sa-report.md
+<p>Provide an inventory and credentials as you would for NRFU, using either command-line options or the shared ANTA environment variables. Then
+select a report format:</p>
+<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>psirt<span class="w"> </span>md-report<span class="w"> </span>--md-output<span class="w"> </span>psirt.md
 </code></pre></div>
+<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_psirt_mdreport_mdoutput_psirtmd.svg"><img alt="anta psirt Markdown report" class="img_center" loading="lazy" src="../../imgs/anta_psirt_mdreport_mdoutput_psirtmd.svg" width="1600" /></a></p>
 <p>By default, the command runs every test registered in the built-in
 <code>anta.tests.advisories</code> catalog.</p>
+<p>All security advisory tests share the same preview warning. ANTA logs
+<code>Security Advisory tests are in preview</code> once during a command invocation,
+regardless of how many advisory tests or devices are selected.</p>
 <p>Use <code>--test</code> to filter the built-in catalog and run only selected security
 advisories. Provide the advisory test class name:</p>
-<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>psirt<span class="w"> </span>--inventory<span class="w"> </span>inventory.yml<span class="w"> </span>--test<span class="w"> </span>SA117<span class="w"> </span>md-report<span class="w"> </span>--md-output<span class="w"> </span>sa117-report.md
+<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>psirt<span class="w"> </span>--test<span class="w"> </span>SA117<span class="w"> </span>md-report<span class="w"> </span>--md-output<span class="w"> </span>sa117.md
 </code></pre></div>
+<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_psirt_test_SA117_mdreport_mdoutput_sa117md.svg"><img alt="anta psirt SA117 Markdown report" class="img_center" loading="lazy" src="../../imgs/anta_psirt_test_SA117_mdreport_mdoutput_sa117md.svg" width="1600" /></a></p>
 <p>Repeat <code>--test</code> to assess multiple selected advisories.</p>
-<p>PSIRT-specific execution settings can be configured with
-<code>ANTA_PSIRT_IGNORE_STATUS</code>, <code>ANTA_PSIRT_IGNORE_ERROR</code>, and
-<code>ANTA_PSIRT_DRY_RUN</code>.</p>
+<p>PSIRT-specific execution settings can be configured with:</p>
+<ul>
+<li><code>ANTA_PSIRT_IGNORE_STATUS</code></li>
+<li><code>ANTA_PSIRT_IGNORE_ERROR</code></li>
+<li><code>ANTA_PSIRT_DRY_RUN</code></li>
+</ul>
 <p>The command accepts the shared ANTA environment variables documented in the
 <a href="../../cli/overview/#anta-environment-variables">ANTA CLI overview</a>, except for
 the catalog-related variables and <code>ANTA_DISCONNECT_INVENTORY</code>. The built-in
@@ -3367,7 +3376,7 @@ behavior.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    September 10, 2026
+    September 14, 2026
   </span>
 
     
