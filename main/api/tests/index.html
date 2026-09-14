@@ -3319,26 +3319,26 @@
 <h3 id="atomic-result-support">Atomic result support<a class="headerlink" href="#atomic-result-support" title="Permanent link">&para;</a></h3>
 <p>Tests marked with the following badge in the documentation support <strong>Atomic Results</strong>: <img alt="Atomic support badge" src="https://img.shields.io/badge/Atomic%20result%20support-brightgreen?style=flat&logoSize=auto"></p>
 <p>This means that when <code>anta nrfu &lt;command&gt;</code> is run with the <code>--expand</code> flag (currently supported for <code>table</code> and <code>text</code>), the report expands the test results to show one entry per input.</p>
-<p>For instance, consider the following inventory and catalog:</p>
-<div class="highlight"><span class="filename">inventory.yml</span><pre><span></span><code><span class="nn">---</span>
-<span class="nt">anta_inventory</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">hosts</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.42.42.42</span>
-<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pf1</span>
-</code></pre></div>
-<div class="highlight"><span class="filename">catalog.yml</span><pre><span></span><code><span class="nn">---</span>
+<p>For instance, consider a catalog containing two reachability checks:</p>
+<div class="highlight"><span class="filename">atomic-results-catalog.yml</span><pre><span></span><code><span class="nn">---</span>
 <span class="nt">anta.tests.connectivity</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyReachability</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">hosts</span><span class="p">:</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">destination</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8.8.8.8</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Management0</span>
+<span class="w">          </span><span class="nt">destination</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.16.1.12</span>
 <span class="w">          </span><span class="nt">vrf</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MGMT</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">destination</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8.8.4.4</span>
-<span class="w">          </span><span class="nt">vrf</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Management0</span>
+<span class="w">          </span><span class="nt">destination</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.0.2.1</span>
+<span class="w">          </span><span class="nt">vrf</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MGMT</span>
 </code></pre></div>
 <p><strong>Normal Run:</strong></p>
-<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_nrfu_table.svg"><img alt="anta nrfu table" loading="lazy" src="../../imgs/anta_nrfu_table.svg" width="1600" /></a></p>
+<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>--device<span class="w"> </span>dc1-spine1<span class="w"> </span>--catalog<span class="w"> </span>docs/snippets/atomic-results-catalog.yml<span class="w"> </span>table
+</code></pre></div>
+<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_nrfu_device_dc1spine1_catalog_docs_snippets_atomicresultscatalogyml_table.svg"><img alt="anta nrfu table" class="img_center" loading="lazy" src="../../imgs/anta_nrfu_device_dc1spine1_catalog_docs_snippets_atomicresultscatalogyml_table.svg" width="1600" /></a></p>
 <p><strong>Expanded Run:</strong></p>
-<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_nrfu_table_expand.svg"><img alt="anta nrfu table" loading="lazy" src="../../imgs/anta_nrfu_table_expand.svg" width="1600" /></a></p>
+<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>--device<span class="w"> </span>dc1-spine1<span class="w"> </span>--catalog<span class="w"> </span>docs/snippets/atomic-results-catalog.yml<span class="w"> </span>table<span class="w"> </span>--expand
+</code></pre></div>
+<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_nrfu_device_dc1spine1_catalog_docs_snippets_atomicresultscatalogyml_table_expand.svg"><img alt="anta nrfu expanded table" class="img_center" loading="lazy" src="../../imgs/anta_nrfu_device_dc1spine1_catalog_docs_snippets_atomicresultscatalogyml_table_expand.svg" width="1600" /></a></p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>If the command collection fails for any reason, the results for that test will not be expanded.
