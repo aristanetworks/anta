@@ -313,7 +313,7 @@ class VerifyTemperature(AntaTest):
             self.result.is_failure(f"Device temperature exceeds acceptable limits. Current system status: '{temperature_status}'")
 ```
 
-As you can see there is no error handling to do in your code. Everything is packaged in the `AntaTest.anta_test` decorator and below is a simple example of error captured when trying to access a dictionary with an incorrect key:
+As you can see, there is no error handling to do in your code. Everything is handled in the `AntaTest.anta_test` decorator. Below is a simple example of an error being captured when attempting to access a dictionary with an invalid key:
 
 ```python
 class VerifyTemperature(AntaTest):
@@ -340,7 +340,7 @@ ERROR    Exception raised for test VerifyTemperature (on device 192.168.0.10) - 
 
 ### Test decorators
 
-In addition to the required `AntaTest.anta_test` decorator, ANTA offers a set of optional decorators for further test customization:
+In addition to the required `AntaTest.anta_test` decorator, ANTA provides optional decorators for further test customization:
 
 - `anta.decorators.deprecated_test`: Use this to log a message of WARNING severity when a test is deprecated.
 - `anta.decorators.skip_on_platforms`: Use this to skip tests for functionalities that are not supported on specific platforms.
@@ -367,13 +367,13 @@ For that, you need to create your own Python package as described in this [hitch
 
 It is very similar to what is documented in [catalog section](../usage-inventory-catalog.md) but you have to use your own package name.
 
-If the custom package is named `anta_custom` and the test is defined in the `anta_custom.dc_project` Python module, ANTA resolves the class from this catalog entry:
+If the custom package is named `anta_custom` and the test is defined in the `anta_custom.dc_project` Python module, ANTA resolves the class using the following catalog entry:
 
 ```yaml
 --8<-- "custom-tests-catalog.yml"
 ```
 
-When ANTA parses the catalog, the package must already be installed in the same Python environment and the module must be importable. ANTA then imports the module and instantiates the referenced `AntaTest` subclass with its catalog inputs.
+When ANTA parses the catalog, the package must already be installed in the same Python environment, and the module must be importable. ANTA then imports the module and instantiates the referenced `AntaTest` subclass with its catalog inputs.
 
 The custom test can then be selected and reported like any built-in ANTA test:
 

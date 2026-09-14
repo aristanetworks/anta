@@ -274,7 +274,7 @@ The following example is the catalog used throughout this documentation:
 ### Catalog with custom tests
 
 In case you want to leverage your own tests collection, use your own Python package in the test catalog.
-For instance, if a custom test is defined in the importable `anta_custom.dc_project` Python module, the test catalog is:
+For instance, if a custom test is defined in the importable Python module `anta_custom.dc_project`, the test catalog entry is:
 
 ```yaml
 --8<-- "custom-tests-catalog.yml"
@@ -289,7 +289,7 @@ For instance, if a custom test is defined in the importable `anta_custom.dc_proj
 
 It might be interesting to use your own categories and customized test description to build a better report for your environment. ANTA comes with a handy feature to define your own `categories` and `description` in the report.
 
-In your test catalog, use the `result_overwrite` dictionary with `categories` and `description` to overwrite these values in your report:
+In your test catalog, use the `result_overwrite` dictionary with the `categories` and `description` keys to override these values in your report:
 
 ```yaml
 --8<-- "result-overwrite-catalog.yml"
