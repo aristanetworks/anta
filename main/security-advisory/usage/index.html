@@ -18,7 +18,7 @@
         <link rel="prev" href="../../api/tests/vlan/">
       
       
-        <link rel="next" href="../tests-overview/">
+        <link rel="next" href="../reports/">
       
       
         
@@ -2025,6 +2025,33 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../reports/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Report formats and results
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     
     
       
@@ -2040,10 +2067,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_3" >
         
           
-          <label class="md-nav__link" for="__nav_8_2" id="__nav_8_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_8_3" id="__nav_8_3_label" tabindex="0">
             
   
   
@@ -2060,8 +2087,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8_2">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_3">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2127,33 +2154,6 @@
           </ul>
         </nav>
       
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../reports/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  Reports
-
-    
-  </span>
-  
-  
-
-      </a>
     </li>
   
 
@@ -3300,24 +3300,18 @@ advisories. Provide the advisory test class name:</p>
 the catalog-related variables and <code>ANTA_DISCONNECT_INVENTORY</code>. The built-in
 security advisory catalog cannot be overridden.</p>
 <h3 id="reports">Reports<a class="headerlink" href="#reports" title="Permanent link">&para;</a></h3>
-<p>CSV and Markdown use the security advisory reporters to include advisory and
-vulnerability metadata with per-device findings. Markdown reports also include
-a run overview with execution timing, inventory and filter details, and
-assessment counts. CSV also includes result remediation when provided by the
-advisory test. Jinja templates remain available for custom report formats.</p>
+<p>Choose Markdown for human review, CSV for automated processing, or a Jinja
+template for custom output. See <a href="../reports/">Security Advisory Reports</a> for a
+format comparison, result interpretation, remediation guidance, and the CSV
+schema.</p>
 <div class="admonition warning">
 <p class="admonition-title">Template reports</p>
 <p>Template reports are intended for advanced customization. Reach out to the ANTA maintainers if you need help creating a template for your use case.</p>
 </div>
-<p>See <a href="../reports/">Security Advisory Reports</a> for the
-report schemas, result semantics, and detailed rendering behavior.</p>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>psirt<span class="w"> </span>--inventory<span class="w"> </span>inventory.yml<span class="w"> </span>csv<span class="w"> </span>--csv-output<span class="w"> </span>sa-report.csv
 anta<span class="w"> </span>psirt<span class="w"> </span>--inventory<span class="w"> </span>inventory.yml<span class="w"> </span>md-report<span class="w"> </span>--md-output<span class="w"> </span>sa-report.md
 anta<span class="w"> </span>psirt<span class="w"> </span>--inventory<span class="w"> </span>inventory.yml<span class="w"> </span>tpl-report<span class="w"> </span>--template<span class="w"> </span>report.j2<span class="w"> </span>--output<span class="w"> </span>sa-report.txt
 </code></pre></div>
-<p>The Markdown report renders one Device Findings row per vulnerability
-assessment. It also renders one parent lifecycle row when a test ends before
-producing a vulnerability assessment.</p>
 <p>See the <a href="../../cli/nrfu/">NRFU documentation</a> for shared filters and dry-run
 behavior.</p>
 

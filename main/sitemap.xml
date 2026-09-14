@@ -151,13 +151,13 @@
         <loc>https://anta.arista.com/main/security-advisory/usage/</loc>
       </url>
       <url>
+        <loc>https://anta.arista.com/main/security-advisory/reports/</loc>
+      </url>
+      <url>
         <loc>https://anta.arista.com/main/security-advisory/tests-overview/</loc>
       </url>
       <url>
         <loc>https://anta.arista.com/main/security-advisory/tests/</loc>
-      </url>
-      <url>
-        <loc>https://anta.arista.com/main/security-advisory/reports/</loc>
       </url>
       <url>
         <loc>https://anta.arista.com/main/security-advisory/lab/</loc>
