@@ -3699,11 +3699,7 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/bfd.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span>
-<span class="normal">219</span>
-<span class="normal">220</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">220</span>
 <span class="normal">221</span>
 <span class="normal">222</span>
 <span class="normal">223</span>
@@ -3769,7 +3765,11 @@
 <span class="normal">283</span>
 <span class="normal">284</span>
 <span class="normal">285</span>
-<span class="normal">286</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBFDPeersHealth</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBFDPeersHealth</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Verifies the health of BFD peers across all VRFs.</span>
 
 <span class="sd">    !!! warning</span>
@@ -4085,7 +4085,11 @@
 <span class="normal">210</span>
 <span class="normal">211</span>
 <span class="normal">212</span>
-<span class="normal">213</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBFDPeersIntervals</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBFDPeersIntervals</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Verifies the operational timers of BFD peer sessions.</span>
 
 <span class="sd">    !!! warning</span>
@@ -4173,11 +4177,15 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">bfd_peer</span><span class="si">}</span><span class="s2"> - Not found"</span><span class="p">)</span>
                 <span class="k">continue</span>
 
+            <span class="k">if</span> <span class="p">(</span><span class="n">peer_stats_detail</span> <span class="o">:=</span> <span class="n">peer_stats</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"peerStatsDetail"</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">bfd_peer</span><span class="si">}</span><span class="s2"> - Peer stats detail not found"</span><span class="p">)</span>
+                <span class="k">continue</span>
+
             <span class="c1"># Convert interval timers into milliseconds to be consistent with the inputs</span>
-            <span class="n">act_tx_interval</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">peer_stats</span><span class="p">,</span> <span class="s2">"peerStatsDetail.operTxInterval"</span><span class="p">)</span> <span class="o">//</span> <span class="mi">1000</span>
-            <span class="n">act_rx_interval</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">peer_stats</span><span class="p">,</span> <span class="s2">"peerStatsDetail.operRxInterval"</span><span class="p">)</span> <span class="o">//</span> <span class="mi">1000</span>
-            <span class="n">act_detect_time</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">peer_stats</span><span class="p">,</span> <span class="s2">"peerStatsDetail.detectTime"</span><span class="p">)</span> <span class="o">//</span> <span class="mi">1000</span>
-            <span class="n">act_detect_mult</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">peer_stats</span><span class="p">,</span> <span class="s2">"peerStatsDetail.detectMult"</span><span class="p">)</span>
+            <span class="n">act_tx_interval</span> <span class="o">=</span> <span class="n">peer_stats_detail</span><span class="p">[</span><span class="s2">"operTxInterval"</span><span class="p">]</span> <span class="o">//</span> <span class="mi">1000</span>
+            <span class="n">act_rx_interval</span> <span class="o">=</span> <span class="n">peer_stats_detail</span><span class="p">[</span><span class="s2">"operRxInterval"</span><span class="p">]</span> <span class="o">//</span> <span class="mi">1000</span>
+            <span class="n">act_detect_time</span> <span class="o">=</span> <span class="n">peer_stats_detail</span><span class="p">[</span><span class="s2">"detectTime"</span><span class="p">]</span> <span class="o">//</span> <span class="mi">1000</span>
+            <span class="n">act_detect_mult</span> <span class="o">=</span> <span class="n">peer_stats_detail</span><span class="p">[</span><span class="s2">"detectMult"</span><span class="p">]</span>
 
             <span class="k">if</span> <span class="n">act_tx_interval</span> <span class="o">!=</span> <span class="n">bfd_peer</span><span class="o">.</span><span class="n">tx_interval</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">bfd_peer</span><span class="si">}</span><span class="s2"> - Incorrect Transmit interval - Expected: </span><span class="si">{</span><span class="n">bfd_peer</span><span class="o">.</span><span class="n">tx_interval</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">act_tx_interval</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
@@ -4322,11 +4330,7 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/bfd.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">289</span>
-<span class="normal">290</span>
-<span class="normal">291</span>
-<span class="normal">292</span>
-<span class="normal">293</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">293</span>
 <span class="normal">294</span>
 <span class="normal">295</span>
 <span class="normal">296</span>
@@ -4396,7 +4400,11 @@
 <span class="normal">360</span>
 <span class="normal">361</span>
 <span class="normal">362</span>
-<span class="normal">363</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBFDPeersRegProtocols</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">363</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
+<span class="normal">367</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBFDPeersRegProtocols</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Verifies the registered protocols of BFD peer sessions.</span>
 
 <span class="sd">    !!! warning</span>
