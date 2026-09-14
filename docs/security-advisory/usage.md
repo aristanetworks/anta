@@ -38,7 +38,7 @@ select a report format:
 anta psirt md-report --md-output psirt.md
 ```
 
-![anta psirt Markdown report](../imgs/anta_psirt_mdreport_mdoutput_psirtmd.svg){ class="img_center" loading=lazy width="1600" }
+![anta psirt Markdown report](../imgs/anta-psirt.gif){ class="img_center" loading=lazy width="1171" }
 
 By default, the command runs every test registered in the built-in
 `anta.tests.advisories` catalog.
