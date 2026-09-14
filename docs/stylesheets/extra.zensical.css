@@ -490,6 +490,11 @@ h5.doc-heading {
   color: #2F9E44;
 }
 
+.timeout-sequence-diagram-source ~ .mermaid {
+  display: flex;
+  justify-content: center;
+}
+
 .mermaid-zoom-open {
   background-color: var(--md-code-bg-color);
   border: .05rem solid var(--md-typeset-table-color);
