@@ -66,7 +66,10 @@ class FactDefinition(ABC, Generic[T]):
 
     @classmethod
     def available(cls, value: T, source: FactSource) -> AvailableFact[T]:
-        """Create an available observation of this fact."""
+        """Create an available observation of this fact.
+
+        TODO: Once all fact values are nominal, move available-observation construction onto the fact instance to avoid passing an instance of `cls`.
+        """
         return AvailableFact(definition=cls, value=value, source=source)
 
     @classmethod
