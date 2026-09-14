@@ -105,15 +105,15 @@ The CSV report is intended for programmatic consumption. Each row combines three
 | `Advisory Severity` | Advisory metadata | Highest normalized vulnerability severity: `unknown`, `none`, `low`, `medium`, `high`, or `critical`. | Never; `unknown` represents the absence of a known severity. |
 | `Advisory URL` | Advisory metadata | Published Arista advisory URL. | Never. |
 | `Advisory Description` | Advisory metadata | Published advisory description. | Never. |
-| `Vulnerability ID` | Vulnerability metadata | Published identifier represented by the row. | The detailed result is advisory-wide, or the row is a parent lifecycle row. |
+| `Vulnerability ID` | Vulnerability metadata | Published identifier represented by the row. | The detailed result is advisory-wide or otherwise unassociated with a vulnerability, or the row is a parent lifecycle row. |
 | `Vulnerability Description` | Vulnerability metadata | Published description for `Vulnerability ID`. | `Vulnerability ID` is empty. |
 | `Vulnerability Severity` | Vulnerability metadata | Normalized published severity for `Vulnerability ID`. | `Vulnerability ID` is empty. |
 
 ### CSV value conventions
 
 - `Advisory Result` is repeated on every detailed row; consumers should use it directly instead of deriving a whole-advisory status.
-- A detailed result associated with multiple vulnerabilities is emitted once for each identifier. An advisory-wide detailed result uses empty vulnerability
-  metadata fields.
+- A detailed result associated with multiple vulnerabilities is emitted once for each identifier. An advisory-wide or otherwise unassociated detailed
+  result uses empty vulnerability metadata fields. Parent lifecycle rows also use empty vulnerability metadata fields.
 - Message collections, lines within a remediation plan, and multiple consolidated plans use literal `\n` separators inside CSV cells. Cells are not
   JSON-encoded.
 - Empty message collections, missing remediation plans, and unavailable vulnerability metadata use empty cells.
