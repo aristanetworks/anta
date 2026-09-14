@@ -12,7 +12,10 @@ from anta.cli.get.utils import create_inventory_from_ansible
 
 REPOSITORY_ROOT = Path(__file__).parents[2]
 README_HELP_PATTERN = re.compile(r"^Run the ANTA CLI:\n\n(?P<help>```bash\n.*?^```)", flags=re.DOTALL | re.MULTILINE)
-LOCAL_SVG_PATTERN = re.compile(r"!\[[^]]*\]\((?!https?://)[^)\n]+\.svg\)(?P<attributes>\{[^}\n]*\})?")
+LOCAL_SVG_PATTERN = re.compile(
+    r"!\[[^]]*\]\((?!https?://)[^)\n]+\.svg\)(?P<attributes>\{[^}\n]*\})?"
+    r'|<img(?P<html_attributes>[^>\n]*\bsrc=["\'](?!https?://)[^"\']+\.svg["\'][^>\n]*)>'
+)
 
 
 def test_readme_help_matches_generated_snippet() -> None:
@@ -34,7 +37,7 @@ def test_documentation_svg_images_are_centered() -> None:
             missing_center_class.extend(
                 f"{markdown_path.relative_to(REPOSITORY_ROOT)}:{line_number}"
                 for match in LOCAL_SVG_PATTERN.finditer(line)
-                if 'class="img_center"' not in (match.group("attributes") or "")
+                if 'class="img_center"' not in (match.group("attributes") or match.group("html_attributes") or "")
             )
 
     assert not missing_center_class
