@@ -31,8 +31,8 @@ behavior, and exit handling with [`anta nrfu`](../cli/nrfu.md).
 --8<-- "anta_psirt_help.txt"
 ```
 
-Provide an inventory and credentials as for NRFU, either with command-line
-options or the shared ANTA environment variables. Then select a report format:
+Provide an inventory and credentials as you would for NRFU, using either command-line options or the shared ANTA environment variables. Then
+select a report format:
 
 ```bash
 anta psirt md-report --md-output psirt.md
@@ -58,9 +58,11 @@ anta psirt --test SA117 md-report --md-output sa117.md
 
 Repeat `--test` to assess multiple selected advisories.
 
-PSIRT-specific execution settings can be configured with
-`ANTA_PSIRT_IGNORE_STATUS`, `ANTA_PSIRT_IGNORE_ERROR`, and
-`ANTA_PSIRT_DRY_RUN`.
+PSIRT-specific execution settings can be configured with:
+
+- `ANTA_PSIRT_IGNORE_STATUS`
+- `ANTA_PSIRT_IGNORE_ERROR`
+- `ANTA_PSIRT_DRY_RUN`
 
 The command accepts the shared ANTA environment variables documented in the
 [ANTA CLI overview](../cli/overview.md#anta-environment-variables), except for
