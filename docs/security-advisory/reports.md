@@ -32,13 +32,13 @@ JSON, text, and table reports are not currently implemented for `anta psirt`.
 
 ## Interpret results
 
-| Report result | Where it appears / scope | Meaning | What to do |
+| Report result | Location and scope | Meaning | What to do |
 | --- | --- | --- | --- |
 | 🛑 Affected | Detailed vulnerability result; may determine the whole-advisory result. | The device satisfies the advisory's vulnerability or exposure conditions and is not fully mitigated. Exploitation, compromise, triggering, or indicators of compromise do not need to be observed. | Apply the reported remediation and consult the linked advisory. |
-| ❓ Inconclusive | Detailed vulnerability result; may determine the whole-advisory result. | Device facts indicate possible vulnerability, but a necessary property is not observable under the supported assessment. Collection or parsing failures are errors, not inconclusive results. | Resolve the stated uncertainty and follow the reported remediation. |
-| 🛡️ Mitigated | Detailed vulnerability result; may determine the whole-advisory result. | The device would otherwise be affected, but every exposure is covered by a verified, device-enforced mitigation expressly documented by the advisory. General security practice alone is insufficient. | Preserve the verified control and follow the remaining remediation and advisory guidance. |
-| ✅ Not affected | Detailed vulnerability result; may determine the whole-advisory result. | The device does not satisfy the vulnerability or exposure conditions, for example because it runs a fixed release, uses an excluded platform, or lacks a required feature. Disabling a necessary vulnerable feature is not affected, even if the advisory calls it a mitigation. | No remediation is required by this assessment. |
-| ❗ Error | Either a detailed vulnerability-assessment error or a parent advisory execution/lifecycle error before detailed results exist. | Required device-observable evidence is missing, uncollectable, malformed, or contradictory, or the assessment cannot execute. Neither error scope makes a security claim. | Correct the evidence or execution problem and rerun. Any recovery instructions obtain an assessment; they are not security remediation. |
+| ❓ Inconclusive | Detailed vulnerability result; may determine the whole-advisory result. | Device facts indicate the device may be vulnerable, but a necessary property is not observable under the supported assessment. Collection or parsing failures are errors, not inconclusive results. | Resolve the stated uncertainty and follow the reported remediation. |
+| 🛡️ Mitigated | Detailed vulnerability result; may determine the whole-advisory result. | The device would otherwise be affected, but every exposure is covered by a verified, device-enforced mitigation expressly documented by the advisory. General security practices alone are insufficient. | Preserve the verified control and follow the remaining remediation and advisory guidance. |
+| ✅ Not affected | Detailed vulnerability result; may determine the whole-advisory result. | The device does not satisfy the vulnerability or exposure conditions, for example because it runs a fixed release, uses an excluded platform, or lacks a required feature. Disabling a necessary vulnerable feature produces a not affected result, even if the advisory describes the action as a mitigation. | No remediation is required by this assessment. |
+| ❗ Error | Either a detailed vulnerability-assessment error or a parent advisory execution/lifecycle error before detailed results exist. | Required device-observable evidence is missing, uncollectable, malformed, or contradictory, or the assessment cannot execute. Neither error scope makes a security claim. | Correct the evidence or execution problem and rerun. Any recovery instructions explain how to obtain an assessment; they do not provide security remediation. |
 | ⏭️ Skipped | Lifecycle-only; a parent row appears when no detailed result exists. | The assessment did not run and makes no security claim. | Correct the reported reachability or support condition and rerun. |
 
 ## Understand advisory and vulnerability rows
@@ -61,7 +61,7 @@ execution outcome remain visible. A parent lifecycle row has no vulnerability me
 ## Act on remediation
 
 Affected, mitigated, and inconclusive vulnerability results include a structured plan containing the applicable fixed release, configuration, command,
-or operational action. Follow the plan on each detailed row and consult the linked Arista advisory for newly published fixed releases and current
+or operational action. Follow the plan in each detailed row and consult the linked Arista advisory for newly published fixed releases and current
 mitigation guidance.
 
 ## Markdown report
@@ -105,7 +105,7 @@ The CSV report is intended for programmatic consumption. Each row combines three
 | `Advisory Severity` | Advisory metadata | Highest normalized vulnerability severity: `unknown`, `none`, `low`, `medium`, `high`, or `critical`. | Never; `unknown` represents the absence of a known severity. |
 | `Advisory URL` | Advisory metadata | Published Arista advisory URL. | Never. |
 | `Advisory Description` | Advisory metadata | Published advisory description. | Never. |
-| `Vulnerability ID` | Vulnerability metadata | Published identifier represented by the row. | The result is advisory-wide or is a parent lifecycle row. |
+| `Vulnerability ID` | Vulnerability metadata | Published identifier represented by the row. | The detailed result is advisory-wide, or the row is a parent lifecycle row. |
 | `Vulnerability Description` | Vulnerability metadata | Published description for `Vulnerability ID`. | `Vulnerability ID` is empty. |
 | `Vulnerability Severity` | Vulnerability metadata | Normalized published severity for `Vulnerability ID`. | `Vulnerability ID` is empty. |
 
