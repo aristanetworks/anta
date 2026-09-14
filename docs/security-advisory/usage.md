@@ -31,7 +31,7 @@ behavior, and exit handling with [`anta nrfu`](../cli/nrfu.md).
 --8<-- "anta_psirt_help.txt"
 ```
 
-Provide an inventory and credentials as for NRFU, either with command-line
+Provide an inventory and credentials as you would for NRFU, using either command-line options or the shared ANTA environment variables. Then
 select a report format:
 
 ```bash
