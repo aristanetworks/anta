@@ -113,7 +113,10 @@ class _AntaAdvisoryTest(AntaTest):
         raise ValueError(msg)
 
     def collect_fact(self, fact: Fact[T] | PendingFact[T]) -> Fact[T]:
-        """Collect a pending fact, or return an already collected fact unchanged."""
+        """Collect a pending fact, or return an already collected fact unchanged.
+
+        TODO: Once all advisories use typed `Facts` fields, fold `fact()` into this method and remove the `required_facts` compatibility path.
+        """
         if isinstance(fact, PendingFact):
             return self.fact(fact.definition)
         return fact
