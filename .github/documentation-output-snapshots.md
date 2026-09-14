@@ -25,7 +25,7 @@ uv run --extra cli python docs/scripts/generate_snippet.py \
 
 `--max-results` limits NRFU results before a report is rendered. Use it for long table, text, or JSON examples, but omit it when every result is intentionally visible, such as a small grouped report or a CSV/Markdown example. `--max-lines` limits recorded terminal lines while preserving the final status line; use it for verbose commands whose output is not backed by a `ResultManager`.
 
-The script prints the generated path. Its filename is derived from the complete ANTA command, so update the Markdown image reference if the command changes. Do not hand-edit generated SVG content.
+The script prints the path to the generated file. The filename is derived from the complete ANTA command, so update the Markdown image reference if the command changes. Do not manually edit generated SVG content.
 
 ## Load the documentation lab
 
@@ -45,7 +45,7 @@ source "$ANTA_PRIVATE_DIR/doc_env"
 set +a
 ```
 
-Run captures from the worktree root. For example:
+Run the capture commands from the worktree root. For example:
 
 ```bash
 uv run --extra cli python docs/scripts/generate_snippet.py \
@@ -57,7 +57,7 @@ uv run --extra cli python docs/scripts/generate_snippet.py \
   nrfu --tags leaf table
 ```
 
-Use the command displayed in the target documentation page as the source of truth. Match its device, tag, catalog, and report options exactly. Do not regenerate PSIRT snapshots unless the PSIRT lab is available and its expected advisory state has been confirmed.
+Use the command displayed in the target documentation page as the source of truth. Match its device, tag, catalog, and report options exactly. Do not regenerate PSIRT snapshots unless the PSIRT lab is available and you have confirmed its expected advisory state.
 
 ## Documentation-only custom tests
 
@@ -73,13 +73,13 @@ PYTHONPATH=docs/fixtures uv run --extra cli python docs/scripts/generate_snippet
   nrfu --device dc1-spine1 text
 ```
 
-Keep this implementation detail in maintainer instructions or Markdown source comments; the public custom-test page should explain how custom tests work, not how ANTA's documentation fixture is wired.
+Keep this implementation detail in maintainer instructions or Markdown source comments; the public custom-test page should explain how custom tests work, not how ANTA's documentation fixture is configured.
 
 ## Review and validate
 
 Before committing a regenerated snapshot:
 
-1. Compare it with the command and surrounding explanation on the page.
+1. Compare the snapshot with the command and surrounding explanation on the page.
 2. Confirm the capture contains the command header and final outcome, uses reasonable result or line limits, and does not expose passwords, tokens, private addresses, or unrelated environment details.
 3. Reference local SVGs with `class="img_center"`, `loading=lazy`, and the established page width.
 4. Remove report files produced only as command side effects, but keep the generated SVG under `docs/imgs/`.
