@@ -12,7 +12,7 @@ from typing import ClassVar
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import CollectedFact, Fact, FeatureState, PendingFact, UnavailableFact
+from anta._advisory.facts.models import Fact, FeatureState, PendingFact, UnavailableFact
 from anta._advisory.facts.routing import BfdAuthenticationFact
 from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import AffectedResult, EosReleaseAssessment, ErrorResult, NotAffectedResult, VulnerabilityResult
@@ -59,7 +59,7 @@ ADVISORY = _AdvisoryMetadata(
 VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
-def _assess_sa154(version: CollectedFact[EOSVersion], bfd: CollectedFact[BfdAuthenticationFact]) -> VulnerabilityResult:
+def _assess_sa154(version: Fact[EOSVersion], bfd: Fact[BfdAuthenticationFact]) -> VulnerabilityResult:
     """Assess EOS applicability and configured BFD authentication exposure."""
     if not isinstance(bfd, UnavailableFact) and bfd.value.state is not FeatureState.ENABLED:
         return NotAffectedResult(vulnerability_id=VULNERABILITY_ID, decisive=(bfd,))
@@ -102,8 +102,10 @@ class SA154(OptionalCommandsMixin, _AntaAdvisoryTest):
     class Facts:
         """Typed facts required to assess the advisory."""
 
-        version: Fact[EOSVersion] = PendingFact(EosVersionFact)  # noqa: RUF009  # PendingFact is immutable.
-        bfd_authentication: Fact[BfdAuthenticationFact] = PendingFact(BfdAuthenticationFact)  # noqa: RUF009  # PendingFact is immutable.
+        version: Fact[EOSVersion] | PendingFact[EOSVersion] = PendingFact(EosVersionFact)  # noqa: RUF009  # PendingFact is immutable.
+        bfd_authentication: Fact[BfdAuthenticationFact] | PendingFact[BfdAuthenticationFact] = PendingFact(  # noqa: RUF009
+            BfdAuthenticationFact
+        )
 
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
     description = "Verify whether the device is impacted by Security Advisory 0154."

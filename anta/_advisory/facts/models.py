@@ -76,7 +76,7 @@ class FactDefinition(ABC, Generic[T]):
 
     @classmethod
     @abstractmethod
-    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> CollectedFact[T]:
+    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[T]:
         """Derive this fact from its declared source."""
 
     @classmethod
@@ -119,8 +119,7 @@ class PendingFact(Generic[T]):
     definition: type[FactDefinition[T]]
 
 
-CollectedFact: TypeAlias = AvailableFact[T] | UnavailableFact[T]
-Fact: TypeAlias = PendingFact[T] | CollectedFact[T]
+Fact: TypeAlias = AvailableFact[T] | UnavailableFact[T]
 
 
 class CommandsFactDefinition(FactDefinition[T], ABC):
@@ -134,7 +133,7 @@ class CommandsFactDefinition(FactDefinition[T], ABC):
         return cls.commands
 
     @classmethod
-    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> CollectedFact[T]:
+    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[T]:
         """Validate the collected commands and normalize their output."""
         _ = device
         if len(commands) != len(cls.commands) or any(command.uid != declared.uid for command, declared in zip(commands, cls.commands, strict=True)):
@@ -144,7 +143,7 @@ class CommandsFactDefinition(FactDefinition[T], ABC):
 
     @classmethod
     @abstractmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[T]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[T]:
         """Normalize the collected outputs for this fact."""
 
 

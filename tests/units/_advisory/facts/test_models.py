@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 import pytest
 
 from anta._advisory.facts.models import (
-    CollectedFact,
+    Fact,
     FactDefinition,
     FactProblemKind,
     FactSource,
@@ -33,7 +33,7 @@ class ExampleFactDefinition(FactDefinition[FeatureValue]):
     label = "Example feature"
 
     @classmethod
-    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> CollectedFact[FeatureValue]:
+    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[FeatureValue]:
         """Return a stable value; derivation details are outside these model tests."""
         _ = device, commands
         return cls.available(ENABLED, SOURCE)

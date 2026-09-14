@@ -15,7 +15,7 @@ from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnsiAcctzFact, GnsiAuthzFact
 from anta._advisory.facts.models import (
-    CollectedFact,
+    Fact,
     FactProblemKind,
     FactSource,
     FactSourceKind,
@@ -126,7 +126,7 @@ DATA: AntaUnitTestData = {
 }
 
 
-def version_fact(value: str) -> CollectedFact[EOSVersion]:
+def version_fact(value: str) -> Fact[EOSVersion]:
     """Build an EOS version fact."""
     parsed = parse_eos_version(value).unwrap()
     return EosVersionFact.available(parsed, SOURCE)

@@ -14,7 +14,7 @@ from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.models import (
     AvailableFact,
-    CollectedFact,
+    Fact,
     FactProblemKind,
     FactSource,
     FactSourceKind,
@@ -211,7 +211,7 @@ DATA: AntaUnitTestData = {
 }
 
 
-def version_fact(version: str | None) -> CollectedFact[EOSVersion]:
+def version_fact(version: str | None) -> Fact[EOSVersion]:
     """Build an EOS version fact for assessment tests."""
     if version is None:
         return EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)

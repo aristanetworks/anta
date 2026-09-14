@@ -13,7 +13,7 @@ import pytest
 
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import AvailableFact, CollectedFact, CommandsFactDefinition, Fact, FactDefinition, FactSource, FactSourceKind, PendingFact
+from anta._advisory.facts.models import AvailableFact, CommandsFactDefinition, Fact, FactDefinition, FactSource, FactSourceKind, PendingFact
 from anta._advisory.optional_commands import OptionalAntaCommand
 from anta._advisory.results import _AdvisoryTestResult, _get_advisory_metadata
 from anta._eos.version import parse_eos_version
@@ -46,7 +46,7 @@ class FakeCommandFact(CommandsFactDefinition[str]):
     commands = (AntaCommand(command="show fake", revision=1),)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> CollectedFact[str]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[str]:
         """Return the fake value from the collected command."""
         (command,) = commands
         return cls.available(str(command.json_output["value"]), FactSource(command.command, FactSourceKind.COMMAND))
@@ -72,7 +72,7 @@ class PendingFactAdvisoryTest(_AntaAdvisoryTest):
     class Facts:
         """Typed facts required by the fake advisory."""
 
-        value: Fact[str] = PendingFact(FakeCommandFact)  # noqa: RUF009  # PendingFact is immutable.
+        value: Fact[str] | PendingFact[str] = PendingFact(FakeCommandFact)  # noqa: RUF009  # PendingFact is immutable.
 
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
 

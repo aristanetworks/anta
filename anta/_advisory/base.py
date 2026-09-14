@@ -19,7 +19,7 @@ else:
     from typing_extensions import override
 
 if TYPE_CHECKING:
-    from anta._advisory.facts.models import CollectedFact, Fact, FactDefinition
+    from anta._advisory.facts.models import Fact, FactDefinition
 
 T = TypeVar("T")
 
@@ -99,7 +99,7 @@ class _AntaAdvisoryTest(AntaTest):
         """Return the commands needed by the required facts in declaration order."""
         return [command for definition in required_facts for command in definition.required_commands()]
 
-    def fact(self, definition: type[FactDefinition[T]]) -> CollectedFact[T]:
+    def fact(self, definition: type[FactDefinition[T]]) -> Fact[T]:
         """Derive one required fact from device metadata or collected command data."""
         command_offset = 0
         for candidate in self.required_facts:
@@ -112,7 +112,7 @@ class _AntaAdvisoryTest(AntaTest):
         msg = f"Fact '{definition.key}' is not listed in required_facts for {self.__class__.__name__}"
         raise ValueError(msg)
 
-    def collect_fact(self, fact: Fact[T]) -> CollectedFact[T]:
+    def collect_fact(self, fact: Fact[T] | PendingFact[T]) -> Fact[T]:
         """Collect a pending fact, or return an already collected fact unchanged."""
         if isinstance(fact, PendingFact):
             return self.fact(fact.definition)
