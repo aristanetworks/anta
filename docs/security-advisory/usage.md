@@ -32,7 +32,7 @@ behavior, and exit handling with [`anta nrfu`](../cli/nrfu.md).
 ```
 
 Provide an inventory and credentials as for NRFU, either with command-line
-options or the shared ANTA environment variables. Then select a report format:
+select a report format:
 
 ```bash
 anta psirt md-report --md-output psirt.md
