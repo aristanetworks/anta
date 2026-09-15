@@ -334,6 +334,13 @@ class FeatureFact:
     feature: ClassVar[FeatureRef]
     state: FeatureState
 
+    def __init_subclass__(cls) -> None:
+        """Require every feature-fact subclass to expose a valid identity."""
+        super().__init_subclass__()
+        if not isinstance(getattr(cls, "feature", None), (FeatureName, SubFeature)):
+            msg = f"Class {cls.__module__}.{cls.__qualname__} must define 'feature' as a FeatureName or SubFeature"
+            raise TypeError(msg)
+
 
 @dataclass(frozen=True, slots=True)
 class FeatureValue:

@@ -18,6 +18,7 @@ from anta._advisory.facts.models import (
     FactsBase,
     FactSource,
     FactSourceKind,
+    FeatureFact,
     FeatureName,
     FeatureState,
     FeatureValue,
@@ -132,6 +133,14 @@ def test_fact_definition_constructs_available_and_unavailable_facts() -> None:
     assert unavailable.definition is DEFINITION
     assert unavailable.problem is FactProblemKind.MISSING
     assert unavailable.source is SOURCE
+
+
+def test_feature_fact_requires_feature_identity() -> None:
+    """Reject nominal feature facts without a runtime feature identity."""
+    with pytest.raises(TypeError, match="must define 'feature' as a FeatureName or SubFeature"):
+
+        class MissingFeatureFact(FeatureFact):
+            """Feature fact missing its required class-level identity."""
 
 
 def test_contradictory_fact_retains_observations() -> None:
