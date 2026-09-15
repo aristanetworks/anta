@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import TYPE_CHECKING, Any, TypeAlias
+from typing import TYPE_CHECKING, Any, Generic, TypeAlias, TypeVar
 
 from anta._advisory.facts.models import (
     AvailableFact,
@@ -34,6 +34,8 @@ if TYPE_CHECKING:
     from anta._advisory.remediation import RemediationPlan
     from anta._eos.platform import PlatformComponentIdentity, PlatformIdentity
     from anta._eos.version import EOSVersion
+
+FeatureFactT = TypeVar("FeatureFactT", bound=FeatureFact | FeatureValue)
 
 
 class VersionRelation(str, Enum):
@@ -86,7 +88,7 @@ class AffectedIndicator(AvailableFact[IndicatorValue]):
 
 
 @dataclass(frozen=True, slots=True)
-class AffectedFeatureState(AvailableFact[FeatureValue]):
+class AffectedFeatureState(AvailableFact[FeatureFactT], Generic[FeatureFactT]):
     """A feature state explicitly classified as an affected condition."""
 
 
@@ -114,7 +116,7 @@ ExposureFact: TypeAlias = (
     | AvailableFact[CredentialSyntaxValue]
 )
 MitigationEvidence: TypeAlias = AvailableFact[MitigationFact | MitigationValue]
-MitigatableCondition: TypeAlias = AffectedEosRelease | AffectedComponentVersion | AffectedFeatureState | AffectedIndicator | ExposureFact
+MitigatableCondition: TypeAlias = AffectedEosRelease | AffectedComponentVersion | AffectedFeatureState[Any] | AffectedIndicator | ExposureFact
 AffectedCondition: TypeAlias = MitigatableCondition | MitigationEvidence
 VersionAssessment: TypeAlias = EosReleaseAssessment | ComponentVersionAssessment
 FindingEvidence: TypeAlias = VersionAssessment | PlatformAssessment | ExposureFact | AvailableFact[IndicatorValue] | MitigationEvidence

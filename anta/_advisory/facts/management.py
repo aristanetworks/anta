@@ -10,6 +10,7 @@ import re
 import shlex
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
+from typing import ClassVar
 
 from anta._advisory.facts.models import (
     CommandsFactDefinition,
@@ -21,7 +22,9 @@ from anta._advisory.facts.models import (
     FactProblemKind,
     FactSource,
     FactSourceKind,
+    FeatureFact,
     FeatureName,
+    FeatureRef,
     FeatureState,
     FeatureValue,
     MitigationState,
@@ -396,21 +399,22 @@ class SnmpV3CredentialSyntaxFact(CommandsFactDefinition[CredentialSyntaxValue]):
         return cls.available(CredentialSyntaxValue(feature, state), source)
 
 
-class GnsiTransportFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class GnsiTransportFact(FeatureFact, CommandsFactDefinition["GnsiTransportFact"]):
     """Effective gNSI transport state."""
 
-    key = "feature.gnsi.transport"
-    label = "gNSI transport state"
-    commands = (GNSI_COMMAND,)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.GNSI, "transport")
+    key: ClassVar[str] = "feature.gnsi.transport"
+    label: ClassVar[str] = "gNSI transport state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (GNSI_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[GnsiTransportFact]:
         """Normalize whether at least one configured gNSI transport is enabled."""
         (command,) = commands
         source = _feature_source(command)
-        feature = SubFeature(FeatureName.GNSI, "transport")
         if is_unsupported_optional_command(command):
-            return cls.available(FeatureValue(feature, FeatureState.UNSUPPORTED), source)
+            return cls.available(cls(FeatureState.UNSUPPORTED), source)
 
         transports = command.json_output.get("transports")
         if transports is None:
@@ -424,24 +428,25 @@ class GnsiTransportFact(CommandsFactDefinition[FeatureValue]):
                 return cls.unavailable(FactProblemKind.MALFORMED, source)
             enabled = enabled or transport_enabled
         state = FeatureState.ENABLED if enabled else FeatureState.DISABLED
-        return cls.available(FeatureValue(feature, state), source)
+        return cls.available(cls(state), source)
 
 
-class GnsiMultipleTransportsFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class GnsiMultipleTransportsFact(FeatureFact, CommandsFactDefinition["GnsiMultipleTransportsFact"]):
     """Presence of at least two enabled gNSI transports."""
 
-    key = "feature.gnsi.multiple_transports"
-    label = "gNSI multiple-transport state"
-    commands = (GNSI_COMMAND,)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.GNSI, "multiple-transport mode")
+    key: ClassVar[str] = "feature.gnsi.multiple_transports"
+    label: ClassVar[str] = "gNSI multiple-transport state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (GNSI_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[GnsiMultipleTransportsFact]:
         """Normalize whether at least two configured gNSI transports are enabled."""
         (command,) = commands
         source = _feature_source(command)
-        feature = SubFeature(FeatureName.GNSI, "multiple-transport mode")
         if is_unsupported_optional_command(command):
-            return cls.available(FeatureValue(feature, FeatureState.UNSUPPORTED), source)
+            return cls.available(cls(FeatureState.UNSUPPORTED), source)
 
         transports = command.json_output.get("transports")
         if transports is None:
@@ -455,24 +460,25 @@ class GnsiMultipleTransportsFact(CommandsFactDefinition[FeatureValue]):
                 return cls.unavailable(FactProblemKind.MALFORMED, source)
             enabled_count += transport_enabled
         state = FeatureState.ENABLED if enabled_count >= MIN_ENABLED_GNSI_TRANSPORTS else FeatureState.DISABLED
-        return cls.available(FeatureValue(feature, state), source)
+        return cls.available(cls(state), source)
 
 
-class GnsiCertzFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class GnsiCertzFact(FeatureFact, CommandsFactDefinition["GnsiCertzFact"]):
     """Effective gNSI Certz service state."""
 
-    key = "feature.gnsi.certz"
-    label = "gNSI Certz service state"
-    commands = (GNSI_COMMAND,)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.GNSI, "Certz service")
+    key: ClassVar[str] = "feature.gnsi.certz"
+    label: ClassVar[str] = "gNSI Certz service state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (GNSI_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[GnsiCertzFact]:
         """Normalize the top-level Certz enablement flag."""
         (command,) = commands
         source = _feature_source(command)
-        feature = SubFeature(FeatureName.GNSI, "Certz service")
         if is_unsupported_optional_command(command):
-            return cls.available(FeatureValue(feature, FeatureState.UNSUPPORTED), source)
+            return cls.available(cls(FeatureState.UNSUPPORTED), source)
 
         enabled = command.json_output.get("certzEnabled")
         if enabled is None:
@@ -480,7 +486,7 @@ class GnsiCertzFact(CommandsFactDefinition[FeatureValue]):
         if not isinstance(enabled, bool):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         state = FeatureState.ENABLED if enabled else FeatureState.DISABLED
-        return cls.available(FeatureValue(feature, state), source)
+        return cls.available(cls(state), source)
 
 
 class GnsiCredentialzFact(CommandsFactDefinition[FeatureValue]):
@@ -507,21 +513,22 @@ class GnsiCredentialzFact(CommandsFactDefinition[FeatureValue]):
         return cls.available(FeatureValue(feature, state), source)
 
 
-class GnsiAuthzFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class GnsiAuthzFact(FeatureFact, CommandsFactDefinition["GnsiAuthzFact"]):
     """Effective gNSI Authz service state."""
 
-    key = "feature.gnsi.authz"
-    label = "gNSI Authz service state"
-    commands = (GNSI_COMMAND,)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.GNSI, "Authz service")
+    key: ClassVar[str] = "feature.gnsi.authz"
+    label: ClassVar[str] = "gNSI Authz service state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (GNSI_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[GnsiAuthzFact]:
         """Normalize the top-level Authz enablement flag."""
         (command,) = commands
         source = _feature_source(command)
-        feature = SubFeature(FeatureName.GNSI, "Authz service")
         if is_unsupported_optional_command(command):
-            return cls.available(FeatureValue(feature, FeatureState.UNSUPPORTED), source)
+            return cls.available(cls(FeatureState.UNSUPPORTED), source)
 
         enabled = command.json_output.get("authzEnabled")
         if enabled is None:
@@ -529,31 +536,32 @@ class GnsiAuthzFact(CommandsFactDefinition[FeatureValue]):
         if not isinstance(enabled, bool):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         state = FeatureState.ENABLED if enabled else FeatureState.DISABLED
-        return cls.available(FeatureValue(feature, state), source)
+        return cls.available(cls(state), source)
 
 
-class GnsiAcctzFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class GnsiAcctzFact(FeatureFact, CommandsFactDefinition["GnsiAcctzFact"]):
     """Effective gNSI Acctz service state."""
 
-    key = "feature.gnsi.acctz"
-    label = "gNSI Acctz service state"
-    commands = (GNSI_COMMAND,)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.GNSI, "Acctz service")
+    key: ClassVar[str] = "feature.gnsi.acctz"
+    label: ClassVar[str] = "gNSI Acctz service state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (GNSI_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[GnsiAcctzFact]:
         """Normalize the top-level Acctz enablement flag."""
         (command,) = commands
         source = _feature_source(command)
-        feature = SubFeature(FeatureName.GNSI, "Acctz service")
         if is_unsupported_optional_command(command):
-            return cls.available(FeatureValue(feature, FeatureState.UNSUPPORTED), source)
+            return cls.available(cls(FeatureState.UNSUPPORTED), source)
         enabled = command.json_output.get("acctzEnabled")
         if enabled is None:
             return cls.unavailable(FactProblemKind.MISSING, source)
         if not isinstance(enabled, bool):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         state = FeatureState.ENABLED if enabled else FeatureState.DISABLED
-        return cls.available(FeatureValue(feature, state), source)
+        return cls.available(cls(state), source)
 
 
 class GnsiPathzFact(CommandsFactDefinition[FeatureValue]):

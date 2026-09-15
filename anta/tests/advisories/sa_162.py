@@ -6,13 +6,13 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import Any, ClassVar, cast
+from typing import ClassVar, cast
 
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnsiCertzFact, GnsiTransportFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
+from anta._advisory.facts.models import AvailableFact, Fact, FactsBase, FeatureState, UnavailableFact, fact_field, facts_dataclass
 from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import (
     AffectedResult,
@@ -69,8 +69,8 @@ VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 def _assess_sa162(
     version: Fact[EOSVersion],
-    transport: Fact[FeatureValue],
-    certz: Fact[FeatureValue],
+    transport: Fact[GnsiTransportFact],
+    certz: Fact[GnsiCertzFact],
 ) -> VulnerabilityResult:
     """Assess the Certz and historical Bootz exposure from normalized facts."""
     eos_release = assess_eos_scope(VULNERABILITY_ID, version, AFFECTED_VERSION_MATRIX)
@@ -97,8 +97,8 @@ def _assess_sa162(
     if problems:
         return ErrorResult(vulnerability_id=VULNERABILITY_ID, problems=problems)
 
-    available_transport = cast("AvailableFact[FeatureValue]", transport)
-    available_certz = cast("AvailableFact[FeatureValue]", certz)
+    available_transport = cast("AvailableFact[GnsiTransportFact]", transport)
+    available_certz = cast("AvailableFact[GnsiCertzFact]", certz)
     return AffectedResult(
         vulnerability_id=VULNERABILITY_ID,
         context=(version_context,),
@@ -126,19 +126,23 @@ class SA162(OptionalCommandsMixin, _AntaAdvisoryTest):
     ```
     """
 
+    @facts_dataclass
+    class Facts(FactsBase):
+        """Collected facts required to assess the advisory."""
+
+        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        transport: Fact[GnsiTransportFact] = fact_field(GnsiTransportFact)
+        certz: Fact[GnsiCertzFact] = fact_field(GnsiCertzFact)
+
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
-    required_facts: ClassVar[tuple[type[FactDefinition[Any]], ...]] = (EosVersionFact, GnsiTransportFact, GnsiCertzFact)
     description = "Verify whether the device is impacted by Security Advisory 0162."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
         """Derive the declared facts, assess the vulnerability, and project it."""
-        finding = _assess_sa162(
-            self.fact(EosVersionFact),
-            self.fact(GnsiTransportFact),
-            self.fact(GnsiCertzFact),
-        )
+        facts = self.Facts.collect(self)
+        finding = _assess_sa162(facts.version, facts.transport, facts.certz)
         atomic_result = self.result.add(
             f"Verify {VULNERABILITY_ID}.",
             vulnerability_ids=(VULNERABILITY_ID,),

@@ -9,12 +9,12 @@ from __future__ import annotations
 
 import unittest
 from functools import partial
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnsiAuthzFact, GnsiMultipleTransportsFact, GnsiTransportFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactProblemKind, FactSource, FactSourceKind, FeatureName, FeatureState, FeatureValue, SubFeature
+from anta._advisory.facts.models import AvailableFact, Fact, FactProblemKind, FactSource, FactSourceKind, FeatureState
 from anta._advisory.findings.models import AffectedResult, ErrorResult, InconclusiveResult, NotAffectedResult
 from anta._advisory.remediation import FixedRelease, software_version_plan
 from anta._eos.version import EOSVersion, parse_eos_version
@@ -22,6 +22,8 @@ from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_169 import ADVISORY, AFFECTED_VERSION_MATRIX, SA169, _assess_sa169
 from tests.units.anta_tests import build_eos_version, test
 from tests.units.anta_tests.advisories import build_expected_advisory_result
+
+GnsiFactT = TypeVar("GnsiFactT", GnsiTransportFact, GnsiMultipleTransportsFact, GnsiAuthzFact)
 
 if TYPE_CHECKING:
     from tests.units.anta_tests import AntaUnitTestData
@@ -103,10 +105,9 @@ def version_fact(value: str) -> Fact[EOSVersion]:
     return EosVersionFact.available(parsed, SOURCE)
 
 
-def feature_fact(definition: type[GnsiTransportFact | GnsiMultipleTransportsFact | GnsiAuthzFact], state: FeatureState) -> AvailableFact[FeatureValue]:
+def feature_fact(definition: type[GnsiFactT], state: FeatureState) -> AvailableFact[GnsiFactT]:
     """Build one gNSI feature fact."""
-    name = "transport" if definition is GnsiTransportFact else "multiple-transport mode" if definition is GnsiMultipleTransportsFact else "Authz service"
-    return definition.available(FeatureValue(SubFeature(FeatureName.GNSI, name), state), SOURCE)
+    return cast("AvailableFact[GnsiFactT]", definition.available(cast("GnsiFactT", definition(state)), SOURCE))
 
 
 class TestSA169Assessment(unittest.TestCase):
