@@ -7,19 +7,21 @@ from __future__ import annotations
 
 import re
 from collections.abc import Mapping, Sequence
-from typing import TYPE_CHECKING, ClassVar
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, ClassVar, Generic, TypeVar, cast
 
 from anta._advisory.facts.models import (
     CommandsFactDefinition,
+    ConfigurationFact,
     ConfigurationState,
-    ConfigurationValue,
     Fact,
     FactProblemKind,
     FactSource,
     FactSourceKind,
     FeatureName,
+    FeatureRef,
+    MitigationFact,
     MitigationState,
-    MitigationValue,
     SubFeature,
 )
 from anta._advisory.optional_commands import OptionalAntaCommand, is_unsupported_optional_command
@@ -206,117 +208,124 @@ def _has_segment_security_redirect(output: object) -> bool | None:
     return False
 
 
-class RedirectConfigurationFact(CommandsFactDefinition[ConfigurationValue]):
+RedirectFactT = TypeVar("RedirectFactT", bound=ConfigurationFact)
+
+
+class RedirectConfigurationFact(CommandsFactDefinition[RedirectFactT], Generic[RedirectFactT]):
     """Base fact for one next-hop redirection path."""
 
-    path_name: ClassVar[str]
-
     @classmethod
-    def configured(cls, command: AntaCommand, *, state: bool | None) -> Fact[ConfigurationValue]:
+    def configured(cls, command: AntaCommand, *, state: bool | None) -> Fact[RedirectFactT]:
         """Build a normalized configured state from one parser result."""
         source = FactSource(command.command, FactSourceKind.COMMAND)
-        feature = SubFeature(FeatureName.NEXT_HOP_REDIRECTION, f"path using {cls.path_name}")
+        typed_cls = cast("type[ConfigurationFact]", cls)
         if is_unsupported_optional_command(command):
-            return cls.available(ConfigurationValue(feature, ConfigurationState.NOT_CONFIGURED), source)
+            return cls.available(cast("RedirectFactT", typed_cls(ConfigurationState.NOT_CONFIGURED)), source)
         if state is None:
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         value = ConfigurationState.CONFIGURED if state else ConfigurationState.NOT_CONFIGURED
-        return cls.available(ConfigurationValue(feature, value), source)
+        return cls.available(cast("RedirectFactT", typed_cls(value)), source)
 
 
-class PbrRedirectFact(RedirectConfigurationFact):
+@dataclass(frozen=True, slots=True)
+class PbrRedirectFact(ConfigurationFact, RedirectConfigurationFact["PbrRedirectFact"]):
     """Policy-Based Routing next-hop redirection configuration."""
 
-    key = "configuration.redirect.pbr"
-    label = "Policy-Based Routing redirect configuration"
-    path_name = "Policy-Based Routing"
-    commands = (OptionalAntaCommand(command="show policy-map type pbr", revision=1),)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.NEXT_HOP_REDIRECTION, "path using Policy-Based Routing")
+    key: ClassVar[str] = "configuration.redirect.pbr"
+    label: ClassVar[str] = "Policy-Based Routing redirect configuration"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (OptionalAntaCommand(command="show policy-map type pbr", revision=1),)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[ConfigurationValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[PbrRedirectFact]:
         (command,) = commands
         if is_unsupported_optional_command(command):
             return cls.configured(command, state=False)
         return cls.configured(command, state=_has_pbr_redirect(command.json_output))
 
 
-class FlowSpecRedirectFact(RedirectConfigurationFact):
+@dataclass(frozen=True, slots=True)
+class FlowSpecRedirectFact(ConfigurationFact, RedirectConfigurationFact["FlowSpecRedirectFact"]):
     """BGP FlowSpec next-hop redirection configuration."""
 
-    key = "configuration.redirect.flowspec"
-    label = "BGP FlowSpec redirect configuration"
-    path_name = "BGP FlowSpec"
-    commands = (OptionalAntaCommand(command="show flow-spec ipv4", ofmt="text"),)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.NEXT_HOP_REDIRECTION, "path using BGP FlowSpec")
+    key: ClassVar[str] = "configuration.redirect.flowspec"
+    label: ClassVar[str] = "BGP FlowSpec redirect configuration"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (OptionalAntaCommand(command="show flow-spec ipv4", ofmt="text"),)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[ConfigurationValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FlowSpecRedirectFact]:
         (command,) = commands
         if is_unsupported_optional_command(command):
             return cls.configured(command, state=False)
         return cls.configured(command, state=_has_flowspec_redirect(command.text_output))
 
 
-class TrafficPolicyRedirectFact(RedirectConfigurationFact):
+@dataclass(frozen=True, slots=True)
+class TrafficPolicyRedirectFact(ConfigurationFact, RedirectConfigurationFact["TrafficPolicyRedirectFact"]):
     """Traffic Policy next-hop redirection configuration."""
 
-    key = "configuration.redirect.traffic_policy"
-    label = "Traffic Policy redirect configuration"
-    path_name = "Traffic Policy"
-    commands = (OptionalAntaCommand(command="show traffic-policy interface", revision=1),)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.NEXT_HOP_REDIRECTION, "path using Traffic Policy")
+    key: ClassVar[str] = "configuration.redirect.traffic_policy"
+    label: ClassVar[str] = "Traffic Policy redirect configuration"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (OptionalAntaCommand(command="show traffic-policy interface", revision=1),)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[ConfigurationValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[TrafficPolicyRedirectFact]:
         (command,) = commands
         if is_unsupported_optional_command(command):
             return cls.configured(command, state=False)
         return cls.configured(command, state=_has_traffic_policy_redirect(command.json_output))
 
 
-class DirectFlowRedirectFact(RedirectConfigurationFact):
+@dataclass(frozen=True, slots=True)
+class DirectFlowRedirectFact(ConfigurationFact, RedirectConfigurationFact["DirectFlowRedirectFact"]):
     """DirectFlow next-hop redirection configuration."""
 
-    key = "configuration.redirect.directflow"
-    label = "DirectFlow redirect configuration"
-    path_name = "DirectFlow"
-    commands = (OptionalAntaCommand(command="show directflow detail", ofmt="text"),)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.NEXT_HOP_REDIRECTION, "path using DirectFlow")
+    key: ClassVar[str] = "configuration.redirect.directflow"
+    label: ClassVar[str] = "DirectFlow redirect configuration"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (OptionalAntaCommand(command="show directflow detail", ofmt="text"),)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[ConfigurationValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[DirectFlowRedirectFact]:
         (command,) = commands
         if is_unsupported_optional_command(command):
             return cls.configured(command, state=False)
         return cls.configured(command, state=_has_directflow_redirect(command.text_output))
 
 
-class SegmentSecurityRedirectFact(RedirectConfigurationFact):
+@dataclass(frozen=True, slots=True)
+class SegmentSecurityRedirectFact(ConfigurationFact, RedirectConfigurationFact["SegmentSecurityRedirectFact"]):
     """Segment Security next-hop redirection configuration."""
 
-    key = "configuration.redirect.segment_security"
-    label = "Segment Security redirect configuration"
-    path_name = "Segment Security"
-    commands = (OptionalAntaCommand(command="show segment-security policy", revision=1),)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.NEXT_HOP_REDIRECTION, "path using Segment Security")
+    key: ClassVar[str] = "configuration.redirect.segment_security"
+    label: ClassVar[str] = "Segment Security redirect configuration"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (OptionalAntaCommand(command="show segment-security policy", revision=1),)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[ConfigurationValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[SegmentSecurityRedirectFact]:
         (command,) = commands
         if is_unsupported_optional_command(command):
             return cls.configured(command, state=False)
         return cls.configured(command, state=_has_segment_security_redirect(command.json_output))
 
 
-class MtuDropMitigationFact(CommandsFactDefinition[MitigationValue]):
+@dataclass(frozen=True, slots=True)
+class MtuDropMitigationFact(MitigationFact, CommandsFactDefinition["MtuDropMitigationFact"]):
     """Required MTU-exceed drop control."""
 
-    key = "mitigation.forwarding.mtu_exceed_drop"
-    label = "MTU-exceed drop control"
-    commands = (OptionalAntaCommand(command=MTU_DROP_SHOW_COMMAND, ofmt="text"),)
+    key: ClassVar[str] = "mitigation.forwarding.mtu_exceed_drop"
+    label: ClassVar[str] = "MTU-exceed drop control"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (OptionalAntaCommand(command=MTU_DROP_SHOW_COMMAND, ofmt="text"),)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[MitigationValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[MtuDropMitigationFact]:
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
         if is_unsupported_optional_command(command):
             return cls.unavailable(FactProblemKind.UNSUPPORTED, source)
         configured = any(line.strip() == MTU_DROP_COMMAND for line in command.text_output.splitlines())
         state = MitigationState.EFFECTIVE if configured else MitigationState.INEFFECTIVE
-        return cls.available(MitigationValue(state), source)
+        return cls.available(cls(state), source)
