@@ -9,6 +9,7 @@ import re
 from collections.abc import Mapping
 from dataclasses import dataclass
 from enum import Enum
+from typing import ClassVar
 
 from anta._advisory.facts.models import (
     CommandsFactDefinition,
@@ -16,11 +17,12 @@ from anta._advisory.facts.models import (
     FactProblemKind,
     FactSource,
     FactSourceKind,
+    FeatureFact,
     FeatureName,
+    FeatureRef,
     FeatureState,
-    FeatureValue,
+    MitigationFact,
     MitigationState,
-    MitigationValue,
     SubFeature,
 )
 from anta._advisory.optional_commands import OptionalAntaCommand, is_unsupported_optional_command
@@ -113,77 +115,82 @@ def _vrrp_state(config: str) -> tuple[bool, bool]:
     return configured, exposed
 
 
-class VrrpFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class VrrpFact(FeatureFact, CommandsFactDefinition["VrrpFact"]):
     """Presence of at least one configured VRRPv2 or VRRPv3 virtual router."""
 
-    key = "feature.vrrp"
-    label = "VRRP feature state"
-    commands = (VRRP_CONFIG_COMMAND,)
+    feature: ClassVar[FeatureRef] = FeatureName.VRRP
+    key: ClassVar[str] = "feature.vrrp"
+    label: ClassVar[str] = "VRRP feature state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (VRRP_CONFIG_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[VrrpFact]:
         """Normalize VRRP presence from its configuration section."""
         (command,) = commands
         configured, _ = _vrrp_state(command.text_output)
         state = FeatureState.ENABLED if configured else FeatureState.DISABLED
-        return cls.available(FeatureValue(FeatureName.VRRP, state), _source(command))
+        return cls.available(cls(state), _source(command))
 
 
-class VrrpV2IpAhFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class VrrpV2IpAhFact(FeatureFact, CommandsFactDefinition["VrrpV2IpAhFact"]):
     """Presence of VRRPv2 IP-AH authentication on one virtual router."""
 
-    key = "feature.vrrp.v2_ip_ah"
-    label = "VRRPv2 IP-AH authentication state"
-    commands = (VRRP_CONFIG_COMMAND,)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.VRRP, "version 2 IP-AH authentication")
+    key: ClassVar[str] = "feature.vrrp.v2_ip_ah"
+    label: ClassVar[str] = "VRRPv2 IP-AH authentication state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (VRRP_CONFIG_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[VrrpV2IpAhFact]:
         """Correlate VRRP version and IP-AH authentication by interface and virtual-router ID."""
         (command,) = commands
         _, exposed = _vrrp_state(command.text_output)
-        feature = SubFeature(FeatureName.VRRP, "version 2 IP-AH authentication")
         state = FeatureState.ENABLED if exposed else FeatureState.DISABLED
-        return cls.available(FeatureValue(feature, state), _source(command))
+        return cls.available(cls(state), _source(command))
 
 
-class VrrpAntiReplayFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class VrrpAntiReplayFact(FeatureFact, CommandsFactDefinition["VrrpAntiReplayFact"]):
     """Presence of the global VRRP authentication anti-replay setting."""
 
-    key = "feature.vrrp.authentication_anti_replay"
-    label = "VRRP authentication anti-replay state"
-    commands = (VRRP_ANTI_REPLAY_COMMAND,)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.VRRP, "authentication anti-replay")
+    key: ClassVar[str] = "feature.vrrp.authentication_anti_replay"
+    label: ClassVar[str] = "VRRP authentication anti-replay state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (VRRP_ANTI_REPLAY_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[VrrpAntiReplayFact]:
         """Normalize the exact global configuration line."""
         (command,) = commands
         lines = tuple(line.strip() for line in command.text_output.splitlines() if line.strip())
         if any(line != "vrrp ipv4 authentication anti-replay" for line in lines):
             return cls.unavailable(FactProblemKind.MALFORMED, _source(command))
-        feature = SubFeature(FeatureName.VRRP, "authentication anti-replay")
         state = FeatureState.ENABLED if lines else FeatureState.DISABLED
-        return cls.available(FeatureValue(feature, state), _source(command))
+        return cls.available(cls(state), _source(command))
 
 
-class DhcpRelayActiveFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class DhcpRelayActiveFact(FeatureFact, CommandsFactDefinition["DhcpRelayActiveFact"]):
     """Effective DHCP relay state with at least one helper address."""
 
-    key = "feature.dhcp.relay"
-    label = "DHCP relay state"
-    commands = (DHCP_RELAY_COMMAND,)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.DHCP, "relay")
+    key: ClassVar[str] = "feature.dhcp.relay"
+    label: ClassVar[str] = "DHCP relay state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (DHCP_RELAY_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[DhcpRelayActiveFact]:
         """Normalize the structured relay activity state."""
         (command,) = commands
         source = _source(command)
-        feature = SubFeature(FeatureName.DHCP, "relay")
         if is_unsupported_optional_command(command):
-            return cls.available(FeatureValue(feature, FeatureState.UNSUPPORTED), source)
+            return cls.available(cls(FeatureState.UNSUPPORTED), source)
         active = _required_bool(command.json_output, "activeState")
         if isinstance(active, FactProblemKind):
             return cls.unavailable(active, source)
-        return cls.available(FeatureValue(feature, FeatureState.ENABLED if active else FeatureState.DISABLED), source)
+        return cls.available(cls(FeatureState.ENABLED if active else FeatureState.DISABLED), source)
 
 
 def _parse_dhcp_relay_scope(output: str) -> DhcpRelayScope | None:
@@ -208,26 +215,28 @@ def _parse_dhcp_relay_scope(output: str) -> DhcpRelayScope | None:
     return DhcpRelayScope(populated) if populated else None
 
 
-class DhcpRelayScopeFact(CommandsFactDefinition[DhcpRelayScope]):
+@dataclass(frozen=True, slots=True)
+class DhcpRelayScopeFact(CommandsFactDefinition["DhcpRelayScopeFact"]):
     """Operational DHCP relay interfaces and helper-address families."""
 
-    key = "feature.dhcp.relay.scope"
-    label = "DHCP relay interface and address-family scope"
-    commands = (DHCP_RELAY_SCOPE_COMMAND,)
+    interfaces: tuple[DhcpRelayInterface, ...]
+    key: ClassVar[str] = "feature.dhcp.relay.scope"
+    label: ClassVar[str] = "DHCP relay interface and address-family scope"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (DHCP_RELAY_SCOPE_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[DhcpRelayScope]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[DhcpRelayScopeFact]:
         """Normalize the interface and address-family blocks from relay output."""
         (command,) = commands
         source = _source(command)
         if is_unsupported_optional_command(command) or "DHCP relay is not active" in command.text_output:
-            return cls.available(DhcpRelayScope(()), source)
+            return cls.available(cls(()), source)
         if "DHCP relay is active" not in command.text_output:
             problem = FactProblemKind.MISSING if not command.text_output.strip() else FactProblemKind.MALFORMED
             return cls.unavailable(problem, source)
         if (scope := _parse_dhcp_relay_scope(command.text_output)) is None:
             return cls.unavailable(FactProblemKind.MISSING, source)
-        return cls.available(scope, source)
+        return cls.available(cls(scope.interfaces), source)
 
 
 def _parse_ip_locking_family(data: Mapping[str, object], family: IpAddressFamily, prefix: str) -> IpAddressFamily | FactProblemKind | None:
@@ -282,65 +291,70 @@ def _parse_ip_locking_coverage(output: Mapping[str, object]) -> tuple[bool, IpLo
     return True, IpLockingCoverage(interfaces, vlans)
 
 
-class IpLockingMitigationFact(CommandsFactDefinition[MitigationValue]):
+@dataclass(frozen=True, slots=True)
+class IpLockingMitigationFact(MitigationFact, CommandsFactDefinition["IpLockingMitigationFact"]):
     """Operational IP locking with locked-address enforcement disabled."""
 
-    key = "mitigation.ip_locking.enforcement_disabled"
-    label = "IP locking with locked-address enforcement disabled"
-    commands = (IP_LOCKING_COMMAND,)
+    key: ClassVar[str] = "mitigation.ip_locking.enforcement_disabled"
+    label: ClassVar[str] = "IP locking with locked-address enforcement disabled"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (IP_LOCKING_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[MitigationValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[IpLockingMitigationFact]:
         """Normalize whether any operational scope uses enforcement-disabled mode."""
         (command,) = commands
         source = _source(command)
         if is_unsupported_optional_command(command):
-            return cls.available(MitigationValue(MitigationState.INEFFECTIVE), source)
+            return cls.available(cls(MitigationState.INEFFECTIVE), source)
         if isinstance((parsed := _parse_ip_locking_coverage(command.json_output)), FactProblemKind):
             return cls.unavailable(parsed, source)
         active, coverage = parsed
         effective = active and any(scope.families for scope in (*coverage.interfaces, *coverage.vlans))
         state = MitigationState.EFFECTIVE if effective else MitigationState.INEFFECTIVE
-        return cls.available(MitigationValue(state), source)
+        return cls.available(cls(state), source)
 
 
-class IpLockingCoverageFact(CommandsFactDefinition[IpLockingCoverage]):
+@dataclass(frozen=True, slots=True)
+class IpLockingCoverageFact(CommandsFactDefinition["IpLockingCoverageFact"]):
     """Operational interface and VLAN coverage of enforcement-disabled IP locking."""
 
-    key = "feature.ip_locking.enforcement_disabled_scope"
-    label = "IP locking enforcement-disabled scope"
-    commands = (IP_LOCKING_COMMAND,)
+    interfaces: tuple[IpLockingScope, ...]
+    vlans: tuple[IpLockingScope, ...]
+    key: ClassVar[str] = "feature.ip_locking.enforcement_disabled_scope"
+    label: ClassVar[str] = "IP locking enforcement-disabled scope"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (IP_LOCKING_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[IpLockingCoverage]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[IpLockingCoverageFact]:
         """Normalize enforcement-disabled interface and VLAN address families."""
         (command,) = commands
         source = _source(command)
         if is_unsupported_optional_command(command):
-            return cls.available(IpLockingCoverage((), ()), source)
+            return cls.available(cls((), ()), source)
         if isinstance((parsed := _parse_ip_locking_coverage(command.json_output)), FactProblemKind):
             return cls.unavailable(parsed, source)
         _, coverage = parsed
-        return cls.available(coverage, source)
+        return cls.available(cls(coverage.interfaces, coverage.vlans), source)
 
 
-class DhcpReplySourceValidationFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class DhcpReplySourceValidationFact(FeatureFact, CommandsFactDefinition["DhcpReplySourceValidationFact"]):
     """Presence of DHCP relay reply source-address validation."""
 
-    key = "feature.dhcp.reply_source_validation"
-    label = "DHCP relay reply source-address validation state"
-    commands = (DHCP_REPLY_VALIDATION_COMMAND,)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.DHCP, "relay reply source-address validation")
+    key: ClassVar[str] = "feature.dhcp.reply_source_validation"
+    label: ClassVar[str] = "DHCP relay reply source-address validation state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (DHCP_REPLY_VALIDATION_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[DhcpReplySourceValidationFact]:
         """Normalize the exact configuration line."""
         (command,) = commands
         lines = tuple(line.strip() for line in command.text_output.splitlines() if line.strip())
         if any(line != "reply source-address validation" for line in lines):
             return cls.unavailable(FactProblemKind.MALFORMED, _source(command))
-        feature = SubFeature(FeatureName.DHCP, "relay reply source-address validation")
         state = FeatureState.ENABLED if lines else FeatureState.DISABLED
-        return cls.available(FeatureValue(feature, state), _source(command))
+        return cls.available(cls(state), _source(command))
 
 
 def _dhcp_option82_config_exposed(config: str) -> bool:
@@ -368,54 +382,56 @@ def _required_bool(output: Mapping[str, object], key: str) -> bool | FactProblem
     return value
 
 
-class DhcpOption82Fact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class DhcpOption82Fact(FeatureFact, CommandsFactDefinition["DhcpOption82Fact"]):
     """Presence of any DHCP relay, snooping, or server Option 82 exposure path."""
 
-    key = "feature.dhcp.option82"
-    label = "DHCP Option 82 state"
-    commands = (DHCP_CONFIG_COMMAND, DHCP_RELAY_COMMAND)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.DHCP, "Option 82 exposure")
+    key: ClassVar[str] = "feature.dhcp.option82"
+    label: ClassVar[str] = "DHCP Option 82 state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (DHCP_CONFIG_COMMAND, DHCP_RELAY_COMMAND)
 
     @classmethod
     # pylint: disable-next=too-many-return-statements
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:  # noqa: PLR0911
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[DhcpOption82Fact]:  # noqa: PLR0911
         """Evaluate the three source-defined exposure alternatives."""
         config_command, relay_command = commands
-        feature = SubFeature(FeatureName.DHCP, "Option 82 exposure")
         if _dhcp_option82_config_exposed(config_command.text_output):
-            return cls.available(FeatureValue(feature, FeatureState.ENABLED), _source(config_command))
+            return cls.available(cls(FeatureState.ENABLED), _source(config_command))
         if is_unsupported_optional_command(relay_command):
-            return cls.available(FeatureValue(feature, FeatureState.DISABLED), _source(relay_command))
+            return cls.available(cls(FeatureState.DISABLED), _source(relay_command))
 
         output = relay_command.json_output
         active = _required_bool(output, "activeState")
         if isinstance(active, FactProblemKind):
             return cls.unavailable(active, _source(relay_command))
         if active is False:
-            return cls.available(FeatureValue(feature, FeatureState.DISABLED), _source(relay_command))
+            return cls.available(cls(FeatureState.DISABLED), _source(relay_command))
         option82 = _required_bool(output, "option82")
         if isinstance(option82, FactProblemKind):
             return cls.unavailable(option82, _source(relay_command))
         if option82 is False:
-            return cls.available(FeatureValue(feature, FeatureState.DISABLED), _source(relay_command))
-        return cls.available(FeatureValue(feature, FeatureState.ENABLED), _source(relay_command))
+            return cls.available(cls(FeatureState.DISABLED), _source(relay_command))
+        return cls.available(cls(FeatureState.ENABLED), _source(relay_command))
 
 
-class MlagDualPrimaryErrdisableFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class MlagDualPrimaryErrdisableFact(FeatureFact, CommandsFactDefinition["MlagDualPrimaryErrdisableFact"]):
     """MLAG dual-primary heartbeat configuration with errdisable-all action."""
 
-    key = "feature.mlag.dual_primary_errdisable"
-    label = "MLAG dual-primary errdisable exposure state"
-    commands = (MLAG_COMMAND,)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.MLAG, "dual-primary heartbeat with errdisable-all action")
+    key: ClassVar[str] = "feature.mlag.dual_primary_errdisable"
+    label: ClassVar[str] = "MLAG dual-primary errdisable exposure state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (MLAG_COMMAND,)
 
     @classmethod
     # pylint: disable-next=too-many-return-statements
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:  # noqa: PLR0911
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[MlagDualPrimaryErrdisableFact]:  # noqa: PLR0911
         """Require the stable MLAG and dual-primary configuration prerequisites."""
         (command,) = commands
         source = _source(command)
-        feature = SubFeature(FeatureName.MLAG, "dual-primary heartbeat with errdisable-all action")
         if is_unsupported_optional_command(command):
-            return cls.available(FeatureValue(feature, FeatureState.UNSUPPORTED), source)
+            return cls.available(cls(FeatureState.UNSUPPORTED), source)
         output = command.json_output
         domain_id = output.get("domainId")
         peer_link = output.get("peerLink")
@@ -423,7 +439,7 @@ class MlagDualPrimaryErrdisableFact(CommandsFactDefinition[FeatureValue]):
         if any(value is not None and not isinstance(value, str) for value in (domain_id, peer_link, heartbeat_peer)):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         if not domain_id or not peer_link or heartbeat_peer in (None, "", "0.0.0.0"):  # noqa: S104 - EOS uses 0.0.0.0 for an unset heartbeat address
-            return cls.available(FeatureValue(feature, FeatureState.DISABLED), source)
+            return cls.available(cls(FeatureState.DISABLED), source)
         detail = output.get("detail")
         if not isinstance(detail, Mapping):
             problem = FactProblemKind.MISSING if detail is None else FactProblemKind.MALFORMED
@@ -431,34 +447,35 @@ class MlagDualPrimaryErrdisableFact(CommandsFactDefinition[FeatureValue]):
         detection_delay = detail.get("dualPrimaryDetectionDelay")
         action = detail.get("dualPrimaryAction")
         if detection_delay is None and action is None:
-            return cls.available(FeatureValue(feature, FeatureState.DISABLED), source)
+            return cls.available(cls(FeatureState.DISABLED), source)
         if detection_delay is None or action is None:
             return cls.unavailable(FactProblemKind.MISSING, source)
         if isinstance(detection_delay, bool) or not isinstance(detection_delay, int) or not isinstance(action, str):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         errdisable_all = action == "errdisableAllInterfaces"
         state = FeatureState.ENABLED if errdisable_all else FeatureState.DISABLED
-        return cls.available(FeatureValue(feature, state), source)
+        return cls.available(cls(state), source)
 
 
-class MlagConfiguredFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class MlagConfiguredFact(FeatureFact, CommandsFactDefinition["MlagConfiguredFact"]):
     """Complete persistent MLAG configuration."""
 
-    key = "feature.mlag.configured"
-    label = "MLAG configuration state"
-    commands = (MLAG_COMMAND,)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.MLAG, "configuration")
+    key: ClassVar[str] = "feature.mlag.configured"
+    label: ClassVar[str] = "MLAG configuration state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (MLAG_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[MlagConfiguredFact]:
         """Require the MLAG domain, local interface, peer address, and peer link without considering operational state."""
         (command,) = commands
         source = _source(command)
-        feature = SubFeature(FeatureName.MLAG, "configuration")
         if is_unsupported_optional_command(command):
-            return cls.available(FeatureValue(feature, FeatureState.UNSUPPORTED), source)
+            return cls.available(cls(FeatureState.UNSUPPORTED), source)
         configured_values = tuple(command.json_output.get(field) for field in ("domainId", "localInterface", "peerAddress", "peerLink"))
         if any(value is not None and not isinstance(value, str) for value in configured_values):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         configured = all(configured_values)
         state = FeatureState.ENABLED if configured else FeatureState.DISABLED
-        return cls.available(FeatureValue(feature, state), source)
+        return cls.available(cls(state), source)

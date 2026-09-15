@@ -5,11 +5,11 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal, TypeAlias
+from typing import TYPE_CHECKING, Literal, TypeAlias, TypeVar, cast
 
 from anta._advisory.eos_versions import AffectedStatus
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import AvailableFact, FeatureName, FeatureState, FeatureValue, SubFeature
+from anta._advisory.facts.models import AvailableFact, FeatureState
 from anta._advisory.facts.network_services import VrrpAntiReplayFact, VrrpFact, VrrpV2IpAhFact
 from anta._advisory.findings.models import AffectedResult, ErrorResult, NotAffectedResult
 from anta._advisory.remediation import (
@@ -37,6 +37,7 @@ if TYPE_CHECKING:
 
 Status: TypeAlias = Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.ERROR]
 Issue: TypeAlias = tuple[Status, str, RemediationPlan | None]
+VrrpFactT = TypeVar("VrrpFactT", VrrpFact, VrrpV2IpAhFact, VrrpAntiReplayFact)
 FIXED_RELEASES = (
     FixedRelease(EOSVersion(4, 36, 2, suffix="F")),
     FixedRelease(EOSVersion(4, 35, 6, suffix="M")),
@@ -67,15 +68,15 @@ VRRP_V3_IPV6 = """interface Ethernet1
 !"""
 
 
-def vrrp_fact(definition: type[VrrpFact | VrrpV2IpAhFact | VrrpAntiReplayFact], state: FeatureState) -> AvailableFact[FeatureValue]:
+def vrrp_fact(definition: type[VrrpFactT], state: FeatureState) -> AvailableFact[VrrpFactT]:
     """Build normalized VRRP state for direct assessment tests."""
     if definition is VrrpFact:
-        feature = FeatureName.VRRP
+        fact = available_fact(VrrpFact, VrrpFact(state))
     elif definition is VrrpV2IpAhFact:
-        feature = SubFeature(FeatureName.VRRP, "version 2 IP-AH authentication")
+        fact = available_fact(VrrpV2IpAhFact, VrrpV2IpAhFact(state))
     else:
-        feature = SubFeature(FeatureName.VRRP, "authentication anti-replay")
-    return available_fact(definition, FeatureValue(feature, state))
+        fact = available_fact(VrrpAntiReplayFact, VrrpAntiReplayFact(state))
+    return cast("AvailableFact[VrrpFactT]", fact)
 
 
 def test_sa157_simple_assessment_contracts() -> None:

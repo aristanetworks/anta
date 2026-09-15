@@ -6,12 +6,12 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import Any, ClassVar, cast
+from typing import ClassVar, cast
 
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
+from anta._advisory.facts.models import AvailableFact, Fact, FactsBase, FeatureState, UnavailableFact, fact_field, facts_dataclass
 from anta._advisory.facts.network_services import MlagDualPrimaryErrdisableFact
 from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import (
@@ -58,7 +58,7 @@ ADVISORY = _AdvisoryMetadata(
 VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
-def _assess_sa161(version: Fact[EOSVersion], local_mlag: Fact[FeatureValue]) -> VulnerabilityResult:
+def _assess_sa161(version: Fact[EOSVersion], local_mlag: Fact[MlagDualPrimaryErrdisableFact]) -> VulnerabilityResult:
     """Assess EOS scope and the stable local MLAG configuration."""
     if not isinstance(local_mlag, UnavailableFact) and local_mlag.value.state is not FeatureState.ENABLED:
         return NotAffectedResult(vulnerability_id=VULNERABILITY_ID, decisive=(local_mlag,))
@@ -69,7 +69,7 @@ def _assess_sa161(version: Fact[EOSVersion], local_mlag: Fact[FeatureValue]) -> 
         return ErrorResult(vulnerability_id=VULNERABILITY_ID, problems=(local_mlag,))
     return AffectedResult(
         vulnerability_id=VULNERABILITY_ID,
-        conditions=(cast("AvailableFact[FeatureValue]", local_mlag),),
+        conditions=(cast("AvailableFact[MlagDualPrimaryErrdisableFact]", local_mlag),),
         context=(eos_release,),
         remediation=software_version_plan(FIXED_RELEASES, current_version=eos_release.fact.value),
     )
@@ -95,14 +95,21 @@ class SA161(OptionalCommandsMixin, _AntaAdvisoryTest):
     ```
     """
 
+    @facts_dataclass
+    class Facts(FactsBase):
+        """Collected facts required to assess the advisory."""
+
+        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        local_mlag: Fact[MlagDualPrimaryErrdisableFact] = fact_field(MlagDualPrimaryErrdisableFact)
+
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
-    required_facts: ClassVar[tuple[type[FactDefinition[Any]], ...]] = (EosVersionFact, MlagDualPrimaryErrdisableFact)
     description = "Verify whether the device is impacted by Security Advisory 0161."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
         """Derive facts, assess the vulnerability, and project it."""
-        finding = _assess_sa161(self.fact(EosVersionFact), self.fact(MlagDualPrimaryErrdisableFact))
+        facts = self.Facts.collect(self)
+        finding = _assess_sa161(facts.version, facts.local_mlag)
         atomic = self.result.add(f"Verify {VULNERABILITY_ID}.", vulnerability_ids=(VULNERABILITY_ID,))
         project_vulnerability_result(atomic, finding)

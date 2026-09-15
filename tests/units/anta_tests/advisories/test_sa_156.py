@@ -6,19 +6,17 @@
 from __future__ import annotations
 
 from functools import partial
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, overload
 
 from anta._advisory.eos_versions import AffectedStatus
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import AvailableFact, FeatureName, FeatureState, FeatureValue, MitigationState, MitigationValue, SubFeature
+from anta._advisory.facts.models import AvailableFact, FeatureState, MitigationState
 from anta._advisory.facts.network_services import (
     DhcpRelayActiveFact,
     DhcpRelayInterface,
-    DhcpRelayScope,
     DhcpRelayScopeFact,
     DhcpReplySourceValidationFact,
     IpAddressFamily,
-    IpLockingCoverage,
     IpLockingCoverageFact,
     IpLockingMitigationFact,
     IpLockingScope,
@@ -50,11 +48,11 @@ expected_result = partial(build_expected_advisory_result, ADVISORY.vulnerabiliti
 IPV4 = frozenset((IpAddressFamily.IPV4,))
 IPV6 = frozenset((IpAddressFamily.IPV6,))
 DUAL_STACK = frozenset((IpAddressFamily.IPV4, IpAddressFamily.IPV6))
-RELAY_DUAL_STACK = DhcpRelayScope((DhcpRelayInterface("Vlan100", DUAL_STACK),))
-RELAY_IPV6 = DhcpRelayScope((DhcpRelayInterface("Vlan100", IPV6),))
-IP_LOCKING_DUAL_STACK = IpLockingCoverage((), (IpLockingScope("100", DUAL_STACK),))
-IP_LOCKING_IPV4 = IpLockingCoverage((), (IpLockingScope("100", IPV4),))
-IP_LOCKING_OTHER_VLAN = IpLockingCoverage((), (IpLockingScope("200", DUAL_STACK),))
+RELAY_DUAL_STACK = DhcpRelayScopeFact((DhcpRelayInterface("Vlan100", DUAL_STACK),))
+RELAY_IPV6 = DhcpRelayScopeFact((DhcpRelayInterface("Vlan100", IPV6),))
+IP_LOCKING_DUAL_STACK = IpLockingCoverageFact((), (IpLockingScope("100", DUAL_STACK),))
+IP_LOCKING_IPV4 = IpLockingCoverageFact((), (IpLockingScope("100", IPV4),))
+IP_LOCKING_OTHER_VLAN = IpLockingCoverageFact((), (IpLockingScope("200", DUAL_STACK),))
 IP_LOCKING_INACTIVE = {"active": False}
 IP_LOCKING_VLAN_DUAL_STACK = {
     "active": True,
@@ -76,25 +74,36 @@ Interface: Vlan100
   DHCPv6 servers: 2001:db8::10"""
 
 
-def dhcp_fact(definition: type[DhcpRelayActiveFact | DhcpReplySourceValidationFact], state: FeatureState) -> AvailableFact[FeatureValue]:
+@overload
+def dhcp_fact(definition: type[DhcpRelayActiveFact], state: FeatureState) -> AvailableFact[DhcpRelayActiveFact]: ...
+
+
+@overload
+def dhcp_fact(definition: type[DhcpReplySourceValidationFact], state: FeatureState) -> AvailableFact[DhcpReplySourceValidationFact]: ...
+
+
+def dhcp_fact(
+    definition: type[DhcpRelayActiveFact | DhcpReplySourceValidationFact], state: FeatureState
+) -> AvailableFact[DhcpRelayActiveFact] | AvailableFact[DhcpReplySourceValidationFact]:
     """Build normalized DHCP state for direct assessment tests."""
-    name = "relay" if definition is DhcpRelayActiveFact else "relay reply source-address validation"
-    return available_fact(definition, FeatureValue(SubFeature(FeatureName.DHCP, name), state))
+    if definition is DhcpRelayActiveFact:
+        return available_fact(definition, definition(state))
+    return available_fact(DhcpReplySourceValidationFact, DhcpReplySourceValidationFact(state))
 
 
-def mitigation_fact(state: MitigationState) -> AvailableFact[MitigationValue]:
+def mitigation_fact(state: MitigationState) -> AvailableFact[IpLockingMitigationFact]:
     """Build normalized IP-locking mitigation state."""
-    return available_fact(IpLockingMitigationFact, MitigationValue(state))
+    return available_fact(IpLockingMitigationFact, IpLockingMitigationFact(state))
 
 
 def assess(
     version: str,
     *,
-    validation: Fact[FeatureValue],
-    mitigation: Fact[MitigationValue],
-    relay: Fact[FeatureValue] | None = None,
-    relay_scope: Fact[DhcpRelayScope] | None = None,
-    coverage: Fact[IpLockingCoverage] | None = None,
+    validation: Fact[DhcpReplySourceValidationFact],
+    mitigation: Fact[IpLockingMitigationFact],
+    relay: Fact[DhcpRelayActiveFact] | None = None,
+    relay_scope: Fact[DhcpRelayScopeFact] | None = None,
+    coverage: Fact[IpLockingCoverageFact] | None = None,
 ) -> VulnerabilityResult:
     """Assess one concise direct-fact scenario."""
     return _assess_sa156(
@@ -156,7 +165,7 @@ def test_sa156_resolution_and_mitigation_paths() -> None:
             validation=validation_enabled,
             mitigation=effective,
             relay_scope=available_fact(DhcpRelayScopeFact, RELAY_IPV6),
-            coverage=available_fact(IpLockingCoverageFact, IpLockingCoverage((), (IpLockingScope("100", IPV6),))),
+            coverage=available_fact(IpLockingCoverageFact, IpLockingCoverageFact((), (IpLockingScope("100", IPV6),))),
         ),
         MitigatedResult,
     )

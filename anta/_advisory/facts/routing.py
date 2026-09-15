@@ -662,26 +662,27 @@ class Ospfv3IpsecAuthenticationFact(CommandsFactDefinition[MitigationValue]):
         return cls.available(MitigationValue(state), config_source)
 
 
-class PimSparseModeFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class PimSparseModeFact(FeatureFact, CommandsFactDefinition["PimSparseModeFact"]):
     """Presence of PIM sparse mode on any IPv4 or IPv6 interface."""
 
-    key = "feature.pim.sparse_mode"
-    label = "PIM sparse-mode interface state"
-    commands = (PIM_SPARSE_MODE_COMMAND,)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.PIM, "sparse-mode interface")
+    key: ClassVar[str] = "feature.pim.sparse_mode"
+    label: ClassVar[str] = "PIM sparse-mode interface state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (PIM_SPARSE_MODE_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[PimSparseModeFact]:
         """Normalize canonical and legacy interface command syntax."""
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
-        feature = SubFeature(FeatureName.PIM, "sparse-mode interface")
         if is_unsupported_optional_command(command):
             return cls.unavailable(FactProblemKind.UNSUPPORTED, source)
         lines = tuple(line.strip() for line in command.text_output.splitlines() if line.strip())
         if any(line not in PIM_SPARSE_MODE_COMMANDS for line in lines):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         state = FeatureState.ENABLED if lines else FeatureState.DISABLED
-        return cls.available(FeatureValue(feature, state), source)
+        return cls.available(cls(state), source)
 
 
 class LooseUrpfFact(CommandsFactDefinition[FeatureValue]):
