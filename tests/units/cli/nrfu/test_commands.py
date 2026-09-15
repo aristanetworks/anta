@@ -317,3 +317,23 @@ def test_anta_nrfu_table_sort(click_runner: CliRunner) -> None:
     # Check that device, test, description and status exist on the line
     # The regex ensures they appear in that specific order
     assert re.search(r"spine1.*VerifyInterfacesSpeed.*Verifies the speed, lanes, auto-negotiation.*failure", target_line)
+
+
+def test_anta_nrfu_md_junit(click_runner: CliRunner, tmp_path: Path) -> None:
+    """Test anta nrfu junit."""
+    junit_output = tmp_path / "junit.xml"
+    result = click_runner.invoke(anta, ["nrfu", "junit", "--junit-output", str(junit_output)])
+    assert result.exit_code == ExitCode.OK
+    assert "JUnit report saved to" in result.output
+    assert junit_output.exists()
+
+
+def test_anta_nrfu_junit_failure(click_runner: CliRunner, tmp_path: Path) -> None:
+    """Test anta nrfu junit failure for OS reason."""
+    junit_output = tmp_path / "junit.xml"
+    with patch("anta.reporter.junit_reporter.JUnitReporter.generate", side_effect=OSError()):
+        result = click_runner.invoke(anta, ["nrfu", "junit", "--junit-output", str(junit_output)])
+
+    assert result.exit_code == ExitCode.USAGE_ERROR
+    assert "Failed to save JUnit report to" in result.output
+    assert not junit_output.exists()
