@@ -24,7 +24,6 @@ from anta._advisory.facts.models import (
     FeatureState,
     FeatureValue,
     MitigationState,
-    MitigationValue,
     SubFeature,
 )
 from anta._advisory.findings.models import AffectedResult, ErrorResult, MitigatedResult, NotAffectedResult
@@ -136,7 +135,7 @@ def exposure(state: FeatureState):  # noqa: ANN201
 
 def mitigation(state: MitigationState):  # noqa: ANN201
     """Build a level-zero authorization mitigation fact."""
-    return LevelZeroCommandAuthorizationFact.available(MitigationValue(state), SOURCE)
+    return LevelZeroCommandAuthorizationFact.available(LevelZeroCommandAuthorizationFact(state), SOURCE)
 
 
 class TestSA163Assessment(unittest.TestCase):

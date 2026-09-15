@@ -6,17 +6,19 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, ClassVar
 
 from anta._advisory.facts.models import (
     CommandsFactDefinition,
+    ConfigurationFact,
     ConfigurationState,
-    ConfigurationValue,
     Fact,
     FactProblemKind,
     FactSource,
     FactSourceKind,
     FeatureName,
+    FeatureRef,
     SubFeature,
 )
 from anta._advisory.optional_commands import OptionalAntaCommand, is_unsupported_optional_command
@@ -93,15 +95,17 @@ def _shared_svi_acl_state(output: str) -> ConfigurationState | None:  # noqa: C9
     return ConfigurationState.NOT_CONFIGURED
 
 
-class SharedSviIngressAclFact(CommandsFactDefinition[ConfigurationValue]):
+@dataclass(frozen=True, slots=True)
+class SharedSviIngressAclFact(ConfigurationFact, CommandsFactDefinition["SharedSviIngressAclFact"]):
     """Shared IPv4 or IPv6 ingress ACL configuration on an SVI across switch cards."""
 
-    key = "configuration.acl.shared_svi_ingress"
-    label = "shared SVI ingress ACL configuration"
-    commands = (ACL_COMMAND,)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.ACL, "shared SVI ingress")
+    key: ClassVar[str] = "configuration.acl.shared_svi_ingress"
+    label: ClassVar[str] = "shared SVI ingress ACL configuration"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (ACL_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[ConfigurationValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[SharedSviIngressAclFact]:
         """Normalize the unconverted Trident ACL output without retaining ACL inventories."""
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
@@ -110,4 +114,4 @@ class SharedSviIngressAclFact(CommandsFactDefinition[ConfigurationValue]):
         state = _shared_svi_acl_state(command.text_output)
         if state is None:
             return cls.unavailable(FactProblemKind.MALFORMED, source)
-        return cls.available(ConfigurationValue(SubFeature(FeatureName.ACL, "shared SVI ingress"), state), source)
+        return cls.available(cls(state), source)

@@ -360,6 +360,22 @@ class ConfigurationState(str, Enum):
 
 
 @dataclass(frozen=True, slots=True)
+class ConfigurationFact:
+    """Common state and class-level identity for a nominal configuration fact."""
+
+    feature: ClassVar[FeatureRef]
+    state: ConfigurationState
+
+    def __init_subclass__(cls) -> None:
+        """Require every configuration-fact subclass to expose a valid identity."""
+        # See ``FeatureFact.__init_subclass__`` for why this form of ``super`` is required.
+        super(ConfigurationFact, cls).__init_subclass__()
+        if not isinstance(getattr(cls, "feature", None), (FeatureName, SubFeature)):
+            msg = f"Class {cls.__module__}.{cls.__qualname__} must define 'feature' as a FeatureName or SubFeature"
+            raise TypeError(msg)
+
+
+@dataclass(frozen=True, slots=True)
 class ConfigurationValue:
     """Normalized configuration state for a feature or subfeature."""
 
@@ -374,6 +390,22 @@ class CredentialSyntaxState(str, Enum):
     LEGACY = "legacy"
     ENCRYPTED = "encrypted"
     MIXED = "mixed legacy and encrypted"
+
+
+@dataclass(frozen=True, slots=True)
+class CredentialSyntaxFact:
+    """Common state and class-level identity for a nominal credential-syntax fact."""
+
+    feature: ClassVar[FeatureRef]
+    state: CredentialSyntaxState
+
+    def __init_subclass__(cls) -> None:
+        """Require every credential-syntax fact subclass to expose a valid identity."""
+        # See ``FeatureFact.__init_subclass__`` for why this form of ``super`` is required.
+        super(CredentialSyntaxFact, cls).__init_subclass__()
+        if not isinstance(getattr(cls, "feature", None), (FeatureName, SubFeature)):
+            msg = f"Class {cls.__module__}.{cls.__qualname__} must define 'feature' as a FeatureName or SubFeature"
+            raise TypeError(msg)
 
 
 @dataclass(frozen=True, slots=True)
@@ -392,11 +424,26 @@ class ComponentSoftwareVersion:
     version: str
 
 
+@dataclass(frozen=True, slots=True)
+class ComponentSoftwareFact:
+    """Common version and class-level component identity for a nominal software fact."""
+
+    component: ClassVar[str]
+    version: str
+
+
 class MitigationState(str, Enum):
     """Observed effectiveness of a possible mitigation."""
 
     EFFECTIVE = "effective"
     INEFFECTIVE = "ineffective"
+
+
+@dataclass(frozen=True, slots=True)
+class MitigationFact:
+    """Common effectiveness state for a nominal mitigation fact."""
+
+    state: MitigationState
 
 
 @dataclass(frozen=True, slots=True)
