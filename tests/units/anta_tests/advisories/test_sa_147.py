@@ -8,21 +8,19 @@
 from __future__ import annotations
 
 import unittest
-from typing import TYPE_CHECKING, Any, Literal, TypeAlias, cast
+from typing import TYPE_CHECKING, Any, Literal, TypeAlias, TypeVar, cast
 from unittest.mock import AsyncMock
 
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.models import (
     AvailableFact,
-    ComponentSoftwareVersion,
     Fact,
+    FactDefinition,
     FactProblemKind,
     FactSource,
     FactSourceKind,
-    FeatureValue,
     MitigationState,
-    MitigationValue,
 )
 from anta._advisory.facts.software import OpenSshClientVersionFact, OpenSshServerVersionFact
 from anta._advisory.facts.ssh import (
@@ -92,6 +90,7 @@ def sa147_eos_data(version: dict[str, Any], ssh_config: str) -> list[dict[str, A
 
 
 SOURCE = FactSource("unit test", FactSourceKind.DEVICE_METADATA)
+PackageFactT = TypeVar("PackageFactT", OpenSshClientVersionFact, OpenSshServerVersionFact)
 
 
 def eos_version_fact(version: str | None) -> Fact[EOSVersion]:
@@ -103,16 +102,17 @@ def eos_version_fact(version: str | None) -> Fact[EOSVersion]:
 
 
 def component_version_fact(
-    definition: type[OpenSshClientVersionFact | OpenSshServerVersionFact],
+    definition: type[PackageFactT],
     version: str | None,
-) -> Fact[ComponentSoftwareVersion]:
+) -> Fact[PackageFactT]:
     """Build an OpenSSH package-version fact for semantic assessment tests."""
+    typed_definition = cast("type[FactDefinition[PackageFactT]]", definition)
     if version is None:
-        return definition.unavailable(FactProblemKind.MISSING, SOURCE)
-    return definition.available(ComponentSoftwareVersion(definition.component_name, version), SOURCE)
+        return typed_definition.unavailable(FactProblemKind.MISSING, SOURCE)
+    return typed_definition.available(cast("PackageFactT", definition(version)), SOURCE)
 
 
-def ssh_server_fact(config: str, *, unsupported: bool = False) -> Fact[FeatureValue]:
+def ssh_server_fact(config: str, *, unsupported: bool = False) -> Fact[SshServerFact]:
     """Parse the SSH server fact from test configuration or an unsupported command."""
     command = SshServerFact.commands[0].model_copy()
     command.output = None if unsupported else config
@@ -365,7 +365,7 @@ class TestSA147Evidence(unittest.TestCase):
         command.output = version_output()
         parsed = OpenSshClientVersionFact.parse((command,))
         assert isinstance(parsed, AvailableFact)
-        assert parsed.value == ComponentSoftwareVersion("openssh-clients", "9.9p1")
+        assert parsed.value == OpenSshClientVersionFact("9.9p1")
         assert parsed.source == FactSource(command.command, FactSourceKind.COMMAND)
         command.output = {}
         assert OpenSshClientVersionFact.parse((command,)) == OpenSshClientVersionFact.unavailable(
@@ -430,7 +430,7 @@ class TestSA147Evidence(unittest.TestCase):
         command = StrictHostKeyCheckingFact.commands[0].model_copy()
         command.output = config
         assert StrictHostKeyCheckingFact.parse((command,)) == StrictHostKeyCheckingFact.available(
-            MitigationValue(MitigationState.EFFECTIVE),
+            StrictHostKeyCheckingFact(MitigationState.EFFECTIVE),
             FactSource(command.command, FactSourceKind.COMMAND),
         )
 
@@ -490,7 +490,7 @@ class TestSA147Assessment(unittest.TestCase):
         assert isinstance(result, AffectedResult)
         condition = result.conditions[0]
         assert isinstance(condition, AffectedComponentVersion)
-        assert condition.fact.value == ComponentSoftwareVersion("openssh-clients", "9.9p1")
+        assert condition.fact.value == OpenSshClientVersionFact("9.9p1")
         assert result.remediation == EXPECTED_PENDING_REMEDIATION
 
     def test_client_issue_fixed_inconclusive_and_error_states(self) -> None:
@@ -511,7 +511,7 @@ class TestSA147Assessment(unittest.TestCase):
             eos_version=eos_version_fact("4.35.5M"),
             affected_versions=CVE_60002_AFFECTED_VERSION_MATRIX,
             package_version=component_version_fact(OpenSshClientVersionFact, "9.9p1"),
-            mitigation=StrictHostKeyCheckingFact.available(MitigationValue(MitigationState.EFFECTIVE), SOURCE),
+            mitigation=StrictHostKeyCheckingFact.available(StrictHostKeyCheckingFact(MitigationState.EFFECTIVE), SOURCE),
         )
         missing_mitigation = _assess_client_issue(
             vulnerability_id="CVE-test",

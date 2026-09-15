@@ -7,12 +7,12 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import Any, ClassVar
+from typing import ClassVar
 
 from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import Fact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
+from anta._advisory.facts.models import Fact, FactsBase, FeatureState, UnavailableFact, fact_field, facts_dataclass
 from anta._advisory.facts.network_services import MlagConfiguredFact
 from anta._advisory.facts.platform import PlatformIdentityFact
 from anta._advisory.facts.routing import PimSparseModeFact
@@ -99,8 +99,8 @@ VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 def _assess_sa177(  # noqa: PLR0911
     version: Fact[EOSVersion],
     platform: Fact[PlatformIdentity],
-    sparse_mode: Fact[FeatureValue],
-    mlag: Fact[FeatureValue],
+    sparse_mode: Fact[PimSparseModeFact],
+    mlag: Fact[MlagConfiguredFact],
 ) -> VulnerabilityResult:
     """Assess EOS, platform, PIM sparse-mode, and configured MLAG exposure."""
     for prerequisite in (sparse_mode, mlag):
@@ -158,24 +158,23 @@ class SA177(OptionalCommandsMixin, _AntaAdvisoryTest):
     ```
     """
 
+    @facts_dataclass
+    class Facts(FactsBase):
+        """Collected facts required to assess the advisory."""
+
+        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        platform: Fact[PlatformIdentity] = fact_field(PlatformIdentityFact)
+        sparse_mode: Fact[PimSparseModeFact] = fact_field(PimSparseModeFact)
+        mlag: Fact[MlagConfiguredFact] = fact_field(MlagConfiguredFact)
+
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
-    required_facts: ClassVar[tuple[type[FactDefinition[Any]], ...]] = (
-        EosVersionFact,
-        PlatformIdentityFact,
-        PimSparseModeFact,
-        MlagConfiguredFact,
-    )
     description = "Verify whether the device is impacted by Security Advisory 0177."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
         """Derive facts, assess the vulnerability, and project it."""
-        finding = _assess_sa177(
-            self.fact(EosVersionFact),
-            self.fact(PlatformIdentityFact),
-            self.fact(PimSparseModeFact),
-            self.fact(MlagConfiguredFact),
-        )
+        facts = self.Facts.collect(self)
+        finding = _assess_sa177(facts.version, facts.platform, facts.sparse_mode, facts.mlag)
         atomic = self.result.add(f"Verify {VULNERABILITY_ID}.", vulnerability_ids=(VULNERABILITY_ID,))
         project_vulnerability_result(atomic, finding)

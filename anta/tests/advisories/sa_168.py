@@ -6,13 +6,13 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import Any, ClassVar, cast
+from typing import ClassVar, cast
 
 from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnmiTransportFact, NetconfTransportFact, RestconfTransportFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
+from anta._advisory.facts.models import AvailableFact, Fact, FactsBase, FeatureFact, FeatureState, UnavailableFact, fact_field, facts_dataclass
 from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import AffectedResult, EosReleaseAssessment, ErrorResult, NotAffectedResult, VulnerabilityResult
 from anta._advisory.findings.projection import project_vulnerability_result
@@ -63,11 +63,11 @@ def _remediation_plan(current_version: EOSVersion) -> RemediationPlan:
     )
 
 
-def _assess_sa168(version: Fact[EOSVersion], services: tuple[Fact[FeatureValue], ...]) -> VulnerabilityResult:
+def _assess_sa168(version: Fact[EOSVersion], services: tuple[Fact[FeatureFact], ...]) -> VulnerabilityResult:
     """Assess the OR relationship across gNMI, RESTCONF, and NETCONF services."""
     enabled = tuple(fact for fact in services if isinstance(fact, AvailableFact) and fact.value.state is FeatureState.ENABLED)
     if not enabled and all(isinstance(fact, AvailableFact) for fact in services):
-        return NotAffectedResult(vulnerability_id=VULNERABILITY_ID, decisive=cast("tuple[AvailableFact[FeatureValue], ...]", services))
+        return NotAffectedResult(vulnerability_id=VULNERABILITY_ID, decisive=cast("tuple[AvailableFact[FeatureFact], ...]", services))
     eos_release = assess_eos_scope(VULNERABILITY_ID, version, AFFECTED_VERSION_MATRIX)
     if not isinstance(eos_release, EosReleaseAssessment):
         return eos_release
@@ -100,17 +100,24 @@ class SA168(OptionalCommandsMixin, _AntaAdvisoryTest):
     ```
     """
 
+    @facts_dataclass
+    class Facts(FactsBase):
+        """Collected facts required to assess the advisory."""
+
+        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        gnmi: Fact[GnmiTransportFact] = fact_field(GnmiTransportFact)
+        restconf: Fact[RestconfTransportFact] = fact_field(RestconfTransportFact)
+        netconf: Fact[NetconfTransportFact] = fact_field(NetconfTransportFact)
+
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
-    required_facts: ClassVar[tuple[type[FactDefinition[Any]], ...]] = (EosVersionFact, GnmiTransportFact, RestconfTransportFact, NetconfTransportFact)
     description = "Verify whether the device is impacted by Security Advisory 0168."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
         """Derive facts, assess the vulnerability, and project it."""
-        finding = _assess_sa168(
-            self.fact(EosVersionFact),
-            (self.fact(GnmiTransportFact), self.fact(RestconfTransportFact), self.fact(NetconfTransportFact)),
-        )
+        facts = self.Facts.collect(self)
+        services: tuple[Fact[FeatureFact], ...] = (facts.gnmi, facts.restconf, facts.netconf)
+        finding = _assess_sa168(facts.version, services)
         atomic = self.result.add(f"Verify {VULNERABILITY_ID}.", vulnerability_ids=(VULNERABILITY_ID,))
         project_vulnerability_result(atomic, finding)

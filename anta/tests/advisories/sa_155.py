@@ -6,12 +6,12 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import Any, ClassVar, cast
+from typing import ClassVar, cast
 
 from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
+from anta._advisory.facts.models import AvailableFact, Fact, FactsBase, FeatureState, UnavailableFact, fact_field, facts_dataclass
 from anta._advisory.facts.network_services import DhcpOption82Fact
 from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import AffectedResult, EosReleaseAssessment, ErrorResult, NotAffectedResult, VulnerabilityResult
@@ -50,7 +50,7 @@ ADVISORY = _AdvisoryMetadata(
 VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
-def _assess_sa155(version: Fact[EOSVersion], option82: Fact[FeatureValue]) -> VulnerabilityResult:
+def _assess_sa155(version: Fact[EOSVersion], option82: Fact[DhcpOption82Fact]) -> VulnerabilityResult:
     """Assess EOS scope and the three DHCP Option 82 exposure alternatives."""
     if not isinstance(option82, UnavailableFact) and option82.value.state is not FeatureState.ENABLED:
         return NotAffectedResult(vulnerability_id=VULNERABILITY_ID, decisive=(option82,))
@@ -61,7 +61,7 @@ def _assess_sa155(version: Fact[EOSVersion], option82: Fact[FeatureValue]) -> Vu
         return ErrorResult(vulnerability_id=VULNERABILITY_ID, problems=(option82,))
     return AffectedResult(
         vulnerability_id=VULNERABILITY_ID,
-        conditions=(cast("AvailableFact[FeatureValue]", option82),),
+        conditions=(cast("AvailableFact[DhcpOption82Fact]", option82),),
         context=(eos_release,),
         remediation=software_version_plan(FIXED_RELEASES, current_version=eos_release.fact.value),
     )
@@ -85,14 +85,21 @@ class SA155(OptionalCommandsMixin, _AntaAdvisoryTest):
     ```
     """
 
+    @facts_dataclass
+    class Facts(FactsBase):
+        """Collected facts required to assess the advisory."""
+
+        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        option82: Fact[DhcpOption82Fact] = fact_field(DhcpOption82Fact)
+
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
-    required_facts: ClassVar[tuple[type[FactDefinition[Any]], ...]] = (EosVersionFact, DhcpOption82Fact)
     description = "Verify whether the device is impacted by Security Advisory 0155."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
         """Derive facts, assess the vulnerability, and project it."""
-        finding = _assess_sa155(self.fact(EosVersionFact), self.fact(DhcpOption82Fact))
+        facts = self.Facts.collect(self)
+        finding = _assess_sa155(facts.version, facts.option82)
         atomic = self.result.add(f"Verify {VULNERABILITY_ID}.", vulnerability_ids=(VULNERABILITY_ID,))
         project_vulnerability_result(atomic, finding)

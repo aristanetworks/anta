@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import Any, ClassVar
+from typing import ClassVar
 
 from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
@@ -14,12 +14,12 @@ from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import SnmpV3AuthenticationFact, SnmpV3CredentialSyntaxFact
 from anta._advisory.facts.models import (
     CredentialSyntaxState,
-    CredentialSyntaxValue,
     Fact,
-    FactDefinition,
+    FactsBase,
     FeatureState,
-    FeatureValue,
     UnavailableFact,
+    fact_field,
+    facts_dataclass,
 )
 from anta._advisory.findings.assessment import assess_eos_version
 from anta._advisory.findings.models import AffectedResult, EosReleaseAssessment, ErrorResult, NotAffectedResult, VersionRelation, VulnerabilityResult
@@ -69,8 +69,8 @@ VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 def _assess_sa178(  # pylint: disable=too-many-return-statements
     version: Fact[EOSVersion],
-    authentication: Fact[FeatureValue],
-    credential_syntax: Fact[CredentialSyntaxValue],
+    authentication: Fact[SnmpV3AuthenticationFact],
+    credential_syntax: Fact[SnmpV3CredentialSyntaxFact],
 ) -> VulnerabilityResult:
     """Assess EOS software and the legacy SNMPv3 credential-syntax prerequisite.
 
@@ -133,18 +133,22 @@ class SA178(OptionalCommandsMixin, _AntaAdvisoryTest):
     ```
     """
 
+    @facts_dataclass
+    class Facts(FactsBase):
+        """Collected facts required to assess the advisory."""
+
+        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        authentication: Fact[SnmpV3AuthenticationFact] = fact_field(SnmpV3AuthenticationFact)
+        credential_syntax: Fact[SnmpV3CredentialSyntaxFact] = fact_field(SnmpV3CredentialSyntaxFact)
+
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
-    required_facts: ClassVar[tuple[type[FactDefinition[Any]], ...]] = (EosVersionFact, SnmpV3AuthenticationFact, SnmpV3CredentialSyntaxFact)
     description = "Verify whether the device is impacted by Security Advisory 0178."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
         """Derive the declared facts, assess the vulnerability, and project it."""
-        finding = _assess_sa178(
-            self.fact(EosVersionFact),
-            self.fact(SnmpV3AuthenticationFact),
-            self.fact(SnmpV3CredentialSyntaxFact),
-        )
+        facts = self.Facts.collect(self)
+        finding = _assess_sa178(facts.version, facts.authentication, facts.credential_syntax)
         atomic_result = self.result.add(f"Verify {VULNERABILITY_ID}.", vulnerability_ids=(VULNERABILITY_ID,))
         project_vulnerability_result(atomic_result, finding)

@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING
 from anta._advisory.eos_versions import AffectedStatus
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnmiTransportFact
-from anta._advisory.facts.models import AvailableFact, FeatureName, FeatureState, FeatureValue
+from anta._advisory.facts.models import AvailableFact, FeatureState
 from anta._advisory.findings.models import AffectedResult, ErrorResult, NotAffectedResult
 from anta._advisory.remediation import FixedRelease, software_version_plan
 from anta._eos.version import EOSVersion
@@ -35,9 +35,9 @@ REMEDIATION = software_version_plan(FIXED_RELEASES, current_version=EOSVersion(4
 expected_result = partial(build_expected_advisory_result, ADVISORY.vulnerabilities[0].id)
 
 
-def gnmi_fact(state: FeatureState) -> AvailableFact[FeatureValue]:
+def gnmi_fact(state: FeatureState) -> AvailableFact[GnmiTransportFact]:
     """Build normalized gNMI transport state for direct assessment tests."""
-    return available_fact(GnmiTransportFact, FeatureValue(FeatureName.GNMI, state))
+    return available_fact(GnmiTransportFact, GnmiTransportFact(state))
 
 
 def test_sa166_assessment_contract() -> None:

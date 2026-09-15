@@ -6,12 +6,12 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import Any, ClassVar, cast
+from typing import ClassVar, cast
 
 from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
+from anta._advisory.facts.models import AvailableFact, Fact, FactsBase, FeatureState, UnavailableFact, fact_field, facts_dataclass
 from anta._advisory.facts.routing import PimSparseModeFact
 from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import AffectedResult, EosReleaseAssessment, ErrorResult, NotAffectedResult, VulnerabilityResult
@@ -56,7 +56,7 @@ ADVISORY = _AdvisoryMetadata(
 VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
-def _assess_sa175(version: Fact[EOSVersion], sparse_mode: Fact[FeatureValue]) -> VulnerabilityResult:
+def _assess_sa175(version: Fact[EOSVersion], sparse_mode: Fact[PimSparseModeFact]) -> VulnerabilityResult:
     """Assess EOS applicability and PIM sparse-mode exposure."""
     if not isinstance(sparse_mode, UnavailableFact) and sparse_mode.value.state is not FeatureState.ENABLED:
         return NotAffectedResult(vulnerability_id=VULNERABILITY_ID, decisive=(sparse_mode,))
@@ -69,7 +69,7 @@ def _assess_sa175(version: Fact[EOSVersion], sparse_mode: Fact[FeatureValue]) ->
     return AffectedResult(
         vulnerability_id=VULNERABILITY_ID,
         context=(eos_release,),
-        conditions=(cast("AvailableFact[FeatureValue]", sparse_mode),),
+        conditions=(cast("AvailableFact[PimSparseModeFact]", sparse_mode),),
         remediation=software_version_plan(FIXED_RELEASES, current_version=eos_release.fact.value),
     )
 
@@ -92,14 +92,21 @@ class SA175(OptionalCommandsMixin, _AntaAdvisoryTest):
     ```
     """
 
+    @facts_dataclass
+    class Facts(FactsBase):
+        """Collected facts required to assess the advisory."""
+
+        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        sparse_mode: Fact[PimSparseModeFact] = fact_field(PimSparseModeFact)
+
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
-    required_facts: ClassVar[tuple[type[FactDefinition[Any]], ...]] = (EosVersionFact, PimSparseModeFact)
     description = "Verify whether the device is impacted by Security Advisory 0175."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
         """Derive the declared facts, assess the vulnerability, and project it."""
-        finding = _assess_sa175(self.fact(EosVersionFact), self.fact(PimSparseModeFact))
+        facts = self.Facts.collect(self)
+        finding = _assess_sa175(facts.version, facts.sparse_mode)
         atomic_result = self.result.add(f"Verify {VULNERABILITY_ID}.", vulnerability_ids=(VULNERABILITY_ID,))
         project_vulnerability_result(atomic_result, finding)

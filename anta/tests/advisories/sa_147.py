@@ -7,21 +7,20 @@ from __future__ import annotations
 
 import re
 from datetime import date
-from typing import Any, ClassVar
+from typing import ClassVar
 
 from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.models import (
-    ComponentSoftwareVersion,
     Fact,
-    FactDefinition,
     FactProblemKind,
+    FactsBase,
     FeatureState,
-    FeatureValue,
     MitigationState,
-    MitigationValue,
     UnavailableFact,
+    fact_field,
+    facts_dataclass,
 )
 from anta._advisory.facts.software import OpenSshClientVersionFact, OpenSshServerVersionFact
 from anta._advisory.facts.ssh import SshServerFact, StrictHostKeyCheckingFact
@@ -123,9 +122,9 @@ def _assess_client_issue(  # noqa: PLR0911
     vulnerability_id: str,
     eos_version: Fact[EOSVersion],
     affected_versions: tuple[VersionRule, ...],
-    package_version: Fact[ComponentSoftwareVersion],
+    package_version: Fact[OpenSshClientVersionFact],
     fixed_releases: tuple[FixedRelease, ...] = (),
-    mitigation: Fact[MitigationValue] | None = None,
+    mitigation: Fact[StrictHostKeyCheckingFact] | None = None,
 ) -> VulnerabilityResult:
     """Assess one OpenSSH client vulnerability from normalized facts."""
     eos_release = assess_eos_scope(vulnerability_id, eos_version, affected_versions)
@@ -167,8 +166,8 @@ def _assess_server_issue(  # noqa: PLR0911
     vulnerability_id: str,
     eos_version: Fact[EOSVersion],
     affected_versions: tuple[VersionRule, ...],
-    package_version: Fact[ComponentSoftwareVersion],
-    ssh_server: Fact[FeatureValue],
+    package_version: Fact[OpenSshServerVersionFact],
+    ssh_server: Fact[SshServerFact],
 ) -> VulnerabilityResult:
     """Assess the OpenSSH server vulnerability from normalized facts."""
     eos_release = assess_eos_scope(vulnerability_id, eos_version, affected_versions)
@@ -218,53 +217,52 @@ class SA147(OptionalCommandsMixin, _AntaAdvisoryTest):
     ```
     """
 
+    @facts_dataclass
+    class Facts(FactsBase):
+        """Collected facts required to assess the advisory."""
+
+        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        client_version: Fact[OpenSshClientVersionFact] = fact_field(OpenSshClientVersionFact)
+        server_version: Fact[OpenSshServerVersionFact] = fact_field(OpenSshServerVersionFact)
+        ssh_server: Fact[SshServerFact] = fact_field(SshServerFact)
+        strict_host_key_checking: Fact[StrictHostKeyCheckingFact] = fact_field(StrictHostKeyCheckingFact)
+
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
-    required_facts: ClassVar[tuple[type[FactDefinition[Any]], ...]] = (
-        EosVersionFact,
-        OpenSshClientVersionFact,
-        OpenSshServerVersionFact,
-        SshServerFact,
-        StrictHostKeyCheckingFact,
-    )
     description = "Verify whether the device is impacted by Security Advisory 0147."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
         """Assess and project each OpenSSH vulnerability independently."""
-        eos_version = self.fact(EosVersionFact)
-        client_version = self.fact(OpenSshClientVersionFact)
-        server_version = self.fact(OpenSshServerVersionFact)
-        ssh_server = self.fact(SshServerFact)
-        strict_host_key_checking = self.fact(StrictHostKeyCheckingFact)
+        facts = self.Facts.collect(self)
         vulnerability_ids = tuple(vulnerability.id for vulnerability in ADVISORY.vulnerabilities)
         assessments = (
             _assess_client_issue(
                 vulnerability_id=vulnerability_ids[0],
-                eos_version=eos_version,
+                eos_version=facts.version,
                 affected_versions=CVE_59995_59996_60001_AFFECTED_VERSION_MATRIX,
-                package_version=client_version,
+                package_version=facts.client_version,
             ),
             _assess_client_issue(
                 vulnerability_id=vulnerability_ids[1],
-                eos_version=eos_version,
+                eos_version=facts.version,
                 affected_versions=CVE_59995_59996_60001_AFFECTED_VERSION_MATRIX,
-                package_version=client_version,
+                package_version=facts.client_version,
             ),
             _assess_server_issue(
                 vulnerability_id=vulnerability_ids[2],
-                eos_version=eos_version,
+                eos_version=facts.version,
                 affected_versions=CVE_59995_59996_60001_AFFECTED_VERSION_MATRIX,
-                package_version=server_version,
-                ssh_server=ssh_server,
+                package_version=facts.server_version,
+                ssh_server=facts.ssh_server,
             ),
             _assess_client_issue(
                 vulnerability_id=vulnerability_ids[3],
-                eos_version=eos_version,
+                eos_version=facts.version,
                 affected_versions=CVE_60002_AFFECTED_VERSION_MATRIX,
-                package_version=client_version,
+                package_version=facts.client_version,
                 fixed_releases=CVE_60002_FIXED_RELEASES,
-                mitigation=strict_host_key_checking,
+                mitigation=facts.strict_host_key_checking,
             ),
         )
         for vulnerability, finding in zip(ADVISORY.vulnerabilities, assessments, strict=True):

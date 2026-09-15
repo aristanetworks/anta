@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 
 from anta._advisory.eos_versions import AffectedStatus
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import AvailableFact, FeatureName, FeatureState, FeatureValue, SubFeature
+from anta._advisory.facts.models import AvailableFact, FeatureState
 from anta._advisory.facts.network_services import MlagDualPrimaryErrdisableFact
 from anta._advisory.findings.models import AffectedResult, ErrorResult, NotAffectedResult
 from anta._advisory.remediation import FixedRelease, software_version_plan
@@ -34,10 +34,9 @@ REMEDIATION = software_version_plan(FIXED_RELEASES, current_version=EOSVersion(4
 expected_result = partial(build_expected_advisory_result, ADVISORY.vulnerabilities[0].id)
 
 
-def mlag_fact(state: FeatureState) -> AvailableFact[FeatureValue]:
+def mlag_fact(state: FeatureState) -> AvailableFact[MlagDualPrimaryErrdisableFact]:
     """Build normalized local MLAG state for direct assessment tests."""
-    feature = SubFeature(FeatureName.MLAG, "dual-primary heartbeat with errdisable-all action")
-    return available_fact(MlagDualPrimaryErrdisableFact, FeatureValue(feature, state))
+    return available_fact(MlagDualPrimaryErrdisableFact, MlagDualPrimaryErrdisableFact(state))
 
 
 def test_sa161_assessment_contract() -> None:

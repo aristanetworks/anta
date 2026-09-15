@@ -6,7 +6,8 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, ClassVar
 
 from anta._advisory.facts.models import (
     CommandsFactDefinition,
@@ -14,11 +15,12 @@ from anta._advisory.facts.models import (
     FactProblemKind,
     FactSource,
     FactSourceKind,
+    FeatureFact,
     FeatureName,
+    FeatureRef,
     FeatureState,
-    FeatureValue,
+    MitigationFact,
     MitigationState,
-    MitigationValue,
     SubFeature,
 )
 from anta._advisory.optional_commands import OptionalAntaCommand, is_unsupported_optional_command
@@ -52,15 +54,16 @@ def _includes_level_zero(expression: str) -> bool | None:
     return False
 
 
-class LevelZeroCommandAuthorizationFact(CommandsFactDefinition[MitigationValue]):
+@dataclass(frozen=True, slots=True)
+class LevelZeroCommandAuthorizationFact(MitigationFact, CommandsFactDefinition["LevelZeroCommandAuthorizationFact"]):
     """Explicit privilege-level-zero command authorization without the ``none`` method."""
 
-    key = "mitigation.aaa.level_zero_command_authorization"
-    label = "AAA privilege-level-zero command authorization"
-    commands = (AAA_CONFIG_COMMAND,)
+    key: ClassVar[str] = "mitigation.aaa.level_zero_command_authorization"
+    label: ClassVar[str] = "AAA privilege-level-zero command authorization"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (AAA_CONFIG_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[MitigationValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[LevelZeroCommandAuthorizationFact]:
         """Normalize the effective default command-authorization method list for level zero."""
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
@@ -81,18 +84,20 @@ class LevelZeroCommandAuthorizationFact(CommandsFactDefinition[MitigationValue])
                 applicable.append(tuple(match.group("methods").split()))
         effective = bool(applicable) and all("none" not in methods for methods in applicable)
         state = MitigationState.EFFECTIVE if effective else MitigationState.INEFFECTIVE
-        return cls.available(MitigationValue(state), source)
+        return cls.available(cls(state), source)
 
 
-class LoginAuthenticationFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class LoginAuthenticationFact(FeatureFact, CommandsFactDefinition["LoginAuthenticationFact"]):
     """Effective default login authentication state."""
 
-    key = "feature.aaa.login_authentication"
-    label = "login authentication state"
-    commands = (AAA_METHODS_COMMAND,)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.AAA, "login authentication")
+    key: ClassVar[str] = "feature.aaa.login_authentication"
+    label: ClassVar[str] = "login authentication state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (AAA_METHODS_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[LoginAuthenticationFact]:
         """Normalize whether the default login method list requires authentication."""
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
@@ -106,4 +111,4 @@ class LoginAuthenticationFact(CommandsFactDefinition[FeatureValue]):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         enabled = "none" not in {method.strip().lower() for method in methods}
         state = FeatureState.ENABLED if enabled else FeatureState.DISABLED
-        return cls.available(FeatureValue(SubFeature(FeatureName.AAA, "login authentication"), state), source)
+        return cls.available(cls(state), source)

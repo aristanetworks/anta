@@ -6,11 +6,11 @@
 from __future__ import annotations
 
 from functools import partial
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TypeVar, cast
 
 from anta._advisory.eos_versions import AffectedStatus
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import AvailableFact, FeatureName, FeatureState, FeatureValue, MitigationState, MitigationValue, SubFeature
+from anta._advisory.facts.models import AvailableFact, FactDefinition, FeatureState, MitigationState
 from anta._advisory.facts.routing import LegacyOspfv3ConfiguredFact, Ospfv3ConfiguredFact, Ospfv3IpsecAuthenticationFact
 from anta._advisory.findings.models import AffectedResult, ErrorResult, MitigatedResult, NotAffectedResult
 from anta._advisory.remediation import FixedRelease, software_version_plan
@@ -38,17 +38,20 @@ EMPTY_OSPFV3 = {"vrfs": {}}
 CURRENT_OSPFV3 = {"vrfs": {"default": {"addressFamily": {"ipv6": {}}}}}
 LEGACY_OSPFV3 = {"vrfs": {"default": {"instList": {"0": {}}}}}
 MALFORMED_OSPFV3 = {"vrfs": []}
+FeatureFactT = TypeVar("FeatureFactT", Ospfv3ConfiguredFact, LegacyOspfv3ConfiguredFact)
 
 
-def ospfv3_fact(definition: type[Ospfv3ConfiguredFact | LegacyOspfv3ConfiguredFact], state: FeatureState) -> AvailableFact[FeatureValue]:
+def ospfv3_fact(definition: type[FeatureFactT], state: FeatureState) -> AvailableFact[FeatureFactT]:
     """Build one normalized OSPFv3 observation for direct assessment tests."""
-    name = "routing process" if definition is Ospfv3ConfiguredFact else "legacy IPv6 routing process"
-    return available_fact(definition, FeatureValue(SubFeature(FeatureName.OSPFV3, name), state))
+    return available_fact(
+        cast("type[FactDefinition[FeatureFactT]]", definition),
+        cast("FeatureFactT", definition(state)),
+    )
 
 
-def authentication_fact(state: MitigationState) -> AvailableFact[MitigationValue]:
+def authentication_fact(state: MitigationState) -> AvailableFact[Ospfv3IpsecAuthenticationFact]:
     """Build normalized OSPFv3 IPsec authentication coverage for direct assessment tests."""
-    return available_fact(Ospfv3IpsecAuthenticationFact, MitigationValue(state))
+    return available_fact(Ospfv3IpsecAuthenticationFact, Ospfv3IpsecAuthenticationFact(state))
 
 
 def test_sa172_assessment_contract() -> None:

@@ -14,7 +14,7 @@ from unittest.mock import AsyncMock
 
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact, SecureBootFact
-from anta._advisory.facts.models import AvailableFact, FactProblemKind, FactSource, FactSourceKind, FeatureName, FeatureState, FeatureValue
+from anta._advisory.facts.models import AvailableFact, FactProblemKind, FactSource, FactSourceKind, FeatureState
 from anta._advisory.findings.models import AffectedResult, EosReleaseAssessment, ErrorResult, NotAffectedResult, VersionRelation
 from anta._advisory.remediation import FixedRelease, software_version_plan
 from anta._advisory.results import _get_atomic_vulnerability_ids
@@ -154,22 +154,22 @@ class TestSA140Assessment(unittest.TestCase):
     def test_affected_and_safe_configuration_states(self) -> None:
         affected = _assess_sa140(
             self.version_fact("4.35.1F"),
-            SecureBootFact.available(FeatureValue(FeatureName.SECURE_BOOT, FeatureState.ENABLED), TEST_SOURCE),
+            SecureBootFact.available(SecureBootFact(FeatureState.ENABLED), TEST_SOURCE),
         )
         disabled = _assess_sa140(
             self.version_fact("4.35.1F"),
-            SecureBootFact.available(FeatureValue(FeatureName.SECURE_BOOT, FeatureState.DISABLED), TEST_SOURCE),
+            SecureBootFact.available(SecureBootFact(FeatureState.DISABLED), TEST_SOURCE),
         )
 
         assert isinstance(affected, AffectedResult)
         condition = affected.conditions[0]
         assert isinstance(condition, AvailableFact)
-        assert isinstance(condition.value, FeatureValue)
+        assert isinstance(condition.value, SecureBootFact)
         assert condition.value.state is FeatureState.ENABLED
         assert affected.context[0].relation is VersionRelation.AFFECTED
         assert affected.remediation == EXPECTED_REMEDIATION
         assert isinstance(disabled, NotAffectedResult)
-        disabled_evidence = cast("AvailableFact[FeatureValue]", disabled.decisive[0])
+        disabled_evidence = cast("AvailableFact[SecureBootFact]", disabled.decisive[0])
         assert disabled_evidence.value.state is FeatureState.DISABLED
 
     def test_fixed_version_short_circuits_boot_evidence(self) -> None:
@@ -183,11 +183,11 @@ class TestSA140Assessment(unittest.TestCase):
         assert version_assessment.relation is VersionRelation.OUTSIDE_SCOPE
 
     def test_unsupported_secure_boot_is_not_affected(self) -> None:
-        secure_boot = SecureBootFact.available(FeatureValue(FeatureName.SECURE_BOOT, FeatureState.UNSUPPORTED), TEST_SOURCE)
+        secure_boot = SecureBootFact.available(SecureBootFact(FeatureState.UNSUPPORTED), TEST_SOURCE)
         finding = _assess_sa140(self.version_fact("4.35.1F"), secure_boot)
 
         assert isinstance(finding, NotAffectedResult)
-        secure_boot_evidence = cast("AvailableFact[FeatureValue]", finding.decisive[0])
+        secure_boot_evidence = cast("AvailableFact[SecureBootFact]", finding.decisive[0])
         assert secure_boot_evidence.value.state is FeatureState.UNSUPPORTED
 
     def test_unavailable_required_fact_is_error(self) -> None:

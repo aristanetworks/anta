@@ -8,7 +8,7 @@
 from __future__ import annotations
 
 import unittest
-from typing import TYPE_CHECKING, Any, Literal, TypeAlias
+from typing import TYPE_CHECKING, Any, Literal, TypeAlias, cast
 
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact
@@ -18,10 +18,7 @@ from anta._advisory.facts.models import (
     FactProblemKind,
     FactSource,
     FactSourceKind,
-    FeatureName,
     FeatureState,
-    FeatureValue,
-    SubFeature,
 )
 from anta._advisory.facts.tracing import (
     AaaPasswordTraceFact,
@@ -48,11 +45,11 @@ from tests.units.anta_tests import build_eos_version, test
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from anta._advisory.facts.models import CommandsFactDefinition
     from tests.units.anta_tests import AntaUnitTestData, AtomicResult, UnitTestResult
 
 SOURCE = FactSource("unit test", FactSourceKind.DEVICE_METADATA)
 ProductionStatus: TypeAlias = Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.ERROR]
+TraceFact: TypeAlias = ConfigAgentPrivateKeyTraceFact | AaaPasswordTraceFact | AaaTacacsKeyTraceFact
 IssueExpectation: TypeAlias = tuple[ProductionStatus, str, RemediationPlan | None]
 EXPECTED_FIXED_RELEASES = (
     FixedRelease(EOSVersion(4, 36, 2, suffix="F")),
@@ -199,9 +196,13 @@ def version_fact(version: str | None) -> Fact[EOSVersion]:
     return EosVersionFact.available(parsed, SOURCE)
 
 
-def trace_fact(definition: type[CommandsFactDefinition[FeatureValue]], state: FeatureState) -> AvailableFact[FeatureValue]:
+def trace_fact(definition: type[TraceFact], state: FeatureState) -> AvailableFact[TraceFact]:
     """Build one agent-trace fact."""
-    return definition.available(FeatureValue(SubFeature(FeatureName.AGENT_TRACING, "test trace"), state), SOURCE)
+    if definition is ConfigAgentPrivateKeyTraceFact:
+        return definition.available(definition(state), SOURCE)
+    if definition is AaaPasswordTraceFact:
+        return definition.available(definition(state), SOURCE)
+    return AaaTacacsKeyTraceFact.available(AaaTacacsKeyTraceFact(state), SOURCE)
 
 
 class TestSA153VersionMatrix(unittest.TestCase):
@@ -230,17 +231,13 @@ class TestSA153VersionMatrix(unittest.TestCase):
 class TestSA153Assessment(unittest.TestCase):
     """Validate shared semantics through every vulnerability wrapper."""
 
-    ASSESSMENTS: tuple[
-        tuple[
-            Callable[[Fact[EOSVersion], Fact[FeatureValue]], object],
-            str,
-            type[CommandsFactDefinition[FeatureValue]],
-        ],
-        ...,
-    ] = (
-        (_assess_private_key, PRIVATE_KEY_ID, ConfigAgentPrivateKeyTraceFact),
-        (_assess_password, PASSWORD_ID, AaaPasswordTraceFact),
-        (_assess_tacacs_key, TACACS_KEY_ID, AaaTacacsKeyTraceFact),
+    ASSESSMENTS = cast(
+        "tuple[tuple[Callable[[Fact[EOSVersion], Fact[TraceFact]], object], str, type[TraceFact]], ...]",
+        (
+            (_assess_private_key, PRIVATE_KEY_ID, ConfigAgentPrivateKeyTraceFact),
+            (_assess_password, PASSWORD_ID, AaaPasswordTraceFact),
+            (_assess_tacacs_key, TACACS_KEY_ID, AaaTacacsKeyTraceFact),
+        ),
     )
 
     def test_risky_trace_is_affected(self) -> None:

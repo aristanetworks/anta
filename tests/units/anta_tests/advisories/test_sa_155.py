@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 
 from anta._advisory.eos_versions import AffectedStatus
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import AvailableFact, FeatureName, FeatureState, FeatureValue, SubFeature
+from anta._advisory.facts.models import AvailableFact, FeatureState
 from anta._advisory.facts.network_services import DhcpOption82Fact
 from anta._advisory.findings.models import AffectedResult, ErrorResult, NotAffectedResult
 from anta._advisory.remediation import FixedRelease, software_version_plan
@@ -36,9 +36,9 @@ RELAY_INACTIVE = {"activeState": False}
 SNOOPING_OPTION82_CONFIG = "ip dhcp snooping\nip dhcp snooping information option\nip dhcp snooping vlan 100"
 
 
-def option82_fact(state: FeatureState) -> AvailableFact[FeatureValue]:
+def option82_fact(state: FeatureState) -> AvailableFact[DhcpOption82Fact]:
     """Build normalized DHCP Option 82 state for direct assessment tests."""
-    return available_fact(DhcpOption82Fact, FeatureValue(SubFeature(FeatureName.DHCP, "Option 82 exposure"), state))
+    return available_fact(DhcpOption82Fact, DhcpOption82Fact(state))
 
 
 def test_sa155_assessment_contract() -> None:

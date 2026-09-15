@@ -6,12 +6,12 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import Any, ClassVar, cast
+from typing import ClassVar, cast
 
 from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import AffectedStatus, VersionRule, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
+from anta._advisory.facts.models import AvailableFact, Fact, FactsBase, FeatureState, UnavailableFact, fact_field, facts_dataclass
 from anta._advisory.facts.network_services import VrrpAntiReplayFact, VrrpFact, VrrpV2IpAhFact
 from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import (
@@ -104,7 +104,7 @@ def _logging_remediation_plan(current_version: EOSVersion) -> RemediationPlan:
     )
 
 
-def _assess_bypass(version: Fact[EOSVersion], ip_ah: Fact[FeatureValue]) -> VulnerabilityResult:
+def _assess_bypass(version: Fact[EOSVersion], ip_ah: Fact[VrrpV2IpAhFact]) -> VulnerabilityResult:
     """Assess the VRRPv2 IP-AH authentication-bypass issue."""
     if not isinstance(ip_ah, UnavailableFact) and ip_ah.value.state is not FeatureState.ENABLED:
         return NotAffectedResult(vulnerability_id=BYPASS_ID, decisive=(ip_ah,))
@@ -115,7 +115,7 @@ def _assess_bypass(version: Fact[EOSVersion], ip_ah: Fact[FeatureValue]) -> Vuln
         return ErrorResult(vulnerability_id=BYPASS_ID, problems=(ip_ah,))
     return AffectedResult(
         vulnerability_id=BYPASS_ID,
-        conditions=(cast("AvailableFact[FeatureValue]", ip_ah),),
+        conditions=(cast("AvailableFact[VrrpV2IpAhFact]", ip_ah),),
         context=(eos_release,),
         remediation=software_version_plan(FIXED_RELEASES, current_version=eos_release.fact.value),
     )
@@ -131,7 +131,7 @@ def _replay_version_relation(version: AvailableFact[EOSVersion]) -> VersionRelat
 
 
 def _assess_replay(  # noqa: PLR0911  # pylint: disable=too-many-return-statements
-    version: Fact[EOSVersion], ip_ah: Fact[FeatureValue], anti_replay: Fact[FeatureValue]
+    version: Fact[EOSVersion], ip_ah: Fact[VrrpV2IpAhFact], anti_replay: Fact[VrrpAntiReplayFact]
 ) -> VulnerabilityResult:
     """Require both fixed software and explicitly enabled VRRP replay protection."""
     if not isinstance(ip_ah, UnavailableFact) and ip_ah.value.state is not FeatureState.ENABLED:
@@ -161,7 +161,7 @@ def _assess_replay(  # noqa: PLR0911  # pylint: disable=too-many-return-statemen
     return AffectedResult(vulnerability_id=REPLAY_ID, conditions=(ip_ah,), context=(release,), remediation=plan)
 
 
-def _assess_logging(version: Fact[EOSVersion], vrrp: Fact[FeatureValue]) -> VulnerabilityResult:
+def _assess_logging(version: Fact[EOSVersion], vrrp: Fact[VrrpFact]) -> VulnerabilityResult:
     """Assess the VRRP credential-logging issue."""
     if not isinstance(vrrp, UnavailableFact) and vrrp.value.state is not FeatureState.ENABLED:
         return NotAffectedResult(vulnerability_id=LOGGING_ID, decisive=(vrrp,))
@@ -172,7 +172,7 @@ def _assess_logging(version: Fact[EOSVersion], vrrp: Fact[FeatureValue]) -> Vuln
         return ErrorResult(vulnerability_id=LOGGING_ID, problems=(vrrp,))
     return AffectedResult(
         vulnerability_id=LOGGING_ID,
-        conditions=(cast("AvailableFact[FeatureValue]", vrrp),),
+        conditions=(cast("AvailableFact[VrrpFact]", vrrp),),
         context=(eos_release,),
         remediation=_logging_remediation_plan(eos_release.fact.value),
     )
@@ -200,22 +200,27 @@ class SA157(_AntaAdvisoryTest):
     ```
     """
 
+    @facts_dataclass
+    class Facts(FactsBase):
+        """Collected facts required to assess the advisory."""
+
+        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        vrrp: Fact[VrrpFact] = fact_field(VrrpFact)
+        ip_ah: Fact[VrrpV2IpAhFact] = fact_field(VrrpV2IpAhFact)
+        anti_replay: Fact[VrrpAntiReplayFact] = fact_field(VrrpAntiReplayFact)
+
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
-    required_facts: ClassVar[tuple[type[FactDefinition[Any]], ...]] = (EosVersionFact, VrrpFact, VrrpV2IpAhFact, VrrpAntiReplayFact)
     description = "Verify whether the device is impacted by Security Advisory 0157."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
         """Derive facts, assess all three vulnerabilities, and project them."""
-        version = self.fact(EosVersionFact)
-        vrrp = self.fact(VrrpFact)
-        ip_ah = self.fact(VrrpV2IpAhFact)
-        anti_replay = self.fact(VrrpAntiReplayFact)
+        facts = self.Facts.collect(self)
         for vulnerability_id, finding in (
-            (BYPASS_ID, _assess_bypass(version, ip_ah)),
-            (REPLAY_ID, _assess_replay(version, ip_ah, anti_replay)),
-            (LOGGING_ID, _assess_logging(version, vrrp)),
+            (BYPASS_ID, _assess_bypass(facts.version, facts.ip_ah)),
+            (REPLAY_ID, _assess_replay(facts.version, facts.ip_ah, facts.anti_replay)),
+            (LOGGING_ID, _assess_logging(facts.version, facts.vrrp)),
         ):
             atomic = self.result.add(f"Verify {vulnerability_id}.", vulnerability_ids=(vulnerability_id,))
             project_vulnerability_result(atomic, finding)

@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import unittest
 from functools import partial
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 from unittest.mock import AsyncMock
 
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
@@ -25,16 +25,13 @@ from anta._advisory.facts.management import (
 )
 from anta._advisory.facts.models import (
     AvailableFact,
-    ComponentSoftwareVersion,
     Fact,
+    FactDefinition,
     FactProblemKind,
     FactSource,
     FactSourceKind,
-    FeatureName,
     FeatureState,
-    FeatureValue,
     MitigationState,
-    MitigationValue,
     UnavailableFact,
 )
 from anta._advisory.facts.software import TerminAttrVersionFact
@@ -64,6 +61,8 @@ if TYPE_CHECKING:
 
 
 SOURCE = FactSource("unit test", FactSourceKind.DEVICE_METADATA)
+ServiceFactT = TypeVar("ServiceFactT", GnmiTransportFact, GribiTransportFact, TerminAttrGrpcFact)
+MitigationFactT = TypeVar("MitigationFactT", GnmiMtlsFact, GribiMtlsFact, TerminAttrMtlsFact)
 UNSUPPORTED_ERROR = "Incomplete command (at token 1: 'module')"
 EXPECTED_EOS_FIXED_RELEASES = (
     FixedRelease(EOSVersion(4, 36, 2, suffix="F")),
@@ -103,14 +102,14 @@ def _unsupported_command(template: AntaCommand) -> AntaCommand:
     return template.model_copy(update={"errors": [UNSUPPORTED_ERROR]})
 
 
-def _feature_bool(fact: Fact[FeatureValue]) -> bool | None:
+def _feature_bool(fact: Fact[GnmiTransportFact | GribiTransportFact | TerminAttrGrpcFact]) -> bool | None:
     """Project a feature fact to the legacy parser truth table."""
     if isinstance(fact, UnavailableFact):
         return None
     return fact.value.state is FeatureState.ENABLED
 
 
-def _mitigation_bool(fact: Fact[MitigationValue]) -> bool | None:
+def _mitigation_bool(fact: Fact[GnmiMtlsFact | GribiMtlsFact | TerminAttrMtlsFact]) -> bool | None:
     """Project a mitigation fact to the legacy parser truth table."""
     if isinstance(fact, UnavailableFact):
         return None
@@ -445,7 +444,7 @@ class TestSA146Evidence(unittest.TestCase):
         assert not _feature_bool(GribiTransportFact.parse((_command(GribiTransportFact.commands[0], gribi_output(enabled=False)),)))
         assert _feature_bool(GribiTransportFact.parse((_command(GribiTransportFact.commands[0], {"enabled": "true"}),))) is None
 
-        def terminattr_fact(daemon: dict[str, Any]) -> Fact[FeatureValue]:
+        def terminattr_fact(daemon: dict[str, Any]) -> Fact[TerminAttrGrpcFact]:
             return TerminAttrGrpcFact.parse(
                 (
                     _command(TerminAttrGrpcFact.commands[0], daemon),
@@ -587,22 +586,19 @@ class TestSA146Assessment(unittest.TestCase):
         }
         arguments.update(overrides)
 
-        def feature(definition: type[GnmiTransportFact | GribiTransportFact | TerminAttrGrpcFact], enabled: bool | None) -> Fact[FeatureValue]:
+        def feature(definition: type[ServiceFactT], enabled: bool | None) -> Fact[ServiceFactT]:
+            typed_definition = cast("type[FactDefinition[ServiceFactT]]", definition)
             if enabled is None:
-                return definition.unavailable(FactProblemKind.MALFORMED, SOURCE)
-            name = FeatureName.GNMI if definition is GnmiTransportFact else FeatureName.GRIBI if definition is GribiTransportFact else FeatureName.TERMINATTR
-            return definition.available(
-                FeatureValue(name, FeatureState.ENABLED if enabled else FeatureState.DISABLED),
-                SOURCE,
-            )
+                return typed_definition.unavailable(FactProblemKind.MALFORMED, SOURCE)
+            state = FeatureState.ENABLED if enabled else FeatureState.DISABLED
+            return typed_definition.available(cast("ServiceFactT", definition(state)), SOURCE)
 
-        def mitigation(definition: type[GnmiMtlsFact | GribiMtlsFact | TerminAttrMtlsFact], enabled: bool | None) -> Fact[MitigationValue]:
+        def mitigation(definition: type[MitigationFactT], enabled: bool | None) -> Fact[MitigationFactT]:
+            typed_definition = cast("type[FactDefinition[MitigationFactT]]", definition)
             if enabled is None:
-                return definition.unavailable(FactProblemKind.MISSING, SOURCE)
-            return definition.available(
-                MitigationValue(MitigationState.EFFECTIVE if enabled else MitigationState.INEFFECTIVE),
-                SOURCE,
-            )
+                return typed_definition.unavailable(FactProblemKind.MISSING, SOURCE)
+            state = MitigationState.EFFECTIVE if enabled else MitigationState.INEFFECTIVE
+            return typed_definition.available(cast("MitigationFactT", definition(state)), SOURCE)
 
         if arguments["eos_affected"] is None:
             eos_version: Fact[EOSVersion] = EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
@@ -613,7 +609,7 @@ class TestSA146Assessment(unittest.TestCase):
             TerminAttrVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
             if arguments["terminattr_affected"] is None
             else TerminAttrVersionFact.available(
-                ComponentSoftwareVersion("TerminAttr", "v1.45.0" if arguments["terminattr_affected"] else "v1.45.1"),
+                TerminAttrVersionFact("v1.45.0" if arguments["terminattr_affected"] else "v1.45.1"),
                 SOURCE,
             )
         )

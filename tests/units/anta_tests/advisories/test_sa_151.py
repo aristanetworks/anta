@@ -16,13 +16,10 @@ from anta._advisory.facts.acl import SharedSviIngressAclFact
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.models import (
     ConfigurationState,
-    ConfigurationValue,
     Fact,
     FactProblemKind,
     FactSource,
     FactSourceKind,
-    FeatureName,
-    SubFeature,
 )
 from anta._advisory.facts.platform import PlatformIdentityFact
 from anta._advisory.findings.models import AffectedResult, ErrorResult, NotAffectedResult
@@ -109,7 +106,7 @@ def platform_fact(value: str):  # noqa: ANN201
 
 def acl_fact(state: ConfigurationState):  # noqa: ANN201
     """Build a shared SVI ingress ACL fact."""
-    return SharedSviIngressAclFact.available(ConfigurationValue(SubFeature(FeatureName.ACL, "shared SVI ingress"), state), SOURCE)
+    return SharedSviIngressAclFact.available(SharedSviIngressAclFact(state), SOURCE)
 
 
 class TestSA151Assessment(unittest.TestCase):

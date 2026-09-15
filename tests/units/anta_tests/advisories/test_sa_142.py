@@ -16,16 +16,14 @@ from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.models import (
     AvailableFact,
+    ConfigurationFact,
     ConfigurationState,
-    ConfigurationValue,
     Fact,
+    FactDefinition,
     FactProblemKind,
     FactSource,
     FactSourceKind,
-    FeatureName,
     MitigationState,
-    MitigationValue,
-    SubFeature,
     UnavailableFact,
 )
 from anta._advisory.facts.platform import PlatformIdentityFact
@@ -90,6 +88,17 @@ MTU_DROP_COMMAND = "ip software forwarding mtu exceed action drop"
 if TYPE_CHECKING:
     from anta.device import DevicePlatform, DeviceVersion
     from tests.units.anta_tests import AntaUnitTestData
+
+
+def redirect_fact(
+    definition: type[PbrRedirectFact | FlowSpecRedirectFact | TrafficPolicyRedirectFact | DirectFlowRedirectFact | SegmentSecurityRedirectFact],
+    state: ConfigurationState,
+    source: FactSource,
+) -> AvailableFact[ConfigurationFact]:
+    """Build one concrete redirect-configuration fact."""
+    typed_definition = cast("type[FactDefinition[ConfigurationFact]]", definition)
+    typed_value = cast("type[ConfigurationFact]", definition)(state)
+    return typed_definition.available(typed_value, source)
 
 
 def pbr_output(*, attached: bool = True) -> dict[str, Any]:
@@ -652,11 +661,9 @@ class TestSA142Assessment(unittest.TestCase):
         path_facts = tuple(
             definition.unavailable(FactProblemKind.MALFORMED, self.source)
             if state is None
-            else definition.available(
-                ConfigurationValue(
-                    SubFeature(FeatureName.NEXT_HOP_REDIRECTION, f"path using {definition.path_name}"),
-                    ConfigurationState.CONFIGURED if state else ConfigurationState.NOT_CONFIGURED,
-                ),
+            else redirect_fact(
+                definition,
+                ConfigurationState.CONFIGURED if state else ConfigurationState.NOT_CONFIGURED,
                 self.source,
             )
             for definition, state in zip(definitions, states, strict=True)
@@ -671,7 +678,7 @@ class TestSA142Assessment(unittest.TestCase):
             MtuDropMitigationFact.unavailable(FactProblemKind.UNSUPPORTED, self.source)
             if mitigation_unsupported
             else MtuDropMitigationFact.available(
-                MitigationValue(MitigationState.EFFECTIVE if mitigation else MitigationState.INEFFECTIVE),
+                MtuDropMitigationFact(MitigationState.EFFECTIVE if mitigation else MitigationState.INEFFECTIVE),
                 self.source,
             )
         )

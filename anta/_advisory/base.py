@@ -8,6 +8,7 @@ from __future__ import annotations
 import sys
 from typing import TYPE_CHECKING, Any, ClassVar, TypeVar
 
+from anta._advisory.facts.models import FactsBase
 from anta._advisory.models import _AdvisoryMetadata
 from anta._advisory.results import _AdvisoryTestResult
 from anta.models import AntaCommand, AntaTemplate, AntaTest, _description_from_docstring
@@ -51,7 +52,7 @@ class _AntaAdvisoryTest(AntaTest):
         """Derive commands, set subclass identity, and validate advisory attributes."""
         has_own_name = "name" in cls.__dict__
         has_own_description = "description" in cls.__dict__
-        required_facts = cls.__dict__.get("required_facts", ())
+        required_facts = cls._required_facts_for_subclass()
         if required_facts:
             if "commands" in cls.__dict__:
                 msg = f"Class {cls.__module__}.{cls.__name__} cannot define both 'required_facts' and 'commands'"
@@ -76,6 +77,21 @@ class _AntaAdvisoryTest(AntaTest):
         if not cls.commands and not required_facts:
             msg = f"Class {cls.__module__}.{cls.__name__} must define at least one command or required fact"
             raise AttributeError(msg)
+
+    @classmethod
+    def _required_facts_for_subclass(cls) -> tuple[type[FactDefinition[Any]], ...]:
+        """Return facts declared through either the legacy tuple or typed fields."""
+        required_facts = cls.__dict__.get("required_facts", ())
+        if not (facts_type := cls.__dict__.get("Facts")):
+            return required_facts
+        if required_facts:
+            msg = f"Class {cls.__module__}.{cls.__name__} cannot define both 'Facts' and 'required_facts'"
+            raise AttributeError(msg)
+        if not issubclass(facts_type, FactsBase):
+            msg = f"Class {cls.__module__}.{cls.__name__}.Facts must be a subclass of FactsBase"
+            raise TypeError(msg)
+        cls.required_facts = tuple(facts_type.definitions().values())
+        return cls.required_facts
 
     @classmethod
     def _commands_from_required_facts(cls, required_facts: tuple[type[FactDefinition[Any]], ...]) -> list[AntaCommand | AntaTemplate]:

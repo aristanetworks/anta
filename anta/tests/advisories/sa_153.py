@@ -6,12 +6,12 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import Any, ClassVar
+from typing import ClassVar, TypeVar
 
 from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import Fact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
+from anta._advisory.facts.models import Fact, FactsBase, FeatureFact, FeatureState, UnavailableFact, fact_field, facts_dataclass
 from anta._advisory.facts.tracing import (
     AaaPasswordTraceFact,
     AaaTacacsKeyTraceFact,
@@ -68,12 +68,13 @@ ADVISORY = _AdvisoryMetadata(
     ),
 )
 PRIVATE_KEY_ID, PASSWORD_ID, TACACS_KEY_ID = (vulnerability.id for vulnerability in ADVISORY.vulnerabilities)
+TraceFactT = TypeVar("TraceFactT", bound=FeatureFact)
 
 
 def _assess_sa153_issue(
     vulnerability_id: str,
     version: Fact[EOSVersion],
-    risky_trace: Fact[FeatureValue],
+    risky_trace: Fact[TraceFactT],
 ) -> VulnerabilityResult:
     """Assess one independent trace-driven exposure."""
     if not isinstance(risky_trace, UnavailableFact) and risky_trace.value.state is not FeatureState.ENABLED:
@@ -96,7 +97,7 @@ def _assess_sa153_issue(
 
 def _assess_private_key(
     version: Fact[EOSVersion],
-    risky_trace: Fact[FeatureValue],
+    risky_trace: Fact[ConfigAgentPrivateKeyTraceFact],
 ) -> VulnerabilityResult:
     """Assess private-key exposure in ConfigAgent logs."""
     return _assess_sa153_issue(PRIVATE_KEY_ID, version, risky_trace)
@@ -104,7 +105,7 @@ def _assess_private_key(
 
 def _assess_password(
     version: Fact[EOSVersion],
-    risky_trace: Fact[FeatureValue],
+    risky_trace: Fact[AaaPasswordTraceFact],
 ) -> VulnerabilityResult:
     """Assess user-password exposure in Aaa logs."""
     return _assess_sa153_issue(PASSWORD_ID, version, risky_trace)
@@ -112,7 +113,7 @@ def _assess_password(
 
 def _assess_tacacs_key(
     version: Fact[EOSVersion],
-    risky_trace: Fact[FeatureValue],
+    risky_trace: Fact[AaaTacacsKeyTraceFact],
 ) -> VulnerabilityResult:
     """Assess TACACS+ shared-key exposure in Aaa logs."""
     return _assess_sa153_issue(TACACS_KEY_ID, version, risky_trace)
@@ -136,24 +137,27 @@ class SA153(OptionalCommandsMixin, _AntaAdvisoryTest):
     ```
     """
 
+    @facts_dataclass
+    class Facts(FactsBase):
+        """Collected facts required to assess the advisory."""
+
+        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        private_key_trace: Fact[ConfigAgentPrivateKeyTraceFact] = fact_field(ConfigAgentPrivateKeyTraceFact)
+        password_trace: Fact[AaaPasswordTraceFact] = fact_field(AaaPasswordTraceFact)
+        tacacs_key_trace: Fact[AaaTacacsKeyTraceFact] = fact_field(AaaTacacsKeyTraceFact)
+
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
-    required_facts: ClassVar[tuple[type[FactDefinition[Any]], ...]] = (
-        EosVersionFact,
-        ConfigAgentPrivateKeyTraceFact,
-        AaaPasswordTraceFact,
-        AaaTacacsKeyTraceFact,
-    )
     description = "Verify whether the device is impacted by Security Advisory 0153."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
         """Derive the declared facts, assess each vulnerability, and project it."""
-        version = self.fact(EosVersionFact)
+        facts = self.Facts.collect(self)
         findings = (
-            _assess_private_key(version, self.fact(ConfigAgentPrivateKeyTraceFact)),
-            _assess_password(version, self.fact(AaaPasswordTraceFact)),
-            _assess_tacacs_key(version, self.fact(AaaTacacsKeyTraceFact)),
+            _assess_private_key(facts.version, facts.private_key_trace),
+            _assess_password(facts.version, facts.password_trace),
+            _assess_tacacs_key(facts.version, facts.tacacs_key_trace),
         )
         for vulnerability, finding in zip(ADVISORY.vulnerabilities, findings, strict=True):
             atomic_result = self.result.add(f"Verify {vulnerability.id}.", vulnerability_ids=(vulnerability.id,))

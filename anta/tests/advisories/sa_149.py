@@ -6,13 +6,13 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import Any, ClassVar, cast
+from typing import ClassVar, cast
 
 from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import Dot1xDynamicAuthorizationFact, RadiusProxyDynamicAuthorizationFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
+from anta._advisory.facts.models import AvailableFact, Fact, FactsBase, FeatureState, UnavailableFact, fact_field, facts_dataclass
 from anta._advisory.facts.platform import PlatformIdentityFact
 from anta._advisory.findings.assessment import assess_eos_scope, assess_platform_scope
 from anta._advisory.findings.models import (
@@ -99,8 +99,8 @@ VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 def _assess_sa149(
     version: Fact[EOSVersion],
     platform: Fact[PlatformIdentity],
-    dot1x: Fact[FeatureValue],
-    radius_proxy: Fact[FeatureValue],
+    dot1x: Fact[Dot1xDynamicAuthorizationFact],
+    radius_proxy: Fact[RadiusProxyDynamicAuthorizationFact],
 ) -> VulnerabilityResult:
     """Assess the physical-platform, EOS, 802.1X, and RADIUS proxy conjunction."""
     for prerequisite in (dot1x, radius_proxy):
@@ -119,7 +119,7 @@ def _assess_sa149(
         return ErrorResult(vulnerability_id=VULNERABILITY_ID, problems=problems)
     return AffectedResult(
         vulnerability_id=VULNERABILITY_ID,
-        conditions=(cast("AvailableFact[FeatureValue]", dot1x), cast("AvailableFact[FeatureValue]", radius_proxy)),
+        conditions=(cast("AvailableFact[Dot1xDynamicAuthorizationFact]", dot1x), cast("AvailableFact[RadiusProxyDynamicAuthorizationFact]", radius_proxy)),
         context=(eos_release, platform_scope),
         remediation=software_version_plan(FIXED_RELEASES, current_version=eos_release.fact.value),
     )
@@ -143,24 +143,23 @@ class SA149(OptionalCommandsMixin, _AntaAdvisoryTest):
     ```
     """
 
+    @facts_dataclass
+    class Facts(FactsBase):
+        """Collected facts required to assess the advisory."""
+
+        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        platform: Fact[PlatformIdentity] = fact_field(PlatformIdentityFact)
+        dot1x: Fact[Dot1xDynamicAuthorizationFact] = fact_field(Dot1xDynamicAuthorizationFact)
+        radius_proxy: Fact[RadiusProxyDynamicAuthorizationFact] = fact_field(RadiusProxyDynamicAuthorizationFact)
+
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
-    required_facts: ClassVar[tuple[type[FactDefinition[Any]], ...]] = (
-        EosVersionFact,
-        PlatformIdentityFact,
-        Dot1xDynamicAuthorizationFact,
-        RadiusProxyDynamicAuthorizationFact,
-    )
     description = "Verify whether the device is impacted by Security Advisory 0149."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
         """Derive facts, assess the vulnerability, and project it."""
-        finding = _assess_sa149(
-            self.fact(EosVersionFact),
-            self.fact(PlatformIdentityFact),
-            self.fact(Dot1xDynamicAuthorizationFact),
-            self.fact(RadiusProxyDynamicAuthorizationFact),
-        )
+        facts = self.Facts.collect(self)
+        finding = _assess_sa149(facts.version, facts.platform, facts.dot1x, facts.radius_proxy)
         atomic = self.result.add(f"Verify {VULNERABILITY_ID}.", vulnerability_ids=(VULNERABILITY_ID,))
         project_vulnerability_result(atomic, finding)

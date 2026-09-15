@@ -7,15 +7,18 @@
 from __future__ import annotations
 
 from datetime import date
+from typing import ClassVar
 
 from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact, SecureBootFact
 from anta._advisory.facts.models import (
     Fact,
+    FactsBase,
     FeatureState,
-    FeatureValue,
     UnavailableFact,
+    fact_field,
+    facts_dataclass,
 )
 from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import (
@@ -77,7 +80,7 @@ VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 def _assess_sa140(
     version_fact: Fact[EOSVersion],
-    secure_boot: Fact[FeatureValue],
+    secure_boot: Fact[SecureBootFact],
 ) -> VulnerabilityResult:
     """Return a structured conclusion from normalized SA140 facts."""
     release = assess_eos_scope(VULNERABILITY_ID, version_fact, AFFECTED_VERSION_MATRIX)
@@ -122,18 +125,22 @@ class SA140(_AntaAdvisoryTest):
     ```
     """
 
-    advisory = ADVISORY
-    required_facts = (EosVersionFact, SecureBootFact)
+    @facts_dataclass
+    class Facts(FactsBase):
+        """Collected facts required to assess the advisory."""
+
+        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        secure_boot: Fact[SecureBootFact] = fact_field(SecureBootFact)
+
+    advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
     description = "Verify whether the device is impacted by Security Advisory 0140."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
         """Normalize command and inventory inputs, assess facts, and project the finding."""
-        finding = _assess_sa140(
-            self.fact(EosVersionFact),
-            self.fact(SecureBootFact),
-        )
+        facts = self.Facts.collect(self)
+        finding = _assess_sa140(facts.version, facts.secure_boot)
         vulnerability = ADVISORY.vulnerabilities[0]
         atomic_result = self.result.add(
             f"Verify {vulnerability.id}.",

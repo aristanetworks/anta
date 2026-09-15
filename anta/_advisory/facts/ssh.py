@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 from anta._advisory.facts.models import (
     CommandsFactDefinition,
@@ -14,11 +14,12 @@ from anta._advisory.facts.models import (
     FactProblemKind,
     FactSource,
     FactSourceKind,
+    FeatureFact,
     FeatureName,
+    FeatureRef,
     FeatureState,
-    FeatureValue,
+    MitigationFact,
     MitigationState,
-    MitigationValue,
 )
 from anta._advisory.optional_commands import OptionalAntaCommand, is_unsupported_optional_command
 
@@ -106,15 +107,17 @@ def _strict_host_key_checking_enabled(config: _SshConfig) -> bool | None:
     return bool(states and states[0] == SSH_STRICT_CHECKING_ENABLED_DIRECTIVE)
 
 
-class SshServerFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class SshServerFact(FeatureFact, CommandsFactDefinition["SshServerFact"]):
     """Effective management SSH listener state."""
 
-    key = "feature.ssh.server"
-    label = "SSH server state"
-    commands = (SSH_CONFIG_COMMAND,)
+    feature: ClassVar[FeatureRef] = FeatureName.SSH
+    key: ClassVar[str] = "feature.ssh.server"
+    label: ClassVar[str] = "SSH server state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (SSH_CONFIG_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[SshServerFact]:
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
         if is_unsupported_optional_command(command):
@@ -126,18 +129,19 @@ class SshServerFact(CommandsFactDefinition[FeatureValue]):
         if enabled is None:
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         state = FeatureState.ENABLED if enabled else FeatureState.DISABLED
-        return cls.available(FeatureValue(FeatureName.SSH, state), source)
+        return cls.available(cls(state), source)
 
 
-class StrictHostKeyCheckingFact(CommandsFactDefinition[MitigationValue]):
+@dataclass(frozen=True, slots=True)
+class StrictHostKeyCheckingFact(MitigationFact, CommandsFactDefinition["StrictHostKeyCheckingFact"]):
     """Effective SSH client strict host-key checking state."""
 
-    key = "mitigation.ssh.strict_host_key_checking"
-    label = "SSH client strict host-key checking"
-    commands = (SSH_CONFIG_COMMAND,)
+    key: ClassVar[str] = "mitigation.ssh.strict_host_key_checking"
+    label: ClassVar[str] = "SSH client strict host-key checking"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (SSH_CONFIG_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[MitigationValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[StrictHostKeyCheckingFact]:
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
         if is_unsupported_optional_command(command):
@@ -149,4 +153,4 @@ class StrictHostKeyCheckingFact(CommandsFactDefinition[MitigationValue]):
         if enabled is None:
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         state = MitigationState.EFFECTIVE if enabled else MitigationState.INEFFECTIVE
-        return cls.available(MitigationValue(state), source)
+        return cls.available(cls(state), source)

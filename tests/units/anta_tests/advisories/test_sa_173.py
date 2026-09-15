@@ -8,7 +8,7 @@
 from __future__ import annotations
 
 import unittest
-from typing import TYPE_CHECKING, Any, Literal, TypeAlias
+from typing import TYPE_CHECKING, Any, Literal, TypeAlias, TypeVar, cast
 
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact
@@ -18,12 +18,8 @@ from anta._advisory.facts.models import (
     FactProblemKind,
     FactSource,
     FactSourceKind,
-    FeatureName,
     FeatureState,
-    FeatureValue,
     MitigationState,
-    MitigationValue,
-    SubFeature,
 )
 from anta._advisory.facts.routing import LegacyOspfv3ConfiguredFact, Ospfv3ConfiguredFact, Ospfv3IpsecAuthenticationFact
 from anta._advisory.facts.software import SA173HotfixFact
@@ -41,6 +37,7 @@ if TYPE_CHECKING:
 SOURCE = FactSource("unit test", FactSourceKind.DEVICE_METADATA)
 ProductionStatus: TypeAlias = Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.ERROR]
 EMPTY_OSPFV3: dict[str, Any] = {"vrfs": {}}
+FeatureFactT = TypeVar("FeatureFactT", Ospfv3ConfiguredFact, LegacyOspfv3ConfiguredFact)
 CURRENT_OSPFV3: dict[str, Any] = {"vrfs": {"default": {"addressFamily": {"ipv6": {}}}}}
 CURRENT_OSPFV3_NON_DEFAULT: dict[str, Any] = {"vrfs": {"TOTO": {"addressFamily": {"ipv6": {}}}}}
 LEGACY_OSPFV3: dict[str, Any] = {"vrfs": {"default": {"instList": {"0": {}}}}}
@@ -219,20 +216,19 @@ def version_fact(version: str | None) -> Fact[EOSVersion]:
     return EosVersionFact.available(parsed, SOURCE)
 
 
-def ospfv3_fact(definition: type[Ospfv3ConfiguredFact | LegacyOspfv3ConfiguredFact], state: FeatureState) -> AvailableFact[FeatureValue]:
+def ospfv3_fact(definition: type[FeatureFactT], state: FeatureState) -> AvailableFact[FeatureFactT]:
     """Build one current or legacy OSPFv3 configuration fact."""
-    name = "routing process" if definition is Ospfv3ConfiguredFact else "legacy IPv6 routing process"
-    return definition.available(FeatureValue(SubFeature(FeatureName.OSPFV3, name), state), SOURCE)
+    return cast("AvailableFact[FeatureFactT]", definition.available(cast("FeatureFactT", definition(state)), SOURCE))
 
 
-def authentication_fact(state: MitigationState) -> AvailableFact[MitigationValue]:
+def authentication_fact(state: MitigationState) -> AvailableFact[Ospfv3IpsecAuthenticationFact]:
     """Build an OSPFv3 IPsec authentication fact."""
-    return Ospfv3IpsecAuthenticationFact.available(MitigationValue(state), SOURCE)
+    return Ospfv3IpsecAuthenticationFact.available(Ospfv3IpsecAuthenticationFact(state), SOURCE)
 
 
-def hotfix_fact(state: MitigationState) -> AvailableFact[MitigationValue]:
+def hotfix_fact(state: MitigationState) -> AvailableFact[SA173HotfixFact]:
     """Build a persistent SA173 hotfix fact."""
-    return SA173HotfixFact.available(MitigationValue(state), SOURCE)
+    return SA173HotfixFact.available(SA173HotfixFact(state), SOURCE)
 
 
 class TestSA173VersionMatrix(unittest.TestCase):

@@ -19,10 +19,7 @@ from anta._advisory.facts.models import (
     FactProblemKind,
     FactSource,
     FactSourceKind,
-    FeatureName,
     FeatureState,
-    FeatureValue,
-    SubFeature,
 )
 from anta._advisory.facts.platform import PlatformIdentityFact, SwitchCardIdentityFact
 from anta._advisory.facts.routing import LooseUrpfFact
@@ -170,9 +167,9 @@ def switch_card_fact(model: str | None) -> Fact[PlatformComponentIdentity]:
     return SwitchCardIdentityFact.available(switch_card, SOURCE)
 
 
-def loose_urpf_fact(state: FeatureState) -> AvailableFact[FeatureValue]:
+def loose_urpf_fact(state: FeatureState) -> AvailableFact[LooseUrpfFact]:
     """Build a loose-uRPF feature fact."""
-    return LooseUrpfFact.available(FeatureValue(SubFeature(FeatureName.URPF, "loose-mode interface"), state), SOURCE)
+    return LooseUrpfFact.available(LooseUrpfFact(state), SOURCE)
 
 
 class TestSA176VersionMatrix(unittest.TestCase):

@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 from anta._advisory.eos_versions import AffectedStatus
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnmiAuthorizationFact
-from anta._advisory.facts.models import AvailableFact, FeatureName, FeatureState, FeatureValue, SubFeature
+from anta._advisory.facts.models import AvailableFact, FeatureState
 from anta._advisory.findings.models import AffectedResult, ErrorResult, NotAffectedResult
 from anta._advisory.remediation import FixedRelease, software_version_plan
 from anta._eos.version import EOSVersion
@@ -34,10 +34,9 @@ REMEDIATION = software_version_plan(FIXED_RELEASES, current_version=EOSVersion(4
 expected_result = partial(build_expected_advisory_result, ADVISORY.vulnerabilities[0].id)
 
 
-def authorization_fact(state: FeatureState) -> AvailableFact[FeatureValue]:
+def authorization_fact(state: FeatureState) -> AvailableFact[GnmiAuthorizationFact]:
     """Build normalized gNMI authorization state for direct assessment tests."""
-    feature = SubFeature(FeatureName.GNMI, "request authorization")
-    return available_fact(GnmiAuthorizationFact, FeatureValue(feature, state))
+    return available_fact(GnmiAuthorizationFact, GnmiAuthorizationFact(state))
 
 
 def test_sa170_assessment_contract() -> None:
