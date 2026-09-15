@@ -32,6 +32,22 @@ anta.tests.aaa:
         - login
         - enable
         - dot1x
+  - VerifyAuthorizationMethodLists:
+      # Verifies AAA authorization methods for specific method lists.
+      authorization:
+        - authz_type: commands
+          method_lists:
+            # Valid names are integers 0-15 or "all".
+            - name: all
+              methods:
+                - group tacacs+
+                - local
+        - authz_type: exec
+          method_lists:
+            - name: exec
+              methods:
+                - group tacacs+
+                - local
   - VerifyAuthzMethods:
       # Verifies the AAA authorization method lists for different authorization types (commands, exec).
       methods:

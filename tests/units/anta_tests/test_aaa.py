@@ -8,12 +8,16 @@ from __future__ import annotations
 import sys
 from typing import TYPE_CHECKING
 
+import pytest
+from pydantic import ValidationError
+
 from anta.models import AntaTest
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.aaa import (
     VerifyAcctConsoleMethods,
     VerifyAcctDefaultMethods,
     VerifyAuthenMethods,
+    VerifyAuthorizationMethodLists,
     VerifyAuthzMethods,
     VerifyTacacsServerGroups,
     VerifyTacacsServers,
@@ -22,6 +26,8 @@ from anta.tests.aaa import (
 from tests.units.anta_tests import test
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from tests.units.anta_tests import AntaUnitTestData
 
 DATA: AntaUnitTestData = {
@@ -423,5 +429,108 @@ DATA: AntaUnitTestData = {
         ],
         "inputs": {"methods": ["tacacs+", "logging"], "types": ["commands", "exec", "system"]},
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["AAA accounting console methods group tacacs+, logging are not matching for commands"]},
+    },
+    (VerifyAuthorizationMethodLists, "success"): {
+        "eos_data": [
+            {
+                "commandsAuthzMethods": {"privilege0-15": {"methods": ["group tacacs+", "local"]}},
+                "execAuthzMethods": {"exec": {"methods": ["local", "group tacacs+"]}},
+            }
+        ],
+        "inputs": {
+            "authorization": [
+                {"authz_type": "commands", "method_lists": [{"name": "all", "methods": ["tacacs+", "local"]}]},
+                {"authz_type": "exec", "method_lists": [{"name": "exec", "methods": ["tacacs+", "local"]}]},
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Authorization Type: commands Method: privilege0-15",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+                {
+                    "description": "Authorization Type: exec Method: exec",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
+    },
+    (VerifyAuthorizationMethodLists, "failure-not-configured-and-methods-mismatch"): {
+        "eos_data": [
+            {
+                "commandsAuthzMethods": {},
+                "execAuthzMethods": {"exec": {"methods": ["local"]}},
+            }
+        ],
+        "inputs": {
+            "authorization": [
+                {"authz_type": "commands", "method_lists": [{"name": 15, "methods": ["tacacs+", "local"]}]},
+                {"authz_type": "exec", "method_lists": [{"name": "exec", "methods": ["tacacs+", "local"]}]},
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Authorization Type: commands Method: privilege15 - Not configured",
+                "Authorization Type: exec Method: exec - Methods mismatch - Expected: group tacacs+, local Actual: local",
+            ],
+            "atomic_results": [
+                {
+                    "description": "Authorization Type: commands Method: privilege15",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Not configured"],
+                },
+                {
+                    "description": "Authorization Type: exec Method: exec",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Methods mismatch - Expected: group tacacs+, local Actual: local"],
+                },
+            ],
+        },
+    },
+    (VerifyAuthorizationMethodLists, "success-multiple-command-method-lists"): {
+        "eos_data": [
+            {
+                "commandsAuthzMethods": {
+                    "privilege1": {"methods": ["local"]},
+                    "privilege5-10": {"methods": ["local", "group tacacs+"]},
+                }
+            }
+        ],
+        "inputs": {
+            "authorization": [
+                {
+                    "authz_type": "commands",
+                    "method_lists": [
+                        {"name": 1, "methods": ["local"]},
+                        {"name": "privilege5-10", "methods": ["tacacs+", "local"]},
+                    ],
+                }
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {"description": "Authorization Type: commands Method: privilege1", "result": AntaTestStatus.SUCCESS},
+                {"description": "Authorization Type: commands Method: privilege5-10", "result": AntaTestStatus.SUCCESS},
+            ],
+        },
+    },
+    (VerifyAuthorizationMethodLists, "failure-extra-method"): {
+        "eos_data": [{"execAuthzMethods": {"exec": {"methods": ["group tacacs+", "local", "none"]}}}],
+        "inputs": {"authorization": [{"authz_type": "exec", "method_lists": [{"name": "exec", "methods": ["tacacs+", "local"]}]}]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Authorization Type: exec Method: exec - Methods mismatch"],
+            "atomic_results": [
+                {
+                    "description": "Authorization Type: exec Method: exec",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Methods mismatch - Expected: group tacacs+, local Actual: group tacacs+, local, none"],
+                }
+            ],
+        },
     },
 }
