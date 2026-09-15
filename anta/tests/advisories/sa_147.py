@@ -18,9 +18,7 @@ from anta._advisory.facts.models import (
     FactDefinition,
     FactProblemKind,
     FeatureState,
-    FeatureValue,
     MitigationState,
-    MitigationValue,
     UnavailableFact,
 )
 from anta._advisory.facts.software import OpenSshClientVersionFact, OpenSshServerVersionFact
@@ -125,7 +123,7 @@ def _assess_client_issue(  # noqa: PLR0911
     affected_versions: tuple[VersionRule, ...],
     package_version: Fact[ComponentSoftwareVersion],
     fixed_releases: tuple[FixedRelease, ...] = (),
-    mitigation: Fact[MitigationValue] | None = None,
+    mitigation: Fact[StrictHostKeyCheckingFact] | None = None,
 ) -> VulnerabilityResult:
     """Assess one OpenSSH client vulnerability from normalized facts."""
     eos_release = assess_eos_scope(vulnerability_id, eos_version, affected_versions)
@@ -168,7 +166,7 @@ def _assess_server_issue(  # noqa: PLR0911
     eos_version: Fact[EOSVersion],
     affected_versions: tuple[VersionRule, ...],
     package_version: Fact[ComponentSoftwareVersion],
-    ssh_server: Fact[FeatureValue],
+    ssh_server: Fact[SshServerFact],
 ) -> VulnerabilityResult:
     """Assess the OpenSSH server vulnerability from normalized facts."""
     eos_release = assess_eos_scope(vulnerability_id, eos_version, affected_versions)

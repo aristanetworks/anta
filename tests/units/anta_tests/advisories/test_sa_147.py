@@ -20,9 +20,7 @@ from anta._advisory.facts.models import (
     FactProblemKind,
     FactSource,
     FactSourceKind,
-    FeatureValue,
     MitigationState,
-    MitigationValue,
 )
 from anta._advisory.facts.software import OpenSshClientVersionFact, OpenSshServerVersionFact
 from anta._advisory.facts.ssh import (
@@ -112,7 +110,7 @@ def component_version_fact(
     return definition.available(ComponentSoftwareVersion(definition.component_name, version), SOURCE)
 
 
-def ssh_server_fact(config: str, *, unsupported: bool = False) -> Fact[FeatureValue]:
+def ssh_server_fact(config: str, *, unsupported: bool = False) -> Fact[SshServerFact]:
     """Parse the SSH server fact from test configuration or an unsupported command."""
     command = SshServerFact.commands[0].model_copy()
     command.output = None if unsupported else config
@@ -430,7 +428,7 @@ class TestSA147Evidence(unittest.TestCase):
         command = StrictHostKeyCheckingFact.commands[0].model_copy()
         command.output = config
         assert StrictHostKeyCheckingFact.parse((command,)) == StrictHostKeyCheckingFact.available(
-            MitigationValue(MitigationState.EFFECTIVE),
+            StrictHostKeyCheckingFact(MitigationState.EFFECTIVE),
             FactSource(command.command, FactSourceKind.COMMAND),
         )
 
@@ -511,7 +509,7 @@ class TestSA147Assessment(unittest.TestCase):
             eos_version=eos_version_fact("4.35.5M"),
             affected_versions=CVE_60002_AFFECTED_VERSION_MATRIX,
             package_version=component_version_fact(OpenSshClientVersionFact, "9.9p1"),
-            mitigation=StrictHostKeyCheckingFact.available(MitigationValue(MitigationState.EFFECTIVE), SOURCE),
+            mitigation=StrictHostKeyCheckingFact.available(StrictHostKeyCheckingFact(MitigationState.EFFECTIVE), SOURCE),
         )
         missing_mitigation = _assess_client_issue(
             vulnerability_id="CVE-test",

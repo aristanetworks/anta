@@ -103,14 +103,14 @@ def _unsupported_command(template: AntaCommand) -> AntaCommand:
     return template.model_copy(update={"errors": [UNSUPPORTED_ERROR]})
 
 
-def _feature_bool(fact: Fact[FeatureValue]) -> bool | None:
+def _feature_bool(fact: Fact[FeatureValue] | Fact[TerminAttrGrpcFact]) -> bool | None:
     """Project a feature fact to the legacy parser truth table."""
     if isinstance(fact, UnavailableFact):
         return None
     return fact.value.state is FeatureState.ENABLED
 
 
-def _mitigation_bool(fact: Fact[MitigationValue]) -> bool | None:
+def _mitigation_bool(fact: Fact[MitigationValue] | Fact[TerminAttrMtlsFact]) -> bool | None:
     """Project a mitigation fact to the legacy parser truth table."""
     if isinstance(fact, UnavailableFact):
         return None
@@ -445,7 +445,7 @@ class TestSA146Evidence(unittest.TestCase):
         assert not _feature_bool(GribiTransportFact.parse((_command(GribiTransportFact.commands[0], gribi_output(enabled=False)),)))
         assert _feature_bool(GribiTransportFact.parse((_command(GribiTransportFact.commands[0], {"enabled": "true"}),))) is None
 
-        def terminattr_fact(daemon: dict[str, Any]) -> Fact[FeatureValue]:
+        def terminattr_fact(daemon: dict[str, Any]) -> Fact[TerminAttrGrpcFact]:
             return TerminAttrGrpcFact.parse(
                 (
                     _command(TerminAttrGrpcFact.commands[0], daemon),
@@ -587,22 +587,30 @@ class TestSA146Assessment(unittest.TestCase):
         }
         arguments.update(overrides)
 
-        def feature(definition: type[GnmiTransportFact | GribiTransportFact | TerminAttrGrpcFact], enabled: bool | None) -> Fact[FeatureValue]:
+        def feature(
+            definition: type[GnmiTransportFact | GribiTransportFact | TerminAttrGrpcFact], enabled: bool | None
+        ) -> Fact[FeatureValue] | Fact[TerminAttrGrpcFact]:
             if enabled is None:
                 return definition.unavailable(FactProblemKind.MALFORMED, SOURCE)
             name = FeatureName.GNMI if definition is GnmiTransportFact else FeatureName.GRIBI if definition is GribiTransportFact else FeatureName.TERMINATTR
-            return definition.available(
-                FeatureValue(name, FeatureState.ENABLED if enabled else FeatureState.DISABLED),
-                SOURCE,
-            )
+            state = FeatureState.ENABLED if enabled else FeatureState.DISABLED
+            if definition is TerminAttrGrpcFact:
+                return definition.available(definition(state), SOURCE)
+            if definition is GnmiTransportFact:
+                return definition.available(FeatureValue(name, state), SOURCE)
+            return GribiTransportFact.available(FeatureValue(name, state), SOURCE)
 
-        def mitigation(definition: type[GnmiMtlsFact | GribiMtlsFact | TerminAttrMtlsFact], enabled: bool | None) -> Fact[MitigationValue]:
+        def mitigation(
+            definition: type[GnmiMtlsFact | GribiMtlsFact | TerminAttrMtlsFact], enabled: bool | None
+        ) -> Fact[MitigationValue] | Fact[TerminAttrMtlsFact]:
             if enabled is None:
                 return definition.unavailable(FactProblemKind.MISSING, SOURCE)
-            return definition.available(
-                MitigationValue(MitigationState.EFFECTIVE if enabled else MitigationState.INEFFECTIVE),
-                SOURCE,
-            )
+            state = MitigationState.EFFECTIVE if enabled else MitigationState.INEFFECTIVE
+            if definition is TerminAttrMtlsFact:
+                return definition.available(definition(state), SOURCE)
+            if definition is GnmiMtlsFact:
+                return definition.available(MitigationValue(state), SOURCE)
+            return GribiMtlsFact.available(MitigationValue(state), SOURCE)
 
         if arguments["eos_affected"] is None:
             eos_version: Fact[EOSVersion] = EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
