@@ -459,6 +459,16 @@
     margin-right: auto;
     border-radius: 1%;
   }
+  .md-typeset .md-button.button_center {
+    display: block;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .md-typeset .table_center + table {
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
 
 /* mkdocstrings css from official repo to indent sub-elements nicely */
