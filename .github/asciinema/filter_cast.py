@@ -54,7 +54,8 @@ def animate_nrfu_table(events: list[dict[str, object] | list[object]]) -> list[d
         None,
     )
     if start is None:
-        raise RuntimeError("NRFU result table was not found in the recording")
+        msg = "NRFU result table was not found in the recording"
+        raise RuntimeError(msg)
 
     end = None
     bottom_started = False
@@ -67,7 +68,8 @@ def animate_nrfu_table(events: list[dict[str, object] | list[object]]) -> list[d
             end = index
             break
     if end is None:
-        raise RuntimeError("NRFU result table bottom border was not found in the recording")
+        msg = "NRFU result table bottom border was not found in the recording"
+        raise RuntimeError(msg)
 
     table_events = events[start : end + 1]
     table_text = "".join(event[2] for event in table_events if isinstance(event, list) and event[1] == "o")
@@ -75,7 +77,8 @@ def animate_nrfu_table(events: list[dict[str, object] | list[object]]) -> list[d
     header_separator = next((index for index, line in enumerate(lines) if plain_text(line).lstrip().startswith("┡")), None)
     row_boundaries = [index for index, line in enumerate(lines) if plain_text(line).lstrip().startswith(("├", "└"))]
     if header_separator is None or len(row_boundaries) < 2:
-        raise RuntimeError("NRFU result table rows were not found after joining cast events")
+        msg = "NRFU result table rows were not found after joining cast events"
+        raise RuntimeError(msg)
 
     rows: list[list[str]] = []
     row_start = header_separator + 1
@@ -88,7 +91,8 @@ def animate_nrfu_table(events: list[dict[str, object] | list[object]]) -> list[d
     successes = [index for index, row in enumerate(display_rows) if re.search(r"│\s*success\s*│", plain_text(row[0]))]
     failures = [index for index, row in enumerate(display_rows) if re.search(r"│\s*failure\s*│", plain_text(row[0]))]
     if not successes or not failures:
-        raise RuntimeError("NRFU result table does not contain both a success and a failure row")
+        msg = "NRFU result table does not contain both a success and a failure row"
+        raise RuntimeError(msg)
     success = min(successes, key=lambda index: len(display_rows[index]))
     failure = min(failures, key=lambda index: len(display_rows[index]))
 

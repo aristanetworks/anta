@@ -59,10 +59,12 @@ if [[ $recording == "nrfu" ]]; then
   rows=22
 fi
 
+printf -v record_command 'bash %q %q' "$repo_root/.github/asciinema/record.sh" "$recording"
+
 (
   cd "$capture_dir"
   asciinema record \
-    --command "bash $repo_root/.github/asciinema/record.sh $recording" \
+    --command "$record_command" \
     --headless \
     --idle-time-limit 0.5 \
     --output-format asciicast-v3 \
