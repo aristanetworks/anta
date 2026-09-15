@@ -7,12 +7,12 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import Any, ClassVar
+from typing import ClassVar
 
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactDefinition, FeatureState, FeatureValue, MitigationState, MitigationValue, UnavailableFact
+from anta._advisory.facts.models import AvailableFact, Fact, FactsBase, FeatureState, MitigationState, UnavailableFact, fact_field, facts_dataclass
 from anta._advisory.facts.routing import LegacyOspfv3ConfiguredFact, Ospfv3ConfiguredFact, Ospfv3IpsecAuthenticationFact
 from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import (
@@ -64,9 +64,9 @@ _EXPECTED_OBSERVATION_COUNT = 2
 
 def _assess_sa172(
     version: Fact[EOSVersion],
-    current: Fact[FeatureValue],
-    legacy: Fact[FeatureValue],
-    ipsec_authentication: Fact[MitigationValue],
+    current: Fact[Ospfv3ConfiguredFact],
+    legacy: Fact[LegacyOspfv3ConfiguredFact],
+    ipsec_authentication: Fact[Ospfv3IpsecAuthenticationFact],
 ) -> VulnerabilityResult:
     """Assess EOS scope, persistent OSPFv3 configuration, and complete IPsec coverage."""
     available = tuple(fact for fact in (current, legacy) if isinstance(fact, AvailableFact))
@@ -116,24 +116,23 @@ class SA172(OptionalCommandsMixin, _AntaAdvisoryTest):
     ```
     """
 
+    @facts_dataclass
+    class Facts(FactsBase):
+        """Collected facts required to assess the advisory."""
+
+        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        current: Fact[Ospfv3ConfiguredFact] = fact_field(Ospfv3ConfiguredFact)
+        legacy: Fact[LegacyOspfv3ConfiguredFact] = fact_field(LegacyOspfv3ConfiguredFact)
+        ipsec_authentication: Fact[Ospfv3IpsecAuthenticationFact] = fact_field(Ospfv3IpsecAuthenticationFact)
+
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
-    required_facts: ClassVar[tuple[type[FactDefinition[Any]], ...]] = (
-        EosVersionFact,
-        Ospfv3ConfiguredFact,
-        LegacyOspfv3ConfiguredFact,
-        Ospfv3IpsecAuthenticationFact,
-    )
     description = "Verify whether the device is impacted by Security Advisory 0172."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
         """Derive facts, assess the vulnerability, and project it."""
-        finding = _assess_sa172(
-            self.fact(EosVersionFact),
-            self.fact(Ospfv3ConfiguredFact),
-            self.fact(LegacyOspfv3ConfiguredFact),
-            self.fact(Ospfv3IpsecAuthenticationFact),
-        )
+        facts = self.Facts.collect(self)
+        finding = _assess_sa172(facts.version, facts.current, facts.legacy, facts.ipsec_authentication)
         atomic = self.result.add(f"Verify {VULNERABILITY_ID}.", vulnerability_ids=(VULNERABILITY_ID,))
         project_vulnerability_result(atomic, finding)

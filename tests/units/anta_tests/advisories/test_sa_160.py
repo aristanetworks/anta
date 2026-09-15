@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Literal, TypeAlias
 
 from anta._advisory.eos_versions import AffectedStatus
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import AvailableFact, FeatureName, FeatureState, FeatureValue, SubFeature
+from anta._advisory.facts.models import AvailableFact, FeatureState
 from anta._advisory.facts.routing import IsisConfiguredFact, IsisNonPassiveBroadcastInterfaceFact
 from anta._advisory.findings.models import AffectedResult, ErrorResult, InconclusiveResult, NotAffectedResult
 from anta._advisory.remediation import FixedRelease, RemediationPlan, software_version_plan
@@ -47,17 +47,14 @@ LSP_AND_GRACEFUL_RESTART_REMEDIATION = software_version_plan(
 OLD_BROADCAST_REMEDIATION = software_version_plan(BROADCAST_RELEASES, current_version=EOSVersion(4, 35, 5, suffix="M"))
 
 
-def isis_fact(state: FeatureState) -> AvailableFact[FeatureValue]:
+def isis_fact(state: FeatureState) -> AvailableFact[IsisConfiguredFact]:
     """Build normalized IS-IS configuration state for direct assessment tests."""
-    return available_fact(IsisConfiguredFact, FeatureValue(FeatureName.ISIS, state))
+    return available_fact(IsisConfiguredFact, IsisConfiguredFact(state))
 
 
-def isis_interface_fact(state: FeatureState) -> AvailableFact[FeatureValue]:
+def isis_interface_fact(state: FeatureState) -> AvailableFact[IsisNonPassiveBroadcastInterfaceFact]:
     """Build normalized modeled IS-IS broadcast-interface state."""
-    return available_fact(
-        IsisNonPassiveBroadcastInterfaceFact,
-        FeatureValue(SubFeature(FeatureName.ISIS, "non-passive broadcast interface"), state),
-    )
+    return available_fact(IsisNonPassiveBroadcastInterfaceFact, IsisNonPassiveBroadcastInterfaceFact(state))
 
 
 def test_sa160_assessment_contract() -> None:

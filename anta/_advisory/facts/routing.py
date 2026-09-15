@@ -12,8 +12,8 @@ from typing import ClassVar
 
 from anta._advisory.facts.models import (
     CommandsFactDefinition,
+    ConfigurationFact,
     ConfigurationState,
-    ConfigurationValue,
     Fact,
     FactProblemKind,
     FactSource,
@@ -22,9 +22,8 @@ from anta._advisory.facts.models import (
     FeatureName,
     FeatureRef,
     FeatureState,
-    FeatureValue,
+    MitigationFact,
     MitigationState,
-    MitigationValue,
     SubFeature,
 )
 from anta._advisory.optional_commands import OptionalAntaCommand, is_unsupported_optional_command
@@ -308,48 +307,50 @@ def _parse_ospfv3_security(config: str) -> tuple[set[_Ospfv3InterfaceScope], set
     return configured_scopes, interface_authentication, area_authentication
 
 
-class Ospfv3ConfiguredFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class Ospfv3ConfiguredFact(FeatureFact, CommandsFactDefinition["Ospfv3ConfiguredFact"]):
     """Presence of an OSPFv3 routing process in any VRF using current EOS syntax."""
 
-    key = "feature.ospfv3.configured"
-    label = "OSPFv3 configuration state"
-    commands = (OSPFV3_SUMMARY_COMMAND,)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.OSPFV3, "routing process")
+    key: ClassVar[str] = "feature.ospfv3.configured"
+    label: ClassVar[str] = "OSPFv3 configuration state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (OSPFV3_SUMMARY_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[Ospfv3ConfiguredFact]:
         """Normalize current structured OSPFv3 summary output."""
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
-        feature = SubFeature(FeatureName.OSPFV3, "routing process")
         if is_unsupported_optional_command(command):
-            return cls.available(FeatureValue(feature, FeatureState.UNSUPPORTED), source)
+            return cls.available(cls(FeatureState.UNSUPPORTED), source)
         configured = _ospfv3_process_configured(command.json_output)
         if isinstance(configured, FactProblemKind):
             return cls.unavailable(configured, source)
         state = FeatureState.ENABLED if configured else FeatureState.DISABLED
-        return cls.available(FeatureValue(feature, state), source)
+        return cls.available(cls(state), source)
 
 
-class LegacyOspfv3ConfiguredFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class LegacyOspfv3ConfiguredFact(FeatureFact, CommandsFactDefinition["LegacyOspfv3ConfiguredFact"]):
     """Presence of an OSPFv3 routing process in any VRF exposed through legacy IPv6 syntax."""
 
-    key = "feature.ospfv3.legacy_configured"
-    label = "legacy OSPFv3 configuration state"
-    commands = (LEGACY_OSPFV3_SUMMARY_COMMAND,)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.OSPFV3, "legacy IPv6 routing process")
+    key: ClassVar[str] = "feature.ospfv3.legacy_configured"
+    label: ClassVar[str] = "legacy OSPFv3 configuration state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (LEGACY_OSPFV3_SUMMARY_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[LegacyOspfv3ConfiguredFact]:
         """Normalize legacy structured IPv6 OSPF summary output."""
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
-        feature = SubFeature(FeatureName.OSPFV3, "legacy IPv6 routing process")
         if is_unsupported_optional_command(command):
-            return cls.available(FeatureValue(feature, FeatureState.UNSUPPORTED), source)
+            return cls.available(cls(FeatureState.UNSUPPORTED), source)
         configured = _legacy_ospfv3_process_configured(command.json_output)
         if isinstance(configured, FactProblemKind):
             return cls.unavailable(configured, source)
         state = FeatureState.ENABLED if configured else FeatureState.DISABLED
-        return cls.available(FeatureValue(feature, state), source)
+        return cls.available(cls(state), source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -443,30 +444,31 @@ def _ospfv2_area_authentication(
     return (observed, authenticated) if saw_instance else None
 
 
-class Ospfv2BroadcastAuthenticationFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class Ospfv2BroadcastAuthenticationFact(FeatureFact, CommandsFactDefinition["Ospfv2BroadcastAuthenticationFact"]):
     """OSPFv2 broadcast interface with cryptographic authentication."""
 
-    key = "feature.ospfv2.broadcast_cryptographic_authentication"
-    label = "OSPFv2 broadcast cryptographic-authentication exposure state"
-    commands = (OSPFV2_INTERFACE_COMMAND, OSPFV2_SUMMARY_COMMAND)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.OSPFV2, "broadcast cryptographic authentication")
+    key: ClassVar[str] = "feature.ospfv2.broadcast_cryptographic_authentication"
+    label: ClassVar[str] = "OSPFv2 broadcast cryptographic-authentication exposure state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (OSPFV2_INTERFACE_COMMAND, OSPFV2_SUMMARY_COMMAND)
 
     @classmethod
     # pylint: disable-next=too-many-return-statements
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:  # noqa: PLR0911
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[Ospfv2BroadcastAuthenticationFact]:  # noqa: PLR0911
         """Find cryptographic authentication on active OSPFv2 broadcast interfaces."""
         interface_command, summary_command = commands
-        feature = SubFeature(FeatureName.OSPFV2, "broadcast cryptographic authentication")
         interface_source = FactSource(interface_command.command, FactSourceKind.COMMAND)
         if is_unsupported_optional_command(interface_command):
-            return cls.available(FeatureValue(feature, FeatureState.UNSUPPORTED), interface_source)
+            return cls.available(cls(FeatureState.UNSUPPORTED), interface_source)
         interfaces = _ospfv2_interfaces(interface_command.text_output)
         if interfaces is None:
             return cls.unavailable(FactProblemKind.MALFORMED, interface_source)
         candidates = tuple(interface for interface in interfaces if interface.broadcast)
         if not candidates:
-            return cls.available(FeatureValue(feature, FeatureState.DISABLED), interface_source)
+            return cls.available(cls(FeatureState.DISABLED), interface_source)
         if any(interface.cryptographic_authentication for interface in candidates):
-            return cls.available(FeatureValue(feature, FeatureState.ENABLED), interface_source)
+            return cls.available(cls(FeatureState.ENABLED), interface_source)
         summary_source = FactSource(summary_command.command, FactSourceKind.COMMAND)
         if is_unsupported_optional_command(summary_command):
             return cls.unavailable(FactProblemKind.UNSUPPORTED, summary_source)
@@ -479,26 +481,27 @@ class Ospfv2BroadcastAuthenticationFact(CommandsFactDefinition[FeatureValue]):
         if not exposed and not candidate_areas.issubset(observed_areas):
             return cls.unavailable(FactProblemKind.MISSING, summary_source)
         state = FeatureState.ENABLED if exposed else FeatureState.DISABLED
-        return cls.available(FeatureValue(feature, state), summary_source)
+        return cls.available(cls(state), summary_source)
 
 
-class Ospfv2ProcessConfiguredFact(CommandsFactDefinition[ConfigurationValue]):
+@dataclass(frozen=True, slots=True)
+class Ospfv2ProcessConfiguredFact(ConfigurationFact, CommandsFactDefinition["Ospfv2ProcessConfiguredFact"]):
     """Presence of an OSPFv2 routing process."""
 
-    key = "configuration.ospfv2.routing_process"
-    label = "OSPFv2 routing-process configuration state"
-    commands = (OSPFV2_PROCESS_CONFIG_COMMAND,)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.OSPFV2, "routing process")
+    key: ClassVar[str] = "configuration.ospfv2.routing_process"
+    label: ClassVar[str] = "OSPFv2 routing-process configuration state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (OSPFV2_PROCESS_CONFIG_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[ConfigurationValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[Ospfv2ProcessConfiguredFact]:
         """Return whether any OSPFv2 routing process is configured."""
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
-        feature = SubFeature(FeatureName.OSPFV2, "routing process")
         if is_unsupported_optional_command(command):
             return cls.unavailable(FactProblemKind.UNSUPPORTED, source)
         state = ConfigurationState.CONFIGURED if command.text_output.strip() else ConfigurationState.NOT_CONFIGURED
-        return cls.available(ConfigurationValue(feature, state), source)
+        return cls.available(cls(state), source)
 
 
 def _ospfv2_segment_routing_enabled(output: Mapping[str, object]) -> bool | FactProblemKind:
@@ -522,15 +525,17 @@ def _ospfv2_segment_routing_enabled(output: Mapping[str, object]) -> bool | Fact
     return enabled
 
 
-class Ospfv2SegmentRoutingFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class Ospfv2SegmentRoutingFact(FeatureFact, CommandsFactDefinition["Ospfv2SegmentRoutingFact"]):
     """Presence of an OSPFv2 segment-routing instance."""
 
-    key = "feature.ospfv2.segment_routing"
-    label = "OSPFv2 segment-routing state"
-    commands = (OSPFV2_SEGMENT_ROUTING_COMMAND,)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.OSPFV2, "segment routing")
+    key: ClassVar[str] = "feature.ospfv2.segment_routing"
+    label: ClassVar[str] = "OSPFv2 segment-routing state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (OSPFV2_SEGMENT_ROUTING_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[Ospfv2SegmentRoutingFact]:
         """Normalize structured instance presence.
 
         An empty ``instList`` is disabled, including when EOS only reports that
@@ -538,30 +543,30 @@ class Ospfv2SegmentRoutingFact(CommandsFactDefinition[FeatureValue]):
         """
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
-        feature = SubFeature(FeatureName.OSPFV2, "segment routing")
         if is_unsupported_optional_command(command):
-            return cls.available(FeatureValue(feature, FeatureState.UNSUPPORTED), source)
+            return cls.available(cls(FeatureState.UNSUPPORTED), source)
         enabled = _ospfv2_segment_routing_enabled(command.json_output)
         if isinstance(enabled, FactProblemKind):
             return cls.unavailable(enabled, source)
-        return cls.available(FeatureValue(feature, FeatureState.ENABLED if enabled else FeatureState.DISABLED), source)
+        return cls.available(cls(FeatureState.ENABLED if enabled else FeatureState.DISABLED), source)
 
 
-class IsisNonPassiveBroadcastInterfaceFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class IsisNonPassiveBroadcastInterfaceFact(FeatureFact, CommandsFactDefinition["IsisNonPassiveBroadcastInterfaceFact"]):
     """Presence of an enabled, non-passive IS-IS broadcast interface."""
 
-    key = "feature.isis.non_passive_broadcast_interface"
-    label = "IS-IS non-passive broadcast-interface exposure state"
-    commands = (ISIS_INTERFACE_COMMAND,)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.ISIS, "non-passive broadcast interface")
+    key: ClassVar[str] = "feature.isis.non_passive_broadcast_interface"
+    label: ClassVar[str] = "IS-IS non-passive broadcast-interface exposure state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (ISIS_INTERFACE_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[IsisNonPassiveBroadcastInterfaceFact]:
         """Normalize modeled interface, network-type, and per-level passive state."""
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
-        feature = SubFeature(FeatureName.ISIS, "non-passive broadcast interface")
         if is_unsupported_optional_command(command):
-            return cls.available(FeatureValue(feature, FeatureState.UNSUPPORTED), source)
+            return cls.available(cls(FeatureState.UNSUPPORTED), source)
         instances = _isis_instances(command.json_output)
         if isinstance(instances, FactProblemKind):
             return cls.unavailable(instances, source)
@@ -569,23 +574,25 @@ class IsisNonPassiveBroadcastInterfaceFact(CommandsFactDefinition[FeatureValue])
         if isinstance(exposed, FactProblemKind):
             return cls.unavailable(exposed, source)
         state = FeatureState.ENABLED if exposed else FeatureState.DISABLED
-        return cls.available(FeatureValue(feature, state), source)
+        return cls.available(cls(state), source)
 
 
-class IsisConfiguredFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class IsisConfiguredFact(FeatureFact, CommandsFactDefinition["IsisConfiguredFact"]):
     """Presence of an enabled IS-IS instance."""
 
-    key = "feature.isis"
-    label = "IS-IS feature state"
-    commands = (ISIS_SUMMARY_COMMAND,)
+    feature: ClassVar[FeatureRef] = FeatureName.ISIS
+    key: ClassVar[str] = "feature.isis"
+    label: ClassVar[str] = "IS-IS feature state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (ISIS_SUMMARY_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[IsisConfiguredFact]:
         """Normalize an IS-IS summary or its established empty state."""
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
         if is_unsupported_optional_command(command):
-            return cls.available(FeatureValue(FeatureName.ISIS, FeatureState.UNSUPPORTED), source)
+            return cls.available(cls(FeatureState.UNSUPPORTED), source)
         instances = _isis_instances(command.json_output)
         if isinstance(instances, FactProblemKind):
             return cls.unavailable(instances, source)
@@ -602,24 +609,25 @@ class IsisConfiguredFact(CommandsFactDefinition[FeatureValue]):
         if not enabled and problem is not None:
             return cls.unavailable(problem, source)
         state = FeatureState.ENABLED if enabled else FeatureState.DISABLED
-        return cls.available(FeatureValue(FeatureName.ISIS, state), source)
+        return cls.available(cls(state), source)
 
 
-class IsisGracefulRestartFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class IsisGracefulRestartFact(FeatureFact, CommandsFactDefinition["IsisGracefulRestartFact"]):
     """Presence of enabled IS-IS graceful restart."""
 
-    key = "feature.isis.graceful_restart"
-    label = "IS-IS graceful-restart state"
-    commands = (ISIS_GRACEFUL_RESTART_COMMAND,)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.ISIS, "graceful restart")
+    key: ClassVar[str] = "feature.isis.graceful_restart"
+    label: ClassVar[str] = "IS-IS graceful-restart state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (ISIS_GRACEFUL_RESTART_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[IsisGracefulRestartFact]:
         """Normalize the explicit graceful-restart status."""
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
-        feature = SubFeature(FeatureName.ISIS, "graceful restart")
         if is_unsupported_optional_command(command):
-            return cls.available(FeatureValue(feature, FeatureState.UNSUPPORTED), source)
+            return cls.available(cls(FeatureState.UNSUPPORTED), source)
         instances = _isis_instances(command.json_output)
         if isinstance(instances, FactProblemKind):
             return cls.unavailable(instances, source)
@@ -636,18 +644,19 @@ class IsisGracefulRestartFact(CommandsFactDefinition[FeatureValue]):
         if not enabled and problem is not None:
             return cls.unavailable(problem, source)
         state = FeatureState.ENABLED if enabled else FeatureState.DISABLED
-        return cls.available(FeatureValue(feature, state), source)
+        return cls.available(cls(state), source)
 
 
-class Ospfv3IpsecAuthenticationFact(CommandsFactDefinition[MitigationValue]):
+@dataclass(frozen=True, slots=True)
+class Ospfv3IpsecAuthenticationFact(MitigationFact, CommandsFactDefinition["Ospfv3IpsecAuthenticationFact"]):
     """IPsec authentication coverage across every configured OSPFv3 interface scope."""
 
-    key = "mitigation.ospfv3.ipsec_authentication"
-    label = "OSPFv3 IPsec authentication coverage"
-    commands = (OSPFV3_CONFIG_COMMAND,)
+    key: ClassVar[str] = "mitigation.ospfv3.ipsec_authentication"
+    label: ClassVar[str] = "OSPFv3 IPsec authentication coverage"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (OSPFV3_CONFIG_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[MitigationValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[Ospfv3IpsecAuthenticationFact]:
         """Verify interface- or address-family-specific area authentication for every configured scope."""
         (config_command,) = commands
         config_source = FactSource(config_command.command, FactSourceKind.COMMAND)
@@ -659,7 +668,7 @@ class Ospfv3IpsecAuthenticationFact(CommandsFactDefinition[MitigationValue]):
         scopes, interfaces, areas = security
         effective = bool(scopes) and all(scope.interface in interfaces or (scope.vrf, scope.family, scope.area) in areas for scope in scopes)
         state = MitigationState.EFFECTIVE if effective else MitigationState.INEFFECTIVE
-        return cls.available(MitigationValue(state), config_source)
+        return cls.available(cls(state), config_source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -685,24 +694,25 @@ class PimSparseModeFact(FeatureFact, CommandsFactDefinition["PimSparseModeFact"]
         return cls.available(cls(state), source)
 
 
-class LooseUrpfFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class LooseUrpfFact(FeatureFact, CommandsFactDefinition["LooseUrpfFact"]):
     """Presence of loose IPv4 or IPv6 uRPF on any interface."""
 
-    key = "feature.urpf.loose_mode"
-    label = "loose uRPF interface state"
-    commands = (LOOSE_URPF_COMMAND,)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.URPF, "loose-mode interface")
+    key: ClassVar[str] = "feature.urpf.loose_mode"
+    label: ClassVar[str] = "loose uRPF interface state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (LOOSE_URPF_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[LooseUrpfFact]:
         """Normalize the narrow loose-uRPF configuration output."""
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
         lines = tuple(line.strip() for line in command.text_output.splitlines() if line.strip())
         if any(LOOSE_URPF_PATTERN.fullmatch(line) is None for line in lines):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
-        feature = SubFeature(FeatureName.URPF, "loose-mode interface")
         state = FeatureState.ENABLED if lines else FeatureState.DISABLED
-        return cls.available(FeatureValue(feature, state), source)
+        return cls.available(cls(state), source)
 
 
 @dataclass(frozen=True, slots=True)

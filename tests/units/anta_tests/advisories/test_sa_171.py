@@ -5,20 +5,17 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Literal, TypeAlias
+from typing import TYPE_CHECKING, Any, Literal, TypeAlias, TypeVar, cast
 
 from anta._advisory.eos_versions import AffectedStatus
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.models import (
     AvailableFact,
     ConfigurationState,
-    ConfigurationValue,
-    FeatureName,
+    FactDefinition,
     FeatureState,
-    FeatureValue,
     MitigationState,
     MitigationValue,
-    SubFeature,
 )
 from anta._advisory.facts.routing import Ospfv2BroadcastAuthenticationFact, Ospfv2ProcessConfiguredFact, Ospfv2SegmentRoutingFact
 from anta._advisory.facts.software import SA171HotfixFact
@@ -43,15 +40,18 @@ if TYPE_CHECKING:
 
 Status: TypeAlias = Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.ERROR]
 Issue: TypeAlias = tuple[Status, str, RemediationPlan | None]
+FeatureFactT = TypeVar("FeatureFactT", Ospfv2BroadcastAuthenticationFact, Ospfv2SegmentRoutingFact)
 
 
 def ospfv2_fact(
-    definition: type[Ospfv2BroadcastAuthenticationFact | Ospfv2SegmentRoutingFact],
-    name: str,
+    definition: type[FeatureFactT],
     state: FeatureState,
-) -> AvailableFact[FeatureValue]:
+) -> AvailableFact[FeatureFactT]:
     """Build one normalized OSPFv2 fact for direct assessment tests."""
-    return available_fact(definition, FeatureValue(SubFeature(FeatureName.OSPFV2, name), state))
+    return available_fact(
+        cast("type[FactDefinition[FeatureFactT]]", definition),
+        cast("FeatureFactT", definition(state)),
+    )
 
 
 def hotfix_fact(state: MitigationState) -> AvailableFact[MitigationValue]:
@@ -59,21 +59,19 @@ def hotfix_fact(state: MitigationState) -> AvailableFact[MitigationValue]:
     return available_fact(SA171HotfixFact, MitigationValue(state))
 
 
-def ospfv2_configuration(state: ConfigurationState) -> AvailableFact[ConfigurationValue]:
+def ospfv2_configuration(state: ConfigurationState) -> AvailableFact[Ospfv2ProcessConfiguredFact]:
     """Build the OSPFv2 routing-process configuration fact."""
-    return available_fact(Ospfv2ProcessConfiguredFact, ConfigurationValue(SubFeature(FeatureName.OSPFV2, "routing process"), state))
+    return available_fact(Ospfv2ProcessConfiguredFact, Ospfv2ProcessConfiguredFact(state))
 
 
 def test_sa171_assessment_contract() -> None:
     """Apply active exposure, configured-but-inactive fallback, and independent version boundaries."""
     broadcast_enabled = ospfv2_fact(
         Ospfv2BroadcastAuthenticationFact,
-        "broadcast cryptographic authentication",
         FeatureState.ENABLED,
     )
     broadcast_disabled = ospfv2_fact(
         Ospfv2BroadcastAuthenticationFact,
-        "broadcast cryptographic authentication",
         FeatureState.DISABLED,
     )
     assert isinstance(
