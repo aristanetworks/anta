@@ -709,9 +709,9 @@ class BfdAuthenticationFact(FeatureFact, CommandsFactDefinition["BfdAuthenticati
     """Presence of configured BFD authentication while BFD is enabled."""
 
     feature: ClassVar[FeatureRef] = SubFeature(FeatureName.BFD, "authentication")
-    key = "feature.bfd.authentication"
-    label = "BFD authentication state"
-    commands = (BFD_SUMMARY_COMMAND, BFD_GLOBAL_CONFIG_COMMAND, BFD_INTERFACE_AUTH_CONFIG_COMMAND)
+    key: ClassVar[str] = "feature.bfd.authentication"
+    label: ClassVar[str] = "BFD authentication state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (BFD_SUMMARY_COMMAND, BFD_GLOBAL_CONFIG_COMMAND, BFD_INTERFACE_AUTH_CONFIG_COMMAND)
 
     @classmethod
     def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[BfdAuthenticationFact]:

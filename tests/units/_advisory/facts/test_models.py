@@ -107,7 +107,7 @@ def test_facts_base_rejects_empty_and_non_init_fact_containers() -> None:
 
             # Valid raw metadata deliberately bypasses the public helper so validation
             # reaches the independent generated-initializer check.
-            value: Fact[FeatureValue] = field(init=False, metadata={"definition": DEFINITION})
+            value: Fact[FeatureValue] = field(init=False, metadata={"definition": DEFINITION})  # pylint: disable=invalid-field-call
 
 
 def test_facts_base_rejects_duplicate_definitions() -> None:
@@ -139,7 +139,7 @@ def test_feature_fact_requires_feature_identity() -> None:
     """Reject nominal feature facts without a runtime feature identity."""
     with pytest.raises(TypeError, match="must define 'feature' as a FeatureName or SubFeature"):
 
-        class MissingFeatureFact(FeatureFact):
+        class MissingFeatureFact(FeatureFact):  # pylint: disable=too-few-public-methods
             """Feature fact missing its required class-level identity."""
 
 

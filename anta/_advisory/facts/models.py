@@ -336,7 +336,9 @@ class FeatureFact:
 
     def __init_subclass__(cls) -> None:
         """Require every feature-fact subclass to expose a valid identity."""
-        super().__init_subclass__()
+        # ``dataclass(slots=True)`` returns a replacement class, so zero-argument
+        # ``super()`` can retain the pre-transformation class on older Python versions.
+        super(FeatureFact, cls).__init_subclass__()
         if not isinstance(getattr(cls, "feature", None), (FeatureName, SubFeature)):
             msg = f"Class {cls.__module__}.{cls.__qualname__} must define 'feature' as a FeatureName or SubFeature"
             raise TypeError(msg)
