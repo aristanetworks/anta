@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import unittest
 from functools import partial
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 from unittest.mock import AsyncMock
 
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
@@ -26,12 +26,11 @@ from anta._advisory.facts.management import (
 from anta._advisory.facts.models import (
     AvailableFact,
     Fact,
+    FactDefinition,
     FactProblemKind,
     FactSource,
     FactSourceKind,
-    FeatureName,
     FeatureState,
-    FeatureValue,
     MitigationState,
     MitigationValue,
     UnavailableFact,
@@ -63,6 +62,7 @@ if TYPE_CHECKING:
 
 
 SOURCE = FactSource("unit test", FactSourceKind.DEVICE_METADATA)
+ServiceFactT = TypeVar("ServiceFactT", GnmiTransportFact, GribiTransportFact, TerminAttrGrpcFact)
 UNSUPPORTED_ERROR = "Incomplete command (at token 1: 'module')"
 EXPECTED_EOS_FIXED_RELEASES = (
     FixedRelease(EOSVersion(4, 36, 2, suffix="F")),
@@ -102,7 +102,7 @@ def _unsupported_command(template: AntaCommand) -> AntaCommand:
     return template.model_copy(update={"errors": [UNSUPPORTED_ERROR]})
 
 
-def _feature_bool(fact: Fact[FeatureValue] | Fact[TerminAttrGrpcFact]) -> bool | None:
+def _feature_bool(fact: Fact[GnmiTransportFact | GribiTransportFact | TerminAttrGrpcFact]) -> bool | None:
     """Project a feature fact to the legacy parser truth table."""
     if isinstance(fact, UnavailableFact):
         return None
@@ -586,18 +586,12 @@ class TestSA146Assessment(unittest.TestCase):
         }
         arguments.update(overrides)
 
-        def feature(
-            definition: type[GnmiTransportFact | GribiTransportFact | TerminAttrGrpcFact], enabled: bool | None
-        ) -> Fact[FeatureValue] | Fact[TerminAttrGrpcFact]:
+        def feature(definition: type[ServiceFactT], enabled: bool | None) -> Fact[ServiceFactT]:
+            typed_definition = cast("type[FactDefinition[ServiceFactT]]", definition)
             if enabled is None:
-                return definition.unavailable(FactProblemKind.MALFORMED, SOURCE)
-            name = FeatureName.GNMI if definition is GnmiTransportFact else FeatureName.GRIBI if definition is GribiTransportFact else FeatureName.TERMINATTR
+                return typed_definition.unavailable(FactProblemKind.MALFORMED, SOURCE)
             state = FeatureState.ENABLED if enabled else FeatureState.DISABLED
-            if definition is TerminAttrGrpcFact:
-                return definition.available(definition(state), SOURCE)
-            if definition is GnmiTransportFact:
-                return definition.available(FeatureValue(name, state), SOURCE)
-            return GribiTransportFact.available(FeatureValue(name, state), SOURCE)
+            return typed_definition.available(cast("ServiceFactT", definition(state)), SOURCE)
 
         def mitigation(
             definition: type[GnmiMtlsFact | GribiMtlsFact | TerminAttrMtlsFact], enabled: bool | None

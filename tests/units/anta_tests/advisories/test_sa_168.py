@@ -6,12 +6,12 @@
 from __future__ import annotations
 
 from functools import partial
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TypeVar, cast
 
 from anta._advisory.eos_versions import AffectedStatus
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnmiTransportFact, NetconfTransportFact, RestconfTransportFact
-from anta._advisory.facts.models import AvailableFact, FeatureName, FeatureState, FeatureValue
+from anta._advisory.facts.models import AvailableFact, FactDefinition, FeatureState
 from anta._advisory.findings.models import AffectedResult, ErrorResult, NotAffectedResult
 from anta._advisory.remediation import (
     AllOf,
@@ -50,21 +50,21 @@ REMEDIATION = RemediationPlan(
     )
 )
 expected_result = partial(build_expected_advisory_result, ADVISORY.vulnerabilities[0].id)
+ServiceFactT = TypeVar("ServiceFactT", GnmiTransportFact, RestconfTransportFact, NetconfTransportFact)
 
 
-def service_fact(
-    definition: type[GnmiTransportFact | RestconfTransportFact | NetconfTransportFact], feature: FeatureName, state: FeatureState
-) -> AvailableFact[FeatureValue]:
+def service_fact(definition: type[ServiceFactT], state: FeatureState) -> AvailableFact[ServiceFactT]:
     """Build one normalized OpenConfig service fact."""
-    return available_fact(definition, FeatureValue(feature, state))
+    typed_definition = cast("type[FactDefinition[ServiceFactT]]", definition)
+    return available_fact(typed_definition, cast("ServiceFactT", definition(state)))
 
 
 def test_sa168_assessment_contract() -> None:
     """Preserve OR semantics and only error when no service proves exposure."""
-    gnmi_disabled = service_fact(GnmiTransportFact, FeatureName.GNMI, FeatureState.DISABLED)
-    rest_disabled = service_fact(RestconfTransportFact, FeatureName.RESTCONF, FeatureState.DISABLED)
-    netconf_disabled = service_fact(NetconfTransportFact, FeatureName.NETCONF, FeatureState.DISABLED)
-    gnmi_enabled = service_fact(GnmiTransportFact, FeatureName.GNMI, FeatureState.ENABLED)
+    gnmi_disabled = service_fact(GnmiTransportFact, FeatureState.DISABLED)
+    rest_disabled = service_fact(RestconfTransportFact, FeatureState.DISABLED)
+    netconf_disabled = service_fact(NetconfTransportFact, FeatureState.DISABLED)
+    gnmi_enabled = service_fact(GnmiTransportFact, FeatureState.ENABLED)
     rest_missing = unavailable_fact(RestconfTransportFact)
     assert isinstance(_assess_sa168(unavailable_fact(EosVersionFact), (gnmi_disabled, rest_disabled, netconf_disabled)), NotAffectedResult)
     affected = _assess_sa168(eos_version_fact("4.36.1F"), (gnmi_enabled, rest_missing, netconf_disabled))

@@ -662,19 +662,21 @@ class GnsiPathzPolicyOverlapFact(FeatureFact, CommandsFactDefinition["GnsiPathzP
         return cls.available(cls(state), source)
 
 
-class GnmiTransportFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class GnmiTransportFact(FeatureFact, CommandsFactDefinition["GnmiTransportFact"]):
     """Effective gNMI transport state."""
 
-    key = "feature.gnmi.transport"
-    label = "gNMI transport state"
-    commands = (GNMI_COMMAND,)
+    feature: ClassVar[FeatureRef] = FeatureName.GNMI
+    key: ClassVar[str] = "feature.gnmi.transport"
+    label: ClassVar[str] = "gNMI transport state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (GNMI_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[GnmiTransportFact]:
         (command,) = commands
         source = _feature_source(command)
         if is_unsupported_optional_command(command):
-            return cls.available(FeatureValue(FeatureName.GNMI, FeatureState.UNSUPPORTED), source)
+            return cls.available(cls(FeatureState.UNSUPPORTED), source)
         config = _deserialize_gnmi_config(command.json_output)
         if config is None:
             return cls.unavailable(FactProblemKind.MALFORMED, source)
@@ -687,21 +689,23 @@ class GnmiTransportFact(CommandsFactDefinition[FeatureValue]):
                 continue
             enabled = transport.get("enabled")
             if enabled is True:
-                return cls.available(FeatureValue(FeatureName.GNMI, FeatureState.ENABLED), source)
+                return cls.available(cls(FeatureState.ENABLED), source)
             if enabled is not False:
                 unknown = True
         if unknown:
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         state = FeatureState.DISABLED
-        return cls.available(FeatureValue(FeatureName.GNMI, state), source)
+        return cls.available(cls(state), source)
 
 
-class GnmiAccountingFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class GnmiAccountingFact(FeatureFact, CommandsFactDefinition["GnmiAccountingFact"]):
     """Accounting state across enabled gNMI transports."""
 
-    key = "feature.gnmi.accounting"
-    label = "gNMI transport accounting state"
-    commands = (GNMI_COMMAND,)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.GNMI, "transport accounting")
+    key: ClassVar[str] = "feature.gnmi.accounting"
+    label: ClassVar[str] = "gNMI transport accounting state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (GNMI_COMMAND,)
 
     @staticmethod
     def _state(config: _GnmiConfig) -> FeatureState | FactProblemKind:
@@ -727,36 +731,36 @@ class GnmiAccountingFact(CommandsFactDefinition[FeatureValue]):
         return FactProblemKind.MISSING if unknown else FeatureState.DISABLED
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[GnmiAccountingFact]:
         (command,) = commands
         source = _feature_source(command)
-        feature = SubFeature(FeatureName.GNMI, "transport accounting")
         if is_unsupported_optional_command(command):
-            return cls.available(FeatureValue(feature, FeatureState.UNSUPPORTED), source)
+            return cls.available(cls(FeatureState.UNSUPPORTED), source)
         config = _deserialize_gnmi_config(command.json_output)
         if config is None:
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         state = cls._state(config)
         if isinstance(state, FactProblemKind):
             return cls.unavailable(state, source)
-        return cls.available(FeatureValue(feature, state), source)
+        return cls.available(cls(state), source)
 
 
-class GnmiAuthorizationFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class GnmiAuthorizationFact(FeatureFact, CommandsFactDefinition["GnmiAuthorizationFact"]):
     """Request authorization on at least one enabled gNMI transport."""
 
-    key = "feature.gnmi.authorization"
-    label = "gNMI request-authorization state"
-    commands = (GNMI_COMMAND,)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.GNMI, "request authorization")
+    key: ClassVar[str] = "feature.gnmi.authorization"
+    label: ClassVar[str] = "gNMI request-authorization state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (GNMI_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[GnmiAuthorizationFact]:
         """Normalize authorization state across enabled transports."""
         (command,) = commands
         source = _feature_source(command)
-        feature = SubFeature(FeatureName.GNMI, "request authorization")
         if is_unsupported_optional_command(command):
-            return cls.available(FeatureValue(feature, FeatureState.UNSUPPORTED), source)
+            return cls.available(cls(FeatureState.UNSUPPORTED), source)
         config = _deserialize_gnmi_config(command.json_output)
         if config is None:
             return cls.unavailable(FactProblemKind.MALFORMED, source)
@@ -770,56 +774,60 @@ class GnmiAuthorizationFact(CommandsFactDefinition[FeatureValue]):
             enabled = transport.get("enabled")
             authorization = transport.get("authorization")
             if enabled is True and authorization is True:
-                return cls.available(FeatureValue(feature, FeatureState.ENABLED), source)
+                return cls.available(cls(FeatureState.ENABLED), source)
             if enabled not in {True, False} or (enabled is True and authorization not in {True, False}):
                 unknown = True
         if unknown:
             return cls.unavailable(FactProblemKind.MISSING, source)
-        return cls.available(FeatureValue(feature, FeatureState.DISABLED), source)
+        return cls.available(cls(FeatureState.DISABLED), source)
 
 
-class RestconfTransportFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class RestconfTransportFact(FeatureFact, CommandsFactDefinition["RestconfTransportFact"]):
     """Effective RESTCONF transport state."""
 
-    key = "feature.restconf.transport"
-    label = "RESTCONF transport state"
-    commands = (RESTCONF_COMMAND,)
+    feature: ClassVar[FeatureRef] = FeatureName.RESTCONF
+    key: ClassVar[str] = "feature.restconf.transport"
+    label: ClassVar[str] = "RESTCONF transport state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (RESTCONF_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[RestconfTransportFact]:
         """Normalize structured RESTCONF enablement."""
         (command,) = commands
         source = _feature_source(command)
         if is_unsupported_optional_command(command):
-            return cls.available(FeatureValue(FeatureName.RESTCONF, FeatureState.UNSUPPORTED), source)
+            return cls.available(cls(FeatureState.UNSUPPORTED), source)
         if "enabled" not in command.json_output:
             return cls.unavailable(FactProblemKind.MISSING, source)
         enabled = command.json_output["enabled"]
         if not isinstance(enabled, bool):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
-        return cls.available(FeatureValue(FeatureName.RESTCONF, FeatureState.ENABLED if enabled else FeatureState.DISABLED), source)
+        return cls.available(cls(FeatureState.ENABLED if enabled else FeatureState.DISABLED), source)
 
 
-class NetconfTransportFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class NetconfTransportFact(FeatureFact, CommandsFactDefinition["NetconfTransportFact"]):
     """Effective NETCONF transport state."""
 
-    key = "feature.netconf.transport"
-    label = "NETCONF transport state"
-    commands = (NETCONF_COMMAND,)
+    feature: ClassVar[FeatureRef] = FeatureName.NETCONF
+    key: ClassVar[str] = "feature.netconf.transport"
+    label: ClassVar[str] = "NETCONF transport state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (NETCONF_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[NetconfTransportFact]:
         """Normalize structured NETCONF enablement."""
         (command,) = commands
         source = _feature_source(command)
         if is_unsupported_optional_command(command):
-            return cls.available(FeatureValue(FeatureName.NETCONF, FeatureState.UNSUPPORTED), source)
+            return cls.available(cls(FeatureState.UNSUPPORTED), source)
         if "enabled" not in command.json_output:
             return cls.unavailable(FactProblemKind.MISSING, source)
         enabled = command.json_output["enabled"]
         if not isinstance(enabled, bool):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
-        return cls.available(FeatureValue(FeatureName.NETCONF, FeatureState.ENABLED if enabled else FeatureState.DISABLED), source)
+        return cls.available(cls(FeatureState.ENABLED if enabled else FeatureState.DISABLED), source)
 
 
 class GnpsiTransportFact(CommandsFactDefinition[FeatureValue]):
@@ -1072,23 +1080,25 @@ class RiskyOpenConfigTraceFact(CommandsFactDefinition[ConfigurationValue]):
         return cls.available(ConfigurationValue(feature, state), source)
 
 
-class GribiTransportFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class GribiTransportFact(FeatureFact, CommandsFactDefinition["GribiTransportFact"]):
     """Effective gRIBI service state."""
 
-    key = "feature.gribi.transport"
-    label = "gRIBI service state"
-    commands = (GRIBI_COMMAND,)
+    feature: ClassVar[FeatureRef] = FeatureName.GRIBI
+    key: ClassVar[str] = "feature.gribi.transport"
+    label: ClassVar[str] = "gRIBI service state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (GRIBI_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[GribiTransportFact]:
         (command,) = commands
         source = _feature_source(command)
         if is_unsupported_optional_command(command):
-            return cls.available(FeatureValue(FeatureName.GRIBI, FeatureState.UNSUPPORTED), source)
+            return cls.available(cls(FeatureState.UNSUPPORTED), source)
         enabled = command.json_output.get("enabled")
         if not isinstance(enabled, bool):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
-        return cls.available(FeatureValue(FeatureName.GRIBI, FeatureState.ENABLED if enabled else FeatureState.DISABLED), source)
+        return cls.available(cls(FeatureState.ENABLED if enabled else FeatureState.DISABLED), source)
 
 
 def _ssl_profile_is_valid(profile: Mapping[str, object]) -> bool:

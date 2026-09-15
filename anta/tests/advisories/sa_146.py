@@ -20,7 +20,6 @@ from anta._advisory.facts.models import (
     FactDefinition,
     FactProblemKind,
     FeatureState,
-    FeatureValue,
     MitigationState,
     MitigationValue,
     UnavailableFact,
@@ -147,7 +146,7 @@ class _GrpcPath:
     """Facts and remediation scope for one independent gRPC server path."""
 
     version: VersionAssessment | UnavailableFact[Any]
-    service: Fact[FeatureValue] | Fact[TerminAttrGrpcFact]
+    service: Fact[GnmiTransportFact | GribiTransportFact | TerminAttrGrpcFact]
     mitigation: Fact[MitigationValue] | Fact[TerminAttrMtlsFact]
     software: SoftwareTarget
     fixed_releases: tuple[FixedRelease, ...]
@@ -180,7 +179,7 @@ def _assess_sa146(paths: tuple[_GrpcPath, ...]) -> VulnerabilityResult:  # noqa:
     vulnerability_id = ADVISORY.vulnerabilities[0].id
     decisive: list[FindingEvidence] = []
     problems: list[UnavailableFact[Any]] = []
-    affected_services: list[AvailableFact[FeatureValue] | AvailableFact[TerminAttrGrpcFact]] = []
+    affected_services: list[AvailableFact[GnmiTransportFact | GribiTransportFact | TerminAttrGrpcFact]] = []
     affected_versions: list[VersionAssessment] = []
     unmitigated_version_changes: list[ChangeSoftwareVersion] = []
     mitigated_conditions: list[MitigatedCondition] = []

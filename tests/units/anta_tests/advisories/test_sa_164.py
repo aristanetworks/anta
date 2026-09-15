@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING, Any, cast
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnmiTransportFact, GnsiPathzFact, GnsiPathzPolicyOverlapFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactProblemKind, FactSource, FactSourceKind, FeatureName, FeatureState, FeatureValue
+from anta._advisory.facts.models import AvailableFact, Fact, FactProblemKind, FactSource, FactSourceKind, FeatureState
 from anta._advisory.findings.models import AffectedResult, ErrorResult, NotAffectedResult, VersionRelation
 from anta._advisory.remediation import FixedRelease, software_version_plan
 from anta._eos.version import EOSVersion, parse_eos_version
@@ -123,9 +123,9 @@ def version_fact(version: str | None) -> Fact[EOSVersion]:
     return EosVersionFact.available(parsed, SOURCE)
 
 
-def available_gnmi_fact(state: FeatureState) -> AvailableFact[FeatureValue]:
-    """Build a normalized gNMI transport fact pending its nominal conversion."""
-    return GnmiTransportFact.available(FeatureValue(FeatureName.GNMI, state), SOURCE)
+def available_gnmi_fact(state: FeatureState) -> AvailableFact[GnmiTransportFact]:
+    """Build a normalized gNMI transport fact."""
+    return GnmiTransportFact.available(GnmiTransportFact(state), SOURCE)
 
 
 class TestSA164VersionMatrix(unittest.TestCase):
@@ -156,7 +156,7 @@ class TestSA164Assessment(unittest.TestCase):
     """Validate the pure SA164 assessment branches."""
 
     @staticmethod
-    def enabled_facts() -> tuple[AvailableFact[FeatureValue], AvailableFact[GnsiPathzFact], AvailableFact[GnsiPathzPolicyOverlapFact]]:
+    def enabled_facts() -> tuple[AvailableFact[GnmiTransportFact], AvailableFact[GnsiPathzFact], AvailableFact[GnsiPathzPolicyOverlapFact]]:
         """Return active gNMI, Pathz, and policy-overlap facts."""
         return (
             available_gnmi_fact(FeatureState.ENABLED),

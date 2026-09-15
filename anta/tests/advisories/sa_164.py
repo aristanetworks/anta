@@ -6,13 +6,13 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import Any, ClassVar, cast
+from typing import ClassVar, cast
 
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnmiTransportFact, GnsiPathzFact, GnsiPathzPolicyOverlapFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
+from anta._advisory.facts.models import AvailableFact, Fact, FactsBase, FeatureState, UnavailableFact, fact_field, facts_dataclass
 from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import (
     AffectedResult,
@@ -63,7 +63,7 @@ VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 def _assess_sa164(
     version: Fact[EOSVersion],
-    gnmi_transport: Fact[FeatureValue],
+    gnmi_transport: Fact[GnmiTransportFact],
     pathz: Fact[GnsiPathzFact],
     policy_overlap: Fact[GnsiPathzPolicyOverlapFact],
 ) -> VulnerabilityResult:
@@ -89,7 +89,7 @@ def _assess_sa164(
         vulnerability_id=VULNERABILITY_ID,
         context=(eos_release,),
         conditions=(
-            cast("AvailableFact[FeatureValue]", gnmi_transport),
+            cast("AvailableFact[GnmiTransportFact]", gnmi_transport),
             cast("AvailableFact[GnsiPathzFact]", pathz),
             overlap,
         ),
@@ -115,24 +115,23 @@ class SA164(OptionalCommandsMixin, _AntaAdvisoryTest):
     ```
     """
 
+    @facts_dataclass
+    class Facts(FactsBase):
+        """Collected facts required to assess the advisory."""
+
+        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        gnmi: Fact[GnmiTransportFact] = fact_field(GnmiTransportFact)
+        pathz: Fact[GnsiPathzFact] = fact_field(GnsiPathzFact)
+        policy_overlap: Fact[GnsiPathzPolicyOverlapFact] = fact_field(GnsiPathzPolicyOverlapFact)
+
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
-    required_facts: ClassVar[tuple[type[FactDefinition[Any]], ...]] = (
-        EosVersionFact,
-        GnmiTransportFact,
-        GnsiPathzFact,
-        GnsiPathzPolicyOverlapFact,
-    )
     description = "Verify whether the device is impacted by Security Advisory 0164."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
         """Derive the declared facts, assess the vulnerability, and project it."""
-        finding = _assess_sa164(
-            self.fact(EosVersionFact),
-            self.fact(GnmiTransportFact),
-            self.fact(GnsiPathzFact),
-            self.fact(GnsiPathzPolicyOverlapFact),
-        )
+        facts = self.Facts.collect(self)
+        finding = _assess_sa164(facts.version, facts.gnmi, facts.pathz, facts.policy_overlap)
         atomic_result = self.result.add(f"Verify {VULNERABILITY_ID}.", vulnerability_ids=(VULNERABILITY_ID,))
         project_vulnerability_result(atomic_result, finding)
