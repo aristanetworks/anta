@@ -23,7 +23,7 @@ ANTA is a Python framework that automates tests for Arista devices.
   - Via the [ANTA CLI](https://anta.arista.com/stable/cli/overview/)
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/aristanetworks/anta/main/docs/imgs/anta-nrfu.svg" alt="anta nrfu">
+  <img src="https://raw.githubusercontent.com/aristanetworks/anta/main/docs/imgs/anta-nrfu.gif" alt="anta nrfu">
 </p>
 
 ## Install ANTA library

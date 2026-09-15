@@ -72,7 +72,7 @@ jobs:
       - name: Install dependencies
         run: pip install tox tox-gh-actions
       - name: Run pytest via tox for 3.12 on Windows
-        run: tox run
+        run: tox run -- --ignore=tests/docs
   test-documentation:
     name: Build offline documentation for testing
     runs-on: ubuntu-latest

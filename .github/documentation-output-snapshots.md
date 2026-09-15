@@ -59,6 +59,30 @@ uv run --extra cli python docs/scripts/generate_snippet.py \
 
 Use the command displayed in the target documentation page as the source of truth. Match its device, tag, catalog, and report options exactly. Do not regenerate PSIRT snapshots unless the PSIRT lab is available and you have confirmed its expected advisory state.
 
+## Regenerate README animations
+
+The animated README examples are recorded as timestamped [asciinema](https://asciinema.org/) casts and converted locally to GIF with [agg](https://docs.asciinema.org/manual/agg/). Install asciinema 3.2.1 and agg 1.9.0; the generation and rendering scripts reject other versions to avoid output drift. Then load the documentation lab as described above. Export the private documentation environment so the recording shell inherits the inventory and credentials without showing them:
+
+```bash
+source "$ANTA_PRIVATE_DIR/doc_env"
+
+bash .github/asciinema/generate.sh nrfu
+bash .github/asciinema/generate.sh psirt
+```
+
+The NRFU recording runs a bare `anta nrfu` command against all eight documentation devices and a compact showcase catalog selected from `examples/tests.yaml`. The explicit allowlist is tracked in `.github/asciinema/prepare_nrfu_catalog.py`; the source example catalog is never modified. Keep the selection fast and visually varied—the animation is not intended to demonstrate catalog coverage. The cast filter removes warning/error noise, initially shows one success and one failure row, pauses for readability, then rapidly prints the remaining real table rows and lets the terminal scroll naturally. Its 22-row canvas keeps the settings, startup INFO logs, live progress, and initial table visible together. The PSIRT recording runs the complete built-in advisory catalog on an 18-row canvas, captures its logs and Markdown-report terminal flow, and removes the generated `psirt.md` from its temporary working directory. Both recordings enable privileged execution so the catalogs can run without privilege-error noise. Rich file hyperlinks are removed from both casts so local worktree paths are not committed.
+
+Silent intervals are capped at 0.5 seconds in both the cast metadata and local GIF conversion. NRFU renders at 2x speed and its progress phase is normalized to two visible seconds. PSIRT renders at normal speed, including the typed command, with its progress phase normalized to 4.5 seconds. These fixed timings prevent lab performance from controlling either GIF's duration. The cast files are committed alongside the generator, so either GIF can be rendered again without lab access:
+
+```bash
+bash .github/asciinema/render.sh nrfu
+bash .github/asciinema/render.sh psirt
+```
+
+The workflow never uploads recordings or generated images. If PSIRT capture validation fails, `generate.sh` exits before overwriting the committed `.cast` file or GIF, so the last good artifacts remain in the tree.
+
+Review both GIFs for legibility, spinner/progress motion, the final result or saved-report message, and accidental disclosure before committing them. Keep `docs/imgs/anta-nrfu.svg`: published PyPI releases reference that filename even after the README moves to the GIF.
+
 ## Documentation-only custom tests
 
 The custom-test example is reproducible with the committed package under `docs/fixtures/`; it does not require installing a public Python package. Add that directory to `PYTHONPATH` only for the capture command:
@@ -88,7 +112,7 @@ Before committing a regenerated snapshot:
 Run the focused tests and documentation checks:
 
 ```bash
-uv run --extra cli --group test pytest tests/docs/test_generate_snippet.py tests/docs/test_doc_output_examples.py
+uv run --extra cli --group test pytest tests/docs/test_generate_snippet.py tests/docs/test_doc_output_examples.py tests/docs/test_asciinema.py
 pre-commit run --files <changed-file> [<changed-file> ...]
 uv run --group doc --with-editable tools/zensical_extensions zensical build --clean --strict
 ```
