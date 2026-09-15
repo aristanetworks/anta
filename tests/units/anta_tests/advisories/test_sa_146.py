@@ -32,7 +32,6 @@ from anta._advisory.facts.models import (
     FactSourceKind,
     FeatureState,
     MitigationState,
-    MitigationValue,
     UnavailableFact,
 )
 from anta._advisory.facts.software import TerminAttrVersionFact
@@ -63,6 +62,7 @@ if TYPE_CHECKING:
 
 SOURCE = FactSource("unit test", FactSourceKind.DEVICE_METADATA)
 ServiceFactT = TypeVar("ServiceFactT", GnmiTransportFact, GribiTransportFact, TerminAttrGrpcFact)
+MitigationFactT = TypeVar("MitigationFactT", GnmiMtlsFact, GribiMtlsFact, TerminAttrMtlsFact)
 UNSUPPORTED_ERROR = "Incomplete command (at token 1: 'module')"
 EXPECTED_EOS_FIXED_RELEASES = (
     FixedRelease(EOSVersion(4, 36, 2, suffix="F")),
@@ -109,7 +109,7 @@ def _feature_bool(fact: Fact[GnmiTransportFact | GribiTransportFact | TerminAttr
     return fact.value.state is FeatureState.ENABLED
 
 
-def _mitigation_bool(fact: Fact[MitigationValue] | Fact[TerminAttrMtlsFact]) -> bool | None:
+def _mitigation_bool(fact: Fact[GnmiMtlsFact | GribiMtlsFact | TerminAttrMtlsFact]) -> bool | None:
     """Project a mitigation fact to the legacy parser truth table."""
     if isinstance(fact, UnavailableFact):
         return None
@@ -593,17 +593,12 @@ class TestSA146Assessment(unittest.TestCase):
             state = FeatureState.ENABLED if enabled else FeatureState.DISABLED
             return typed_definition.available(cast("ServiceFactT", definition(state)), SOURCE)
 
-        def mitigation(
-            definition: type[GnmiMtlsFact | GribiMtlsFact | TerminAttrMtlsFact], enabled: bool | None
-        ) -> Fact[MitigationValue] | Fact[TerminAttrMtlsFact]:
+        def mitigation(definition: type[MitigationFactT], enabled: bool | None) -> Fact[MitigationFactT]:
+            typed_definition = cast("type[FactDefinition[MitigationFactT]]", definition)
             if enabled is None:
-                return definition.unavailable(FactProblemKind.MISSING, SOURCE)
+                return typed_definition.unavailable(FactProblemKind.MISSING, SOURCE)
             state = MitigationState.EFFECTIVE if enabled else MitigationState.INEFFECTIVE
-            if definition is TerminAttrMtlsFact:
-                return definition.available(definition(state), SOURCE)
-            if definition is GnmiMtlsFact:
-                return definition.available(MitigationValue(state), SOURCE)
-            return GribiMtlsFact.available(MitigationValue(state), SOURCE)
+            return typed_definition.available(cast("MitigationFactT", definition(state)), SOURCE)
 
         if arguments["eos_affected"] is None:
             eos_version: Fact[EOSVersion] = EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)

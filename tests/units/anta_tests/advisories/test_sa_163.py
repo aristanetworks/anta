@@ -130,7 +130,7 @@ def version_fact(value: str) -> Fact[EOSVersion]:
 
 def exposure(state: FeatureState):  # noqa: ANN201
     """Build a gNMI exposure fact."""
-    return GnmiMtlsAuthorizationFact.available(FeatureValue(SubFeature(FeatureName.GNMI, "mTLS request authorization"), state), SOURCE)
+    return GnmiMtlsAuthorizationFact.available(GnmiMtlsAuthorizationFact(state), SOURCE)
 
 
 def mitigation(state: MitigationState):  # noqa: ANN201

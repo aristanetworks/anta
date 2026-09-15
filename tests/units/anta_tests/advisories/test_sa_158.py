@@ -5,12 +5,12 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal, TypeAlias
+from typing import TYPE_CHECKING, Literal, TypeAlias, TypeVar, cast
 
 from anta._advisory.eos_versions import AffectedStatus
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnpsiAuthenticationExposureFact, GnpsiEosRpcAuthTraceFact, GnpsiMutualTlsSpiffeMitigationFact, GnpsiTransportFact
-from anta._advisory.facts.models import AvailableFact, FeatureName, FeatureState, FeatureValue, MitigationState, MitigationValue, SubFeature
+from anta._advisory.facts.models import AvailableFact, FactDefinition, FeatureState, MitigationState
 from anta._advisory.findings.models import AffectedResult, ErrorResult, MitigatedResult, NotAffectedResult
 from anta._advisory.remediation import (
     AllOf,
@@ -56,16 +56,18 @@ LOGGING_REMEDIATION = RemediationPlan(
 )
 
 
-def gnpsi_fact(
-    definition: type[GnpsiTransportFact | GnpsiAuthenticationExposureFact | GnpsiEosRpcAuthTraceFact], name: str, state: FeatureState
-) -> AvailableFact[FeatureValue]:
+GnpsiFactT = TypeVar("GnpsiFactT", GnpsiTransportFact, GnpsiAuthenticationExposureFact, GnpsiEosRpcAuthTraceFact)
+
+
+def gnpsi_fact(definition: type[GnpsiFactT], _name: str, state: FeatureState) -> AvailableFact[GnpsiFactT]:
     """Build one normalized gNPSI fact for direct assessment tests."""
-    return available_fact(definition, FeatureValue(SubFeature(FeatureName.GNPSI, name), state))
+    typed_definition = cast("type[FactDefinition[GnpsiFactT]]", definition)
+    return available_fact(typed_definition, cast("GnpsiFactT", definition(state)))
 
 
-def authentication_mitigation(state: MitigationState) -> AvailableFact[MitigationValue]:
+def authentication_mitigation(state: MitigationState) -> AvailableFact[GnpsiMutualTlsSpiffeMitigationFact]:
     """Build the exact gNPSI authentication mitigation for direct assessment tests."""
-    return available_fact(GnpsiMutualTlsSpiffeMitigationFact, MitigationValue(state))
+    return available_fact(GnpsiMutualTlsSpiffeMitigationFact, GnpsiMutualTlsSpiffeMitigationFact(state))
 
 
 def test_sa158_assessment_contract() -> None:

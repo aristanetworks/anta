@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import Any, ClassVar, cast
+from typing import ClassVar, cast
 
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
@@ -17,7 +17,7 @@ from anta._advisory.facts.management import (
     GnpsiMutualTlsSpiffeMitigationFact,
     GnpsiTransportFact,
 )
-from anta._advisory.facts.models import AvailableFact, Fact, FactDefinition, FeatureState, FeatureValue, MitigationState, MitigationValue, UnavailableFact
+from anta._advisory.facts.models import AvailableFact, Fact, FactsBase, FeatureState, MitigationState, UnavailableFact, fact_field, facts_dataclass
 from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import (
     AffectedResult,
@@ -89,8 +89,8 @@ def _logging_remediation_plan(current_version: EOSVersion) -> RemediationPlan:
 def _assess_gnpsi_issue(
     vulnerability_id: str,
     version: Fact[EOSVersion],
-    transport: Fact[FeatureValue],
-    prerequisite: Fact[FeatureValue],
+    transport: Fact[GnpsiTransportFact],
+    prerequisite: Fact[GnpsiAuthenticationExposureFact],
 ) -> VulnerabilityResult:
     """Assess one gNPSI issue after its independent prerequisite is normalized."""
     if not isinstance(prerequisite, UnavailableFact) and prerequisite.value.state is not FeatureState.ENABLED:
@@ -105,7 +105,7 @@ def _assess_gnpsi_issue(
         return ErrorResult(vulnerability_id=vulnerability_id, problems=problems)
     return AffectedResult(
         vulnerability_id=vulnerability_id,
-        conditions=(cast("AvailableFact[FeatureValue]", transport), cast("AvailableFact[FeatureValue]", prerequisite)),
+        conditions=(cast("AvailableFact[GnpsiTransportFact]", transport), cast("AvailableFact[GnpsiAuthenticationExposureFact]", prerequisite)),
         context=(eos_release,),
         remediation=software_version_plan(FIXED_RELEASES, current_version=eos_release.fact.value),
     )
@@ -113,9 +113,9 @@ def _assess_gnpsi_issue(
 
 def _assess_logging_issue(
     version: Fact[EOSVersion],
-    transport: Fact[FeatureValue],
-    trace: Fact[FeatureValue],
-    authentication_mitigation: Fact[MitigationValue],
+    transport: Fact[GnpsiTransportFact],
+    trace: Fact[GnpsiEosRpcAuthTraceFact],
+    authentication_mitigation: Fact[GnpsiMutualTlsSpiffeMitigationFact],
 ) -> VulnerabilityResult:
     """Assess credential logging and the exact source-defined authentication mitigation."""
     if not isinstance(trace, UnavailableFact) and trace.value.state is not FeatureState.ENABLED:
@@ -129,8 +129,8 @@ def _assess_logging_issue(
     if problems:
         return ErrorResult(vulnerability_id=LOGGING_ID, problems=problems)
     remediation = _logging_remediation_plan(eos_release.fact.value)
-    available_trace = cast("AvailableFact[FeatureValue]", trace)
-    available_mitigation = cast("AvailableFact[MitigationValue]", authentication_mitigation)
+    available_trace = cast("AvailableFact[GnpsiEosRpcAuthTraceFact]", trace)
+    available_mitigation = cast("AvailableFact[GnpsiMutualTlsSpiffeMitigationFact]", authentication_mitigation)
     if available_mitigation.value.state is MitigationState.EFFECTIVE:
         return MitigatedResult(
             vulnerability_id=LOGGING_ID,
@@ -140,7 +140,7 @@ def _assess_logging_issue(
         )
     return AffectedResult(
         vulnerability_id=LOGGING_ID,
-        conditions=(cast("AvailableFact[FeatureValue]", transport), available_trace),
+        conditions=(cast("AvailableFact[GnpsiTransportFact]", transport), available_trace),
         context=(eos_release,),
         remediation=remediation,
     )
@@ -168,31 +168,33 @@ class SA158(OptionalCommandsMixin, _AntaAdvisoryTest):
     ```
     """
 
+    @facts_dataclass
+    class Facts(FactsBase):
+        """Collected facts required to assess the advisory."""
+
+        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        transport: Fact[GnpsiTransportFact] = fact_field(GnpsiTransportFact)
+        authentication: Fact[GnpsiAuthenticationExposureFact] = fact_field(GnpsiAuthenticationExposureFact)
+        trace: Fact[GnpsiEosRpcAuthTraceFact] = fact_field(GnpsiEosRpcAuthTraceFact)
+        mitigation: Fact[GnpsiMutualTlsSpiffeMitigationFact] = fact_field(GnpsiMutualTlsSpiffeMitigationFact)
+
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
-    required_facts: ClassVar[tuple[type[FactDefinition[Any]], ...]] = (
-        EosVersionFact,
-        GnpsiTransportFact,
-        GnpsiAuthenticationExposureFact,
-        GnpsiEosRpcAuthTraceFact,
-        GnpsiMutualTlsSpiffeMitigationFact,
-    )
     description = "Verify whether the device is impacted by Security Advisory 0158."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
         """Derive facts, assess both vulnerabilities, and project them."""
-        version = self.fact(EosVersionFact)
-        transport = self.fact(GnpsiTransportFact)
+        facts = self.Facts.collect(self)
         findings = (
-            (CODE_EXECUTION_ID, _assess_gnpsi_issue(CODE_EXECUTION_ID, version, transport, self.fact(GnpsiAuthenticationExposureFact))),
+            (CODE_EXECUTION_ID, _assess_gnpsi_issue(CODE_EXECUTION_ID, facts.version, facts.transport, facts.authentication)),
             (
                 LOGGING_ID,
                 _assess_logging_issue(
-                    version,
-                    transport,
-                    self.fact(GnpsiEosRpcAuthTraceFact),
-                    self.fact(GnpsiMutualTlsSpiffeMitigationFact),
+                    facts.version,
+                    facts.transport,
+                    facts.trace,
+                    facts.mitigation,
                 ),
             ),
         )

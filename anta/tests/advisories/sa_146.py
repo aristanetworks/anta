@@ -17,12 +17,13 @@ from anta._advisory.facts.management import GnmiMtlsFact, GnmiTransportFact, Gri
 from anta._advisory.facts.models import (
     AvailableFact,
     Fact,
-    FactDefinition,
     FactProblemKind,
+    FactsBase,
     FeatureState,
     MitigationState,
-    MitigationValue,
     UnavailableFact,
+    fact_field,
+    facts_dataclass,
 )
 from anta._advisory.facts.software import TerminAttrVersionFact
 from anta._advisory.facts.terminattr import TerminAttrGrpcFact, TerminAttrMtlsFact
@@ -147,7 +148,7 @@ class _GrpcPath:
 
     version: VersionAssessment | UnavailableFact[Any]
     service: Fact[GnmiTransportFact | GribiTransportFact | TerminAttrGrpcFact]
-    mitigation: Fact[MitigationValue] | Fact[TerminAttrMtlsFact]
+    mitigation: Fact[GnmiMtlsFact | GribiMtlsFact | TerminAttrMtlsFact]
     software: SoftwareTarget
     fixed_releases: tuple[FixedRelease, ...]
 
@@ -265,33 +266,37 @@ class SA146(OptionalCommandsMixin, _AntaAdvisoryTest):
     ```
     """
 
+    @facts_dataclass
+    class Facts(FactsBase):
+        """Collected facts required to assess the advisory."""
+
+        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        terminattr_version: Fact[TerminAttrVersionFact] = fact_field(TerminAttrVersionFact)
+        gnmi: Fact[GnmiTransportFact] = fact_field(GnmiTransportFact)
+        gribi: Fact[GribiTransportFact] = fact_field(GribiTransportFact)
+        terminattr: Fact[TerminAttrGrpcFact] = fact_field(TerminAttrGrpcFact)
+        gnmi_mtls: Fact[GnmiMtlsFact] = fact_field(GnmiMtlsFact)
+        gribi_mtls: Fact[GribiMtlsFact] = fact_field(GribiMtlsFact)
+        terminattr_mtls: Fact[TerminAttrMtlsFact] = fact_field(TerminAttrMtlsFact)
+
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
-    required_facts: ClassVar[tuple[type[FactDefinition[Any]], ...]] = (
-        EosVersionFact,
-        TerminAttrVersionFact,
-        GnmiTransportFact,
-        GribiTransportFact,
-        TerminAttrGrpcFact,
-        GnmiMtlsFact,
-        GribiMtlsFact,
-        TerminAttrMtlsFact,
-    )
     description = "Verify whether the device is impacted by Security Advisory 0146."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
         """Assess and project GHSA-hrxh-6v49-42gf."""
-        eos_release = assess_eos_version(self.fact(EosVersionFact), EOS_AFFECTED_VERSION_MATRIX)
-        terminattr_version = _terminattr_version_assessment(self.fact(TerminAttrVersionFact))
+        facts = self.Facts.collect(self)
+        eos_release = assess_eos_version(facts.version, EOS_AFFECTED_VERSION_MATRIX)
+        terminattr_version = _terminattr_version_assessment(facts.terminattr_version)
         finding = _assess_sa146(
             (
-                _GrpcPath(eos_release, self.fact(GnmiTransportFact), self.fact(GnmiMtlsFact), SoftwareTarget.EOS, EOS_FIXED_RELEASES),
-                _GrpcPath(eos_release, self.fact(GribiTransportFact), self.fact(GribiMtlsFact), SoftwareTarget.EOS, EOS_FIXED_RELEASES),
+                _GrpcPath(eos_release, facts.gnmi, facts.gnmi_mtls, SoftwareTarget.EOS, EOS_FIXED_RELEASES),
+                _GrpcPath(eos_release, facts.gribi, facts.gribi_mtls, SoftwareTarget.EOS, EOS_FIXED_RELEASES),
                 _GrpcPath(
                     terminattr_version,
-                    self.fact(TerminAttrGrpcFact),
-                    self.fact(TerminAttrMtlsFact),
+                    facts.terminattr,
+                    facts.terminattr_mtls,
                     SoftwareTarget.TERMINATTR,
                     TERMINATTR_FIXED_RELEASES,
                 ),

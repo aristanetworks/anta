@@ -18,15 +18,11 @@ from anta._advisory.facts.management import GnmiAccountingFact, GnmiTransportFac
 from anta._advisory.facts.models import (
     AvailableFact,
     ConfigurationState,
-    ConfigurationValue,
     Fact,
     FactProblemKind,
     FactSource,
     FactSourceKind,
-    FeatureName,
     FeatureState,
-    FeatureValue,
-    SubFeature,
     UnavailableFact,
 )
 from anta._advisory.findings.models import ErrorResult, InconclusiveResult, NotAffectedResult, VulnerabilityResult
@@ -72,7 +68,7 @@ def _command(command: AntaCommand, output: dict[str, object] | str) -> AntaComma
     return populated
 
 
-def _feature_bool(fact: Fact[FeatureValue]) -> bool | None:
+def _feature_bool(fact: Fact[GnmiTransportFact | GnmiAccountingFact]) -> bool | None:
     """Project a feature fact to the legacy truth table used by parser cases."""
     if isinstance(fact, UnavailableFact):
         return None
@@ -329,13 +325,10 @@ class TestSA117Assessment(unittest.TestCase):
         gnmi_command = _command(GnmiTransportFact.commands[0], dict(output))
         gnmi_fact = GnmiTransportFact.parse((gnmi_command,))
         accounting_fact = GnmiAccountingFact.parse((gnmi_command,))
-        trace_feature = SubFeature(FeatureName.TRACE, "advisory-identified selector")
-        trace_fact: Fact[ConfigurationValue] = (
+        trace_fact: Fact[RiskyOpenConfigTraceFact] = (
             RiskyOpenConfigTraceFact.unavailable(FactProblemKind.UNSUPPORTED, source)
             if trace is None
-            else RiskyOpenConfigTraceFact.available(
-                ConfigurationValue(trace_feature, ConfigurationState.CONFIGURED if trace else ConfigurationState.NOT_CONFIGURED), source
-            )
+            else RiskyOpenConfigTraceFact.available(RiskyOpenConfigTraceFact(ConfigurationState.CONFIGURED if trace else ConfigurationState.NOT_CONFIGURED), source)
         )
         return _assess_sa117(version_fact, gnmi_fact, accounting_fact, trace_fact)
 
