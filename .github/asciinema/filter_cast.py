@@ -25,7 +25,7 @@ def normalize_nrfu_progress(events: list[dict[str, object] | list[object]], dura
     """Normalize progress timing so lab performance does not control GIF duration."""
     progress_events = [event for event in events if isinstance(event, list) and event[1] == "o" and "Running Tests" in event[2]]
     actual_duration = sum(event[0] for event in progress_events)
-    if actual_duration > duration:
+    if actual_duration > 0:
         factor = duration / actual_duration
         for event in progress_events:
             event[0] = round(event[0] * factor, 3)
