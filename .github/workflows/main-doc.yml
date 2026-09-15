@@ -10,7 +10,7 @@ on:
       - ".github/workflows/main-doc.yml"
       - "tools/zensical_extensions/**"
       - "docs/**"
-      - "mkdocs.yml"
+      - "zensical.toml"
       - "pyproject.toml"
       - "anta/**"
   workflow_dispatch:
