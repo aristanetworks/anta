@@ -6,14 +6,14 @@
 from __future__ import annotations
 
 import inspect
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, ClassVar
 
 import pytest
 
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import AvailableFact, CommandsFactDefinition, Fact, FactDefinition, FactSource, FactSourceKind, PendingFact
+from anta._advisory.facts.models import AvailableFact, CommandsFactDefinition, Fact, FactDefinition, FactsBase, FactSource, FactSourceKind, fact_field
 from anta._advisory.optional_commands import OptionalAntaCommand
 from anta._advisory.results import _AdvisoryTestResult, _get_advisory_metadata
 from anta._eos.version import parse_eos_version
@@ -65,22 +65,21 @@ class FactAdvisoryTest(_AntaAdvisoryTest):
         self.result.is_success(str(fact))
 
 
-class PendingFactAdvisoryTest(_AntaAdvisoryTest):
+class FactsAdvisoryTest(_AntaAdvisoryTest):
     """Fake advisory test whose typed fields declare the facts to collect."""
 
-    @dataclass(slots=True)
-    class Facts:
+    @dataclass(frozen=True, slots=True)
+    class Facts(FactsBase):
         """Typed facts required by the fake advisory."""
 
-        value: Fact[str] | PendingFact[str] = PendingFact(FakeCommandFact)  # noqa: RUF009  # PendingFact is immutable.
+        value: Fact[str] = field(default_factory=fact_field(FakeCommandFact))
 
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
 
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
         """Set the result from the normalized fact."""
-        facts = self.Facts()
-        facts.value = self.collect_fact(facts.value)
+        facts = self.Facts.collect(self)
         self.result.is_success(str(facts.value))
 
 
@@ -167,14 +166,14 @@ def test_advisory_required_facts_own_commands_and_derivation(device: AntaDevice)
     assert fact.source.name == "show fake"
 
 
-def test_advisory_pending_fact_fields_own_commands_and_collection(device: AntaDevice) -> None:
+def test_advisory_fact_fields_own_commands_and_collection(device: AntaDevice) -> None:
     """Derive commands and collect a field from its typed runtime declaration."""
-    test_instance = PendingFactAdvisoryTest(device=device, eos_data=[{"value": "normalized"}])
-    facts = PendingFactAdvisoryTest.Facts()
+    test_instance = FactsAdvisoryTest(device=device, eos_data=[{"value": "normalized"}])
+    facts = FactsAdvisoryTest.Facts.collect(test_instance)
 
-    facts.value = test_instance.collect_fact(facts.value)
-
-    assert PendingFactAdvisoryTest.commands == [FakeCommandFact.commands[0]]
+    assert FactsAdvisoryTest.commands == [FakeCommandFact.commands[0]]
+    assert FactsAdvisoryTest.Facts.definitions() is FactsAdvisoryTest.Facts.definitions()
+    assert FactsAdvisoryTest.Facts.definitions() == {"value": FakeCommandFact}
     collected = facts.value
     assert isinstance(collected, AvailableFact)
     assert collected == AvailableFact(definition=FakeCommandFact, value="normalized", source=FactSource("show fake", FactSourceKind.COMMAND))

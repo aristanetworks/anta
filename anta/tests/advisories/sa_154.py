@@ -5,14 +5,14 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date
 from typing import ClassVar
 
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import Fact, FeatureState, PendingFact, UnavailableFact
+from anta._advisory.facts.models import Fact, FactsBase, FeatureState, UnavailableFact, fact_field
 from anta._advisory.facts.routing import BfdAuthenticationFact
 from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import AffectedResult, EosReleaseAssessment, ErrorResult, NotAffectedResult, VulnerabilityResult
@@ -98,14 +98,16 @@ class SA154(OptionalCommandsMixin, _AntaAdvisoryTest):
     ```
     """
 
-    @dataclass(slots=True)
-    class Facts:
-        """Typed facts required to assess the advisory."""
+    @dataclass(frozen=True, slots=True)
+    class Facts(FactsBase):
+        """Collected facts required to assess the advisory.
 
-        version: Fact[EOSVersion] | PendingFact[EOSVersion] = PendingFact(EosVersionFact)  # noqa: RUF009  # PendingFact is immutable.
-        bfd_authentication: Fact[BfdAuthenticationFact] | PendingFact[BfdAuthenticationFact] = PendingFact(  # noqa: RUF009
-            BfdAuthenticationFact
-        )
+        Each default factory is a typed declaration consumed by ``FactsBase``; it
+        is not invoked when ``collect`` constructs this container.
+        """
+
+        version: Fact[EOSVersion] = field(default_factory=fact_field(EosVersionFact))
+        bfd_authentication: Fact[BfdAuthenticationFact] = field(default_factory=fact_field(BfdAuthenticationFact))
 
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
     description = "Verify whether the device is impacted by Security Advisory 0154."
@@ -114,9 +116,7 @@ class SA154(OptionalCommandsMixin, _AntaAdvisoryTest):
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
         """Derive the declared facts, assess the vulnerability, and project it."""
-        facts = self.Facts()
-        facts.version = self.collect_fact(facts.version)
-        facts.bfd_authentication = self.collect_fact(facts.bfd_authentication)
+        facts = self.Facts.collect(self)
         finding = _assess_sa154(facts.version, facts.bfd_authentication)
         atomic = self.result.add(f"Verify {VULNERABILITY_ID}.", vulnerability_ids=(VULNERABILITY_ID,))
         project_vulnerability_result(atomic, finding)

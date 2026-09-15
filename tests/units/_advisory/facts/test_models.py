@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 import pytest
@@ -13,12 +14,13 @@ from anta._advisory.facts.models import (
     Fact,
     FactDefinition,
     FactProblemKind,
+    FactsBase,
     FactSource,
     FactSourceKind,
     FeatureName,
     FeatureState,
     FeatureValue,
-    PendingFact,
+    fact_field,
 )
 
 if TYPE_CHECKING:
@@ -45,11 +47,58 @@ ENABLED = FeatureValue(FeatureName.SECURE_BOOT, FeatureState.ENABLED)
 DISABLED = FeatureValue(FeatureName.SECURE_BOOT, FeatureState.DISABLED)
 
 
-def test_pending_fact_retains_typed_definition() -> None:
-    """Retain the runtime definition needed to collect a declared fact."""
-    pending = PendingFact(DEFINITION)
+def test_fact_field_retains_definition_and_rejects_direct_use() -> None:
+    """Retain the typed definition while preventing construction without collection."""
+    factory = fact_field(DEFINITION)
 
-    assert pending.definition is DEFINITION
+    @dataclass(frozen=True, slots=True)
+    class DeclaredFacts(FactsBase):
+        """Fact container that must be constructed through collection."""
+
+        value: Fact[FeatureValue] = field(default_factory=factory)
+
+    assert factory.definition is DEFINITION
+    with pytest.raises(RuntimeError, match=r"collect\(\) on a FactsBase subclass"):
+        DeclaredFacts()
+
+
+def test_facts_base_rejects_fields_without_fact_factory() -> None:
+    """Reject fields that do not use the typed fact factory declaration."""
+
+    @dataclass(frozen=True, slots=True)
+    class MissingFactoryFacts(FactsBase):
+        """Fact container without a default factory."""
+
+        value: Fact[FeatureValue] = field()
+
+    @dataclass(frozen=True, slots=True)
+    class OrdinaryFactoryFacts(FactsBase):
+        """Fact container using an ordinary default factory."""
+
+        value: Fact[FeatureValue] = field(default_factory=lambda: DEFINITION.available(ENABLED, SOURCE))
+
+    for invalid_facts in (MissingFactoryFacts, OrdinaryFactoryFacts):
+        with pytest.raises(TypeError, match=r"must use field\(default_factory=fact_field\(\.\.\.\)\)"):
+            invalid_facts.definitions()
+
+
+def test_facts_base_rejects_empty_and_non_init_fact_containers() -> None:
+    """Require at least one fact field and constructor-compatible declarations."""
+
+    @dataclass(frozen=True, slots=True)
+    class EmptyFacts(FactsBase):
+        """Fact container without declared facts."""
+
+    @dataclass(frozen=True, slots=True)
+    class NonInitFacts(FactsBase):
+        """Fact container whose declared fact cannot be initialized."""
+
+        value: Fact[FeatureValue] = field(init=False, default_factory=fact_field(DEFINITION))
+
+    with pytest.raises(TypeError, match="must declare one or more fact fields"):
+        EmptyFacts.definitions()
+    with pytest.raises(TypeError, match="must be included in the generated initializer"):
+        NonInitFacts.definitions()
 
 
 def test_fact_definition_constructs_available_and_unavailable_facts() -> None:

@@ -6,10 +6,9 @@
 from __future__ import annotations
 
 import sys
-from dataclasses import fields
 from typing import TYPE_CHECKING, Any, ClassVar, TypeVar
 
-from anta._advisory.facts.models import PendingFact
+from anta._advisory.facts.models import FactsBase
 from anta._advisory.models import _AdvisoryMetadata
 from anta._advisory.results import _AdvisoryTestResult
 from anta.models import AntaCommand, AntaTemplate, AntaTest, _description_from_docstring
@@ -88,15 +87,10 @@ class _AntaAdvisoryTest(AntaTest):
         if required_facts:
             msg = f"Class {cls.__module__}.{cls.__name__} cannot define both 'Facts' and 'required_facts'"
             raise AttributeError(msg)
-        msg = f"Class {cls.__module__}.{cls.__name__}.Facts must declare one or more PendingFact defaults"
-        definitions: list[type[FactDefinition[Any]]] = []
-        for field in fields(facts_type):
-            if not isinstance(field.default, PendingFact):
-                raise TypeError(msg)
-            definitions.append(field.default.definition)
-        if not definitions:
+        if not issubclass(facts_type, FactsBase):
+            msg = f"Class {cls.__module__}.{cls.__name__}.Facts must be a subclass of FactsBase"
             raise TypeError(msg)
-        cls.required_facts = tuple(definitions)
+        cls.required_facts = tuple(facts_type.definitions().values())
         return cls.required_facts
 
     @classmethod
@@ -116,12 +110,3 @@ class _AntaAdvisoryTest(AntaTest):
 
         msg = f"Fact '{definition.key}' is not listed in required_facts for {self.__class__.__name__}"
         raise ValueError(msg)
-
-    def collect_fact(self, fact: Fact[T] | PendingFact[T]) -> Fact[T]:
-        """Collect a pending fact, or return an already collected fact unchanged.
-
-        TODO: Once all advisories use typed `Facts` fields, fold `fact()` into this method and remove the `required_facts` compatibility path.
-        """
-        if isinstance(fact, PendingFact):
-            return self.fact(fact.definition)
-        return fact
