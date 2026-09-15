@@ -70,57 +70,55 @@ def test_fact_field_retains_definition_and_declares_required_constructor_field()
         DeclaredFacts()  # pyright: ignore[reportCallIssue]
 
 
-def test_facts_base_rejects_fields_without_fact_factory() -> None:
-    """Reject fields that do not use the typed fact factory declaration."""
+def test_facts_base_rejects_fields_without_fact_declaration() -> None:
+    """Reject fields that do not carry a valid runtime fact declaration."""
+    with pytest.raises(TypeError, match=r"must use fact_field\(\.\.\.\)"):
 
-    @facts_dataclass
-    class MissingFactoryFacts(FactsBase):
-        """Fact container without a fact field specifier."""
+        @facts_dataclass
+        class MissingDeclarationFacts(FactsBase):
+            """Fact container without a fact field specifier."""
 
-        value: Fact[FeatureValue]
+            value: Fact[FeatureValue]
 
     @dataclass(frozen=True, slots=True)
-    class OrdinaryFactoryFacts(FactsBase):
-        """Fact container using an ordinary default factory."""
+    class OrdinaryDataclassFacts(FactsBase):
+        """Fact container using an ordinary dataclass field declaration."""
 
         value: Fact[FeatureValue] = field(default_factory=lambda: DEFINITION.available(ENABLED, SOURCE))
 
-    for invalid_facts in (MissingFactoryFacts, OrdinaryFactoryFacts):
-        with pytest.raises(TypeError, match=r"must use fact_field\(\.\.\.\)"):
-            invalid_facts.definitions()
+    with pytest.raises(TypeError, match="must use @facts_dataclass"):
+        OrdinaryDataclassFacts.definitions()
 
 
 def test_facts_base_rejects_empty_and_non_init_fact_containers() -> None:
     """Require at least one fact field and constructor-compatible declarations."""
-
-    @facts_dataclass
-    class EmptyFacts(FactsBase):
-        """Fact container without declared facts."""
-
-    @dataclass(frozen=True, slots=True)
-    class NonInitFacts(FactsBase):
-        """Fact container whose declared fact cannot be initialized."""
-
-        value: Fact[FeatureValue] = field(init=False, metadata={"anta.fact_definition": DEFINITION})
-
     with pytest.raises(TypeError, match="must declare one or more fact fields"):
-        EmptyFacts.definitions()
+
+        @facts_dataclass
+        class EmptyFacts(FactsBase):
+            """Fact container without declared facts."""
+
     with pytest.raises(TypeError, match="must be included in the generated initializer"):
-        NonInitFacts.definitions()
+
+        @facts_dataclass
+        class NonInitFacts(FactsBase):
+            """Malformed container bypassing the helper with a non-init field."""
+
+            # Valid raw metadata deliberately bypasses the public helper so validation
+            # reaches the independent generated-initializer check.
+            value: Fact[FeatureValue] = field(init=False, metadata={"definition": DEFINITION})
 
 
 def test_facts_base_rejects_duplicate_definitions() -> None:
-    """Reject duplicate definitions that collector.fact could not distinguish."""
-
-    @facts_dataclass
-    class DuplicateFacts(FactsBase):
-        """Fact container that declares one definition under two names."""
-
-        first: Fact[FeatureValue] = fact_field(DEFINITION)
-        second: Fact[FeatureValue] = fact_field(DEFINITION)
-
+    """Require one uniquely identified collected fact per container field."""
     with pytest.raises(TypeError, match=r"fields 'first' and 'second'.*same fact definition 'ExampleFactDefinition'"):
-        DuplicateFacts.definitions()
+
+        @facts_dataclass
+        class DuplicateFacts(FactsBase):
+            """Fact container that declares one definition under two names."""
+
+            first: Fact[FeatureValue] = fact_field(DEFINITION)
+            second: Fact[FeatureValue] = fact_field(DEFINITION)
 
 
 def test_fact_definition_constructs_available_and_unavailable_facts() -> None:

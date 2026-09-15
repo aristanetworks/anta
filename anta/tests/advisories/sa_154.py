@@ -101,8 +101,8 @@ class SA154(OptionalCommandsMixin, _AntaAdvisoryTest):
     class Facts(FactsBase):
         """Collected facts required to assess the advisory.
 
-        Each field retains its definition as dataclass metadata consumed by
-        ``FactsBase.collect``.
+        ``fact_field`` statically couples each field value to its definition and
+        retains the runtime declaration consumed by ``FactsBase.collect``.
         """
 
         version: Fact[EOSVersion] = fact_field(EosVersionFact)
