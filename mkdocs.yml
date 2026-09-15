@@ -119,7 +119,7 @@ plugins:
       alias_type: symlink
       redirect_template: null
       deploy_prefix: ""
-      canonical_version: null
+      canonical_version: stable
 
 markdown_extensions:
   - admonition
