@@ -16,7 +16,8 @@ from rich.console import Console
 
 from anta.reporter.table_reporter import ReportTable
 from anta.result_manager import ResultManager
-from anta.result_manager.models import AntaTestStatus, TestResult as AntaTestResult
+from anta.result_manager.models import AntaTestStatus
+from anta.result_manager.models import TestResult as AntaTestResult
 
 REPOSITORY_ROOT = Path(__file__).parents[2]
 ASCIINEMA_DIRECTORY = REPOSITORY_ROOT / ".github" / "asciinema"
