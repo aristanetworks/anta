@@ -24,6 +24,7 @@ ASCIINEMA_DIRECTORY = REPOSITORY_ROOT / ".github" / "asciinema"
 FILTER_CAST = ASCIINEMA_DIRECTORY / "filter_cast.py"
 PREPARE_NRFU_CATALOG = ASCIINEMA_DIRECTORY / "prepare_nrfu_catalog.py"
 EXPECTED_DEMO_CATALOG_ENTRIES = 41
+EXPECTED_PROGRESS_DURATION = 4
 
 
 def run_script(script: Path, *args: Path | str) -> subprocess.CompletedProcess[str]:
@@ -72,13 +73,23 @@ def test_filter_cast_supports_current_nrfu_table(tmp_path: Path) -> None:
 
     source = tmp_path / "raw.cast"
     destination = tmp_path / "filtered.cast"
-    write_cast(source, [cast_header(), [0.1, "o", rendered_table.getvalue()]])
+    write_cast(
+        source,
+        [
+            cast_header(),
+            [0.25, "o", "Running Tests ... 25%"],
+            [0.75, "o", "Running Tests ... 100%"],
+            [0.1, "o", rendered_table.getvalue()],
+        ],
+    )
 
     completed = run_script(FILTER_CAST, source, destination, "nrfu")
 
     assert completed.returncode == 0, completed.stderr
     filtered_events = [json.loads(line) for line in destination.read_text(encoding="utf-8").splitlines()]
     assert filtered_events[0]["command"] == "anta nrfu"
+    progress_duration = sum(event[0] for event in filtered_events if isinstance(event, list) and "Running Tests" in event[2])
+    assert progress_duration == EXPECTED_PROGRESS_DURATION
     output = "".join(event[2] for event in filtered_events[1:] if event[1] == "o")
     assert "All tests results" in output
     assert "success" in output
