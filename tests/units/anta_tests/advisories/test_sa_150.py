@@ -19,10 +19,7 @@ from anta._advisory.facts.models import (
     FactProblemKind,
     FactSource,
     FactSourceKind,
-    FeatureName,
     FeatureState,
-    FeatureValue,
-    SubFeature,
 )
 from anta._advisory.facts.platform import PlatformIdentityFact
 from anta._advisory.findings.models import ErrorResult, InconclusiveResult, NotAffectedResult
@@ -256,9 +253,9 @@ def platform_fact(value: str) -> AvailableFact[PlatformIdentity]:
     return PlatformIdentityFact.available(platform, SOURCE)
 
 
-def dot1x_fact(state: FeatureState) -> AvailableFact[FeatureValue]:
+def dot1x_fact(state: FeatureState) -> AvailableFact[Dot1xControlledAuthenticatorFact]:
     """Build an 802.1X fact."""
-    return Dot1xControlledAuthenticatorFact.available(FeatureValue(SubFeature(FeatureName.DOT1X, "controlled authenticator"), state), SOURCE)
+    return Dot1xControlledAuthenticatorFact.available(Dot1xControlledAuthenticatorFact(state), SOURCE)
 
 
 class TestSA150VersionMatrices(unittest.TestCase):

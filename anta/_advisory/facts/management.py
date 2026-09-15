@@ -16,8 +16,8 @@ from anta._advisory.facts.models import (
     CommandsFactDefinition,
     ConfigurationState,
     ConfigurationValue,
+    CredentialSyntaxFact,
     CredentialSyntaxState,
-    CredentialSyntaxValue,
     Fact,
     FactProblemKind,
     FactSource,
@@ -243,82 +243,87 @@ def _parse_dot1x_controlled_authenticator(output: Mapping[str, object]) -> Parse
     return ParseSuccessful(value=False)
 
 
-class Dot1xControlledAuthenticatorFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class Dot1xControlledAuthenticatorFact(FeatureFact, CommandsFactDefinition["Dot1xControlledAuthenticatorFact"]):
     """Effective 802.1X authenticator with controlled port state."""
 
-    key = "feature.dot1x.controlled_authenticator"
-    label = "802.1X controlled authenticator state"
-    commands = (DOT1X_COMMAND,)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.DOT1X, "controlled authenticator")
+    key: ClassVar[str] = "feature.dot1x.controlled_authenticator"
+    label: ClassVar[str] = "802.1X controlled authenticator state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (DOT1X_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[Dot1xControlledAuthenticatorFact]:
         """Normalize system control and effective interface port-control state."""
         (command,) = commands
         source = _feature_source(command)
-        feature = SubFeature(FeatureName.DOT1X, "controlled authenticator")
         if is_unsupported_optional_command(command):
-            return cls.available(FeatureValue(feature, FeatureState.UNSUPPORTED), source)
+            return cls.available(cls(FeatureState.UNSUPPORTED), source)
         parsed = _parse_dot1x_controlled_authenticator(command.json_output)
         if isinstance(parsed, ParseFail):
             return cls.unavailable(FactProblemKind(parsed.reason.value), source)
         state = FeatureState.ENABLED if parsed.value else FeatureState.DISABLED
-        return cls.available(FeatureValue(feature, state), source)
+        return cls.available(cls(state), source)
 
 
-class Dot1xDynamicAuthorizationFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class Dot1xDynamicAuthorizationFact(FeatureFact, CommandsFactDefinition["Dot1xDynamicAuthorizationFact"]):
     """Effective 802.1X dynamic authorization with an authenticator interface."""
 
-    key = "feature.dot1x.dynamic_authorization"
-    label = "802.1X dynamic-authorization state"
-    commands = (DOT1X_COMMAND,)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.DOT1X, "dynamic authorization authenticator")
+    key: ClassVar[str] = "feature.dot1x.dynamic_authorization"
+    label: ClassVar[str] = "802.1X dynamic-authorization state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (DOT1X_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[Dot1xDynamicAuthorizationFact]:
         """Normalize the structured global and interface prerequisites."""
         (command,) = commands
-        feature = SubFeature(FeatureName.DOT1X, "dynamic authorization authenticator")
         source = _feature_source(command)
         if is_unsupported_optional_command(command):
-            return cls.available(FeatureValue(feature, FeatureState.UNSUPPORTED), source)
+            return cls.available(cls(FeatureState.UNSUPPORTED), source)
         dynamic_authorization = command.json_output.get("dynAuth")
         if not isinstance(dynamic_authorization, bool):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         if not dynamic_authorization:
-            return cls.available(FeatureValue(feature, FeatureState.DISABLED), source)
+            return cls.available(cls(FeatureState.DISABLED), source)
         parsed = _parse_dot1x_controlled_authenticator(command.json_output)
         if isinstance(parsed, ParseFail):
             return cls.unavailable(FactProblemKind(parsed.reason.value), source)
         state = FeatureState.ENABLED if parsed.value else FeatureState.DISABLED
-        return cls.available(FeatureValue(feature, state), source)
+        return cls.available(cls(state), source)
 
 
-class RadiusProxyDynamicAuthorizationFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class RadiusProxyDynamicAuthorizationFact(FeatureFact, CommandsFactDefinition["RadiusProxyDynamicAuthorizationFact"]):
     """Configured RADIUS proxy dynamic authorization with a client group."""
 
-    key = "feature.radius_proxy.dynamic_authorization"
-    label = "RADIUS proxy dynamic-authorization state"
-    commands = (RADIUS_PROXY_CONFIG_COMMAND,)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.RADIUS_PROXY, "dynamic authorization client group")
+    key: ClassVar[str] = "feature.radius_proxy.dynamic_authorization"
+    label: ClassVar[str] = "RADIUS proxy dynamic-authorization state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (RADIUS_PROXY_CONFIG_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[RadiusProxyDynamicAuthorizationFact]:
         """Normalize the complete source-defined RADIUS proxy prerequisite."""
         (command,) = commands
         lines = tuple(line.strip() for line in command.text_output.splitlines() if line.strip() and line.strip() != "!")
         configured = "radius proxy" in lines and "dynamic-authorization" in lines and any(line.startswith("client group ") for line in lines)
         state = FeatureState.ENABLED if configured else FeatureState.DISABLED
-        feature = SubFeature(FeatureName.RADIUS_PROXY, "dynamic authorization client group")
-        return cls.available(FeatureValue(feature, state), _feature_source(command))
+        return cls.available(cls(state), _feature_source(command))
 
 
-class SnmpAgentFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class SnmpAgentFact(FeatureFact, CommandsFactDefinition["SnmpAgentFact"]):
     """Effective SNMP agent state."""
 
-    key = "feature.snmp.agent"
-    label = "SNMP agent state"
-    commands = (SNMP_COMMAND,)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.SNMP, "agent")
+    key: ClassVar[str] = "feature.snmp.agent"
+    label: ClassVar[str] = "SNMP agent state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (SNMP_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[SnmpAgentFact]:
         """Normalize the structured top-level SNMP enablement flag."""
         (command,) = commands
         source = _feature_source(command)
@@ -327,27 +332,27 @@ class SnmpAgentFact(CommandsFactDefinition[FeatureValue]):
             return cls.unavailable(FactProblemKind.MISSING, source)
         if not isinstance(enabled, bool):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
-        feature = SubFeature(FeatureName.SNMP, "agent")
         state = FeatureState.ENABLED if enabled else FeatureState.DISABLED
-        return cls.available(FeatureValue(feature, state), source)
+        return cls.available(cls(state), source)
 
 
-class SnmpV3AuthenticationFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class SnmpV3AuthenticationFact(FeatureFact, CommandsFactDefinition["SnmpV3AuthenticationFact"]):
     """Whether a local or remote SNMPv3 user has a configured authentication key."""
 
-    key = "feature.snmpv3.authentication_key"
-    label = "SNMPv3 authentication key state"
-    commands = (SNMPV3_USER_COMMAND,)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.SNMPV3, "authentication key")
+    key: ClassVar[str] = "feature.snmpv3.authentication_key"
+    label: ClassVar[str] = "SNMPv3 authentication key state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (SNMPV3_USER_COMMAND,)
 
     @classmethod
     # pylint: disable-next=too-many-return-statements
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:  # noqa: C901, PLR0911
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[SnmpV3AuthenticationFact]:  # noqa: C901, PLR0911
         """Normalize SNMPv3 authentication-key presence from structured operational state."""
         (command,) = commands
         source = _feature_source(command)
-        feature = SubFeature(FeatureName.SNMPV3, "authentication key")
         if is_unsupported_optional_command(command):
-            return cls.available(FeatureValue(feature, FeatureState.UNSUPPORTED), source)
+            return cls.available(cls(FeatureState.UNSUPPORTED), source)
         if "usersByVersion" not in command.json_output:
             return cls.unavailable(FactProblemKind.MISSING, source)
         users_by_version = command.json_output["usersByVersion"]
@@ -355,12 +360,12 @@ class SnmpV3AuthenticationFact(CommandsFactDefinition[FeatureValue]):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         version = users_by_version.get("v3")
         if version is None:
-            return cls.available(FeatureValue(feature, FeatureState.DISABLED), source)
+            return cls.available(cls(FeatureState.DISABLED), source)
         if not isinstance(version, Mapping):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         users = version.get("users")
         if users is None:
-            return cls.available(FeatureValue(feature, FeatureState.DISABLED), source)
+            return cls.available(cls(FeatureState.DISABLED), source)
         if not isinstance(users, Mapping):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         enabled = False
@@ -377,26 +382,27 @@ class SnmpV3AuthenticationFact(CommandsFactDefinition[FeatureValue]):
                 return cls.unavailable(FactProblemKind.MALFORMED, source)
             enabled |= isinstance(authentication_type, str) and authentication_type.casefold() not in {"", "none", "noauth"}
         state = FeatureState.ENABLED if enabled else FeatureState.DISABLED
-        return cls.available(FeatureValue(feature, state), source)
+        return cls.available(cls(state), source)
 
 
-class SnmpV3CredentialSyntaxFact(CommandsFactDefinition[CredentialSyntaxValue]):
+@dataclass(frozen=True, slots=True)
+class SnmpV3CredentialSyntaxFact(CredentialSyntaxFact, CommandsFactDefinition["SnmpV3CredentialSyntaxFact"]):
     """Storage syntax used by configured local and remote SNMPv3 credentials."""
 
-    key = "configuration.snmpv3.credential_syntax"
-    label = "SNMPv3 credential syntax"
-    commands = (SNMPV3_USER_CONFIG_COMMAND,)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.SNMPV3, "credential syntax")
+    key: ClassVar[str] = "configuration.snmpv3.credential_syntax"
+    label: ClassVar[str] = "SNMPv3 credential syntax"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (SNMPV3_USER_CONFIG_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[CredentialSyntaxValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[SnmpV3CredentialSyntaxFact]:
         """Normalize credential syntax from the narrow SNMP user configuration output."""
         (command,) = commands
         source = _feature_source(command)
         state = _snmpv3_credential_syntax(command.text_output)
         if state is None:
             return cls.unavailable(FactProblemKind.MALFORMED, source)
-        feature = SubFeature(FeatureName.SNMPV3, "credential syntax")
-        return cls.available(CredentialSyntaxValue(feature, state), source)
+        return cls.available(cls(state), source)
 
 
 @dataclass(frozen=True, slots=True)

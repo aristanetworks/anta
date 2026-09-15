@@ -6,12 +6,12 @@
 from __future__ import annotations
 
 from functools import partial
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TypeVar, cast
 
 from anta._advisory.eos_versions import AffectedStatus
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import Dot1xDynamicAuthorizationFact, RadiusProxyDynamicAuthorizationFact
-from anta._advisory.facts.models import AvailableFact, FeatureName, FeatureState, FeatureValue, SubFeature
+from anta._advisory.facts.models import AvailableFact, FactDefinition, FeatureState
 from anta._advisory.facts.platform import PlatformIdentityFact
 from anta._advisory.findings.models import AffectedResult, ErrorResult, NotAffectedResult
 from anta._advisory.remediation import FixedRelease, software_version_plan
@@ -42,6 +42,7 @@ RADIUS_PROXY = """radius proxy
    dynamic-authorization
    client group CG1
       client ipv4 192.0.2.0/24 vrf default"""
+FeatureFactT = TypeVar("FeatureFactT", Dot1xDynamicAuthorizationFact, RadiusProxyDynamicAuthorizationFact)
 
 
 def platform_fact(model: str) -> AvailableFact[PlatformIdentity]:
@@ -51,13 +52,10 @@ def platform_fact(model: str) -> AvailableFact[PlatformIdentity]:
     return available_fact(PlatformIdentityFact, platform)
 
 
-def sa149_feature_fact(definition: type[Dot1xDynamicAuthorizationFact | RadiusProxyDynamicAuthorizationFact], state: FeatureState) -> AvailableFact[FeatureValue]:
+def sa149_feature_fact(definition: type[FeatureFactT], state: FeatureState) -> AvailableFact[FeatureFactT]:
     """Build one normalized SA149 feature prerequisite."""
-    if definition is Dot1xDynamicAuthorizationFact:
-        feature = SubFeature(FeatureName.DOT1X, "dynamic authorization authenticator")
-    else:
-        feature = SubFeature(FeatureName.RADIUS_PROXY, "dynamic authorization client group")
-    return available_fact(definition, FeatureValue(feature, state))
+    typed_definition = cast("type[FactDefinition[FeatureFactT]]", definition)
+    return available_fact(typed_definition, cast("FeatureFactT", definition(state)))
 
 
 def test_sa149_assessment_contract() -> None:
