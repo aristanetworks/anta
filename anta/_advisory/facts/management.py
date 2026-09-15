@@ -495,28 +495,29 @@ class GnsiCertzFact(FeatureFact, CommandsFactDefinition["GnsiCertzFact"]):
         return cls.available(cls(state), source)
 
 
-class GnsiCredentialzFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class GnsiCredentialzFact(FeatureFact, CommandsFactDefinition["GnsiCredentialzFact"]):
     """Effective gNSI Credentialz service state."""
 
-    key = "feature.gnsi.credentialz"
-    label = "gNSI Credentialz service state"
-    commands = (GNSI_COMMAND,)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.GNSI, "Credentialz service")
+    key: ClassVar[str] = "feature.gnsi.credentialz"
+    label: ClassVar[str] = "gNSI Credentialz service state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (GNSI_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[GnsiCredentialzFact]:
         """Normalize the top-level Credentialz enablement flag."""
         (command,) = commands
         source = _feature_source(command)
-        feature = SubFeature(FeatureName.GNSI, "Credentialz service")
         if is_unsupported_optional_command(command):
-            return cls.available(FeatureValue(feature, FeatureState.UNSUPPORTED), source)
+            return cls.available(cls(FeatureState.UNSUPPORTED), source)
         enabled = command.json_output.get("credentialzEnabled")
         if enabled is None:
             return cls.unavailable(FactProblemKind.MISSING, source)
         if not isinstance(enabled, bool):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         state = FeatureState.ENABLED if enabled else FeatureState.DISABLED
-        return cls.available(FeatureValue(feature, state), source)
+        return cls.available(cls(state), source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -570,21 +571,22 @@ class GnsiAcctzFact(FeatureFact, CommandsFactDefinition["GnsiAcctzFact"]):
         return cls.available(cls(state), source)
 
 
-class GnsiPathzFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class GnsiPathzFact(FeatureFact, CommandsFactDefinition["GnsiPathzFact"]):
     """Effective gNSI Pathz service state."""
 
-    key = "feature.gnsi.pathz"
-    label = "gNSI Pathz service state"
-    commands = (GNSI_COMMAND,)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.GNSI, "Pathz service")
+    key: ClassVar[str] = "feature.gnsi.pathz"
+    label: ClassVar[str] = "gNSI Pathz service state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (GNSI_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[GnsiPathzFact]:
         """Normalize the top-level Pathz enablement flag."""
         (command,) = commands
         source = _feature_source(command)
-        feature = SubFeature(FeatureName.GNSI, "Pathz service")
         if is_unsupported_optional_command(command):
-            return cls.available(FeatureValue(feature, FeatureState.UNSUPPORTED), source)
+            return cls.available(cls(FeatureState.UNSUPPORTED), source)
 
         enabled = command.json_output.get("pathzEnabled")
         if enabled is None:
@@ -592,7 +594,7 @@ class GnsiPathzFact(CommandsFactDefinition[FeatureValue]):
         if not isinstance(enabled, bool):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         state = FeatureState.ENABLED if enabled else FeatureState.DISABLED
-        return cls.available(FeatureValue(feature, state), source)
+        return cls.available(cls(state), source)
 
 
 def _pathz_policy_has_user_group_overlap(output: str) -> bool | None:
@@ -634,15 +636,17 @@ def _pathz_policy_rule_paths(rules: list[object]) -> tuple[set[str], set[str]] |
     return user_paths, group_paths
 
 
-class GnsiPathzPolicyOverlapFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class GnsiPathzPolicyOverlapFact(FeatureFact, CommandsFactDefinition["GnsiPathzPolicyOverlapFact"]):
     """Presence of Pathz user and group rules applying to the same path."""
 
-    key = "feature.gnsi.pathz_policy_user_group_overlap"
-    label = "Pathz policy user/group overlap"
-    commands = (PATHZ_POLICY_COMMAND,)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.GNSI, "Pathz policy user/group overlap")
+    key: ClassVar[str] = "feature.gnsi.pathz_policy_user_group_overlap"
+    label: ClassVar[str] = "Pathz policy user/group overlap"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (PATHZ_POLICY_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[GnsiPathzPolicyOverlapFact]:
         """Normalize the persisted Pathz policy without retaining policy contents."""
         (command,) = commands
         source = _feature_source(command)
@@ -654,9 +658,8 @@ class GnsiPathzPolicyOverlapFact(CommandsFactDefinition[FeatureValue]):
         if overlap is None:
             problem = FactProblemKind.MISSING if not command.text_output.strip() else FactProblemKind.MALFORMED
             return cls.unavailable(problem, source)
-        feature = SubFeature(FeatureName.GNSI, "Pathz policy user/group overlap")
         state = FeatureState.ENABLED if overlap else FeatureState.DISABLED
-        return cls.available(FeatureValue(feature, state), source)
+        return cls.available(cls(state), source)
 
 
 class GnmiTransportFact(CommandsFactDefinition[FeatureValue]):

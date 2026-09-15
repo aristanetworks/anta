@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING, Any, cast
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnmiTransportFact, GnsiPathzFact, GnsiPathzPolicyOverlapFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactProblemKind, FactSource, FactSourceKind, FeatureName, FeatureState, FeatureValue, SubFeature
+from anta._advisory.facts.models import AvailableFact, Fact, FactProblemKind, FactSource, FactSourceKind, FeatureName, FeatureState, FeatureValue
 from anta._advisory.findings.models import AffectedResult, ErrorResult, NotAffectedResult, VersionRelation
 from anta._advisory.remediation import FixedRelease, software_version_plan
 from anta._eos.version import EOSVersion, parse_eos_version
@@ -123,13 +123,9 @@ def version_fact(version: str | None) -> Fact[EOSVersion]:
     return EosVersionFact.available(parsed, SOURCE)
 
 
-def feature_fact(
-    definition: type[GnmiTransportFact | GnsiPathzFact | GnsiPathzPolicyOverlapFact],
-    feature: FeatureName | SubFeature,
-    state: FeatureState,
-) -> AvailableFact[FeatureValue]:
-    """Build a normalized management-feature fact."""
-    return definition.available(FeatureValue(feature, state), SOURCE)
+def available_gnmi_fact(state: FeatureState) -> AvailableFact[FeatureValue]:
+    """Build a normalized gNMI transport fact pending its nominal conversion."""
+    return GnmiTransportFact.available(FeatureValue(FeatureName.GNMI, state), SOURCE)
 
 
 class TestSA164VersionMatrix(unittest.TestCase):
@@ -160,12 +156,12 @@ class TestSA164Assessment(unittest.TestCase):
     """Validate the pure SA164 assessment branches."""
 
     @staticmethod
-    def enabled_facts() -> tuple[AvailableFact[FeatureValue], AvailableFact[FeatureValue], AvailableFact[FeatureValue]]:
+    def enabled_facts() -> tuple[AvailableFact[FeatureValue], AvailableFact[GnsiPathzFact], AvailableFact[GnsiPathzPolicyOverlapFact]]:
         """Return active gNMI, Pathz, and policy-overlap facts."""
         return (
-            feature_fact(GnmiTransportFact, FeatureName.GNMI, FeatureState.ENABLED),
-            feature_fact(GnsiPathzFact, SubFeature(FeatureName.GNSI, "Pathz service"), FeatureState.ENABLED),
-            feature_fact(GnsiPathzPolicyOverlapFact, SubFeature(FeatureName.GNSI, "Pathz policy user/group overlap"), FeatureState.ENABLED),
+            available_gnmi_fact(FeatureState.ENABLED),
+            GnsiPathzFact.available(GnsiPathzFact(FeatureState.ENABLED), SOURCE),
+            GnsiPathzPolicyOverlapFact.available(GnsiPathzPolicyOverlapFact(FeatureState.ENABLED), SOURCE),
         )
 
     def test_overlapping_policy_is_affected(self) -> None:
@@ -177,15 +173,15 @@ class TestSA164Assessment(unittest.TestCase):
         assert finding.remediation == EXPECTED_REMEDIATION
 
     def test_either_false_prerequisite_closes_the_path(self) -> None:
-        _gnmi, pathz, overlap = self.enabled_facts()
+        _gnmi, _pathz, overlap = self.enabled_facts()
         cases = (
             (
                 GnmiTransportFact.unavailable(FactProblemKind.MISSING, SOURCE),
-                feature_fact(GnsiPathzFact, pathz.value.feature, FeatureState.DISABLED),
+                GnsiPathzFact.available(GnsiPathzFact(FeatureState.DISABLED), SOURCE),
                 GnsiPathzFact,
             ),
             (
-                feature_fact(GnmiTransportFact, FeatureName.GNMI, FeatureState.DISABLED),
+                available_gnmi_fact(FeatureState.DISABLED),
                 GnsiPathzFact.unavailable(FactProblemKind.MISSING, SOURCE),
                 GnmiTransportFact,
             ),

@@ -64,8 +64,8 @@ VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 def _assess_sa164(
     version: Fact[EOSVersion],
     gnmi_transport: Fact[FeatureValue],
-    pathz: Fact[FeatureValue],
-    policy_overlap: Fact[FeatureValue],
+    pathz: Fact[GnsiPathzFact],
+    policy_overlap: Fact[GnsiPathzPolicyOverlapFact],
 ) -> VulnerabilityResult:
     """Assess the observable Pathz prerequisites and persisted policy shape."""
     eos_release = assess_eos_scope(VULNERABILITY_ID, version, AFFECTED_VERSION_MATRIX)
@@ -81,7 +81,7 @@ def _assess_sa164(
     if problems:
         return ErrorResult(vulnerability_id=VULNERABILITY_ID, problems=problems)
 
-    overlap = cast("AvailableFact[FeatureValue]", policy_overlap)
+    overlap = cast("AvailableFact[GnsiPathzPolicyOverlapFact]", policy_overlap)
     if overlap.value.state is not FeatureState.ENABLED:
         return NotAffectedResult(vulnerability_id=VULNERABILITY_ID, decisive=(overlap,))
 
@@ -90,7 +90,7 @@ def _assess_sa164(
         context=(eos_release,),
         conditions=(
             cast("AvailableFact[FeatureValue]", gnmi_transport),
-            cast("AvailableFact[FeatureValue]", pathz),
+            cast("AvailableFact[GnsiPathzFact]", pathz),
             overlap,
         ),
         remediation=software_version_plan(FIXED_RELEASES, current_version=eos_release.fact.value),
