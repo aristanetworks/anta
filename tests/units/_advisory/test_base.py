@@ -68,7 +68,7 @@ class FactAdvisoryTest(_AntaAdvisoryTest):
 class PendingFactAdvisoryTest(_AntaAdvisoryTest):
     """Fake advisory test whose typed fields declare the facts to collect."""
 
-    @dataclass
+    @dataclass(slots=True)
     class Facts:
         """Typed facts required by the fake advisory."""
 

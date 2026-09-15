@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import sys
+from dataclasses import fields
 from typing import TYPE_CHECKING, Any, ClassVar, TypeVar
 
 from anta._advisory.facts.models import PendingFact
@@ -87,11 +88,15 @@ class _AntaAdvisoryTest(AntaTest):
         if required_facts:
             msg = f"Class {cls.__module__}.{cls.__name__} cannot define both 'Facts' and 'required_facts'"
             raise AttributeError(msg)
-        declared_facts = vars(facts_type())
-        if not declared_facts or any(not isinstance(fact, PendingFact) for fact in declared_facts.values()):
-            msg = f"Class {cls.__module__}.{cls.__name__}.Facts must declare one or more PendingFact defaults"
+        msg = f"Class {cls.__module__}.{cls.__name__}.Facts must declare one or more PendingFact defaults"
+        definitions: list[type[FactDefinition[Any]]] = []
+        for field in fields(facts_type):
+            if not isinstance(field.default, PendingFact):
+                raise TypeError(msg)
+            definitions.append(field.default.definition)
+        if not definitions:
             raise TypeError(msg)
-        cls.required_facts = tuple(fact.definition for fact in declared_facts.values())
+        cls.required_facts = tuple(definitions)
         return cls.required_facts
 
     @classmethod

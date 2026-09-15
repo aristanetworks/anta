@@ -98,7 +98,7 @@ class SA154(OptionalCommandsMixin, _AntaAdvisoryTest):
     ```
     """
 
-    @dataclass
+    @dataclass(slots=True)
     class Facts:
         """Typed facts required to assess the advisory."""
 
