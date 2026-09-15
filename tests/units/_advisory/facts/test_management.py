@@ -656,18 +656,18 @@ def test_gnsi_absent_newer_service_field_is_unsupported_on_older_eos(
     [GnsiAcctzFact, GnsiPathzFact],
 )
 @pytest.mark.parametrize("version", [EOSVersion(4, 33, 2, suffix="F"), EOSVersion(4, 34, 0, suffix="F")])
-def test_gnsi_absent_newer_service_field_is_malformed_on_supported_eos(
+def test_gnsi_absent_newer_service_field_is_missing_on_supported_eos(
     device: OfflineAntaDevice,
     definition: type,
     version: EOSVersion,
 ) -> None:
-    """Reject missing service fields once the EOS gNSI schema supports them."""
+    """Keep missing service fields incomplete once the EOS gNSI schema supports them."""
     device.version = version
 
     fact = definition.derive(device, (gnsi_command({"transports": {}}),))
 
     assert isinstance(fact, UnavailableFact)
-    assert fact.problem is FactProblemKind.MALFORMED
+    assert fact.problem is FactProblemKind.MISSING
 
 
 @pytest.mark.parametrize(

@@ -173,7 +173,7 @@ def _version_aware_gnsi_service_absence(
         return fact
     if version < MIN_GNSI_ACCTZ_PATHZ_VERSION:
         return fact.definition.available(FeatureValue(feature, FeatureState.UNSUPPORTED), fact.source)
-    return fact.definition.unavailable(FactProblemKind.MALFORMED, fact.source)
+    return fact
 
 
 _SNMPV3_CREDENTIAL_CLAUSES = frozenset({"auth", "priv"})
