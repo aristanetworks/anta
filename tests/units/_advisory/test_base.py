@@ -6,14 +6,23 @@
 from __future__ import annotations
 
 import inspect
-from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, ClassVar
 
 import pytest
 
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import AvailableFact, CommandsFactDefinition, Fact, FactDefinition, FactsBase, FactSource, FactSourceKind, fact_field
+from anta._advisory.facts.models import (
+    AvailableFact,
+    CommandsFactDefinition,
+    Fact,
+    FactDefinition,
+    FactsBase,
+    FactSource,
+    FactSourceKind,
+    fact_field,
+    facts_dataclass,
+)
 from anta._advisory.optional_commands import OptionalAntaCommand
 from anta._advisory.results import _AdvisoryTestResult, _get_advisory_metadata
 from anta._eos.version import parse_eos_version
@@ -68,11 +77,11 @@ class FactAdvisoryTest(_AntaAdvisoryTest):
 class FactsAdvisoryTest(_AntaAdvisoryTest):
     """Fake advisory test whose typed fields declare the facts to collect."""
 
-    @dataclass(frozen=True, slots=True)
+    @facts_dataclass
     class Facts(FactsBase):
         """Typed facts required by the fake advisory."""
 
-        value: Fact[str] = field(default_factory=fact_field(FakeCommandFact))
+        value: Fact[str] = fact_field(FakeCommandFact)
 
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
 
