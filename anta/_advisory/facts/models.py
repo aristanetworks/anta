@@ -6,11 +6,13 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, fields
+from dataclasses import dataclass, field, fields
 from enum import Enum
 from inspect import isabstract
 from types import MappingProxyType
-from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeAlias, TypeVar
+from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeAlias, TypeVar, cast
+
+from typing_extensions import dataclass_transform
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
@@ -23,7 +25,9 @@ if TYPE_CHECKING:
 
 T = TypeVar("T")
 T_co = TypeVar("T_co", covariant=True)
+FactsT = TypeVar("FactsT")
 MIN_CONTRADICTORY_OBSERVATIONS = 2
+_FACT_DEFINITION_METADATA_KEY = "anta.fact_definition"
 
 
 class FactProblemKind(str, Enum):
@@ -124,52 +128,26 @@ class UnavailableFact(Generic[T_co]):
 Fact: TypeAlias = AvailableFact[T] | UnavailableFact[T]
 
 
-@dataclass(frozen=True, slots=True)
-class _FactFactory(Generic[T]):
-    """Callable declaration connecting one dataclass field to its fact definition.
-
-    Dataclasses require ``default_factory`` to be a zero-argument callable returning
-    the annotated field type. Exposing ``Fact[T]`` from this callable lets the type
-    checker verify that ``FactDefinition[T]`` matches the field's ``Fact[T]``.
-
-    The callable is retained on ``dataclasses.Field.default_factory`` so
-    ``FactsBase`` can discover the definition without resolving type annotations.
-    It is a declaration marker and must never create an uncollected field value.
-    """
-
-    definition: type[FactDefinition[T]]
-
-    def __call__(self) -> Fact[T]:
-        """Reject dataclass construction that omitted an explicitly collected value.
-
-        Calling ``collect`` on the concrete ``FactsBase`` subclass supplies every
-        field as a constructor argument, so a valid collection never invokes this
-        default factory. Calling the generated dataclass constructor without those
-        values would invoke the factory and expose a container whose annotations
-        incorrectly claim its facts are collected, so fail immediately instead.
-        """
-        msg = "Fact fields must be populated using collect() on a FactsBase subclass"
-        raise RuntimeError(msg)
+def fact_field(definition: type[FactDefinition[T]]) -> Fact[T]:
+    """Declare a required fact field and retain its definition as dataclass metadata."""
+    # This function is registered as a PEP 681 field specifier by ``facts_dataclass``.
+    return cast("Fact[T]", field(metadata={_FACT_DEFINITION_METADATA_KEY: definition}))  # pylint: disable=invalid-field-call
 
 
-def fact_field(definition: type[FactDefinition[T]]) -> _FactFactory[T]:
-    """Declare the definition collected into a typed dataclass fact field.
-
-    Use this helper only as ``field(default_factory=fact_field(Definition))``.
-    Keeping ``T`` in both the argument and return type makes mismatched field and
-    definition types a static error, while the returned callable retains the
-    definition needed for runtime command derivation and collection.
-    """
-    return _FactFactory(definition)
+@dataclass_transform(field_specifiers=(fact_field,), frozen_default=True)
+def facts_dataclass(cls: type[FactsT]) -> type[FactsT]:
+    """Create the frozen, slotted dataclass used for a collected facts container."""
+    return dataclass(frozen=True, slots=True)(cls)
 
 
-@dataclass(frozen=True, slots=True)
+@facts_dataclass
 class FactsBase:
     """Base for immutable containers of collected advisory facts.
 
-    Concrete dataclasses declare each fact with ``fact_field``. Definitions are
-    validated and cached once when the advisory class consumes ``definitions``;
-    subsequent device collections reuse that immutable cache.
+    Concrete classes use ``facts_dataclass`` and declare each required field with
+    ``fact_field``. Definitions are validated and cached once when the advisory
+    class consumes ``definitions``; subsequent device collections reuse that
+    immutable cache.
     """
 
     _definitions: ClassVar[Mapping[str, type[FactDefinition[Any]]]]
@@ -195,15 +173,23 @@ class FactsBase:
         ``collect``.
         """
         definitions: dict[str, type[FactDefinition[Any]]] = {}
+        definition_fields: dict[type[FactDefinition[Any]], str] = {}
         for declared_field in fields(cls):
-            factory = declared_field.default_factory
-            if not isinstance(factory, _FactFactory):
-                msg = f"Class {cls.__module__}.{cls.__qualname__} field '{declared_field.name}' must use field(default_factory=fact_field(...))"
+            definition = declared_field.metadata.get(_FACT_DEFINITION_METADATA_KEY)
+            if not isinstance(definition, type) or not issubclass(definition, FactDefinition):
+                msg = f"Class {cls.__module__}.{cls.__qualname__} field '{declared_field.name}' must use fact_field(...)"
                 raise TypeError(msg)
             if not declared_field.init:
                 msg = f"Class {cls.__module__}.{cls.__qualname__} field '{declared_field.name}' must be included in the generated initializer"
                 raise TypeError(msg)
-            definitions[declared_field.name] = factory.definition
+            if previous_field := definition_fields.get(definition):
+                msg = (
+                    f"Class {cls.__module__}.{cls.__qualname__} fields '{previous_field}' and '{declared_field.name}' "
+                    f"must not use the same fact definition '{definition.__name__}'"
+                )
+                raise TypeError(msg)
+            definitions[declared_field.name] = definition
+            definition_fields[definition] = declared_field.name
         if not definitions:
             msg = f"Class {cls.__module__}.{cls.__qualname__} must declare one or more fact fields"
             raise TypeError(msg)
@@ -213,9 +199,9 @@ class FactsBase:
     def collect(cls, collector: _AntaAdvisoryTest) -> Self:
         """Collect every cached definition and construct the concrete container.
 
-        Every field is passed explicitly, preventing dataclasses from invoking the
-        raising declaration factories. Returning ``Self`` preserves the concrete
-        nested ``Facts`` type and its precisely typed fields at the call site.
+        Every required field is passed explicitly. Returning ``Self`` preserves
+        the concrete nested ``Facts`` type and its precisely typed fields at the
+        call site.
         """
         facts = {}
         for name, definition in cls.definitions().items():

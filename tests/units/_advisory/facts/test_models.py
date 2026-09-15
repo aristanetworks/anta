@@ -5,7 +5,8 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+import inspect
+from dataclasses import MISSING, dataclass, field, fields
 from typing import TYPE_CHECKING
 
 import pytest
@@ -21,6 +22,7 @@ from anta._advisory.facts.models import (
     FeatureState,
     FeatureValue,
     fact_field,
+    facts_dataclass,
 )
 
 if TYPE_CHECKING:
@@ -47,29 +49,35 @@ ENABLED = FeatureValue(FeatureName.SECURE_BOOT, FeatureState.ENABLED)
 DISABLED = FeatureValue(FeatureName.SECURE_BOOT, FeatureState.DISABLED)
 
 
-def test_fact_field_retains_definition_and_rejects_direct_use() -> None:
-    """Retain the typed definition while preventing construction without collection."""
-    factory = fact_field(DEFINITION)
+def test_fact_field_retains_definition_and_declares_required_constructor_field() -> None:
+    """Retain the typed definition while keeping the collected value required."""
 
-    @dataclass(frozen=True, slots=True)
+    @facts_dataclass
     class DeclaredFacts(FactsBase):
-        """Fact container that must be constructed through collection."""
+        """Fact container with one required collected value."""
 
-        value: Fact[FeatureValue] = field(default_factory=factory)
+        value: Fact[FeatureValue] = fact_field(DEFINITION)
 
-    assert factory.definition is DEFINITION
-    with pytest.raises(RuntimeError, match=r"collect\(\) on a FactsBase subclass"):
-        DeclaredFacts()
+    declared_field = fields(DeclaredFacts)[0]
+    available = DEFINITION.available(ENABLED, SOURCE)
+
+    assert declared_field.default is MISSING
+    assert declared_field.default_factory is MISSING
+    assert inspect.signature(DeclaredFacts).parameters["value"].default is inspect.Parameter.empty
+    assert DeclaredFacts.definitions() == {"value": DEFINITION}
+    assert DeclaredFacts(value=available).value is available
+    with pytest.raises(TypeError, match="missing 1 required positional argument: 'value'"):
+        DeclaredFacts()  # pyright: ignore[reportCallIssue]
 
 
 def test_facts_base_rejects_fields_without_fact_factory() -> None:
     """Reject fields that do not use the typed fact factory declaration."""
 
-    @dataclass(frozen=True, slots=True)
+    @facts_dataclass
     class MissingFactoryFacts(FactsBase):
-        """Fact container without a default factory."""
+        """Fact container without a fact field specifier."""
 
-        value: Fact[FeatureValue] = field()
+        value: Fact[FeatureValue]
 
     @dataclass(frozen=True, slots=True)
     class OrdinaryFactoryFacts(FactsBase):
@@ -78,14 +86,14 @@ def test_facts_base_rejects_fields_without_fact_factory() -> None:
         value: Fact[FeatureValue] = field(default_factory=lambda: DEFINITION.available(ENABLED, SOURCE))
 
     for invalid_facts in (MissingFactoryFacts, OrdinaryFactoryFacts):
-        with pytest.raises(TypeError, match=r"must use field\(default_factory=fact_field\(\.\.\.\)\)"):
+        with pytest.raises(TypeError, match=r"must use fact_field\(\.\.\.\)"):
             invalid_facts.definitions()
 
 
 def test_facts_base_rejects_empty_and_non_init_fact_containers() -> None:
     """Require at least one fact field and constructor-compatible declarations."""
 
-    @dataclass(frozen=True, slots=True)
+    @facts_dataclass
     class EmptyFacts(FactsBase):
         """Fact container without declared facts."""
 
@@ -93,12 +101,26 @@ def test_facts_base_rejects_empty_and_non_init_fact_containers() -> None:
     class NonInitFacts(FactsBase):
         """Fact container whose declared fact cannot be initialized."""
 
-        value: Fact[FeatureValue] = field(init=False, default_factory=fact_field(DEFINITION))
+        value: Fact[FeatureValue] = field(init=False, metadata={"anta.fact_definition": DEFINITION})
 
     with pytest.raises(TypeError, match="must declare one or more fact fields"):
         EmptyFacts.definitions()
     with pytest.raises(TypeError, match="must be included in the generated initializer"):
         NonInitFacts.definitions()
+
+
+def test_facts_base_rejects_duplicate_definitions() -> None:
+    """Reject duplicate definitions that collector.fact could not distinguish."""
+
+    @facts_dataclass
+    class DuplicateFacts(FactsBase):
+        """Fact container that declares one definition under two names."""
+
+        first: Fact[FeatureValue] = fact_field(DEFINITION)
+        second: Fact[FeatureValue] = fact_field(DEFINITION)
+
+    with pytest.raises(TypeError, match=r"fields 'first' and 'second'.*same fact definition 'ExampleFactDefinition'"):
+        DuplicateFacts.definitions()
 
 
 def test_fact_definition_constructs_available_and_unavailable_facts() -> None:

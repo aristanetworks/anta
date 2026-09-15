@@ -5,14 +5,13 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
 from datetime import date
 from typing import ClassVar
 
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import Fact, FactsBase, FeatureState, UnavailableFact, fact_field
+from anta._advisory.facts.models import Fact, FactsBase, FeatureState, UnavailableFact, fact_field, facts_dataclass
 from anta._advisory.facts.routing import BfdAuthenticationFact
 from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import AffectedResult, EosReleaseAssessment, ErrorResult, NotAffectedResult, VulnerabilityResult
@@ -98,16 +97,16 @@ class SA154(OptionalCommandsMixin, _AntaAdvisoryTest):
     ```
     """
 
-    @dataclass(frozen=True, slots=True)
+    @facts_dataclass
     class Facts(FactsBase):
         """Collected facts required to assess the advisory.
 
-        Each default factory is a typed declaration consumed by ``FactsBase``; it
-        is not invoked when ``collect`` constructs this container.
+        Each field retains its definition as dataclass metadata consumed by
+        ``FactsBase.collect``.
         """
 
-        version: Fact[EOSVersion] = field(default_factory=fact_field(EosVersionFact))
-        bfd_authentication: Fact[BfdAuthenticationFact] = field(default_factory=fact_field(BfdAuthenticationFact))
+        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        bfd_authentication: Fact[BfdAuthenticationFact] = fact_field(BfdAuthenticationFact)
 
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
     description = "Verify whether the device is impacted by Security Advisory 0154."
