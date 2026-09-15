@@ -25,7 +25,6 @@ from anta._advisory.facts.management import (
 )
 from anta._advisory.facts.models import (
     AvailableFact,
-    ComponentSoftwareVersion,
     Fact,
     FactProblemKind,
     FactSource,
@@ -621,7 +620,7 @@ class TestSA146Assessment(unittest.TestCase):
             TerminAttrVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
             if arguments["terminattr_affected"] is None
             else TerminAttrVersionFact.available(
-                ComponentSoftwareVersion("TerminAttr", "v1.45.0" if arguments["terminattr_affected"] else "v1.45.1"),
+                TerminAttrVersionFact("v1.45.0" if arguments["terminattr_affected"] else "v1.45.1"),
                 SOURCE,
             )
         )

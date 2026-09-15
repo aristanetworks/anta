@@ -15,7 +15,6 @@ from anta._advisory.facts.models import (
     FactDefinition,
     FeatureState,
     MitigationState,
-    MitigationValue,
 )
 from anta._advisory.facts.routing import Ospfv2BroadcastAuthenticationFact, Ospfv2ProcessConfiguredFact, Ospfv2SegmentRoutingFact
 from anta._advisory.facts.software import SA171HotfixFact
@@ -54,9 +53,9 @@ def ospfv2_fact(
     )
 
 
-def hotfix_fact(state: MitigationState) -> AvailableFact[MitigationValue]:
+def hotfix_fact(state: MitigationState) -> AvailableFact[SA171HotfixFact]:
     """Build one normalized SA171 hotfix fact for direct assessment tests."""
-    return available_fact(SA171HotfixFact, MitigationValue(state))
+    return available_fact(SA171HotfixFact, SA171HotfixFact(state))
 
 
 def ospfv2_configuration(state: ConfigurationState) -> AvailableFact[Ospfv2ProcessConfiguredFact]:

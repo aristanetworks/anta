@@ -19,7 +19,6 @@ from anta._advisory.facts.models import (
     FeatureFact,
     FeatureState,
     MitigationState,
-    MitigationValue,
     UnavailableFact,
     fact_field,
     facts_dataclass,
@@ -103,7 +102,7 @@ def _assess_ospfv2_issue(
     prerequisite: Fact[FeatureFactT],
     affected_versions: tuple[VersionRule, ...],
     fixed_releases: tuple[FixedRelease, ...],
-    hotfix: Fact[MitigationValue] | None,
+    hotfix: Fact[SA171HotfixFact] | None,
     hotfix_releases: frozenset[str],
 ) -> VulnerabilityResult:
     """Assess one OSPFv2 issue using its independent version and feature prerequisite."""
@@ -139,7 +138,7 @@ def _assess_broadcast_issue(
     version: Fact[EOSVersion],
     prerequisite: Fact[Ospfv2BroadcastAuthenticationFact],
     configuration: Fact[Ospfv2ProcessConfiguredFact],
-    hotfix: Fact[MitigationValue],
+    hotfix: Fact[SA171HotfixFact],
 ) -> VulnerabilityResult:
     """Assess reported active broadcast authentication, falling back to configured-process state when inactive."""
     if not isinstance(prerequisite, UnavailableFact) and prerequisite.value.state is FeatureState.ENABLED:
@@ -170,7 +169,7 @@ def _assess_broadcast_issue(
 def _assess_inactive_broadcast_issue(
     version: Fact[EOSVersion],
     configuration: Fact[Ospfv2ProcessConfiguredFact],
-    hotfix: Fact[MitigationValue],
+    hotfix: Fact[SA171HotfixFact],
 ) -> VulnerabilityResult:
     """Assess configured OSPFv2 when no qualifying broadcast interface is currently active."""
     eos_release = assess_eos_scope(BROADCAST_ID, version, BROADCAST_AFFECTED_VERSIONS)
@@ -251,7 +250,7 @@ class SA171(OptionalCommandsMixin, _AntaAdvisoryTest):
         broadcast_authentication: Fact[Ospfv2BroadcastAuthenticationFact] = fact_field(Ospfv2BroadcastAuthenticationFact)
         ospfv2_configuration: Fact[Ospfv2ProcessConfiguredFact] = fact_field(Ospfv2ProcessConfiguredFact)
         segment_routing: Fact[Ospfv2SegmentRoutingFact] = fact_field(Ospfv2SegmentRoutingFact)
-        hotfix: Fact[MitigationValue] = fact_field(SA171HotfixFact)
+        hotfix: Fact[SA171HotfixFact] = fact_field(SA171HotfixFact)
 
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
     description = "Verify whether the device is impacted by Security Advisory 0171."

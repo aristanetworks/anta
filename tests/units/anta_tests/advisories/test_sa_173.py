@@ -20,7 +20,6 @@ from anta._advisory.facts.models import (
     FactSourceKind,
     FeatureState,
     MitigationState,
-    MitigationValue,
 )
 from anta._advisory.facts.routing import LegacyOspfv3ConfiguredFact, Ospfv3ConfiguredFact, Ospfv3IpsecAuthenticationFact
 from anta._advisory.facts.software import SA173HotfixFact
@@ -227,9 +226,9 @@ def authentication_fact(state: MitigationState) -> AvailableFact[Ospfv3IpsecAuth
     return Ospfv3IpsecAuthenticationFact.available(Ospfv3IpsecAuthenticationFact(state), SOURCE)
 
 
-def hotfix_fact(state: MitigationState) -> AvailableFact[MitigationValue]:
+def hotfix_fact(state: MitigationState) -> AvailableFact[SA173HotfixFact]:
     """Build a persistent SA173 hotfix fact."""
-    return SA173HotfixFact.available(MitigationValue(state), SOURCE)
+    return SA173HotfixFact.available(SA173HotfixFact(state), SOURCE)
 
 
 class TestSA173VersionMatrix(unittest.TestCase):

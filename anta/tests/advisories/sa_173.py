@@ -11,7 +11,7 @@ from typing import ClassVar
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactsBase, FeatureState, MitigationState, MitigationValue, UnavailableFact, fact_field, facts_dataclass
+from anta._advisory.facts.models import AvailableFact, Fact, FactsBase, FeatureState, MitigationState, UnavailableFact, fact_field, facts_dataclass
 from anta._advisory.facts.routing import LegacyOspfv3ConfiguredFact, Ospfv3ConfiguredFact, Ospfv3IpsecAuthenticationFact
 from anta._advisory.facts.software import SA173HotfixFact
 from anta._advisory.findings.assessment import assess_eos_scope
@@ -70,7 +70,7 @@ def _assess_sa173(
     current: Fact[Ospfv3ConfiguredFact],
     legacy: Fact[LegacyOspfv3ConfiguredFact],
     ipsec_authentication: Fact[Ospfv3IpsecAuthenticationFact],
-    hotfix: Fact[MitigationValue],
+    hotfix: Fact[SA173HotfixFact],
 ) -> VulnerabilityResult:
     """Assess persistent OSPFv3 configuration, complete IPsec coverage, and the persistent SWIX."""
     available = tuple(fact for fact in (current, legacy) if isinstance(fact, AvailableFact))
@@ -139,7 +139,7 @@ class SA173(OptionalCommandsMixin, _AntaAdvisoryTest):
         current: Fact[Ospfv3ConfiguredFact] = fact_field(Ospfv3ConfiguredFact)
         legacy: Fact[LegacyOspfv3ConfiguredFact] = fact_field(LegacyOspfv3ConfiguredFact)
         ipsec_authentication: Fact[Ospfv3IpsecAuthenticationFact] = fact_field(Ospfv3IpsecAuthenticationFact)
-        hotfix: Fact[MitigationValue] = fact_field(SA173HotfixFact)
+        hotfix: Fact[SA173HotfixFact] = fact_field(SA173HotfixFact)
 
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
     description = "Verify whether the device is impacted by Security Advisory 0173."

@@ -16,7 +16,6 @@ from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnmiMtlsFact, GnmiTransportFact, GribiMtlsFact, GribiTransportFact
 from anta._advisory.facts.models import (
     AvailableFact,
-    ComponentSoftwareVersion,
     Fact,
     FactDefinition,
     FactProblemKind,
@@ -133,7 +132,7 @@ def _is_affected_terminattr_version(version_string: str) -> bool | None:
     return any(first_minor <= version.minor <= last_minor for first_minor, last_minor in TERMINATTR_FULLY_AFFECTED_MINOR_RANGES)
 
 
-def _terminattr_version_assessment(fact: Fact[ComponentSoftwareVersion]) -> ComponentVersionAssessment | UnavailableFact[ComponentSoftwareVersion]:
+def _terminattr_version_assessment(fact: Fact[TerminAttrVersionFact]) -> ComponentVersionAssessment | UnavailableFact[TerminAttrVersionFact]:
     """Interpret the TerminAttr package version for SA146."""
     if isinstance(fact, UnavailableFact):
         return fact
