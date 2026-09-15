@@ -79,7 +79,7 @@ bash .github/asciinema/render.sh nrfu
 bash .github/asciinema/render.sh psirt
 ```
 
-The workflow never uploads recordings or generated images. It also preserves the existing PSIRT cast and GIF if the terminal capture does not contain the successful Markdown-report outcome.
+The workflow never uploads recordings or generated images. If PSIRT capture validation fails, `generate.sh` exits before overwriting the committed `.cast` file or GIF, so the last good artifacts remain in the tree.
 
 Review both GIFs for legibility, spinner/progress motion, the final result or saved-report message, and accidental disclosure before committing them. Keep `docs/imgs/anta-nrfu.svg`: published PyPI releases reference that filename even after the README moves to the GIF.
 
