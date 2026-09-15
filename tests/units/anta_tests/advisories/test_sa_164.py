@@ -103,7 +103,7 @@ _DATA: AntaUnitTestData = {
         "eos_data": [{"transports": {"default": {"enabled": True}}}, {}, OVERLAPPING_POLICY],
         "expected": expected_result(
             AntaTestStatus.ERROR,
-            "The test could not determine the gNSI Pathz service state because the 'show management api gnsi' output is incomplete",
+            "The test could not determine the gNSI Pathz service state because the 'show management api gnsi' output is invalid",
             None,
         ),
     },
