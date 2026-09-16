@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import unittest
 from functools import partial
-from typing import TYPE_CHECKING, Any, TypeVar, cast
+from typing import TYPE_CHECKING, Any, cast
 from unittest.mock import AsyncMock
 
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
@@ -24,8 +24,6 @@ from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_162 import ADVISORY, AFFECTED_VERSION_MATRIX, SA162, _assess_sa162
 from tests.units.anta_tests import build_eos_version, test
 from tests.units.anta_tests.advisories import OfflineAntaDevice, build_expected_advisory_result
-
-GnsiFactT = TypeVar("GnsiFactT", GnsiTransportFact, GnsiCertzFact)
 
 if TYPE_CHECKING:
     from tests.units.anta_tests import AntaUnitTestData
@@ -133,9 +131,14 @@ def version_fact(version: str | None) -> Fact[EosVersionFact]:
     return EosVersionFact.from_version(parsed).available(SOURCE)
 
 
-def feature_fact(definition: type[GnsiFactT], state: FeatureState) -> AvailableFact[GnsiFactT]:
-    """Build a normalized gNSI subfeature fact."""
-    return cast("AvailableFact[GnsiFactT]", cast("GnsiFactT", definition(state)).available(SOURCE))
+def transport_fact(state: FeatureState) -> AvailableFact[GnsiTransportFact]:
+    """Build normalized gNSI transport state."""
+    return GnsiTransportFact(state).available(SOURCE)
+
+
+def certz_fact(state: FeatureState) -> AvailableFact[GnsiCertzFact]:
+    """Build normalized gNSI Certz state."""
+    return GnsiCertzFact(state).available(SOURCE)
 
 
 class TestSA162VersionMatrix(unittest.TestCase):
@@ -171,8 +174,8 @@ class TestSA162Assessment(unittest.TestCase):
     def test_certz_exposure_is_affected(self) -> None:
         finding = _assess_sa162(
             version_fact("4.35.5M"),
-            feature_fact(GnsiTransportFact, FeatureState.ENABLED),
-            feature_fact(GnsiCertzFact, FeatureState.ENABLED),
+            transport_fact(FeatureState.ENABLED),
+            certz_fact(FeatureState.ENABLED),
         )
 
         assert isinstance(finding, AffectedResult)
@@ -183,8 +186,8 @@ class TestSA162Assessment(unittest.TestCase):
     def test_disabled_certz_leaves_bootz_history_inconclusive(self) -> None:
         finding = _assess_sa162(
             version_fact("4.35.5M"),
-            feature_fact(GnsiTransportFact, FeatureState.ENABLED),
-            feature_fact(GnsiCertzFact, FeatureState.DISABLED),
+            transport_fact(FeatureState.ENABLED),
+            certz_fact(FeatureState.DISABLED),
         )
 
         assert isinstance(finding, InconclusiveResult)
@@ -195,7 +198,7 @@ class TestSA162Assessment(unittest.TestCase):
         missing_certz = GnsiCertzFact.unavailable(FactProblemKind.MISSING, SOURCE)
         for state in (FeatureState.DISABLED, FeatureState.UNSUPPORTED):
             with self.subTest(state=state):
-                transport = feature_fact(GnsiTransportFact, state)
+                transport = transport_fact(state)
                 finding = _assess_sa162(version_fact("4.35.5M"), transport, missing_certz)
                 assert isinstance(finding, InconclusiveResult)
                 assert cast("EosReleaseAssessment", finding.indications[0]).relation is VersionRelation.AFFECTED
@@ -211,13 +214,13 @@ class TestSA162Assessment(unittest.TestCase):
         assert cast("Any", finding.decisive[0]).relation is VersionRelation.OUTSIDE_SCOPE
 
     def test_required_observable_input_errors(self) -> None:
-        enabled_transport = feature_fact(GnsiTransportFact, FeatureState.ENABLED)
+        enabled_transport = transport_fact(FeatureState.ENABLED)
         for version, transport, certz, definition in (
-            (version_fact(None), enabled_transport, feature_fact(GnsiCertzFact, FeatureState.ENABLED), EosVersionFact),
+            (version_fact(None), enabled_transport, certz_fact(FeatureState.ENABLED), EosVersionFact),
             (
                 version_fact("4.35.5M"),
                 GnsiTransportFact.unavailable(FactProblemKind.MALFORMED, SOURCE),
-                feature_fact(GnsiCertzFact, FeatureState.ENABLED),
+                certz_fact(FeatureState.ENABLED),
                 GnsiTransportFact,
             ),
             (

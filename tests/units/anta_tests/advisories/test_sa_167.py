@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import unittest
 from functools import partial
-from typing import TYPE_CHECKING, Any, TypeVar, cast
+from typing import TYPE_CHECKING, Any, cast
 from unittest.mock import AsyncMock
 
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
@@ -24,8 +24,6 @@ from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_167 import ADVISORY, AFFECTED_VERSION_MATRIX, SA167, _assess_sa167
 from tests.units.anta_tests import build_eos_version, test
 from tests.units.anta_tests.advisories import OfflineAntaDevice, build_expected_advisory_result
-
-GnsiFactT = TypeVar("GnsiFactT", GnsiTransportFact, GnsiAuthzFact)
 
 if TYPE_CHECKING:
     from tests.units.anta_tests import AntaUnitTestData
@@ -115,9 +113,14 @@ def version_fact(version: str | None) -> Fact[EosVersionFact]:
     return EosVersionFact.from_version(parsed).available(SOURCE)
 
 
-def feature_fact(definition: type[GnsiFactT], state: FeatureState) -> AvailableFact[GnsiFactT]:
-    """Build a normalized gNSI subfeature fact."""
-    return cast("AvailableFact[GnsiFactT]", cast("GnsiFactT", definition(state)).available(SOURCE))
+def transport_fact(state: FeatureState) -> AvailableFact[GnsiTransportFact]:
+    """Build normalized gNSI transport state."""
+    return GnsiTransportFact(state).available(SOURCE)
+
+
+def authz_fact(state: FeatureState) -> AvailableFact[GnsiAuthzFact]:
+    """Build normalized gNSI Authz state."""
+    return GnsiAuthzFact(state).available(SOURCE)
 
 
 class TestSA167VersionMatrix(unittest.TestCase):
@@ -150,8 +153,8 @@ class TestSA167Assessment(unittest.TestCase):
     def test_enabled_authz_is_affected(self) -> None:
         finding = _assess_sa167(
             version_fact("4.35.5M"),
-            feature_fact(GnsiTransportFact, FeatureState.ENABLED),
-            feature_fact(GnsiAuthzFact, FeatureState.ENABLED),
+            transport_fact(FeatureState.ENABLED),
+            authz_fact(FeatureState.ENABLED),
         )
 
         assert isinstance(finding, AffectedResult)
@@ -163,13 +166,13 @@ class TestSA167Assessment(unittest.TestCase):
         for transport_state, authz, expected in (
             (FeatureState.DISABLED, missing, GnsiTransportFact),
             (FeatureState.UNSUPPORTED, missing, GnsiTransportFact),
-            (FeatureState.ENABLED, feature_fact(GnsiAuthzFact, FeatureState.DISABLED), GnsiAuthzFact),
-            (FeatureState.ENABLED, feature_fact(GnsiAuthzFact, FeatureState.UNSUPPORTED), GnsiAuthzFact),
+            (FeatureState.ENABLED, authz_fact(FeatureState.DISABLED), GnsiAuthzFact),
+            (FeatureState.ENABLED, authz_fact(FeatureState.UNSUPPORTED), GnsiAuthzFact),
         ):
             with self.subTest(transport=transport_state, expected=expected.key):
                 finding = _assess_sa167(
                     version_fact("4.35.5M"),
-                    feature_fact(GnsiTransportFact, transport_state),
+                    transport_fact(transport_state),
                     authz,
                 )
                 assert isinstance(finding, NotAffectedResult)
@@ -186,8 +189,8 @@ class TestSA167Assessment(unittest.TestCase):
         assert cast("Any", finding.decisive[0]).relation is VersionRelation.OUTSIDE_SCOPE
 
     def test_missing_required_facts_are_errors(self) -> None:
-        enabled_transport = feature_fact(GnsiTransportFact, FeatureState.ENABLED)
-        enabled_authz = feature_fact(GnsiAuthzFact, FeatureState.ENABLED)
+        enabled_transport = transport_fact(FeatureState.ENABLED)
+        enabled_authz = authz_fact(FeatureState.ENABLED)
         for version, transport, authz, expected in (
             (version_fact(None), enabled_transport, enabled_authz, EosVersionFact),
             (version_fact("4.35.5M"), GnsiTransportFact.unavailable(FactProblemKind.MALFORMED, SOURCE), enabled_authz, GnsiTransportFact),

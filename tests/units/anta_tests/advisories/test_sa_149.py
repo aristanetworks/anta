@@ -6,12 +6,12 @@
 from __future__ import annotations
 
 from functools import partial
-from typing import TYPE_CHECKING, TypeVar, cast
+from typing import TYPE_CHECKING
 
 from anta._advisory.eos_versions import AffectedStatus
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import Dot1xDynamicAuthorizationFact, RadiusProxyDynamicAuthorizationFact
-from anta._advisory.facts.models import AvailableFact, FactDefinition, FeatureState
+from anta._advisory.facts.models import AvailableFact, FactProblemKind, FeatureState
 from anta._advisory.facts.platform import PlatformIdentityFact
 from anta._advisory.findings.models import AffectedResult, ErrorResult, NotAffectedResult
 from anta._advisory.remediation import FixedRelease, software_version_plan
@@ -20,7 +20,7 @@ from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_149 import ADVISORY, AFFECTED_VERSION_MATRIX, SA149, _assess_sa149
 from tests.units.anta_tests import build_eos_platform, build_eos_version, test
 from tests.units.anta_tests.advisories import build_expected_advisory_result
-from tests.units.anta_tests.advisories.fact_builders import assert_version_statuses, available_fact, eos_version_fact, unavailable_fact
+from tests.units.anta_tests.advisories.fact_builders import SOURCE, assert_version_statuses, eos_version_fact
 
 if TYPE_CHECKING:
     from tests.units.anta_tests import AntaUnitTestData
@@ -41,31 +41,36 @@ RADIUS_PROXY = """radius proxy
    dynamic-authorization
    client group CG1
       client ipv4 192.0.2.0/24 vrf default"""
-FeatureFactT = TypeVar("FeatureFactT", Dot1xDynamicAuthorizationFact, RadiusProxyDynamicAuthorizationFact)
 
 
 def platform_fact(model: str) -> AvailableFact[PlatformIdentityFact]:
     """Build normalized platform identity for direct assessment tests."""
     platform = build_eos_platform(model)
     assert platform is not None
-    return available_fact(PlatformIdentityFact, PlatformIdentityFact.from_identity(platform))
+    return PlatformIdentityFact.from_identity(platform).available(SOURCE)
 
 
-def sa149_feature_fact(definition: type[FeatureFactT], state: FeatureState) -> AvailableFact[FeatureFactT]:
-    """Build one normalized SA149 feature prerequisite."""
-    typed_definition = cast("type[FactDefinition[FeatureFactT]]", definition)
-    return available_fact(typed_definition, cast("FeatureFactT", definition(state)))
+def dot1x_fact(state: FeatureState) -> AvailableFact[Dot1xDynamicAuthorizationFact]:
+    """Build normalized 802.1X state for direct assessment tests."""
+    return Dot1xDynamicAuthorizationFact(state).available(SOURCE)
+
+
+def radius_proxy_fact(state: FeatureState) -> AvailableFact[RadiusProxyDynamicAuthorizationFact]:
+    """Build normalized RADIUS proxy state for direct assessment tests."""
+    return RadiusProxyDynamicAuthorizationFact(state).available(SOURCE)
 
 
 def test_sa149_assessment_contract() -> None:
     """Require both features and one explicitly affected physical family."""
-    dot1x_enabled = sa149_feature_fact(Dot1xDynamicAuthorizationFact, FeatureState.ENABLED)
-    dot1x_disabled = sa149_feature_fact(Dot1xDynamicAuthorizationFact, FeatureState.DISABLED)
-    radius_enabled = sa149_feature_fact(RadiusProxyDynamicAuthorizationFact, FeatureState.ENABLED)
-    assert isinstance(_assess_sa149(unavailable_fact(EosVersionFact), unavailable_fact(PlatformIdentityFact), dot1x_disabled, radius_enabled), NotAffectedResult)
+    dot1x_enabled = dot1x_fact(FeatureState.ENABLED)
+    dot1x_disabled = dot1x_fact(FeatureState.DISABLED)
+    radius_enabled = radius_proxy_fact(FeatureState.ENABLED)
+    missing_version = EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
+    missing_platform = PlatformIdentityFact.unavailable(FactProblemKind.MISSING, SOURCE)
+    assert isinstance(_assess_sa149(missing_version, missing_platform, dot1x_disabled, radius_enabled), NotAffectedResult)
     assert isinstance(_assess_sa149(eos_version_fact("4.36.1F"), platform_fact("DCS-7050CX3-32S"), dot1x_enabled, radius_enabled), AffectedResult)
     assert isinstance(_assess_sa149(eos_version_fact("4.36.1F"), platform_fact("DCS-7050SX2-128"), dot1x_enabled, radius_enabled), NotAffectedResult)
-    assert isinstance(_assess_sa149(eos_version_fact("4.36.1F"), unavailable_fact(PlatformIdentityFact), dot1x_enabled, radius_enabled), ErrorResult)
+    assert isinstance(_assess_sa149(eos_version_fact("4.36.1F"), missing_platform, dot1x_enabled, radius_enabled), ErrorResult)
     assert isinstance(_assess_sa149(eos_version_fact("4.36.1F"), platform_fact("DCS-UNRECOGNIZED"), dot1x_enabled, radius_enabled), ErrorResult)
     assert isinstance(_assess_sa149(eos_version_fact("4.36.2F"), platform_fact("DCS-7050CX3-32S"), dot1x_enabled, radius_enabled), NotAffectedResult)
 

@@ -16,10 +16,8 @@ from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.models import (
     AvailableFact,
-    ConfigurationFact,
     ConfigurationState,
     Fact,
-    FactDefinition,
     FactProblemKind,
     FactSource,
     FactSourceKind,
@@ -88,17 +86,6 @@ MTU_DROP_COMMAND = "ip software forwarding mtu exceed action drop"
 if TYPE_CHECKING:
     from anta.device import DevicePlatform, DeviceVersion
     from tests.units.anta_tests import AntaUnitTestData
-
-
-def redirect_fact(
-    definition: type[PbrRedirectFact | FlowSpecRedirectFact | TrafficPolicyRedirectFact | DirectFlowRedirectFact | SegmentSecurityRedirectFact],
-    state: ConfigurationState,
-    source: FactSource,
-) -> AvailableFact[ConfigurationFact]:
-    """Build one concrete redirect-configuration fact."""
-    typed_value = cast("type[ConfigurationFact]", definition)(state)
-    typed_fact = cast("FactDefinition[Any]", typed_value)
-    return cast("AvailableFact[ConfigurationFact]", typed_fact.available(source))
 
 
 def pbr_output(*, attached: bool = True) -> dict[str, Any]:
@@ -660,16 +647,22 @@ class TestSA142Assessment(unittest.TestCase):
     ) -> VulnerabilityResult:
         """Assess a compact combination of normalized facts."""
         assert len(states) == len(EXPOSURE_PATHS)
-        definitions = (PbrRedirectFact, FlowSpecRedirectFact, TrafficPolicyRedirectFact, DirectFlowRedirectFact, SegmentSecurityRedirectFact)
-        path_facts = tuple(
-            definition.unavailable(FactProblemKind.MALFORMED, self.source)
-            if state is None
-            else redirect_fact(
-                definition,
-                ConfigurationState.CONFIGURED if state else ConfigurationState.NOT_CONFIGURED,
-                self.source,
-            )
-            for definition, state in zip(definitions, states, strict=True)
+        path_facts = (
+            PbrRedirectFact.unavailable(FactProblemKind.MALFORMED, self.source)
+            if states[0] is None
+            else PbrRedirectFact(ConfigurationState.CONFIGURED if states[0] else ConfigurationState.NOT_CONFIGURED).available(self.source),
+            FlowSpecRedirectFact.unavailable(FactProblemKind.MALFORMED, self.source)
+            if states[1] is None
+            else FlowSpecRedirectFact(ConfigurationState.CONFIGURED if states[1] else ConfigurationState.NOT_CONFIGURED).available(self.source),
+            TrafficPolicyRedirectFact.unavailable(FactProblemKind.MALFORMED, self.source)
+            if states[2] is None
+            else TrafficPolicyRedirectFact(ConfigurationState.CONFIGURED if states[2] else ConfigurationState.NOT_CONFIGURED).available(self.source),
+            DirectFlowRedirectFact.unavailable(FactProblemKind.MALFORMED, self.source)
+            if states[3] is None
+            else DirectFlowRedirectFact(ConfigurationState.CONFIGURED if states[3] else ConfigurationState.NOT_CONFIGURED).available(self.source),
+            SegmentSecurityRedirectFact.unavailable(FactProblemKind.MALFORMED, self.source)
+            if states[4] is None
+            else SegmentSecurityRedirectFact(ConfigurationState.CONFIGURED if states[4] else ConfigurationState.NOT_CONFIGURED).available(self.source),
         )
         platform_value = platform_identity(platform)
         platform_fact: Fact[PlatformIdentityFact] = (

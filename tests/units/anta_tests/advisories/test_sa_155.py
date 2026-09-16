@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 
 from anta._advisory.eos_versions import AffectedStatus
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import AvailableFact, FeatureState
+from anta._advisory.facts.models import AvailableFact, FactProblemKind, FeatureState
 from anta._advisory.facts.network_services import DhcpOption82Fact
 from anta._advisory.findings.models import AffectedResult, ErrorResult, NotAffectedResult
 from anta._advisory.remediation import FixedRelease, software_version_plan
@@ -19,7 +19,7 @@ from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_155 import ADVISORY, AFFECTED_VERSION_MATRIX, SA155, _assess_sa155
 from tests.units.anta_tests import build_eos_version, test
 from tests.units.anta_tests.advisories import build_expected_advisory_result
-from tests.units.anta_tests.advisories.fact_builders import assert_version_statuses, available_fact, eos_version_fact, unavailable_fact
+from tests.units.anta_tests.advisories.fact_builders import SOURCE, assert_version_statuses, eos_version_fact
 
 if TYPE_CHECKING:
     from tests.units.anta_tests import AntaUnitTestData
@@ -38,15 +38,16 @@ SNOOPING_OPTION82_CONFIG = "ip dhcp snooping\nip dhcp snooping information optio
 
 def option82_fact(state: FeatureState) -> AvailableFact[DhcpOption82Fact]:
     """Build normalized DHCP Option 82 state for direct assessment tests."""
-    return available_fact(DhcpOption82Fact, DhcpOption82Fact(state))
+    return DhcpOption82Fact(state).available(SOURCE)
 
 
 def test_sa155_assessment_contract() -> None:
     """Return each supported result type from typed facts and safe short-circuits."""
-    assert isinstance(_assess_sa155(unavailable_fact(EosVersionFact), option82_fact(FeatureState.DISABLED)), NotAffectedResult)
+    missing_version = EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
+    assert isinstance(_assess_sa155(missing_version, option82_fact(FeatureState.DISABLED)), NotAffectedResult)
     assert isinstance(_assess_sa155(eos_version_fact("4.35.5M"), option82_fact(FeatureState.ENABLED)), AffectedResult)
     assert isinstance(_assess_sa155(eos_version_fact("4.35.6M"), option82_fact(FeatureState.ENABLED)), NotAffectedResult)
-    assert isinstance(_assess_sa155(unavailable_fact(EosVersionFact), option82_fact(FeatureState.ENABLED)), ErrorResult)
+    assert isinstance(_assess_sa155(missing_version, option82_fact(FeatureState.ENABLED)), ErrorResult)
 
 
 def test_sa155_version_boundaries() -> None:

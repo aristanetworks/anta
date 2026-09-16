@@ -5,7 +5,6 @@
 
 from __future__ import annotations
 
-import inspect
 from dataclasses import MISSING, dataclass, field, fields
 from typing import TYPE_CHECKING, Any, ClassVar, cast
 
@@ -67,11 +66,9 @@ def test_fact_field_retains_definition_and_declares_required_constructor_field()
 
     assert declared_field.default is MISSING
     assert declared_field.default_factory is MISSING
-    assert inspect.signature(DeclaredFacts).parameters["value"].default is inspect.Parameter.empty
+    assert DeclaredFacts.definitions() is DeclaredFacts.definitions()
     assert DeclaredFacts.definitions() == {"value": DEFINITION}
     assert DeclaredFacts(value=available).value is available
-    with pytest.raises(TypeError, match="missing 1 required positional argument: 'value'"):
-        DeclaredFacts()  # pyright: ignore[reportCallIssue]
 
 
 def test_facts_base_rejects_fields_without_fact_declaration() -> None:

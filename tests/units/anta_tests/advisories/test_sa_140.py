@@ -169,7 +169,9 @@ class TestSA140Assessment(unittest.TestCase):
         assert affected.context[0].relation is VersionRelation.AFFECTED
         assert affected.remediation == EXPECTED_REMEDIATION
         assert isinstance(disabled, NotAffectedResult)
-        disabled_evidence = cast("AvailableFact[SecureBootFact]", disabled.decisive[0])
+        disabled_evidence = disabled.decisive[0]
+        assert isinstance(disabled_evidence, AvailableFact)
+        assert isinstance(disabled_evidence.value, SecureBootFact)
         assert disabled_evidence.value.state is FeatureState.DISABLED
 
     def test_fixed_version_short_circuits_boot_evidence(self) -> None:
@@ -179,7 +181,8 @@ class TestSA140Assessment(unittest.TestCase):
         )
 
         assert isinstance(finding, NotAffectedResult)
-        version_assessment = cast("EosReleaseAssessment", finding.decisive[0])
+        version_assessment = finding.decisive[0]
+        assert isinstance(version_assessment, EosReleaseAssessment)
         assert version_assessment.relation is VersionRelation.OUTSIDE_SCOPE
 
     def test_unsupported_secure_boot_is_not_affected(self) -> None:
@@ -187,7 +190,9 @@ class TestSA140Assessment(unittest.TestCase):
         finding = _assess_sa140(self.version_fact("4.35.1F"), secure_boot)
 
         assert isinstance(finding, NotAffectedResult)
-        secure_boot_evidence = cast("AvailableFact[SecureBootFact]", finding.decisive[0])
+        secure_boot_evidence = finding.decisive[0]
+        assert isinstance(secure_boot_evidence, AvailableFact)
+        assert isinstance(secure_boot_evidence.value, SecureBootFact)
         assert secure_boot_evidence.value.state is FeatureState.UNSUPPORTED
 
     def test_unavailable_required_fact_is_error(self) -> None:

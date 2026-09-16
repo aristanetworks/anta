@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import unittest
 from functools import partial
-from typing import TYPE_CHECKING, Any, TypeVar, cast
+from typing import TYPE_CHECKING, Any, cast
 from unittest.mock import AsyncMock
 
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
@@ -26,7 +26,6 @@ from anta._advisory.facts.management import (
 from anta._advisory.facts.models import (
     AvailableFact,
     Fact,
-    FactDefinition,
     FactProblemKind,
     FactSource,
     FactSourceKind,
@@ -61,8 +60,6 @@ if TYPE_CHECKING:
 
 
 SOURCE = FactSource("unit test", FactSourceKind.DEVICE_METADATA)
-ServiceFactT = TypeVar("ServiceFactT", GnmiTransportFact, GribiTransportFact, TerminAttrGrpcFact)
-MitigationFactT = TypeVar("MitigationFactT", GnmiMtlsFact, GribiMtlsFact, TerminAttrMtlsFact)
 UNSUPPORTED_ERROR = "Incomplete command (at token 1: 'module')"
 EXPECTED_EOS_FIXED_RELEASES = (
     FixedRelease(EOSVersion(4, 36, 2, suffix="F")),
@@ -586,20 +583,6 @@ class TestSA146Assessment(unittest.TestCase):
         }
         arguments.update(overrides)
 
-        def feature(definition: type[ServiceFactT], enabled: bool | None) -> Fact[ServiceFactT]:
-            typed_definition = cast("type[FactDefinition[ServiceFactT]]", definition)
-            if enabled is None:
-                return typed_definition.unavailable(FactProblemKind.MALFORMED, SOURCE)
-            state = FeatureState.ENABLED if enabled else FeatureState.DISABLED
-            return cast("ServiceFactT", definition(state)).available(SOURCE)
-
-        def mitigation(definition: type[MitigationFactT], enabled: bool | None) -> Fact[MitigationFactT]:
-            typed_definition = cast("type[FactDefinition[MitigationFactT]]", definition)
-            if enabled is None:
-                return typed_definition.unavailable(FactProblemKind.MISSING, SOURCE)
-            state = MitigationState.EFFECTIVE if enabled else MitigationState.INEFFECTIVE
-            return cast("MitigationFactT", definition(state)).available(SOURCE)
-
         if arguments["eos_affected"] is None:
             eos_version: Fact[EosVersionFact] = EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
         else:
@@ -610,26 +593,62 @@ class TestSA146Assessment(unittest.TestCase):
             if arguments["terminattr_affected"] is None
             else TerminAttrVersionFact("v1.45.0" if arguments["terminattr_affected"] else "v1.45.1").available(SOURCE)
         )
+        gnmi_enabled = arguments["gnmi_enabled"]
+        gnmi_transport = (
+            GnmiTransportFact.unavailable(FactProblemKind.MALFORMED, SOURCE)
+            if gnmi_enabled is None
+            else GnmiTransportFact(FeatureState.ENABLED if gnmi_enabled else FeatureState.DISABLED).available(SOURCE)
+        )
+        gnmi_mtls = arguments["gnmi_mtls"]
+        gnmi_mitigation = (
+            GnmiMtlsFact.unavailable(FactProblemKind.MISSING, SOURCE)
+            if gnmi_mtls is None
+            else GnmiMtlsFact(MitigationState.EFFECTIVE if gnmi_mtls else MitigationState.INEFFECTIVE).available(SOURCE)
+        )
+        gribi_enabled = arguments["gribi_enabled"]
+        gribi_transport = (
+            GribiTransportFact.unavailable(FactProblemKind.MALFORMED, SOURCE)
+            if gribi_enabled is None
+            else GribiTransportFact(FeatureState.ENABLED if gribi_enabled else FeatureState.DISABLED).available(SOURCE)
+        )
+        gribi_mtls = arguments["gribi_mtls"]
+        gribi_mitigation = (
+            GribiMtlsFact.unavailable(FactProblemKind.MISSING, SOURCE)
+            if gribi_mtls is None
+            else GribiMtlsFact(MitigationState.EFFECTIVE if gribi_mtls else MitigationState.INEFFECTIVE).available(SOURCE)
+        )
+        terminattr_enabled = arguments["terminattr_enabled"]
+        terminattr_transport = (
+            TerminAttrGrpcFact.unavailable(FactProblemKind.MALFORMED, SOURCE)
+            if terminattr_enabled is None
+            else TerminAttrGrpcFact(FeatureState.ENABLED if terminattr_enabled else FeatureState.DISABLED).available(SOURCE)
+        )
+        terminattr_mtls = arguments["terminattr_mtls"]
+        terminattr_mitigation = (
+            TerminAttrMtlsFact.unavailable(FactProblemKind.MISSING, SOURCE)
+            if terminattr_mtls is None
+            else TerminAttrMtlsFact(MitigationState.EFFECTIVE if terminattr_mtls else MitigationState.INEFFECTIVE).available(SOURCE)
+        )
         return _assess_sa146(
             (
                 _GrpcPath(
                     assess_eos_version(eos_version, EOS_AFFECTED_VERSION_MATRIX),
-                    feature(GnmiTransportFact, arguments["gnmi_enabled"]),
-                    mitigation(GnmiMtlsFact, arguments["gnmi_mtls"]),
+                    gnmi_transport,
+                    gnmi_mitigation,
                     SoftwareTarget.EOS,
                     EXPECTED_EOS_FIXED_RELEASES,
                 ),
                 _GrpcPath(
                     assess_eos_version(eos_version, EOS_AFFECTED_VERSION_MATRIX),
-                    feature(GribiTransportFact, arguments["gribi_enabled"]),
-                    mitigation(GribiMtlsFact, arguments["gribi_mtls"]),
+                    gribi_transport,
+                    gribi_mitigation,
                     SoftwareTarget.EOS,
                     EXPECTED_EOS_FIXED_RELEASES,
                 ),
                 _GrpcPath(
                     _terminattr_version_assessment(terminattr_version),
-                    feature(TerminAttrGrpcFact, arguments["terminattr_enabled"]),
-                    mitigation(TerminAttrMtlsFact, arguments["terminattr_mtls"]),
+                    terminattr_transport,
+                    terminattr_mitigation,
                     SoftwareTarget.TERMINATTR,
                     EXPECTED_TERMINATTR_FIXED_RELEASES,
                 ),

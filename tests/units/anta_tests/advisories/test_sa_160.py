@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Literal, TypeAlias
 
 from anta._advisory.eos_versions import AffectedStatus
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import AvailableFact, FeatureState
+from anta._advisory.facts.models import AvailableFact, FactProblemKind, FeatureState
 from anta._advisory.facts.routing import IsisConfiguredFact, IsisNonPassiveBroadcastInterfaceFact
 from anta._advisory.findings.models import AffectedResult, ErrorResult, InconclusiveResult, NotAffectedResult
 from anta._advisory.remediation import FixedRelease, RemediationPlan, software_version_plan
@@ -25,7 +25,7 @@ from anta.tests.advisories.sa_160 import (
     _assess_isis_issue,
 )
 from tests.units.anta_tests import build_eos_version, test
-from tests.units.anta_tests.advisories.fact_builders import assert_version_statuses, available_fact, eos_version_fact, unavailable_fact
+from tests.units.anta_tests.advisories.fact_builders import SOURCE, assert_version_statuses, eos_version_fact
 
 if TYPE_CHECKING:
     from tests.units.anta_tests import AntaUnitTestData, AtomicResult, UnitTestResult
@@ -49,12 +49,12 @@ OLD_BROADCAST_REMEDIATION = software_version_plan(BROADCAST_RELEASES, current_ve
 
 def isis_fact(state: FeatureState) -> AvailableFact[IsisConfiguredFact]:
     """Build normalized IS-IS configuration state for direct assessment tests."""
-    return available_fact(IsisConfiguredFact, IsisConfiguredFact(state))
+    return IsisConfiguredFact(state).available(SOURCE)
 
 
 def isis_interface_fact(state: FeatureState) -> AvailableFact[IsisNonPassiveBroadcastInterfaceFact]:
     """Build normalized modeled IS-IS broadcast-interface state."""
-    return available_fact(IsisNonPassiveBroadcastInterfaceFact, IsisNonPassiveBroadcastInterfaceFact(state))
+    return IsisNonPassiveBroadcastInterfaceFact(state).available(SOURCE)
 
 
 def test_sa160_assessment_contract() -> None:
@@ -63,7 +63,7 @@ def test_sa160_assessment_contract() -> None:
     assert isinstance(
         _assess_isis_issue(
             vulnerability_id,
-            unavailable_fact(EosVersionFact),
+            EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE),
             isis_fact(FeatureState.DISABLED),
             LSP_AND_GRACEFUL_RESTART_AFFECTED_VERSIONS,
             LSP_AND_GRACEFUL_RESTART_FIXED_RELEASES,
@@ -93,7 +93,7 @@ def test_sa160_assessment_contract() -> None:
     assert isinstance(
         _assess_isis_issue(
             vulnerability_id,
-            unavailable_fact(EosVersionFact),
+            EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE),
             isis_fact(FeatureState.ENABLED),
             LSP_AND_GRACEFUL_RESTART_AFFECTED_VERSIONS,
             LSP_AND_GRACEFUL_RESTART_FIXED_RELEASES,
@@ -114,7 +114,7 @@ def test_sa160_broadcast_assessment_contract() -> None:
     )
     assert isinstance(
         _assess_broadcast_issue(
-            unavailable_fact(EosVersionFact),
+            EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE),
             isis_interface_fact(FeatureState.DISABLED),
             isis_fact(FeatureState.DISABLED),
         ),
@@ -139,7 +139,7 @@ def test_sa160_broadcast_assessment_contract() -> None:
     assert isinstance(
         _assess_broadcast_issue(
             eos_version_fact("4.35.5M"),
-            unavailable_fact(IsisNonPassiveBroadcastInterfaceFact),
+            IsisNonPassiveBroadcastInterfaceFact.unavailable(FactProblemKind.MISSING, SOURCE),
             isis_fact(FeatureState.ENABLED),
         ),
         ErrorResult,
@@ -148,7 +148,7 @@ def test_sa160_broadcast_assessment_contract() -> None:
         _assess_broadcast_issue(
             eos_version_fact("4.35.5M"),
             isis_interface_fact(FeatureState.DISABLED),
-            unavailable_fact(IsisConfiguredFact),
+            IsisConfiguredFact.unavailable(FactProblemKind.MISSING, SOURCE),
         ),
         ErrorResult,
     )

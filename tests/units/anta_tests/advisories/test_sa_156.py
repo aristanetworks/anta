@@ -6,11 +6,11 @@
 from __future__ import annotations
 
 from functools import partial
-from typing import TYPE_CHECKING, overload
+from typing import TYPE_CHECKING
 
 from anta._advisory.eos_versions import AffectedStatus
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import AvailableFact, FeatureState, MitigationState
+from anta._advisory.facts.models import AvailableFact, FactProblemKind, FeatureState, MitigationState
 from anta._advisory.facts.network_services import (
     DhcpRelayActiveFact,
     DhcpRelayInterface,
@@ -28,7 +28,7 @@ from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_156 import ADVISORY, AFFECTED_VERSION_MATRIX, SA156, _assess_sa156
 from tests.units.anta_tests import build_eos_version, test
 from tests.units.anta_tests.advisories import build_expected_advisory_result
-from tests.units.anta_tests.advisories.fact_builders import assert_version_statuses, available_fact, eos_version_fact, unavailable_fact
+from tests.units.anta_tests.advisories.fact_builders import SOURCE, assert_version_statuses, eos_version_fact
 
 if TYPE_CHECKING:
     from anta._advisory.facts.models import Fact
@@ -74,26 +74,19 @@ Interface: Vlan100
   DHCPv6 servers: 2001:db8::10"""
 
 
-@overload
-def dhcp_fact(definition: type[DhcpRelayActiveFact], state: FeatureState) -> AvailableFact[DhcpRelayActiveFact]: ...
+def relay_fact(state: FeatureState) -> AvailableFact[DhcpRelayActiveFact]:
+    """Build normalized DHCP relay state for direct assessment tests."""
+    return DhcpRelayActiveFact(state).available(SOURCE)
 
 
-@overload
-def dhcp_fact(definition: type[DhcpReplySourceValidationFact], state: FeatureState) -> AvailableFact[DhcpReplySourceValidationFact]: ...
-
-
-def dhcp_fact(
-    definition: type[DhcpRelayActiveFact | DhcpReplySourceValidationFact], state: FeatureState
-) -> AvailableFact[DhcpRelayActiveFact] | AvailableFact[DhcpReplySourceValidationFact]:
-    """Build normalized DHCP state for direct assessment tests."""
-    if definition is DhcpRelayActiveFact:
-        return available_fact(definition, definition(state))
-    return available_fact(DhcpReplySourceValidationFact, DhcpReplySourceValidationFact(state))
+def validation_fact(state: FeatureState) -> AvailableFact[DhcpReplySourceValidationFact]:
+    """Build normalized DHCP reply-validation state for direct assessment tests."""
+    return DhcpReplySourceValidationFact(state).available(SOURCE)
 
 
 def mitigation_fact(state: MitigationState) -> AvailableFact[IpLockingMitigationFact]:
     """Build normalized IP-locking mitigation state."""
-    return available_fact(IpLockingMitigationFact, IpLockingMitigationFact(state))
+    return IpLockingMitigationFact(state).available(SOURCE)
 
 
 def assess(
@@ -108,24 +101,24 @@ def assess(
     """Assess one concise direct-fact scenario."""
     return _assess_sa156(
         eos_version_fact(version),
-        relay or dhcp_fact(DhcpRelayActiveFact, FeatureState.ENABLED),
+        relay or relay_fact(FeatureState.ENABLED),
         validation,
         mitigation,
-        relay_scope or available_fact(DhcpRelayScopeFact, RELAY_DUAL_STACK),
-        coverage or available_fact(IpLockingCoverageFact, IP_LOCKING_DUAL_STACK),
+        relay_scope or RELAY_DUAL_STACK.available(SOURCE),
+        coverage or IP_LOCKING_DUAL_STACK.available(SOURCE),
     )
 
 
 def test_sa156_safe_short_circuits() -> None:
     """Ignore unavailable later facts after relay absence or complete resolution proves safety."""
-    unavailable_validation = unavailable_fact(DhcpReplySourceValidationFact)
-    unavailable_mitigation = unavailable_fact(IpLockingMitigationFact)
-    unavailable_scope = unavailable_fact(DhcpRelayScopeFact)
-    unavailable_coverage = unavailable_fact(IpLockingCoverageFact)
+    unavailable_validation = DhcpReplySourceValidationFact.unavailable(FactProblemKind.MISSING, SOURCE)
+    unavailable_mitigation = IpLockingMitigationFact.unavailable(FactProblemKind.MISSING, SOURCE)
+    unavailable_scope = DhcpRelayScopeFact.unavailable(FactProblemKind.MISSING, SOURCE)
+    unavailable_coverage = IpLockingCoverageFact.unavailable(FactProblemKind.MISSING, SOURCE)
     assert isinstance(
         _assess_sa156(
-            unavailable_fact(EosVersionFact),
-            dhcp_fact(DhcpRelayActiveFact, FeatureState.DISABLED),
+            EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE),
+            relay_fact(FeatureState.DISABLED),
             unavailable_validation,
             unavailable_mitigation,
             unavailable_scope,
@@ -134,15 +127,15 @@ def test_sa156_safe_short_circuits() -> None:
         NotAffectedResult,
     )
     assert isinstance(
-        assess("4.36.2F", validation=dhcp_fact(DhcpReplySourceValidationFact, FeatureState.ENABLED), mitigation=unavailable_mitigation),
+        assess("4.36.2F", validation=validation_fact(FeatureState.ENABLED), mitigation=unavailable_mitigation),
         NotAffectedResult,
     )
 
 
 def test_sa156_resolution_and_mitigation_paths() -> None:
     """Distinguish complete resolution, verified mitigation, and uncovered exposure."""
-    validation_enabled = dhcp_fact(DhcpReplySourceValidationFact, FeatureState.ENABLED)
-    validation_disabled = dhcp_fact(DhcpReplySourceValidationFact, FeatureState.DISABLED)
+    validation_enabled = validation_fact(FeatureState.ENABLED)
+    validation_disabled = validation_fact(FeatureState.DISABLED)
     ineffective = mitigation_fact(MitigationState.INEFFECTIVE)
     effective = mitigation_fact(MitigationState.EFFECTIVE)
 
@@ -150,13 +143,14 @@ def test_sa156_resolution_and_mitigation_paths() -> None:
     assert isinstance(assess("4.36.2F", validation=validation_disabled, mitigation=ineffective), AffectedResult)
     assert isinstance(assess("4.36.1F", validation=validation_enabled, mitigation=effective), MitigatedResult)
     assert isinstance(assess("4.36.2F", validation=validation_disabled, mitigation=effective), MitigatedResult)
-    assert isinstance(assess("4.36.2F", validation=unavailable_fact(DhcpReplySourceValidationFact), mitigation=effective), MitigatedResult)
+    missing_validation = DhcpReplySourceValidationFact.unavailable(FactProblemKind.MISSING, SOURCE)
+    assert isinstance(assess("4.36.2F", validation=missing_validation, mitigation=effective), MitigatedResult)
     assert isinstance(
-        assess("4.36.2F", validation=validation_disabled, mitigation=effective, coverage=available_fact(IpLockingCoverageFact, IP_LOCKING_IPV4)),
+        assess("4.36.2F", validation=validation_disabled, mitigation=effective, coverage=IP_LOCKING_IPV4.available(SOURCE)),
         AffectedResult,
     )
     assert isinstance(
-        assess("4.36.2F", validation=validation_disabled, mitigation=effective, coverage=available_fact(IpLockingCoverageFact, IP_LOCKING_OTHER_VLAN)),
+        assess("4.36.2F", validation=validation_disabled, mitigation=effective, coverage=IP_LOCKING_OTHER_VLAN.available(SOURCE)),
         AffectedResult,
     )
     assert isinstance(
@@ -164,8 +158,8 @@ def test_sa156_resolution_and_mitigation_paths() -> None:
             "4.36.1F",
             validation=validation_enabled,
             mitigation=effective,
-            relay_scope=available_fact(DhcpRelayScopeFact, RELAY_IPV6),
-            coverage=available_fact(IpLockingCoverageFact, IpLockingCoverageFact((), (IpLockingScope("100", IPV6),))),
+            relay_scope=RELAY_IPV6.available(SOURCE),
+            coverage=IpLockingCoverageFact((), (IpLockingScope("100", IPV6),)).available(SOURCE),
         ),
         MitigatedResult,
     )
@@ -173,14 +167,22 @@ def test_sa156_resolution_and_mitigation_paths() -> None:
 
 def test_sa156_unavailable_required_facts_are_errors() -> None:
     """Require every observable fact needed by the remaining resolution or mitigation branches."""
-    validation_disabled = dhcp_fact(DhcpReplySourceValidationFact, FeatureState.DISABLED)
+    validation_disabled = validation_fact(FeatureState.DISABLED)
     effective = mitigation_fact(MitigationState.EFFECTIVE)
     ineffective = mitigation_fact(MitigationState.INEFFECTIVE)
 
-    assert isinstance(assess("4.36.1F", validation=validation_disabled, mitigation=unavailable_fact(IpLockingMitigationFact)), ErrorResult)
-    assert isinstance(assess("4.36.2F", validation=unavailable_fact(DhcpReplySourceValidationFact), mitigation=ineffective), ErrorResult)
-    assert isinstance(assess("4.36.1F", validation=validation_disabled, mitigation=effective, relay_scope=unavailable_fact(DhcpRelayScopeFact)), ErrorResult)
-    assert isinstance(assess("4.36.1F", validation=validation_disabled, mitigation=effective, coverage=unavailable_fact(IpLockingCoverageFact)), ErrorResult)
+    assert isinstance(
+        assess("4.36.1F", validation=validation_disabled, mitigation=IpLockingMitigationFact.unavailable(FactProblemKind.MISSING, SOURCE)), ErrorResult
+    )
+    assert isinstance(assess("4.36.2F", validation=DhcpReplySourceValidationFact.unavailable(FactProblemKind.MISSING, SOURCE), mitigation=ineffective), ErrorResult)
+    assert isinstance(
+        assess("4.36.1F", validation=validation_disabled, mitigation=effective, relay_scope=DhcpRelayScopeFact.unavailable(FactProblemKind.MISSING, SOURCE)),
+        ErrorResult,
+    )
+    assert isinstance(
+        assess("4.36.1F", validation=validation_disabled, mitigation=effective, coverage=IpLockingCoverageFact.unavailable(FactProblemKind.MISSING, SOURCE)),
+        ErrorResult,
+    )
 
 
 def test_sa156_version_boundaries() -> None:

@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 from anta._advisory.eos_versions import AffectedStatus
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnmiAuthorizationFact
-from anta._advisory.facts.models import AvailableFact, FeatureState
+from anta._advisory.facts.models import AvailableFact, FactProblemKind, FeatureState
 from anta._advisory.findings.models import AffectedResult, ErrorResult, NotAffectedResult
 from anta._advisory.remediation import FixedRelease, software_version_plan
 from anta._eos.version import EOSVersion
@@ -19,7 +19,7 @@ from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_170 import ADVISORY, AFFECTED_VERSION_MATRIX, SA170, _assess_sa170
 from tests.units.anta_tests import build_eos_version, test
 from tests.units.anta_tests.advisories import build_expected_advisory_result
-from tests.units.anta_tests.advisories.fact_builders import assert_version_statuses, available_fact, eos_version_fact, unavailable_fact
+from tests.units.anta_tests.advisories.fact_builders import SOURCE, assert_version_statuses, eos_version_fact
 
 if TYPE_CHECKING:
     from tests.units.anta_tests import AntaUnitTestData
@@ -36,15 +36,16 @@ expected_result = partial(build_expected_advisory_result, ADVISORY.vulnerabiliti
 
 def authorization_fact(state: FeatureState) -> AvailableFact[GnmiAuthorizationFact]:
     """Build normalized gNMI authorization state for direct assessment tests."""
-    return available_fact(GnmiAuthorizationFact, GnmiAuthorizationFact(state))
+    return GnmiAuthorizationFact(state).available(SOURCE)
 
 
 def test_sa170_assessment_contract() -> None:
     """Return affected, safe, and error outcomes from typed authorization state."""
-    assert isinstance(_assess_sa170(unavailable_fact(EosVersionFact), authorization_fact(FeatureState.DISABLED)), NotAffectedResult)
+    missing_version = EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
+    assert isinstance(_assess_sa170(missing_version, authorization_fact(FeatureState.DISABLED)), NotAffectedResult)
     assert isinstance(_assess_sa170(eos_version_fact("4.36.0.1F"), authorization_fact(FeatureState.ENABLED)), AffectedResult)
     assert isinstance(_assess_sa170(eos_version_fact("4.36.1F"), authorization_fact(FeatureState.ENABLED)), NotAffectedResult)
-    assert isinstance(_assess_sa170(unavailable_fact(EosVersionFact), authorization_fact(FeatureState.ENABLED)), ErrorResult)
+    assert isinstance(_assess_sa170(missing_version, authorization_fact(FeatureState.ENABLED)), ErrorResult)
 
 
 def test_sa170_version_boundaries() -> None:

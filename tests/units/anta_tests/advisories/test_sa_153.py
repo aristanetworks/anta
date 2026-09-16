@@ -8,7 +8,7 @@
 from __future__ import annotations
 
 import unittest
-from typing import TYPE_CHECKING, Any, Literal, TypeAlias, cast
+from typing import TYPE_CHECKING, Any, Literal, TypeAlias
 
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact
@@ -43,13 +43,10 @@ from anta.tests.advisories.sa_153 import (
 from tests.units.anta_tests import build_eos_version, test
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
-
     from tests.units.anta_tests import AntaUnitTestData, AtomicResult, UnitTestResult
 
 SOURCE = FactSource("unit test", FactSourceKind.DEVICE_METADATA)
 ProductionStatus: TypeAlias = Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.ERROR]
-TraceFact: TypeAlias = ConfigAgentPrivateKeyTraceFact | AaaPasswordTraceFact | AaaTacacsKeyTraceFact
 IssueExpectation: TypeAlias = tuple[ProductionStatus, str, RemediationPlan | None]
 EXPECTED_FIXED_RELEASES = (
     FixedRelease(EOSVersion(4, 36, 2, suffix="F")),
@@ -196,15 +193,6 @@ def version_fact(version: str | None) -> Fact[EosVersionFact]:
     return EosVersionFact.from_version(parsed).available(SOURCE)
 
 
-def trace_fact(definition: type[TraceFact], state: FeatureState) -> AvailableFact[TraceFact]:
-    """Build one agent-trace fact."""
-    if definition is ConfigAgentPrivateKeyTraceFact:
-        return definition(state).available(SOURCE)
-    if definition is AaaPasswordTraceFact:
-        return definition(state).available(SOURCE)
-    return AaaTacacsKeyTraceFact(state).available(SOURCE)
-
-
 class TestSA153VersionMatrix(unittest.TestCase):
     """Validate every source-published version boundary."""
 
@@ -231,30 +219,28 @@ class TestSA153VersionMatrix(unittest.TestCase):
 class TestSA153Assessment(unittest.TestCase):
     """Validate shared semantics through every vulnerability wrapper."""
 
-    ASSESSMENTS = cast(
-        "tuple[tuple[Callable[[Fact[EosVersionFact], Fact[TraceFact]], object], str, type[TraceFact]], ...]",
-        (
-            (_assess_private_key, PRIVATE_KEY_ID, ConfigAgentPrivateKeyTraceFact),
-            (_assess_password, PASSWORD_ID, AaaPasswordTraceFact),
-            (_assess_tacacs_key, TACACS_KEY_ID, AaaTacacsKeyTraceFact),
-        ),
-    )
-
     def test_risky_trace_is_affected(self) -> None:
-        for assess, vulnerability_id, trace_definition in self.ASSESSMENTS:
+        version = version_fact("4.36.1F")
+        findings = (
+            (_assess_private_key(version, ConfigAgentPrivateKeyTraceFact(FeatureState.ENABLED).available(SOURCE)), PRIVATE_KEY_ID),
+            (_assess_password(version, AaaPasswordTraceFact(FeatureState.ENABLED).available(SOURCE)), PASSWORD_ID),
+            (_assess_tacacs_key(version, AaaTacacsKeyTraceFact(FeatureState.ENABLED).available(SOURCE)), TACACS_KEY_ID),
+        )
+        for finding, vulnerability_id in findings:
             with self.subTest(vulnerability_id=vulnerability_id):
-                finding = assess(
-                    version_fact("4.36.1F"),
-                    trace_fact(trace_definition, FeatureState.ENABLED),
-                )
                 assert isinstance(finding, AffectedResult)
                 assert finding.vulnerability_id == vulnerability_id
                 assert finding.context[0].relation is VersionRelation.AFFECTED
 
     def test_disabled_trace_is_not_affected(self) -> None:
-        for assess, vulnerability_id, trace_definition in self.ASSESSMENTS:
+        missing_version = version_fact(None)
+        findings = (
+            (_assess_private_key(missing_version, ConfigAgentPrivateKeyTraceFact(FeatureState.DISABLED).available(SOURCE)), PRIVATE_KEY_ID),
+            (_assess_password(missing_version, AaaPasswordTraceFact(FeatureState.DISABLED).available(SOURCE)), PASSWORD_ID),
+            (_assess_tacacs_key(missing_version, AaaTacacsKeyTraceFact(FeatureState.DISABLED).available(SOURCE)), TACACS_KEY_ID),
+        )
+        for finding, vulnerability_id in findings:
             with self.subTest(vulnerability_id=vulnerability_id):
-                finding = assess(version_fact(None), trace_fact(trace_definition, FeatureState.DISABLED))
                 assert isinstance(finding, NotAffectedResult)
                 assert finding.vulnerability_id == vulnerability_id
 

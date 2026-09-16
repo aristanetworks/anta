@@ -51,43 +51,8 @@ class FakeCommandFact(CommandsFactDefinition["FakeCommandFact"]):
         return cls(str(command.json_output["value"])).available(FactSource(command.command, FactSourceKind.COMMAND))
 
 
-class FakeAdvisoryTest(_AntaAdvisoryTest):
-    """Fake security advisory test."""
-
-    @facts_dataclass
-    class Facts(FactsBase):
-        """Typed facts required by the fake advisory."""
-
-        value: Fact[FakeCommandFact] = fact_field(FakeCommandFact)
-
-    advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
-
-    @_AntaAdvisoryTest.anta_test
-    def test(self) -> None:
-        """Set the test result to success."""
-        self.result.is_success()
-
-
 class FactAdvisoryTest(_AntaAdvisoryTest):
     """Fake advisory test whose commands are derived from its typed fields."""
-
-    @facts_dataclass
-    class Facts(FactsBase):
-        """Typed facts required by the fake advisory."""
-
-        value: Fact[FakeCommandFact] = fact_field(FakeCommandFact)
-
-    advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
-
-    @_AntaAdvisoryTest.anta_test
-    def test(self) -> None:
-        """Set the result from the normalized fact."""
-        facts = self.Facts.collect(self)
-        self.result.is_success(str(facts.value))
-
-
-class FactsAdvisoryTest(_AntaAdvisoryTest):
-    """Fake advisory test whose typed fields declare the facts to collect."""
 
     @facts_dataclass
     class Facts(FactsBase):
@@ -181,7 +146,7 @@ def test_advisory_base_is_abstract() -> None:
 
 def test_advisory_result(device: AntaDevice) -> None:
     """Verify advisory metadata is attached to results but kept off serialized output."""
-    test_instance = FakeAdvisoryTest(
+    test_instance = FactAdvisoryTest(
         device=device,
         inputs={
             "result_overwrite": {
@@ -190,7 +155,7 @@ def test_advisory_result(device: AntaDevice) -> None:
                 "custom_field": "Overridden custom field.",
             }
         },
-        eos_data=[{"version": "4.36.1F"}],
+        eos_data=[{"value": "normalized"}],
     )
 
     assert test_instance.categories == ["advisories"]
@@ -212,21 +177,7 @@ def test_advisory_fact_container_owns_commands_and_derivation(device: AntaDevice
 
     assert FactAdvisoryTest.commands == [FakeCommandFact.commands[0]]
     assert isinstance(fact, AvailableFact)
-    assert fact.value == FakeCommandFact("normalized")
-    assert fact.source.name == "show fake"
-
-
-def test_advisory_fact_fields_own_commands_and_collection(device: AntaDevice) -> None:
-    """Derive commands and collect a field from its typed runtime declaration."""
-    test_instance = FactsAdvisoryTest(device=device, eos_data=[{"value": "normalized"}])
-    facts = FactsAdvisoryTest.Facts.collect(test_instance)
-
-    assert FactsAdvisoryTest.commands == [FakeCommandFact.commands[0]]
-    assert FactsAdvisoryTest.Facts.definitions() is FactsAdvisoryTest.Facts.definitions()
-    assert FactsAdvisoryTest.Facts.definitions() == {"value": FakeCommandFact}
-    collected = facts.value
-    assert isinstance(collected, AvailableFact)
-    assert collected == AvailableFact(value=FakeCommandFact("normalized"), source=FactSource("show fake", FactSourceKind.COMMAND))
+    assert fact == FakeCommandFact("normalized").available(FactSource("show fake", FactSourceKind.COMMAND))
 
 
 def test_advisory_preserves_same_uid_commands_and_fact_association(device: AntaDevice) -> None:
@@ -242,9 +193,9 @@ def test_advisory_preserves_same_uid_commands_and_fact_association(device: AntaD
     assert not isinstance(SharedCommandAdvisoryTest.commands[0], OptionalAntaCommand)
     assert isinstance(SharedCommandAdvisoryTest.commands[1], OptionalAntaCommand)
     assert isinstance(required_fact, AvailableFact)
-    assert required_fact.value == RequiredSharedCommandFact("required")
+    assert required_fact == RequiredSharedCommandFact("required").available(FactSource("show fake", FactSourceKind.COMMAND))
     assert isinstance(optional_fact, AvailableFact)
-    assert optional_fact.value == OptionalSharedCommandFact("optional")
+    assert optional_fact == OptionalSharedCommandFact("optional").available(FactSource("show fake", FactSourceKind.COMMAND))
 
 
 @pytest.mark.asyncio

@@ -5,12 +5,12 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal, TypeAlias, TypeVar, cast
+from typing import TYPE_CHECKING, Literal, TypeAlias
 
 from anta._advisory.eos_versions import AffectedStatus
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnpsiAuthenticationExposureFact, GnpsiEosRpcAuthTraceFact, GnpsiMutualTlsSpiffeMitigationFact, GnpsiTransportFact
-from anta._advisory.facts.models import AvailableFact, FactDefinition, FeatureState, MitigationState
+from anta._advisory.facts.models import AvailableFact, FactProblemKind, FeatureState, MitigationState
 from anta._advisory.findings.models import AffectedResult, ErrorResult, MitigatedResult, NotAffectedResult
 from anta._advisory.remediation import (
     AllOf,
@@ -26,7 +26,7 @@ from anta._eos.version import EOSVersion
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_158 import ADVISORY, AFFECTED_VERSION_MATRIX, SA158, _assess_gnpsi_issue, _assess_logging_issue
 from tests.units.anta_tests import build_eos_version, test
-from tests.units.anta_tests.advisories.fact_builders import assert_version_statuses, available_fact, eos_version_fact, unavailable_fact
+from tests.units.anta_tests.advisories.fact_builders import SOURCE, assert_version_statuses, eos_version_fact
 
 if TYPE_CHECKING:
     from tests.units.anta_tests import AntaUnitTestData, AtomicResult, UnitTestResult
@@ -56,37 +56,49 @@ LOGGING_REMEDIATION = RemediationPlan(
 )
 
 
-GnpsiFactT = TypeVar("GnpsiFactT", GnpsiTransportFact, GnpsiAuthenticationExposureFact, GnpsiEosRpcAuthTraceFact)
+def transport_fact(state: FeatureState) -> AvailableFact[GnpsiTransportFact]:
+    """Build normalized gNPSI transport state for direct assessment tests."""
+    return GnpsiTransportFact(state).available(SOURCE)
 
 
-def gnpsi_fact(definition: type[GnpsiFactT], _name: str, state: FeatureState) -> AvailableFact[GnpsiFactT]:
-    """Build one normalized gNPSI fact for direct assessment tests."""
-    typed_definition = cast("type[FactDefinition[GnpsiFactT]]", definition)
-    return available_fact(typed_definition, cast("GnpsiFactT", definition(state)))
+def authentication_exposure_fact(state: FeatureState) -> AvailableFact[GnpsiAuthenticationExposureFact]:
+    """Build normalized gNPSI authentication exposure for direct assessment tests."""
+    return GnpsiAuthenticationExposureFact(state).available(SOURCE)
+
+
+def trace_fact(state: FeatureState) -> AvailableFact[GnpsiEosRpcAuthTraceFact]:
+    """Build normalized gNPSI trace state for direct assessment tests."""
+    return GnpsiEosRpcAuthTraceFact(state).available(SOURCE)
 
 
 def authentication_mitigation(state: MitigationState) -> AvailableFact[GnpsiMutualTlsSpiffeMitigationFact]:
     """Build the exact gNPSI authentication mitigation for direct assessment tests."""
-    return available_fact(GnpsiMutualTlsSpiffeMitigationFact, GnpsiMutualTlsSpiffeMitigationFact(state))
+    return GnpsiMutualTlsSpiffeMitigationFact(state).available(SOURCE)
 
 
 def test_sa158_assessment_contract() -> None:
     """Evaluate transport and issue-specific gNPSI prerequisites independently."""
-    transport_enabled = gnpsi_fact(GnpsiTransportFact, "transport", FeatureState.ENABLED)
-    transport_disabled = gnpsi_fact(GnpsiTransportFact, "transport", FeatureState.DISABLED)
-    authentication_enabled = gnpsi_fact(GnpsiAuthenticationExposureFact, "exposed authentication mode", FeatureState.ENABLED)
-    authentication_disabled = gnpsi_fact(GnpsiAuthenticationExposureFact, "exposed authentication mode", FeatureState.DISABLED)
+    transport_enabled = transport_fact(FeatureState.ENABLED)
+    transport_disabled = transport_fact(FeatureState.DISABLED)
+    authentication_enabled = authentication_exposure_fact(FeatureState.ENABLED)
+    authentication_disabled = authentication_exposure_fact(FeatureState.DISABLED)
+    missing_version = EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
     vulnerability_id = "CVE-2026-73456"
-    assert isinstance(_assess_gnpsi_issue(vulnerability_id, unavailable_fact(EosVersionFact), transport_enabled, authentication_disabled), NotAffectedResult)
-    assert isinstance(_assess_gnpsi_issue(vulnerability_id, unavailable_fact(EosVersionFact), transport_disabled, authentication_enabled), NotAffectedResult)
+    assert isinstance(_assess_gnpsi_issue(vulnerability_id, missing_version, transport_enabled, authentication_disabled), NotAffectedResult)
+    assert isinstance(_assess_gnpsi_issue(vulnerability_id, missing_version, transport_disabled, authentication_enabled), NotAffectedResult)
     assert isinstance(_assess_gnpsi_issue(vulnerability_id, eos_version_fact("4.36.1F"), transport_enabled, authentication_enabled), AffectedResult)
     assert isinstance(_assess_gnpsi_issue(vulnerability_id, eos_version_fact("4.36.2F"), transport_enabled, authentication_enabled), NotAffectedResult)
     assert isinstance(
-        _assess_gnpsi_issue(vulnerability_id, eos_version_fact("4.36.1F"), transport_enabled, unavailable_fact(GnpsiAuthenticationExposureFact)),
+        _assess_gnpsi_issue(
+            vulnerability_id,
+            eos_version_fact("4.36.1F"),
+            transport_enabled,
+            GnpsiAuthenticationExposureFact.unavailable(FactProblemKind.MISSING, SOURCE),
+        ),
         ErrorResult,
     )
 
-    trace_enabled = gnpsi_fact(GnpsiEosRpcAuthTraceFact, "EosRpcAuth trace", FeatureState.ENABLED)
+    trace_enabled = trace_fact(FeatureState.ENABLED)
     mitigated = _assess_logging_issue(
         eos_version_fact("4.36.1F"),
         transport_enabled,
@@ -105,10 +117,10 @@ def test_sa158_assessment_contract() -> None:
     assert affected.remediation == LOGGING_REMEDIATION
     assert isinstance(
         _assess_logging_issue(
-            unavailable_fact(EosVersionFact),
+            missing_version,
             transport_disabled,
-            unavailable_fact(GnpsiEosRpcAuthTraceFact),
-            unavailable_fact(GnpsiMutualTlsSpiffeMitigationFact),
+            GnpsiEosRpcAuthTraceFact.unavailable(FactProblemKind.MISSING, SOURCE),
+            GnpsiMutualTlsSpiffeMitigationFact.unavailable(FactProblemKind.MISSING, SOURCE),
         ),
         NotAffectedResult,
     )

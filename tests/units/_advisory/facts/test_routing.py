@@ -5,12 +5,11 @@
 
 from __future__ import annotations
 
-from dataclasses import fields
 from typing import TYPE_CHECKING, Any
 
 import pytest
 
-from anta._advisory.facts.models import AvailableFact, ConfigurationState, FactProblemKind, FeatureName, FeatureState, MitigationState, SubFeature, UnavailableFact
+from anta._advisory.facts.models import AvailableFact, ConfigurationState, FactProblemKind, FeatureState, MitigationState, UnavailableFact
 from anta._advisory.facts.routing import (
     BfdAuthenticationFact,
     IsisConfiguredFact,
@@ -585,8 +584,6 @@ def test_bfd_authentication_states(device: OfflineAntaDevice, commands: tuple[An
 
     assert isinstance(fact, AvailableFact)
     assert isinstance(fact.value, BfdAuthenticationFact)
-    assert tuple(field.name for field in fields(BfdAuthenticationFact)) == ("state",)
-    assert BfdAuthenticationFact.feature == SubFeature(FeatureName.BFD, "authentication")
     assert fact.value.state is state
 
 

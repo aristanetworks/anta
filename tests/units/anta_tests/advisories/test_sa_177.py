@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import unittest
 from functools import partial
-from typing import TYPE_CHECKING, TypeVar, cast
+from typing import TYPE_CHECKING
 
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact
@@ -31,7 +31,6 @@ if TYPE_CHECKING:
     from tests.units.anta_tests import AntaUnitTestData
 
 SOURCE = FactSource("unit test", FactSourceKind.DEVICE_METADATA)
-FeatureFactT = TypeVar("FeatureFactT", PimSparseModeFact, MlagConfiguredFact)
 EXPECTED_FIXED_RELEASES = (
     FixedRelease(EOSVersion(4, 36, 2, suffix="F")),
     FixedRelease(EOSVersion(4, 35, 6, suffix="M")),
@@ -131,9 +130,14 @@ def platform_fact(model: str | None) -> Fact[PlatformIdentityFact]:
     return PlatformIdentityFact.from_identity(platform).available(SOURCE)
 
 
-def feature_fact(definition: type[FeatureFactT], state: FeatureState) -> Fact[FeatureFactT]:
-    """Build one available feature fact."""
-    return cast("Fact[FeatureFactT]", cast("FeatureFactT", definition(state)).available(SOURCE))
+def pim_fact(state: FeatureState) -> Fact[PimSparseModeFact]:
+    """Build one available PIM sparse-mode fact."""
+    return PimSparseModeFact(state).available(SOURCE)
+
+
+def mlag_fact(state: FeatureState) -> Fact[MlagConfiguredFact]:
+    """Build one available MLAG configuration fact."""
+    return MlagConfiguredFact(state).available(SOURCE)
 
 
 class TestSA177Assessment(unittest.TestCase):
@@ -195,10 +199,10 @@ class TestSA177Assessment(unittest.TestCase):
         } == AFFECTED_PLATFORM_FAMILIES
 
     def test_assessment_states(self) -> None:
-        pim_enabled = feature_fact(PimSparseModeFact, FeatureState.ENABLED)
-        pim_disabled = feature_fact(PimSparseModeFact, FeatureState.DISABLED)
-        mlag_configured = feature_fact(MlagConfiguredFact, FeatureState.ENABLED)
-        mlag_not_configured = feature_fact(MlagConfiguredFact, FeatureState.DISABLED)
+        pim_enabled = pim_fact(FeatureState.ENABLED)
+        pim_disabled = pim_fact(FeatureState.DISABLED)
+        mlag_configured = mlag_fact(FeatureState.ENABLED)
+        mlag_not_configured = mlag_fact(FeatureState.DISABLED)
 
         assert isinstance(_assess_sa177(version_fact("4.35.5M"), platform_fact("cEOSLab"), pim_enabled, mlag_configured), AffectedResult)
         assert isinstance(_assess_sa177(version_fact(None), platform_fact(None), pim_disabled, mlag_configured), NotAffectedResult)
@@ -219,8 +223,8 @@ class TestSA177Assessment(unittest.TestCase):
         assert tuple(problem.definition for problem in finding.problems) == (PimSparseModeFact, MlagConfiguredFact)
 
     def test_unavailable_scope_facts_are_preserved(self) -> None:
-        pim_enabled = feature_fact(PimSparseModeFact, FeatureState.ENABLED)
-        mlag_configured = feature_fact(MlagConfiguredFact, FeatureState.ENABLED)
+        pim_enabled = pim_fact(FeatureState.ENABLED)
+        mlag_configured = mlag_fact(FeatureState.ENABLED)
         finding = _assess_sa177(version_fact(None), platform_fact(None), pim_enabled, mlag_configured)
         assert isinstance(finding, ErrorResult)
         assert tuple(problem.definition for problem in finding.problems) == (EosVersionFact, PlatformIdentityFact)

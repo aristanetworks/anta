@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import unittest
 from functools import partial
-from typing import TYPE_CHECKING, Any, TypeVar, cast
+from typing import TYPE_CHECKING, Any
 
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact
@@ -22,8 +22,6 @@ from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_169 import ADVISORY, AFFECTED_VERSION_MATRIX, SA169, _assess_sa169
 from tests.units.anta_tests import build_eos_version, test
 from tests.units.anta_tests.advisories import build_expected_advisory_result
-
-GnsiFactT = TypeVar("GnsiFactT", GnsiTransportFact, GnsiMultipleTransportsFact, GnsiAuthzFact)
 
 if TYPE_CHECKING:
     from tests.units.anta_tests import AntaUnitTestData
@@ -105,9 +103,19 @@ def version_fact(value: str) -> Fact[EosVersionFact]:
     return EosVersionFact.from_version(parsed).available(SOURCE)
 
 
-def feature_fact(definition: type[GnsiFactT], state: FeatureState) -> AvailableFact[GnsiFactT]:
-    """Build one gNSI feature fact."""
-    return cast("AvailableFact[GnsiFactT]", cast("GnsiFactT", definition(state)).available(SOURCE))
+def transport_fact(state: FeatureState) -> AvailableFact[GnsiTransportFact]:
+    """Build normalized gNSI transport state."""
+    return GnsiTransportFact(state).available(SOURCE)
+
+
+def multiple_transports_fact(state: FeatureState) -> AvailableFact[GnsiMultipleTransportsFact]:
+    """Build normalized gNSI multiple-transport state."""
+    return GnsiMultipleTransportsFact(state).available(SOURCE)
+
+
+def authz_fact(state: FeatureState) -> AvailableFact[GnsiAuthzFact]:
+    """Build normalized gNSI Authz state."""
+    return GnsiAuthzFact(state).available(SOURCE)
 
 
 class TestSA169Assessment(unittest.TestCase):
@@ -139,14 +147,14 @@ class TestSA169Assessment(unittest.TestCase):
 
     def test_states(self) -> None:
         version = version_fact("4.35.5M")
-        transport = feature_fact(GnsiTransportFact, FeatureState.ENABLED)
-        one_transport = feature_fact(GnsiMultipleTransportsFact, FeatureState.DISABLED)
-        multiple_transports = feature_fact(GnsiMultipleTransportsFact, FeatureState.ENABLED)
-        authz = feature_fact(GnsiAuthzFact, FeatureState.ENABLED)
+        transport = transport_fact(FeatureState.ENABLED)
+        one_transport = multiple_transports_fact(FeatureState.DISABLED)
+        multiple_transports = multiple_transports_fact(FeatureState.ENABLED)
+        authz = authz_fact(FeatureState.ENABLED)
         assert isinstance(_assess_sa169(version, transport, one_transport, authz), InconclusiveResult)
         assert isinstance(_assess_sa169(version, transport, multiple_transports, authz), AffectedResult)
         assert isinstance(
-            _assess_sa169(version, feature_fact(GnsiTransportFact, FeatureState.DISABLED), one_transport, authz),
+            _assess_sa169(version, transport_fact(FeatureState.DISABLED), one_transport, authz),
             NotAffectedResult,
         )
         unavailable = GnsiAuthzFact.unavailable(FactProblemKind.MISSING, SOURCE)
