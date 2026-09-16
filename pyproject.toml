@@ -68,13 +68,16 @@ dev = [
 test = [
   "pytest-asyncio>=1.4.0",
   "pytest-cov>=7.1.0",
-  "pytest-codspeed>=5.0.3",
   "pytest-html>=4.2.0",
   "pytest-httpx>=0.36.2",
   "pytest-metadata>=3.1.1",
   "pytest>=9.1.1",
   "respx>=0.23.1",
   "tox>=4.61.2,<5.0.0",
+]
+benchmark = [
+  "pytest-codspeed>=5.0.3",
+  "pytest-dependency>=0.6.0",
 ]
 lint = [
   "codespell>=2.4.3,<2.5.0",
