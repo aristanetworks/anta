@@ -7,11 +7,12 @@ from __future__ import annotations
 
 import inspect
 from dataclasses import MISSING, dataclass, field, fields
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, ClassVar, cast
 
 import pytest
 
 from anta._advisory.facts.models import (
+    AvailableFact,
     Fact,
     FactDefinition,
     FactProblemKind,
@@ -20,8 +21,8 @@ from anta._advisory.facts.models import (
     FactSourceKind,
     FeatureFact,
     FeatureName,
+    FeatureRef,
     FeatureState,
-    FeatureValue,
     fact_field,
     facts_dataclass,
 )
@@ -31,23 +32,25 @@ if TYPE_CHECKING:
     from anta.models import AntaCommand
 
 
-class ExampleFactDefinition(FactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class ExampleFactDefinition(FeatureFact, FactDefinition["ExampleFactDefinition"]):
     """Concrete fact definition used to exercise the common model behavior."""
 
-    key = "feature.example"
-    label = "Example feature"
+    feature: ClassVar[FeatureRef] = FeatureName.SECURE_BOOT
+    key: ClassVar[str] = "feature.example"
+    label: ClassVar[str] = "Example feature"
 
     @classmethod
-    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[FeatureValue]:
+    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[ExampleFactDefinition]:
         """Return a stable value; derivation details are outside these model tests."""
         _ = device, commands
-        return cls.available(ENABLED, SOURCE)
+        return ENABLED.available(SOURCE)
 
 
 SOURCE = FactSource("show example", FactSourceKind.COMMAND)
 DEFINITION = ExampleFactDefinition
-ENABLED = FeatureValue(FeatureName.SECURE_BOOT, FeatureState.ENABLED)
-DISABLED = FeatureValue(FeatureName.SECURE_BOOT, FeatureState.DISABLED)
+ENABLED = ExampleFactDefinition(FeatureState.ENABLED)
+DISABLED = ExampleFactDefinition(FeatureState.DISABLED)
 
 
 def test_fact_field_retains_definition_and_declares_required_constructor_field() -> None:
@@ -57,10 +60,10 @@ def test_fact_field_retains_definition_and_declares_required_constructor_field()
     class DeclaredFacts(FactsBase):
         """Fact container with one required collected value."""
 
-        value: Fact[FeatureValue] = fact_field(DEFINITION)
+        value: Fact[ExampleFactDefinition] = fact_field(DEFINITION)
 
     declared_field = fields(DeclaredFacts)[0]
-    available = DEFINITION.available(ENABLED, SOURCE)
+    available = ENABLED.available(SOURCE)
 
     assert declared_field.default is MISSING
     assert declared_field.default_factory is MISSING
@@ -79,13 +82,13 @@ def test_facts_base_rejects_fields_without_fact_declaration() -> None:
         class MissingDeclarationFacts(FactsBase):
             """Fact container without a fact field specifier."""
 
-            value: Fact[FeatureValue]
+            value: Fact[ExampleFactDefinition]
 
     @dataclass(frozen=True, slots=True)
     class OrdinaryDataclassFacts(FactsBase):
         """Fact container using an ordinary dataclass field declaration."""
 
-        value: Fact[FeatureValue] = field(default_factory=lambda: DEFINITION.available(ENABLED, SOURCE))
+        value: Fact[ExampleFactDefinition] = field(default_factory=lambda: ENABLED.available(SOURCE))
 
     with pytest.raises(TypeError, match="must use @facts_dataclass"):
         OrdinaryDataclassFacts.definitions()
@@ -107,7 +110,7 @@ def test_facts_base_rejects_empty_and_non_init_fact_containers() -> None:
 
             # Valid raw metadata deliberately bypasses the public helper so validation
             # reaches the independent generated-initializer check.
-            value: Fact[FeatureValue] = field(init=False, metadata={"definition": DEFINITION})  # pylint: disable=invalid-field-call
+            value: Fact[ExampleFactDefinition] = field(init=False, metadata={"definition": DEFINITION})  # pylint: disable=invalid-field-call
 
 
 def test_facts_base_rejects_duplicate_definitions() -> None:
@@ -118,13 +121,13 @@ def test_facts_base_rejects_duplicate_definitions() -> None:
         class DuplicateFacts(FactsBase):
             """Fact container that declares one definition under two names."""
 
-            first: Fact[FeatureValue] = fact_field(DEFINITION)
-            second: Fact[FeatureValue] = fact_field(DEFINITION)
+            first: Fact[ExampleFactDefinition] = fact_field(DEFINITION)
+            second: Fact[ExampleFactDefinition] = fact_field(DEFINITION)
 
 
 def test_fact_definition_constructs_available_and_unavailable_facts() -> None:
     """Retain typed identity, normalized values, provenance, and problem quality."""
-    available = DEFINITION.available(ENABLED, SOURCE)
+    available = ENABLED.available(SOURCE)
     unavailable = DEFINITION.unavailable(FactProblemKind.MISSING, SOURCE)
 
     assert available.definition is DEFINITION
@@ -133,6 +136,16 @@ def test_fact_definition_constructs_available_and_unavailable_facts() -> None:
     assert unavailable.definition is DEFINITION
     assert unavailable.problem is FactProblemKind.MISSING
     assert unavailable.source is SOURCE
+
+
+def test_fact_wrappers_reject_non_nominal_values() -> None:
+    """Reject manual wrappers and contradictory observations that bypass nominal construction."""
+    with pytest.raises(TypeError, match="must be FactDefinition instances"):
+        AvailableFact(value=cast("Any", "not a nominal fact"), source=SOURCE)
+
+    observations = cast("tuple[ExampleFactDefinition, ...]", ("first", "second"))
+    with pytest.raises(TypeError, match="must be instances of ExampleFactDefinition"):
+        DEFINITION.unavailable(FactProblemKind.CONTRADICTORY, SOURCE, observations=observations)
 
 
 def test_feature_fact_requires_feature_identity() -> None:

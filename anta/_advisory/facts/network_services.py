@@ -130,7 +130,7 @@ class VrrpFact(FeatureFact, CommandsFactDefinition["VrrpFact"]):
         (command,) = commands
         configured, _ = _vrrp_state(command.text_output)
         state = FeatureState.ENABLED if configured else FeatureState.DISABLED
-        return cls.available(cls(state), _source(command))
+        return cls(state).available(_source(command))
 
 
 @dataclass(frozen=True, slots=True)
@@ -148,7 +148,7 @@ class VrrpV2IpAhFact(FeatureFact, CommandsFactDefinition["VrrpV2IpAhFact"]):
         (command,) = commands
         _, exposed = _vrrp_state(command.text_output)
         state = FeatureState.ENABLED if exposed else FeatureState.DISABLED
-        return cls.available(cls(state), _source(command))
+        return cls(state).available(_source(command))
 
 
 @dataclass(frozen=True, slots=True)
@@ -168,7 +168,7 @@ class VrrpAntiReplayFact(FeatureFact, CommandsFactDefinition["VrrpAntiReplayFact
         if any(line != "vrrp ipv4 authentication anti-replay" for line in lines):
             return cls.unavailable(FactProblemKind.MALFORMED, _source(command))
         state = FeatureState.ENABLED if lines else FeatureState.DISABLED
-        return cls.available(cls(state), _source(command))
+        return cls(state).available(_source(command))
 
 
 @dataclass(frozen=True, slots=True)
@@ -186,11 +186,11 @@ class DhcpRelayActiveFact(FeatureFact, CommandsFactDefinition["DhcpRelayActiveFa
         (command,) = commands
         source = _source(command)
         if is_unsupported_optional_command(command):
-            return cls.available(cls(FeatureState.UNSUPPORTED), source)
+            return cls(FeatureState.UNSUPPORTED).available(source)
         active = _required_bool(command.json_output, "activeState")
         if isinstance(active, FactProblemKind):
             return cls.unavailable(active, source)
-        return cls.available(cls(FeatureState.ENABLED if active else FeatureState.DISABLED), source)
+        return cls(FeatureState.ENABLED if active else FeatureState.DISABLED).available(source)
 
 
 def _parse_dhcp_relay_scope(output: str) -> DhcpRelayScope | None:
@@ -230,13 +230,13 @@ class DhcpRelayScopeFact(CommandsFactDefinition["DhcpRelayScopeFact"]):
         (command,) = commands
         source = _source(command)
         if is_unsupported_optional_command(command) or "DHCP relay is not active" in command.text_output:
-            return cls.available(cls(()), source)
+            return cls(()).available(source)
         if "DHCP relay is active" not in command.text_output:
             problem = FactProblemKind.MISSING if not command.text_output.strip() else FactProblemKind.MALFORMED
             return cls.unavailable(problem, source)
         if (scope := _parse_dhcp_relay_scope(command.text_output)) is None:
             return cls.unavailable(FactProblemKind.MISSING, source)
-        return cls.available(cls(scope.interfaces), source)
+        return cls(scope.interfaces).available(source)
 
 
 def _parse_ip_locking_family(data: Mapping[str, object], family: IpAddressFamily, prefix: str) -> IpAddressFamily | FactProblemKind | None:
@@ -305,13 +305,13 @@ class IpLockingMitigationFact(MitigationFact, CommandsFactDefinition["IpLockingM
         (command,) = commands
         source = _source(command)
         if is_unsupported_optional_command(command):
-            return cls.available(cls(MitigationState.INEFFECTIVE), source)
+            return cls(MitigationState.INEFFECTIVE).available(source)
         if isinstance((parsed := _parse_ip_locking_coverage(command.json_output)), FactProblemKind):
             return cls.unavailable(parsed, source)
         active, coverage = parsed
         effective = active and any(scope.families for scope in (*coverage.interfaces, *coverage.vlans))
         state = MitigationState.EFFECTIVE if effective else MitigationState.INEFFECTIVE
-        return cls.available(cls(state), source)
+        return cls(state).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -330,11 +330,11 @@ class IpLockingCoverageFact(CommandsFactDefinition["IpLockingCoverageFact"]):
         (command,) = commands
         source = _source(command)
         if is_unsupported_optional_command(command):
-            return cls.available(cls((), ()), source)
+            return cls((), ()).available(source)
         if isinstance((parsed := _parse_ip_locking_coverage(command.json_output)), FactProblemKind):
             return cls.unavailable(parsed, source)
         _, coverage = parsed
-        return cls.available(cls(coverage.interfaces, coverage.vlans), source)
+        return cls(coverage.interfaces, coverage.vlans).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -354,7 +354,7 @@ class DhcpReplySourceValidationFact(FeatureFact, CommandsFactDefinition["DhcpRep
         if any(line != "reply source-address validation" for line in lines):
             return cls.unavailable(FactProblemKind.MALFORMED, _source(command))
         state = FeatureState.ENABLED if lines else FeatureState.DISABLED
-        return cls.available(cls(state), _source(command))
+        return cls(state).available(_source(command))
 
 
 def _dhcp_option82_config_exposed(config: str) -> bool:
@@ -397,22 +397,22 @@ class DhcpOption82Fact(FeatureFact, CommandsFactDefinition["DhcpOption82Fact"]):
         """Evaluate the three source-defined exposure alternatives."""
         config_command, relay_command = commands
         if _dhcp_option82_config_exposed(config_command.text_output):
-            return cls.available(cls(FeatureState.ENABLED), _source(config_command))
+            return cls(FeatureState.ENABLED).available(_source(config_command))
         if is_unsupported_optional_command(relay_command):
-            return cls.available(cls(FeatureState.DISABLED), _source(relay_command))
+            return cls(FeatureState.DISABLED).available(_source(relay_command))
 
         output = relay_command.json_output
         active = _required_bool(output, "activeState")
         if isinstance(active, FactProblemKind):
             return cls.unavailable(active, _source(relay_command))
         if active is False:
-            return cls.available(cls(FeatureState.DISABLED), _source(relay_command))
+            return cls(FeatureState.DISABLED).available(_source(relay_command))
         option82 = _required_bool(output, "option82")
         if isinstance(option82, FactProblemKind):
             return cls.unavailable(option82, _source(relay_command))
         if option82 is False:
-            return cls.available(cls(FeatureState.DISABLED), _source(relay_command))
-        return cls.available(cls(FeatureState.ENABLED), _source(relay_command))
+            return cls(FeatureState.DISABLED).available(_source(relay_command))
+        return cls(FeatureState.ENABLED).available(_source(relay_command))
 
 
 @dataclass(frozen=True, slots=True)
@@ -431,7 +431,7 @@ class MlagDualPrimaryErrdisableFact(FeatureFact, CommandsFactDefinition["MlagDua
         (command,) = commands
         source = _source(command)
         if is_unsupported_optional_command(command):
-            return cls.available(cls(FeatureState.UNSUPPORTED), source)
+            return cls(FeatureState.UNSUPPORTED).available(source)
         output = command.json_output
         domain_id = output.get("domainId")
         peer_link = output.get("peerLink")
@@ -439,7 +439,7 @@ class MlagDualPrimaryErrdisableFact(FeatureFact, CommandsFactDefinition["MlagDua
         if any(value is not None and not isinstance(value, str) for value in (domain_id, peer_link, heartbeat_peer)):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         if not domain_id or not peer_link or heartbeat_peer in (None, "", "0.0.0.0"):  # noqa: S104 - EOS uses 0.0.0.0 for an unset heartbeat address
-            return cls.available(cls(FeatureState.DISABLED), source)
+            return cls(FeatureState.DISABLED).available(source)
         detail = output.get("detail")
         if not isinstance(detail, Mapping):
             problem = FactProblemKind.MISSING if detail is None else FactProblemKind.MALFORMED
@@ -447,14 +447,14 @@ class MlagDualPrimaryErrdisableFact(FeatureFact, CommandsFactDefinition["MlagDua
         detection_delay = detail.get("dualPrimaryDetectionDelay")
         action = detail.get("dualPrimaryAction")
         if detection_delay is None and action is None:
-            return cls.available(cls(FeatureState.DISABLED), source)
+            return cls(FeatureState.DISABLED).available(source)
         if detection_delay is None or action is None:
             return cls.unavailable(FactProblemKind.MISSING, source)
         if isinstance(detection_delay, bool) or not isinstance(detection_delay, int) or not isinstance(action, str):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         errdisable_all = action == "errdisableAllInterfaces"
         state = FeatureState.ENABLED if errdisable_all else FeatureState.DISABLED
-        return cls.available(cls(state), source)
+        return cls(state).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -472,10 +472,10 @@ class MlagConfiguredFact(FeatureFact, CommandsFactDefinition["MlagConfiguredFact
         (command,) = commands
         source = _source(command)
         if is_unsupported_optional_command(command):
-            return cls.available(cls(FeatureState.UNSUPPORTED), source)
+            return cls(FeatureState.UNSUPPORTED).available(source)
         configured_values = tuple(command.json_output.get(field) for field in ("domainId", "localInterface", "peerAddress", "peerLink"))
         if any(value is not None and not isinstance(value, str) for value in configured_values):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         configured = all(configured_values)
         state = FeatureState.ENABLED if configured else FeatureState.DISABLED
-        return cls.available(cls(state), source)
+        return cls(state).available(source)

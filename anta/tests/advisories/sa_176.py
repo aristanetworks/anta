@@ -37,7 +37,7 @@ from anta._advisory.findings.projection import project_vulnerability_result
 from anta._advisory.models import _AdvisoryMetadata, _AdvisoryVulnerability, _AdvisoryVulnerabilitySeverity
 from anta._advisory.optional_commands import OptionalCommandsMixin
 from anta._advisory.remediation import FixedRelease, software_version_plan
-from anta._eos.platform import PlatformComponentIdentity, PlatformFamily, PlatformIdentity, PlatformType
+from anta._eos.platform import PlatformFamily, PlatformType
 from anta._eos.version import EOSVersion
 from anta.decorators import preview_test_class
 
@@ -70,8 +70,8 @@ VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 # pylint: disable-next=too-many-return-statements
 def _assess_platform(  # noqa: PLR0911
-    platform: Fact[PlatformIdentity],
-    switch_card: Fact[PlatformComponentIdentity],
+    platform: Fact[PlatformIdentityFact],
+    switch_card: Fact[SwitchCardIdentityFact],
 ) -> tuple[VulnerabilityResult | None, PlatformAssessment | None]:
     """Return a terminal platform result or the affected platform context."""
     if not isinstance(switch_card, UnavailableFact):
@@ -98,9 +98,9 @@ def _assess_platform(  # noqa: PLR0911
 
 
 def _assess_sa176(
-    version: Fact[EOSVersion],
-    platform: Fact[PlatformIdentity],
-    switch_card: Fact[PlatformComponentIdentity],
+    version: Fact[EosVersionFact],
+    platform: Fact[PlatformIdentityFact],
+    switch_card: Fact[SwitchCardIdentityFact],
     loose_urpf: Fact[LooseUrpfFact],
 ) -> VulnerabilityResult:
     """Assess EOS, platform, and loose-uRPF exposure."""
@@ -146,9 +146,9 @@ class SA176(OptionalCommandsMixin, _AntaAdvisoryTest):
     class Facts(FactsBase):
         """Collected facts required to assess the advisory."""
 
-        version: Fact[EOSVersion] = fact_field(EosVersionFact)
-        platform: Fact[PlatformIdentity] = fact_field(PlatformIdentityFact)
-        switch_card: Fact[PlatformComponentIdentity] = fact_field(SwitchCardIdentityFact)
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
+        platform: Fact[PlatformIdentityFact] = fact_field(PlatformIdentityFact)
+        switch_card: Fact[SwitchCardIdentityFact] = fact_field(SwitchCardIdentityFact)
         loose_urpf: Fact[LooseUrpfFact] = fact_field(LooseUrpfFact)
 
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY

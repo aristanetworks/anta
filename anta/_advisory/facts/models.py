@@ -61,7 +61,12 @@ class FactSource:
 
 
 class FactDefinition(ABC, Generic[T]):
-    """Typed identity, display label, and derivation contract for one fact."""
+    """Identity and derivation contract shared by every nominal fact class.
+
+    Concrete definitions are also the dataclass type of their collected value.
+    Their generic argument names that same concrete class so ``derive`` and
+    ``unavailable`` preserve it through the observation wrappers.
+    """
 
     key: ClassVar[str]
     label: ClassVar[str]
@@ -73,13 +78,15 @@ class FactDefinition(ABC, Generic[T]):
             msg = "Fact keys and labels must be non-empty and single-line"
             raise ValueError(msg)
 
-    @classmethod
-    def available(cls, value: T, source: FactSource) -> AvailableFact[T]:
-        """Create an available observation of this fact.
+    def available(self, source: FactSource) -> AvailableFact[Self]:
+        """Create an available observation from this nominal fact instance.
 
-        TODO: Once all fact values are nominal, move available-observation construction onto the fact instance to avoid passing an instance of `cls`.
+        Construction lives on the value so callers cannot pair one fact
+        definition with an instance of another fact class. ``AvailableFact``
+        derives its definition from the runtime value type instead of storing a
+        second identity that could disagree.
         """
-        return AvailableFact(definition=cls, value=value, source=source)
+        return AvailableFact(value=self, source=source)
 
     @classmethod
     def unavailable(cls, problem: FactProblemKind, source: FactSource, *, observations: tuple[T, ...] = ()) -> UnavailableFact[T]:
@@ -99,16 +106,26 @@ class FactDefinition(ABC, Generic[T]):
 
 @dataclass(frozen=True, slots=True)
 class AvailableFact(Generic[T_co]):
-    """A typed fact whose normalized value is known."""
+    """An observation containing one known nominal fact value."""
 
-    definition: type[FactDefinition[T_co]]
     value: T_co
     source: FactSource
+
+    def __post_init__(self) -> None:
+        """Reject manually assembled available values that are not nominal facts."""
+        if not isinstance(self.value, FactDefinition):
+            msg = "Available fact values must be FactDefinition instances"
+            raise TypeError(msg)
+
+    @property
+    def definition(self) -> type[FactDefinition[T_co]]:
+        """Return the definition carried inherently by the nominal value class."""
+        return cast("type[FactDefinition[T_co]]", type(self.value))
 
 
 @dataclass(frozen=True, slots=True)
 class UnavailableFact(Generic[T_co]):
-    """A requested typed fact whose normalized value cannot be established."""
+    """A requested nominal fact whose value could not be established."""
 
     definition: type[FactDefinition[T_co]]
     problem: FactProblemKind
@@ -116,6 +133,12 @@ class UnavailableFact(Generic[T_co]):
     observations: tuple[T_co, ...] = ()
 
     def __post_init__(self) -> None:
+        if not isinstance(self.definition, type) or not issubclass(self.definition, FactDefinition):
+            msg = "Unavailable facts require a FactDefinition subclass"
+            raise TypeError(msg)
+        if any(not isinstance(observation, self.definition) for observation in self.observations):
+            msg = f"Unavailable fact observations must be instances of {self.definition.__name__}"
+            raise TypeError(msg)
         if self.problem is FactProblemKind.CONTRADICTORY and len(self.observations) < MIN_CONTRADICTORY_OBSERVATIONS:
             msg = "Contradictory facts must retain at least two observations"
             raise ValueError(msg)
@@ -234,6 +257,16 @@ class FactsBase:
         return cls._definitions
 
     @classmethod
+    def required_commands(cls) -> tuple[AntaCommand, ...]:
+        """Return every declared fact command in field declaration order.
+
+        Commands are intentionally not deduplicated. Two fact definitions may
+        require distinct command wrappers with the same EOS command UID, and
+        each definition must receive the response collected for its own field.
+        """
+        return tuple(command for definition in cls.definitions().values() for command in definition.required_commands())
+
+    @classmethod
     def collect(cls, collector: _AntaAdvisoryTest) -> Self:
         """Collect every cached definition and construct the concrete container.
 
@@ -241,12 +274,19 @@ class FactsBase:
         is supplied explicitly. The dynamic loop cannot preserve each field's
         distinct generic parameter internally, so this boundary relies on the
         validated declaration and the type-checker contract of ``fact_field``.
+        Each definition receives exactly its own contiguous command slice in
+        declaration order; command-based definitions independently validate the
+        count and identity of that slice before parsing it.
         Returning ``Self`` preserves the concrete nested ``Facts`` type and its
         precisely typed fields at the call site.
         """
         facts = {}
+        command_offset = 0
         for name, definition in cls.definitions().items():
-            facts[name] = collector.fact(definition)
+            command_count = len(definition.required_commands())
+            commands = tuple(collector.instance_commands[command_offset : command_offset + command_count])
+            facts[name] = definition.derive(collector.device, commands)
+            command_offset += command_count
         return cls(**facts)
 
 
@@ -344,14 +384,6 @@ class FeatureFact:
             raise TypeError(msg)
 
 
-@dataclass(frozen=True, slots=True)
-class FeatureValue:
-    """Legacy non-nominal state of one EOS feature."""
-
-    feature: FeatureRef
-    state: FeatureState
-
-
 class ConfigurationState(str, Enum):
     """Observed configuration state."""
 
@@ -373,14 +405,6 @@ class ConfigurationFact:
         if not isinstance(getattr(cls, "feature", None), (FeatureName, SubFeature)):
             msg = f"Class {cls.__module__}.{cls.__qualname__} must define 'feature' as a FeatureName or SubFeature"
             raise TypeError(msg)
-
-
-@dataclass(frozen=True, slots=True)
-class ConfigurationValue:
-    """Normalized configuration state for a feature or subfeature."""
-
-    feature: FeatureRef
-    state: ConfigurationState
 
 
 class CredentialSyntaxState(str, Enum):
@@ -409,22 +433,6 @@ class CredentialSyntaxFact:
 
 
 @dataclass(frozen=True, slots=True)
-class CredentialSyntaxValue:
-    """Normalized credential-syntax state for a feature or subfeature."""
-
-    feature: FeatureRef
-    state: CredentialSyntaxState
-
-
-@dataclass(frozen=True, slots=True)
-class ComponentSoftwareVersion:
-    """Normalized version of an EOS software component."""
-
-    component: str
-    version: str
-
-
-@dataclass(frozen=True, slots=True)
 class ComponentSoftwareFact:
     """Common version and class-level component identity for a nominal software fact."""
 
@@ -444,25 +452,3 @@ class MitigationFact:
     """Common effectiveness state for a nominal mitigation fact."""
 
     state: MitigationState
-
-
-@dataclass(frozen=True, slots=True)
-class MitigationValue:
-    """Normalized effectiveness of a mitigation fact."""
-
-    state: MitigationState
-
-
-class IndicatorState(str, Enum):
-    """Observed state of an advisory-relevant indicator."""
-
-    PRESENT = "present"
-    ABSENT = "absent"
-
-
-@dataclass(frozen=True, slots=True)
-class IndicatorValue:
-    """Normalized state of one advisory-relevant indicator."""
-
-    indicator: str
-    state: IndicatorState

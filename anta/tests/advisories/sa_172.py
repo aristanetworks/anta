@@ -63,7 +63,7 @@ _EXPECTED_OBSERVATION_COUNT = 2
 
 
 def _assess_sa172(
-    version: Fact[EOSVersion],
+    version: Fact[EosVersionFact],
     current: Fact[Ospfv3ConfiguredFact],
     legacy: Fact[LegacyOspfv3ConfiguredFact],
     ipsec_authentication: Fact[Ospfv3IpsecAuthenticationFact],
@@ -120,7 +120,7 @@ class SA172(OptionalCommandsMixin, _AntaAdvisoryTest):
     class Facts(FactsBase):
         """Collected facts required to assess the advisory."""
 
-        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
         current: Fact[Ospfv3ConfiguredFact] = fact_field(Ospfv3ConfiguredFact)
         legacy: Fact[LegacyOspfv3ConfiguredFact] = fact_field(LegacyOspfv3ConfiguredFact)
         ipsec_authentication: Fact[Ospfv3IpsecAuthenticationFact] = fact_field(Ospfv3IpsecAuthenticationFact)

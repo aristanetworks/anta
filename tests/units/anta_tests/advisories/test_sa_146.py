@@ -591,27 +591,24 @@ class TestSA146Assessment(unittest.TestCase):
             if enabled is None:
                 return typed_definition.unavailable(FactProblemKind.MALFORMED, SOURCE)
             state = FeatureState.ENABLED if enabled else FeatureState.DISABLED
-            return typed_definition.available(cast("ServiceFactT", definition(state)), SOURCE)
+            return cast("ServiceFactT", definition(state)).available(SOURCE)
 
         def mitigation(definition: type[MitigationFactT], enabled: bool | None) -> Fact[MitigationFactT]:
             typed_definition = cast("type[FactDefinition[MitigationFactT]]", definition)
             if enabled is None:
                 return typed_definition.unavailable(FactProblemKind.MISSING, SOURCE)
             state = MitigationState.EFFECTIVE if enabled else MitigationState.INEFFECTIVE
-            return typed_definition.available(cast("MitigationFactT", definition(state)), SOURCE)
+            return cast("MitigationFactT", definition(state)).available(SOURCE)
 
         if arguments["eos_affected"] is None:
-            eos_version: Fact[EOSVersion] = EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
+            eos_version: Fact[EosVersionFact] = EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
         else:
             parsed_eos_version = parse_eos_version("4.35.5M" if arguments["eos_affected"] else "4.35.6M").unwrap()
-            eos_version = EosVersionFact.available(parsed_eos_version, SOURCE)
+            eos_version = EosVersionFact.from_version(parsed_eos_version).available(SOURCE)
         terminattr_version = (
             TerminAttrVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
             if arguments["terminattr_affected"] is None
-            else TerminAttrVersionFact.available(
-                TerminAttrVersionFact("v1.45.0" if arguments["terminattr_affected"] else "v1.45.1"),
-                SOURCE,
-            )
+            else TerminAttrVersionFact("v1.45.0" if arguments["terminattr_affected"] else "v1.45.1").available(SOURCE)
         )
         return _assess_sa146(
             (

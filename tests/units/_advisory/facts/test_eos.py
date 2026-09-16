@@ -43,7 +43,8 @@ def test_eos_version_fact_from_device_metadata(device: OfflineAntaDevice) -> Non
 
     assert isinstance(available, AvailableFact)
     assert available.definition is EosVersionFact
-    assert available.value is version
+    assert isinstance(available.value, EosVersionFact)
+    assert available.value == version
     assert available.source.name == "device metadata"
     assert isinstance(missing, UnavailableFact)
     assert missing.definition is EosVersionFact
@@ -74,6 +75,16 @@ def test_eos_version_fact_normalizes_device_version_protocol(device: OfflineAnta
 
     assert isinstance(fact, AvailableFact)
     assert fact.value == EOSVersion(4, 35, 1, suffix="F")
+
+
+def test_eos_version_fact_preserves_normalized_version_value_semantics() -> None:
+    """Keep nominal EOS facts equal and hash-compatible with normalized EOS versions."""
+    version = EOSVersion(4, 35, 1, suffix="F")
+    fact = EosVersionFact.from_version(version)
+
+    assert fact == version
+    assert version == fact
+    assert hash(fact) == hash(version)
 
 
 def test_eos_version_fact_rejects_invalid_device_version_protocol(device: OfflineAntaDevice) -> None:

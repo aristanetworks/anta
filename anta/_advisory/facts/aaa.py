@@ -84,7 +84,7 @@ class LevelZeroCommandAuthorizationFact(MitigationFact, CommandsFactDefinition["
                 applicable.append(tuple(match.group("methods").split()))
         effective = bool(applicable) and all("none" not in methods for methods in applicable)
         state = MitigationState.EFFECTIVE if effective else MitigationState.INEFFECTIVE
-        return cls.available(cls(state), source)
+        return cls(state).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -111,4 +111,4 @@ class LoginAuthenticationFact(FeatureFact, CommandsFactDefinition["LoginAuthenti
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         enabled = "none" not in {method.strip().lower() for method in methods}
         state = FeatureState.ENABLED if enabled else FeatureState.DISABLED
-        return cls.available(cls(state), source)
+        return cls(state).available(source)

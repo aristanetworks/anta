@@ -188,21 +188,21 @@ DATA: AntaUnitTestData = {
 }
 
 
-def version_fact(version: str | None) -> Fact[EOSVersion]:
+def version_fact(version: str | None) -> Fact[EosVersionFact]:
     """Build an EOS version fact for assessment tests."""
     if version is None:
         return EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
     parsed = parse_eos_version(version).unwrap()
-    return EosVersionFact.available(parsed, SOURCE)
+    return EosVersionFact.from_version(parsed).available(SOURCE)
 
 
 def trace_fact(definition: type[TraceFact], state: FeatureState) -> AvailableFact[TraceFact]:
     """Build one agent-trace fact."""
     if definition is ConfigAgentPrivateKeyTraceFact:
-        return definition.available(definition(state), SOURCE)
+        return definition(state).available(SOURCE)
     if definition is AaaPasswordTraceFact:
-        return definition.available(definition(state), SOURCE)
-    return AaaTacacsKeyTraceFact.available(AaaTacacsKeyTraceFact(state), SOURCE)
+        return definition(state).available(SOURCE)
+    return AaaTacacsKeyTraceFact(state).available(SOURCE)
 
 
 class TestSA153VersionMatrix(unittest.TestCase):
@@ -232,7 +232,7 @@ class TestSA153Assessment(unittest.TestCase):
     """Validate shared semantics through every vulnerability wrapper."""
 
     ASSESSMENTS = cast(
-        "tuple[tuple[Callable[[Fact[EOSVersion], Fact[TraceFact]], object], str, type[TraceFact]], ...]",
+        "tuple[tuple[Callable[[Fact[EosVersionFact], Fact[TraceFact]], object], str, type[TraceFact]], ...]",
         (
             (_assess_private_key, PRIVATE_KEY_ID, ConfigAgentPrivateKeyTraceFact),
             (_assess_password, PASSWORD_ID, AaaPasswordTraceFact),

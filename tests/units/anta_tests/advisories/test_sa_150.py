@@ -240,22 +240,22 @@ DATA: AntaUnitTestData = {
 }
 
 
-def version_fact(value: str) -> Fact[EOSVersion]:
+def version_fact(value: str) -> Fact[EosVersionFact]:
     """Build an EOS version fact."""
     parsed = parse_eos_version(value).unwrap()
-    return EosVersionFact.available(parsed, SOURCE)
+    return EosVersionFact.from_version(parsed).available(SOURCE)
 
 
-def platform_fact(value: str) -> AvailableFact[PlatformIdentity]:
+def platform_fact(value: str) -> AvailableFact[PlatformIdentityFact]:
     """Build a platform fact."""
     platform = build_eos_platform(value)
     assert platform is not None
-    return PlatformIdentityFact.available(platform, SOURCE)
+    return PlatformIdentityFact.from_identity(platform).available(SOURCE)
 
 
 def dot1x_fact(state: FeatureState) -> AvailableFact[Dot1xControlledAuthenticatorFact]:
     """Build an 802.1X fact."""
-    return Dot1xControlledAuthenticatorFact.available(Dot1xControlledAuthenticatorFact(state), SOURCE)
+    return Dot1xControlledAuthenticatorFact(state).available(SOURCE)
 
 
 class TestSA150VersionMatrices(unittest.TestCase):

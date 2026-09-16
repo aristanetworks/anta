@@ -91,22 +91,22 @@ DATA: AntaUnitTestData = {
 }
 
 
-def version_fact(value: str) -> Fact[EOSVersion]:
+def version_fact(value: str) -> Fact[EosVersionFact]:
     """Build an EOS version fact."""
     parsed = parse_eos_version(value).unwrap()
-    return EosVersionFact.available(parsed, SOURCE)
+    return EosVersionFact.from_version(parsed).available(SOURCE)
 
 
 def platform_fact(value: str):  # noqa: ANN201
     """Build a platform fact."""
     platform = build_eos_platform(value)
     assert platform is not None
-    return PlatformIdentityFact.available(platform, SOURCE)
+    return PlatformIdentityFact.from_identity(platform).available(SOURCE)
 
 
 def acl_fact(state: ConfigurationState):  # noqa: ANN201
     """Build a shared SVI ingress ACL fact."""
-    return SharedSviIngressAclFact.available(SharedSviIngressAclFact(state), SOURCE)
+    return SharedSviIngressAclFact(state).available(SOURCE)
 
 
 class TestSA151Assessment(unittest.TestCase):

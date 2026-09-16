@@ -129,7 +129,7 @@ class SshServerFact(FeatureFact, CommandsFactDefinition["SshServerFact"]):
         if enabled is None:
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         state = FeatureState.ENABLED if enabled else FeatureState.DISABLED
-        return cls.available(cls(state), source)
+        return cls(state).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -153,4 +153,4 @@ class StrictHostKeyCheckingFact(MitigationFact, CommandsFactDefinition["StrictHo
         if enabled is None:
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         state = MitigationState.EFFECTIVE if enabled else MitigationState.INEFFECTIVE
-        return cls.available(cls(state), source)
+        return cls(state).available(source)

@@ -98,7 +98,7 @@ FeatureFactT = TypeVar("FeatureFactT", bound=FeatureFact)
 
 def _assess_ospfv2_issue(
     vulnerability_id: str,
-    version: Fact[EOSVersion],
+    version: Fact[EosVersionFact],
     prerequisite: Fact[FeatureFactT],
     affected_versions: tuple[VersionRule, ...],
     fixed_releases: tuple[FixedRelease, ...],
@@ -135,7 +135,7 @@ def _assess_ospfv2_issue(
 
 
 def _assess_broadcast_issue(
-    version: Fact[EOSVersion],
+    version: Fact[EosVersionFact],
     prerequisite: Fact[Ospfv2BroadcastAuthenticationFact],
     configuration: Fact[Ospfv2ProcessConfiguredFact],
     hotfix: Fact[SA171HotfixFact],
@@ -167,7 +167,7 @@ def _assess_broadcast_issue(
 
 
 def _assess_inactive_broadcast_issue(
-    version: Fact[EOSVersion],
+    version: Fact[EosVersionFact],
     configuration: Fact[Ospfv2ProcessConfiguredFact],
     hotfix: Fact[SA171HotfixFact],
 ) -> VulnerabilityResult:
@@ -246,7 +246,7 @@ class SA171(OptionalCommandsMixin, _AntaAdvisoryTest):
     class Facts(FactsBase):
         """Collected facts required to assess the advisory."""
 
-        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
         broadcast_authentication: Fact[Ospfv2BroadcastAuthenticationFact] = fact_field(Ospfv2BroadcastAuthenticationFact)
         ospfv2_configuration: Fact[Ospfv2ProcessConfiguredFact] = fact_field(Ospfv2ProcessConfiguredFact)
         segment_routing: Fact[Ospfv2SegmentRoutingFact] = fact_field(Ospfv2SegmentRoutingFact)

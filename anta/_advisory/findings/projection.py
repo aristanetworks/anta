@@ -11,15 +11,11 @@ from typing_extensions import assert_never
 
 from anta._advisory.facts.models import (
     ComponentSoftwareFact,
-    ComponentSoftwareVersion,
     ConfigurationFact,
-    ConfigurationValue,
     FactProblemKind,
     FactSourceKind,
     FeatureName,
-    IndicatorValue,
     MitigationFact,
-    MitigationValue,
     SubFeature,
 )
 from anta._advisory.findings.models import (
@@ -49,7 +45,7 @@ def _render_evidence(evidence: FindingEvidence) -> str:
     """Render one typed piece of finding evidence as a factual clause."""
     if isinstance(evidence, (EosReleaseAssessment, ComponentVersionAssessment)):
         value = evidence.fact.value
-        if isinstance(value, (ComponentSoftwareFact, ComponentSoftwareVersion)):
+        if isinstance(value, ComponentSoftwareFact):
             rendered = f"{value.component} '{value.version}' is {evidence.relation.value}"
         else:
             rendered = f"{evidence.fact.definition.label} '{value}' is {evidence.relation.value}"
@@ -59,14 +55,12 @@ def _render_evidence(evidence: FindingEvidence) -> str:
             rendered = f"{component.role.value.replace('_', ' ')} '{component.model}' is {evidence.relation.value}"
         else:
             rendered = f"platform '{evidence.fact.value.model}' is {evidence.relation.value}"
-    elif isinstance(evidence.value, (MitigationFact, MitigationValue)):
+    elif isinstance(evidence.value, MitigationFact):
         rendered = f"{evidence.definition.label} is {evidence.value.state.value}"
-    elif isinstance(evidence.value, IndicatorValue):
-        rendered = f"the {evidence.value.indicator} is {evidence.value.state.value}"
     else:
         feature = evidence.value.feature
         feature_name = f"{feature.parent.value} {feature.name}" if isinstance(feature, SubFeature) else feature.value
-        if isinstance(evidence.value, (ConfigurationFact, ConfigurationValue)):
+        if isinstance(evidence.value, ConfigurationFact):
             rendered = f"the {feature_name} configuration is {evidence.value.state.value}"
         else:
             suffix = " feature" if isinstance(feature, FeatureName) else ""
@@ -103,7 +97,7 @@ def _join_clauses(clauses: tuple[str, ...]) -> str:
     return f"{', '.join(clauses[:-1])}, and {clauses[-1]}"
 
 
-def _render_mitigation(mitigation: AvailableFact[MitigationFact | MitigationValue]) -> str:
+def _render_mitigation(mitigation: AvailableFact[MitigationFact]) -> str:
     """Render one observed mitigation as a factual clause."""
     return f"{mitigation.definition.label} is {mitigation.value.state.value}"
 

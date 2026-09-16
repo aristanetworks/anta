@@ -55,7 +55,7 @@ ADVISORY = _AdvisoryMetadata(
 VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
-def _assess_sa165(version: Fact[EOSVersion], credentialz: Fact[GnsiCredentialzFact]) -> VulnerabilityResult:
+def _assess_sa165(version: Fact[EosVersionFact], credentialz: Fact[GnsiCredentialzFact]) -> VulnerabilityResult:
     """Assess EOS scope and gNSI Credentialz exposure."""
     if not isinstance(credentialz, UnavailableFact) and credentialz.value.state is not FeatureState.ENABLED:
         return NotAffectedResult(vulnerability_id=VULNERABILITY_ID, decisive=(credentialz,))
@@ -94,7 +94,7 @@ class SA165(OptionalCommandsMixin, _AntaAdvisoryTest):
     class Facts(FactsBase):
         """Collected facts required to assess the advisory."""
 
-        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
         credentialz: Fact[GnsiCredentialzFact] = fact_field(GnsiCredentialzFact)
 
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY

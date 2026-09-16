@@ -56,7 +56,7 @@ ADVISORY = _AdvisoryMetadata(
 VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
-def _assess_sa166(version: Fact[EOSVersion], gnmi: Fact[GnmiTransportFact]) -> VulnerabilityResult:
+def _assess_sa166(version: Fact[EosVersionFact], gnmi: Fact[GnmiTransportFact]) -> VulnerabilityResult:
     """Assess EOS scope and enabled gNMI transport exposure."""
     if not isinstance(gnmi, UnavailableFact) and gnmi.value.state is not FeatureState.ENABLED:
         return NotAffectedResult(vulnerability_id=VULNERABILITY_ID, decisive=(gnmi,))
@@ -95,7 +95,7 @@ class SA166(OptionalCommandsMixin, _AntaAdvisoryTest):
     class Facts(FactsBase):
         """Collected facts required to assess the advisory."""
 
-        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
         gnmi: Fact[GnmiTransportFact] = fact_field(GnmiTransportFact)
 
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY

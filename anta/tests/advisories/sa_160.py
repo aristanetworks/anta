@@ -77,7 +77,7 @@ FeatureFactT = TypeVar("FeatureFactT", bound=FeatureFact)
 
 def _assess_isis_issue(
     vulnerability_id: str,
-    version: Fact[EOSVersion],
+    version: Fact[EosVersionFact],
     prerequisite: Fact[FeatureFactT],
     affected_versions: tuple[VersionRule, ...],
     fixed_releases: tuple[FixedRelease, ...],
@@ -99,7 +99,7 @@ def _assess_isis_issue(
 
 
 def _assess_broadcast_issue(
-    version: Fact[EOSVersion],
+    version: Fact[EosVersionFact],
     interface: Fact[IsisNonPassiveBroadcastInterfaceFact],
     isis: Fact[IsisConfiguredFact],
 ) -> VulnerabilityResult:
@@ -158,7 +158,7 @@ class SA160(OptionalCommandsMixin, _AntaAdvisoryTest):
     class Facts(FactsBase):
         """Collected facts required to assess the advisory."""
 
-        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
         broadcast_interface: Fact[IsisNonPassiveBroadcastInterfaceFact] = fact_field(IsisNonPassiveBroadcastInterfaceFact)
         isis: Fact[IsisConfiguredFact] = fact_field(IsisConfiguredFact)
         graceful_restart: Fact[IsisGracefulRestartFact] = fact_field(IsisGracefulRestartFact)

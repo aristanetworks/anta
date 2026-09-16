@@ -75,7 +75,7 @@ class TerminAttrGrpcFact(FeatureFact, CommandsFactDefinition["TerminAttrGrpcFact
         if is_unsupported_optional_command(config):
             return cls.unavailable(FactProblemKind.UNSUPPORTED, source)
         if _terminattr_grpc_arguments(config.text_output) is None:
-            return cls.available(cls(FeatureState.DISABLED), source)
+            return cls(FeatureState.DISABLED).available(source)
         if is_unsupported_optional_command(daemon):
             return cls.unavailable(FactProblemKind.UNSUPPORTED, source)
         daemons = daemon.json_output.get("daemons")
@@ -83,10 +83,10 @@ class TerminAttrGrpcFact(FeatureFact, CommandsFactDefinition["TerminAttrGrpcFact
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         terminattr = daemons.get("TerminAttr")
         if terminattr is None:
-            return cls.available(cls(FeatureState.DISABLED), source)
+            return cls(FeatureState.DISABLED).available(source)
         if not isinstance(terminattr, Mapping) or not isinstance((enabled := terminattr.get("enabled")), bool):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
-        return cls.available(cls(FeatureState.ENABLED if enabled else FeatureState.DISABLED), source)
+        return cls(FeatureState.ENABLED if enabled else FeatureState.DISABLED).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -106,4 +106,4 @@ class TerminAttrMtlsFact(MitigationFact, CommandsFactDefinition["TerminAttrMtlsF
         arguments = _terminattr_grpc_arguments(command.text_output)
         effective = arguments is not None and all(_has_argument(arguments, flag) for flag in ("certfile", "keyfile", "clientcafile"))
         state = MitigationState.EFFECTIVE if effective else MitigationState.INEFFECTIVE
-        return cls.available(cls(state), source)
+        return cls(state).available(source)

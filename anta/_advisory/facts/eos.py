@@ -27,14 +27,43 @@ if TYPE_CHECKING:
     from anta.device import AntaDevice
 
 
-class EosVersionFact(FactDefinition[EOSVersion]):
+@dataclass(frozen=True, eq=False)
+class EosVersionFact(EOSVersion, FactDefinition["EosVersionFact"]):
     """Derive the normalized EOS version from refreshed device metadata."""
 
-    key = "eos.version"
-    label = "EOS version"
+    key: ClassVar[str] = "eos.version"
+    label: ClassVar[str] = "EOS version"
 
     @classmethod
-    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[EOSVersion]:
+    def from_version(cls, version: EOSVersion) -> EosVersionFact:
+        """Create the nominal fact value from an already normalized EOS version."""
+        return cls(version.major, version.minor, version.patch, version.suffix, version.hotfix)
+
+    def __eq__(self, other: object) -> bool:
+        """Compare release components with any normalized EOS version.
+
+        ``EOSVersion`` is a dataclass whose generated equality otherwise rejects
+        subclasses. A nominal fact remains an EOS version and is passed to
+        remediation/version APIs, so equality must preserve that value contract.
+        """
+        if not isinstance(other, EOSVersion):
+            return NotImplemented
+        return (self.major, self.minor, self.patch, self.hotfix, self.suffix) == (
+            other.major,
+            other.minor,
+            other.patch,
+            other.hotfix,
+            other.suffix,
+        )
+
+    def __hash__(self) -> int:
+        """Hash the same release components used by equality."""
+        # Match the field order used by the generated ``EOSVersion.__hash__`` so
+        # equal base and nominal values remain interchangeable as mapping keys.
+        return hash((self.major, self.minor, self.patch, self.suffix, self.hotfix))
+
+    @classmethod
+    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[EosVersionFact]:
         """Normalize the device version into an EOS version fact."""
         _ = commands
         source = FactSource("device metadata", FactSourceKind.DEVICE_METADATA)
@@ -44,7 +73,7 @@ class EosVersionFact(FactDefinition[EOSVersion]):
         version = device_version if isinstance(device_version, EOSVersion) else parse_eos_version(str(device_version)).unwrap_or_none()
         if version is None:
             return cls.unavailable(FactProblemKind.INVALID, source)
-        return cls.available(version, source)
+        return cls.from_version(version).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -69,7 +98,7 @@ class SecureBootFact(FeatureFact, CommandsFactDefinition["SecureBootFact"]):
         boot_output = command.json_output
         source = FactSource(command.command, FactSourceKind.COMMAND)
         if not boot_output:
-            return cls.available(cls(FeatureState.UNSUPPORTED), source)
+            return cls(FeatureState.UNSUPPORTED).available(source)
 
         supported = boot_output.get("securebootSupported")
         enabled = boot_output.get("securebootEnabled")
@@ -84,11 +113,11 @@ class SecureBootFact(FeatureFact, CommandsFactDefinition["SecureBootFact"]):
                 ),
             )
         if supported is False:
-            return cls.available(cls(FeatureState.UNSUPPORTED), source)
+            return cls(FeatureState.UNSUPPORTED).available(source)
         if enabled is False:
-            return cls.available(cls(FeatureState.DISABLED), source)
+            return cls(FeatureState.DISABLED).available(source)
         if supported is True and enabled is True:
-            return cls.available(cls(FeatureState.ENABLED), source)
+            return cls(FeatureState.ENABLED).available(source)
 
         values = (supported, enabled)
         problem = FactProblemKind.MISSING if any(value is None for value in values) else FactProblemKind.MALFORMED

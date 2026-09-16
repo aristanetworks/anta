@@ -8,7 +8,7 @@ from __future__ import annotations
 import re
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, ClassVar, Generic, TypeVar, cast
+from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeVar, cast
 
 from anta._advisory.facts.models import (
     CommandsFactDefinition,
@@ -208,7 +208,7 @@ def _has_segment_security_redirect(output: object) -> bool | None:
     return False
 
 
-RedirectFactT = TypeVar("RedirectFactT", bound=ConfigurationFact)
+RedirectFactT = TypeVar("RedirectFactT", bound="RedirectConfigurationFact[Any]")
 
 
 class RedirectConfigurationFact(CommandsFactDefinition[RedirectFactT], Generic[RedirectFactT]):
@@ -220,11 +220,11 @@ class RedirectConfigurationFact(CommandsFactDefinition[RedirectFactT], Generic[R
         source = FactSource(command.command, FactSourceKind.COMMAND)
         typed_cls = cast("type[ConfigurationFact]", cls)
         if is_unsupported_optional_command(command):
-            return cls.available(cast("RedirectFactT", typed_cls(ConfigurationState.NOT_CONFIGURED)), source)
+            return cast("RedirectFactT", typed_cls(ConfigurationState.NOT_CONFIGURED)).available(source)
         if state is None:
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         value = ConfigurationState.CONFIGURED if state else ConfigurationState.NOT_CONFIGURED
-        return cls.available(cast("RedirectFactT", typed_cls(value)), source)
+        return cast("RedirectFactT", typed_cls(value)).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -328,4 +328,4 @@ class MtuDropMitigationFact(MitigationFact, CommandsFactDefinition["MtuDropMitig
             return cls.unavailable(FactProblemKind.UNSUPPORTED, source)
         configured = any(line.strip() == MTU_DROP_COMMAND for line in command.text_output.splitlines())
         state = MitigationState.EFFECTIVE if configured else MitigationState.INEFFECTIVE
-        return cls.available(cls(state), source)
+        return cls(state).available(source)

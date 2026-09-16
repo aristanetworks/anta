@@ -120,7 +120,7 @@ def _is_openssh_before_10_4(version_string: str) -> bool | None:
 def _assess_client_issue(  # noqa: PLR0911
     *,
     vulnerability_id: str,
-    eos_version: Fact[EOSVersion],
+    eos_version: Fact[EosVersionFact],
     affected_versions: tuple[VersionRule, ...],
     package_version: Fact[OpenSshClientVersionFact],
     fixed_releases: tuple[FixedRelease, ...] = (),
@@ -164,7 +164,7 @@ def _assess_client_issue(  # noqa: PLR0911
 def _assess_server_issue(  # noqa: PLR0911
     *,
     vulnerability_id: str,
-    eos_version: Fact[EOSVersion],
+    eos_version: Fact[EosVersionFact],
     affected_versions: tuple[VersionRule, ...],
     package_version: Fact[OpenSshServerVersionFact],
     ssh_server: Fact[SshServerFact],
@@ -221,7 +221,7 @@ class SA147(OptionalCommandsMixin, _AntaAdvisoryTest):
     class Facts(FactsBase):
         """Collected facts required to assess the advisory."""
 
-        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
         client_version: Fact[OpenSshClientVersionFact] = fact_field(OpenSshClientVersionFact)
         server_version: Fact[OpenSshServerVersionFact] = fact_field(OpenSshServerVersionFact)
         ssh_server: Fact[SshServerFact] = fact_field(SshServerFact)

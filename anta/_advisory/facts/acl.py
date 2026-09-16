@@ -114,4 +114,4 @@ class SharedSviIngressAclFact(ConfigurationFact, CommandsFactDefinition["SharedS
         state = _shared_svi_acl_state(command.text_output)
         if state is None:
             return cls.unavailable(FactProblemKind.MALFORMED, source)
-        return cls.available(cls(state), source)
+        return cls(state).available(source)

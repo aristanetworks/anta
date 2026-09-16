@@ -85,7 +85,7 @@ def _known_feature(fact: Fact[FeatureFact], state: FeatureState) -> bool:
 
 # pylint: disable-next=too-many-return-statements
 def _assess_sa174(  # noqa: PLR0911
-    version: Fact[EOSVersion],
+    version: Fact[EosVersionFact],
     p4_runtime: Fact[P4RuntimeFact],
     mtls: Fact[P4RuntimeMtlsFact],
     p4_accounting: Fact[P4RuntimeAccountingFact],
@@ -106,7 +106,7 @@ def _assess_sa174(  # noqa: PLR0911
     if mtls.value.state is not FeatureState.ENABLED:
         return AffectedResult(
             vulnerability_id=VULNERABILITY_ID,
-            conditions=(p4_runtime, AffectedFeatureState(mtls.definition, mtls.value, mtls.source)),
+            conditions=(p4_runtime, AffectedFeatureState(mtls.value, mtls.source)),
             context=(eos_release,),
             remediation=remediation,
         )
@@ -137,7 +137,7 @@ def _assess_sa174(  # noqa: PLR0911
         )
     return AffectedResult(
         vulnerability_id=VULNERABILITY_ID,
-        conditions=(p4_runtime, mtls, *enabled_accounting, AffectedFeatureState(authz.definition, authz.value, authz.source)),
+        conditions=(p4_runtime, mtls, *enabled_accounting, AffectedFeatureState(authz.value, authz.source)),
         context=(eos_release,),
         remediation=remediation,
     )
@@ -166,7 +166,7 @@ class SA174(OptionalCommandsMixin, _AntaAdvisoryTest):
     class Facts(FactsBase):
         """Collected facts required to assess the advisory."""
 
-        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
         p4_runtime: Fact[P4RuntimeFact] = fact_field(P4RuntimeFact)
         mtls: Fact[P4RuntimeMtlsFact] = fact_field(P4RuntimeMtlsFact)
         p4_accounting: Fact[P4RuntimeAccountingFact] = fact_field(P4RuntimeAccountingFact)

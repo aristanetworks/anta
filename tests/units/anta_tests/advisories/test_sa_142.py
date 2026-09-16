@@ -96,9 +96,9 @@ def redirect_fact(
     source: FactSource,
 ) -> AvailableFact[ConfigurationFact]:
     """Build one concrete redirect-configuration fact."""
-    typed_definition = cast("type[FactDefinition[ConfigurationFact]]", definition)
     typed_value = cast("type[ConfigurationFact]", definition)(state)
-    return typed_definition.available(typed_value, source)
+    typed_fact = cast("FactDefinition[Any]", typed_value)
+    return cast("AvailableFact[ConfigurationFact]", typed_fact.available(source))
 
 
 def pbr_output(*, attached: bool = True) -> dict[str, Any]:
@@ -496,17 +496,20 @@ class TestSA142PlatformScope(unittest.TestCase):
     """Validate precise and accepted conservative platform qualification."""
 
     def test_platform_fact_uses_refreshed_platform_identity(self) -> None:
-        """Do not reconstruct advisory platform facts from the legacy hardware model."""
+        """Build a nominal platform fact from refreshed metadata rather than the legacy hardware model."""
         device = OfflineAntaDevice("unit-test")
         device.hw_model = "DCS-7050SX3-48YC12-F"
 
         missing = PlatformIdentityFact.derive(device)
         assert isinstance(missing, UnavailableFact)
 
-        device.platform = platform_identity("DCS-7050SX3-48YC12-F")
+        platform = platform_identity("DCS-7050SX3-48YC12-F")
+        assert platform is not None
+        device.platform = platform
         available = PlatformIdentityFact.derive(device)
         assert isinstance(available, AvailableFact)
-        assert available.value is device.platform
+        assert isinstance(available.value, PlatformIdentityFact)
+        assert available.value.model == platform.model
 
     def test_platform_fact_rejects_non_eos_platform_identity(self) -> None:
         """Return invalid evidence for a generic platform identity instead of raising at assessment time."""
@@ -640,9 +643,9 @@ class TestSA142Assessment(unittest.TestCase):
     precise_platform = "DCS-7050SX3-48YC12-F"
     conservative_platform = "DCS-7508N"
     source = FactSource("unit test", FactSourceKind.DEVICE_METADATA)
-    affected_version = EosVersionFact.available(EOSVersion(4, 35, 3, suffix="M"), source)
-    conditional_fixed_version = EosVersionFact.available(EOSVersion(4, 35, 4, suffix="M"), source)
-    outside_scope_version = EosVersionFact.available(EOSVersion(4, 37, 0, suffix="F"), source)
+    affected_version = EosVersionFact(4, 35, 3, suffix="M").available(source)
+    conditional_fixed_version = EosVersionFact(4, 35, 4, suffix="M").available(source)
+    outside_scope_version = EosVersionFact(4, 37, 0, suffix="F").available(source)
     missing_version = EosVersionFact.unavailable(FactProblemKind.MISSING, source)
     invalid_version = EosVersionFact.unavailable(FactProblemKind.INVALID, source)
 
@@ -650,7 +653,7 @@ class TestSA142Assessment(unittest.TestCase):
         self,
         states: tuple[bool | None, ...],
         *,
-        version: Fact[EOSVersion],
+        version: Fact[EosVersionFact],
         platform: str | None = precise_platform,
         mitigation: bool = False,
         mitigation_unsupported: bool = False,
@@ -669,18 +672,15 @@ class TestSA142Assessment(unittest.TestCase):
             for definition, state in zip(definitions, states, strict=True)
         )
         platform_value = platform_identity(platform)
-        platform_fact: Fact[PlatformIdentity] = (
+        platform_fact: Fact[PlatformIdentityFact] = (
             PlatformIdentityFact.unavailable(FactProblemKind.MISSING, self.source)
             if platform_value is None
-            else PlatformIdentityFact.available(platform_value, self.source)
+            else PlatformIdentityFact.from_identity(platform_value).available(self.source)
         )
         mitigation_fact = (
             MtuDropMitigationFact.unavailable(FactProblemKind.UNSUPPORTED, self.source)
             if mitigation_unsupported
-            else MtuDropMitigationFact.available(
-                MtuDropMitigationFact(MitigationState.EFFECTIVE if mitigation else MitigationState.INEFFECTIVE),
-                self.source,
-            )
+            else MtuDropMitigationFact(MitigationState.EFFECTIVE if mitigation else MitigationState.INEFFECTIVE).available(self.source)
         )
         return _assess_sa142(
             path_facts,

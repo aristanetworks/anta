@@ -58,7 +58,7 @@ VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
 def _assess_sa152(
-    version: Fact[EOSVersion],
+    version: Fact[EosVersionFact],
     login_authentication: Fact[LoginAuthenticationFact],
     password_service: Fact[PasswordManagementServiceFact],
 ) -> VulnerabilityResult:
@@ -108,7 +108,7 @@ class SA152(OptionalCommandsMixin, _AntaAdvisoryTest):
     class Facts(FactsBase):
         """Collected facts required to assess the advisory."""
 
-        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
         login_authentication: Fact[LoginAuthenticationFact] = fact_field(LoginAuthenticationFact)
         password_service: Fact[PasswordManagementServiceFact] = fact_field(PasswordManagementServiceFact)
 

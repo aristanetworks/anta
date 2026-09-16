@@ -73,7 +73,7 @@ TraceFactT = TypeVar("TraceFactT", bound=FeatureFact)
 
 def _assess_sa153_issue(
     vulnerability_id: str,
-    version: Fact[EOSVersion],
+    version: Fact[EosVersionFact],
     risky_trace: Fact[TraceFactT],
 ) -> VulnerabilityResult:
     """Assess one independent trace-driven exposure."""
@@ -96,7 +96,7 @@ def _assess_sa153_issue(
 
 
 def _assess_private_key(
-    version: Fact[EOSVersion],
+    version: Fact[EosVersionFact],
     risky_trace: Fact[ConfigAgentPrivateKeyTraceFact],
 ) -> VulnerabilityResult:
     """Assess private-key exposure in ConfigAgent logs."""
@@ -104,7 +104,7 @@ def _assess_private_key(
 
 
 def _assess_password(
-    version: Fact[EOSVersion],
+    version: Fact[EosVersionFact],
     risky_trace: Fact[AaaPasswordTraceFact],
 ) -> VulnerabilityResult:
     """Assess user-password exposure in Aaa logs."""
@@ -112,7 +112,7 @@ def _assess_password(
 
 
 def _assess_tacacs_key(
-    version: Fact[EOSVersion],
+    version: Fact[EosVersionFact],
     risky_trace: Fact[AaaTacacsKeyTraceFact],
 ) -> VulnerabilityResult:
     """Assess TACACS+ shared-key exposure in Aaa logs."""
@@ -141,7 +141,7 @@ class SA153(OptionalCommandsMixin, _AntaAdvisoryTest):
     class Facts(FactsBase):
         """Collected facts required to assess the advisory."""
 
-        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
         private_key_trace: Fact[ConfigAgentPrivateKeyTraceFact] = fact_field(ConfigAgentPrivateKeyTraceFact)
         password_trace: Fact[AaaPasswordTraceFact] = fact_field(AaaPasswordTraceFact)
         tacacs_key_trace: Fact[AaaTacacsKeyTraceFact] = fact_field(AaaTacacsKeyTraceFact)

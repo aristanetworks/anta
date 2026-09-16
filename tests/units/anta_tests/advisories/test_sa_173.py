@@ -208,27 +208,27 @@ DATA: AntaUnitTestData = {
 }
 
 
-def version_fact(version: str | None) -> Fact[EOSVersion]:
+def version_fact(version: str | None) -> Fact[EosVersionFact]:
     """Build an EOS version fact for assessment tests."""
     if version is None:
         return EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
     parsed = parse_eos_version(version).unwrap()
-    return EosVersionFact.available(parsed, SOURCE)
+    return EosVersionFact.from_version(parsed).available(SOURCE)
 
 
 def ospfv3_fact(definition: type[FeatureFactT], state: FeatureState) -> AvailableFact[FeatureFactT]:
     """Build one current or legacy OSPFv3 configuration fact."""
-    return cast("AvailableFact[FeatureFactT]", definition.available(cast("FeatureFactT", definition(state)), SOURCE))
+    return cast("AvailableFact[FeatureFactT]", cast("FeatureFactT", definition(state)).available(SOURCE))
 
 
 def authentication_fact(state: MitigationState) -> AvailableFact[Ospfv3IpsecAuthenticationFact]:
     """Build an OSPFv3 IPsec authentication fact."""
-    return Ospfv3IpsecAuthenticationFact.available(Ospfv3IpsecAuthenticationFact(state), SOURCE)
+    return Ospfv3IpsecAuthenticationFact(state).available(SOURCE)
 
 
 def hotfix_fact(state: MitigationState) -> AvailableFact[SA173HotfixFact]:
     """Build a persistent SA173 hotfix fact."""
-    return SA173HotfixFact.available(SA173HotfixFact(state), SOURCE)
+    return SA173HotfixFact(state).available(SOURCE)
 
 
 class TestSA173VersionMatrix(unittest.TestCase):

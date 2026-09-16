@@ -322,12 +322,12 @@ class Ospfv3ConfiguredFact(FeatureFact, CommandsFactDefinition["Ospfv3Configured
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
         if is_unsupported_optional_command(command):
-            return cls.available(cls(FeatureState.UNSUPPORTED), source)
+            return cls(FeatureState.UNSUPPORTED).available(source)
         configured = _ospfv3_process_configured(command.json_output)
         if isinstance(configured, FactProblemKind):
             return cls.unavailable(configured, source)
         state = FeatureState.ENABLED if configured else FeatureState.DISABLED
-        return cls.available(cls(state), source)
+        return cls(state).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -345,12 +345,12 @@ class LegacyOspfv3ConfiguredFact(FeatureFact, CommandsFactDefinition["LegacyOspf
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
         if is_unsupported_optional_command(command):
-            return cls.available(cls(FeatureState.UNSUPPORTED), source)
+            return cls(FeatureState.UNSUPPORTED).available(source)
         configured = _legacy_ospfv3_process_configured(command.json_output)
         if isinstance(configured, FactProblemKind):
             return cls.unavailable(configured, source)
         state = FeatureState.ENABLED if configured else FeatureState.DISABLED
-        return cls.available(cls(state), source)
+        return cls(state).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -460,15 +460,15 @@ class Ospfv2BroadcastAuthenticationFact(FeatureFact, CommandsFactDefinition["Osp
         interface_command, summary_command = commands
         interface_source = FactSource(interface_command.command, FactSourceKind.COMMAND)
         if is_unsupported_optional_command(interface_command):
-            return cls.available(cls(FeatureState.UNSUPPORTED), interface_source)
+            return cls(FeatureState.UNSUPPORTED).available(interface_source)
         interfaces = _ospfv2_interfaces(interface_command.text_output)
         if interfaces is None:
             return cls.unavailable(FactProblemKind.MALFORMED, interface_source)
         candidates = tuple(interface for interface in interfaces if interface.broadcast)
         if not candidates:
-            return cls.available(cls(FeatureState.DISABLED), interface_source)
+            return cls(FeatureState.DISABLED).available(interface_source)
         if any(interface.cryptographic_authentication for interface in candidates):
-            return cls.available(cls(FeatureState.ENABLED), interface_source)
+            return cls(FeatureState.ENABLED).available(interface_source)
         summary_source = FactSource(summary_command.command, FactSourceKind.COMMAND)
         if is_unsupported_optional_command(summary_command):
             return cls.unavailable(FactProblemKind.UNSUPPORTED, summary_source)
@@ -481,7 +481,7 @@ class Ospfv2BroadcastAuthenticationFact(FeatureFact, CommandsFactDefinition["Osp
         if not exposed and not candidate_areas.issubset(observed_areas):
             return cls.unavailable(FactProblemKind.MISSING, summary_source)
         state = FeatureState.ENABLED if exposed else FeatureState.DISABLED
-        return cls.available(cls(state), summary_source)
+        return cls(state).available(summary_source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -501,7 +501,7 @@ class Ospfv2ProcessConfiguredFact(ConfigurationFact, CommandsFactDefinition["Osp
         if is_unsupported_optional_command(command):
             return cls.unavailable(FactProblemKind.UNSUPPORTED, source)
         state = ConfigurationState.CONFIGURED if command.text_output.strip() else ConfigurationState.NOT_CONFIGURED
-        return cls.available(cls(state), source)
+        return cls(state).available(source)
 
 
 def _ospfv2_segment_routing_enabled(output: Mapping[str, object]) -> bool | FactProblemKind:
@@ -544,11 +544,11 @@ class Ospfv2SegmentRoutingFact(FeatureFact, CommandsFactDefinition["Ospfv2Segmen
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
         if is_unsupported_optional_command(command):
-            return cls.available(cls(FeatureState.UNSUPPORTED), source)
+            return cls(FeatureState.UNSUPPORTED).available(source)
         enabled = _ospfv2_segment_routing_enabled(command.json_output)
         if isinstance(enabled, FactProblemKind):
             return cls.unavailable(enabled, source)
-        return cls.available(cls(FeatureState.ENABLED if enabled else FeatureState.DISABLED), source)
+        return cls(FeatureState.ENABLED if enabled else FeatureState.DISABLED).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -566,7 +566,7 @@ class IsisNonPassiveBroadcastInterfaceFact(FeatureFact, CommandsFactDefinition["
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
         if is_unsupported_optional_command(command):
-            return cls.available(cls(FeatureState.UNSUPPORTED), source)
+            return cls(FeatureState.UNSUPPORTED).available(source)
         instances = _isis_instances(command.json_output)
         if isinstance(instances, FactProblemKind):
             return cls.unavailable(instances, source)
@@ -574,7 +574,7 @@ class IsisNonPassiveBroadcastInterfaceFact(FeatureFact, CommandsFactDefinition["
         if isinstance(exposed, FactProblemKind):
             return cls.unavailable(exposed, source)
         state = FeatureState.ENABLED if exposed else FeatureState.DISABLED
-        return cls.available(cls(state), source)
+        return cls(state).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -592,7 +592,7 @@ class IsisConfiguredFact(FeatureFact, CommandsFactDefinition["IsisConfiguredFact
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
         if is_unsupported_optional_command(command):
-            return cls.available(cls(FeatureState.UNSUPPORTED), source)
+            return cls(FeatureState.UNSUPPORTED).available(source)
         instances = _isis_instances(command.json_output)
         if isinstance(instances, FactProblemKind):
             return cls.unavailable(instances, source)
@@ -609,7 +609,7 @@ class IsisConfiguredFact(FeatureFact, CommandsFactDefinition["IsisConfiguredFact
         if not enabled and problem is not None:
             return cls.unavailable(problem, source)
         state = FeatureState.ENABLED if enabled else FeatureState.DISABLED
-        return cls.available(cls(state), source)
+        return cls(state).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -627,7 +627,7 @@ class IsisGracefulRestartFact(FeatureFact, CommandsFactDefinition["IsisGracefulR
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
         if is_unsupported_optional_command(command):
-            return cls.available(cls(FeatureState.UNSUPPORTED), source)
+            return cls(FeatureState.UNSUPPORTED).available(source)
         instances = _isis_instances(command.json_output)
         if isinstance(instances, FactProblemKind):
             return cls.unavailable(instances, source)
@@ -644,7 +644,7 @@ class IsisGracefulRestartFact(FeatureFact, CommandsFactDefinition["IsisGracefulR
         if not enabled and problem is not None:
             return cls.unavailable(problem, source)
         state = FeatureState.ENABLED if enabled else FeatureState.DISABLED
-        return cls.available(cls(state), source)
+        return cls(state).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -668,7 +668,7 @@ class Ospfv3IpsecAuthenticationFact(MitigationFact, CommandsFactDefinition["Ospf
         scopes, interfaces, areas = security
         effective = bool(scopes) and all(scope.interface in interfaces or (scope.vrf, scope.family, scope.area) in areas for scope in scopes)
         state = MitigationState.EFFECTIVE if effective else MitigationState.INEFFECTIVE
-        return cls.available(cls(state), config_source)
+        return cls(state).available(config_source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -691,7 +691,7 @@ class PimSparseModeFact(FeatureFact, CommandsFactDefinition["PimSparseModeFact"]
         if any(line not in PIM_SPARSE_MODE_COMMANDS for line in lines):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         state = FeatureState.ENABLED if lines else FeatureState.DISABLED
-        return cls.available(cls(state), source)
+        return cls(state).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -712,7 +712,7 @@ class LooseUrpfFact(FeatureFact, CommandsFactDefinition["LooseUrpfFact"]):
         if any(LOOSE_URPF_PATTERN.fullmatch(line) is None for line in lines):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         state = FeatureState.ENABLED if lines else FeatureState.DISABLED
-        return cls.available(cls(state), source)
+        return cls(state).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -737,7 +737,7 @@ class BfdAuthenticationFact(FeatureFact, CommandsFactDefinition["BfdAuthenticati
             if not isinstance(admin_down, bool):
                 return cls.unavailable(FactProblemKind.MISSING if admin_down is None else FactProblemKind.MALFORMED, summary_source)
             if admin_down:
-                return cls.available(cls(FeatureState.DISABLED), summary_source)
+                return cls(FeatureState.DISABLED).available(summary_source)
 
             for command in (global_config, interface_config):
                 source = FactSource(command.command, FactSourceKind.COMMAND)
@@ -751,4 +751,4 @@ class BfdAuthenticationFact(FeatureFact, CommandsFactDefinition["BfdAuthenticati
                 return cls.unavailable(FactProblemKind.MALFORMED, FactSource(interface_config.command, FactSourceKind.COMMAND))
             state = FeatureState.ENABLED if global_configured or interface_configured else FeatureState.DISABLED
             source_command = global_config if global_configured else interface_config if interface_configured else summary
-        return cls.available(cls(state), FactSource(source_command.command, FactSourceKind.COMMAND))
+        return cls(state).available(FactSource(source_command.command, FactSourceKind.COMMAND))

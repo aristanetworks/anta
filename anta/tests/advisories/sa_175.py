@@ -56,7 +56,7 @@ ADVISORY = _AdvisoryMetadata(
 VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
-def _assess_sa175(version: Fact[EOSVersion], sparse_mode: Fact[PimSparseModeFact]) -> VulnerabilityResult:
+def _assess_sa175(version: Fact[EosVersionFact], sparse_mode: Fact[PimSparseModeFact]) -> VulnerabilityResult:
     """Assess EOS applicability and PIM sparse-mode exposure."""
     if not isinstance(sparse_mode, UnavailableFact) and sparse_mode.value.state is not FeatureState.ENABLED:
         return NotAffectedResult(vulnerability_id=VULNERABILITY_ID, decisive=(sparse_mode,))
@@ -96,7 +96,7 @@ class SA175(OptionalCommandsMixin, _AntaAdvisoryTest):
     class Facts(FactsBase):
         """Collected facts required to assess the advisory."""
 
-        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
         sparse_mode: Fact[PimSparseModeFact] = fact_field(PimSparseModeFact)
 
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY

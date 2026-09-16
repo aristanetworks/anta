@@ -115,25 +115,25 @@ DATA: AntaUnitTestData = {
 }
 
 
-def version_fact(version: str | None) -> Fact[EOSVersion]:
+def version_fact(version: str | None) -> Fact[EosVersionFact]:
     """Build an EOS version fact."""
     if version is None:
         return EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
-    return EosVersionFact.available(parse_eos_version(version).unwrap(), SOURCE)
+    return EosVersionFact.from_version(parse_eos_version(version).unwrap()).available(SOURCE)
 
 
-def platform_fact(model: str | None) -> Fact[PlatformIdentity]:
+def platform_fact(model: str | None) -> Fact[PlatformIdentityFact]:
     """Build a platform identity fact."""
     if model is None:
         return PlatformIdentityFact.unavailable(FactProblemKind.MISSING, SOURCE)
     platform = build_eos_platform(model)
     assert platform is not None
-    return PlatformIdentityFact.available(platform, SOURCE)
+    return PlatformIdentityFact.from_identity(platform).available(SOURCE)
 
 
 def feature_fact(definition: type[FeatureFactT], state: FeatureState) -> Fact[FeatureFactT]:
     """Build one available feature fact."""
-    return cast("Fact[FeatureFactT]", definition.available(cast("FeatureFactT", definition(state)), SOURCE))
+    return cast("Fact[FeatureFactT]", cast("FeatureFactT", definition(state)).available(SOURCE))
 
 
 class TestSA177Assessment(unittest.TestCase):

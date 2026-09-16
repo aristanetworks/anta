@@ -140,36 +140,36 @@ DATA: AntaUnitTestData = {
 }
 
 
-def version_fact(version: str | None) -> Fact[EOSVersion]:
+def version_fact(version: str | None) -> Fact[EosVersionFact]:
     """Build an EOS version fact for assessment tests."""
     if version is None:
         return EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
     parsed = parse_eos_version(version).unwrap()
-    return EosVersionFact.available(parsed, SOURCE)
+    return EosVersionFact.from_version(parsed).available(SOURCE)
 
 
-def platform_fact(model: str | None) -> Fact[PlatformIdentity]:
+def platform_fact(model: str | None) -> Fact[PlatformIdentityFact]:
     """Build a platform identity fact."""
     if model is None:
         return PlatformIdentityFact.unavailable(FactProblemKind.MISSING, SOURCE)
     platform = build_eos_platform(model)
     assert platform is not None
-    return PlatformIdentityFact.available(platform, SOURCE)
+    return PlatformIdentityFact.from_identity(platform).available(SOURCE)
 
 
-def switch_card_fact(model: str | None) -> Fact[PlatformComponentIdentity]:
+def switch_card_fact(model: str | None) -> Fact[SwitchCardIdentityFact]:
     """Build a switch-card identity fact."""
     if model is None:
         return SwitchCardIdentityFact.unavailable(FactProblemKind.MISSING, SOURCE)
     platform = build_eos_platform("7368-F", modules(model))
     assert platform is not None
     switch_card = next(module for module in platform.modules if module.model == model)
-    return SwitchCardIdentityFact.available(switch_card, SOURCE)
+    return SwitchCardIdentityFact.from_identity(switch_card).available(SOURCE)
 
 
 def loose_urpf_fact(state: FeatureState) -> AvailableFact[LooseUrpfFact]:
     """Build a loose-uRPF feature fact."""
-    return LooseUrpfFact.available(LooseUrpfFact(state), SOURCE)
+    return LooseUrpfFact(state).available(SOURCE)
 
 
 class TestSA176VersionMatrix(unittest.TestCase):

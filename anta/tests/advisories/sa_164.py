@@ -62,7 +62,7 @@ VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
 def _assess_sa164(
-    version: Fact[EOSVersion],
+    version: Fact[EosVersionFact],
     gnmi_transport: Fact[GnmiTransportFact],
     pathz: Fact[GnsiPathzFact],
     policy_overlap: Fact[GnsiPathzPolicyOverlapFact],
@@ -119,7 +119,7 @@ class SA164(OptionalCommandsMixin, _AntaAdvisoryTest):
     class Facts(FactsBase):
         """Collected facts required to assess the advisory."""
 
-        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
         gnmi: Fact[GnmiTransportFact] = fact_field(GnmiTransportFact)
         pathz: Fact[GnsiPathzFact] = fact_field(GnsiPathzFact)
         policy_overlap: Fact[GnsiPathzPolicyOverlapFact] = fact_field(GnsiPathzPolicyOverlapFact)

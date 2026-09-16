@@ -68,7 +68,7 @@ VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
 def _assess_sa178(  # pylint: disable=too-many-return-statements
-    version: Fact[EOSVersion],
+    version: Fact[EosVersionFact],
     authentication: Fact[SnmpV3AuthenticationFact],
     credential_syntax: Fact[SnmpV3CredentialSyntaxFact],
 ) -> VulnerabilityResult:
@@ -137,7 +137,7 @@ class SA178(OptionalCommandsMixin, _AntaAdvisoryTest):
     class Facts(FactsBase):
         """Collected facts required to assess the advisory."""
 
-        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
         authentication: Fact[SnmpV3AuthenticationFact] = fact_field(SnmpV3AuthenticationFact)
         credential_syntax: Fact[SnmpV3CredentialSyntaxFact] = fact_field(SnmpV3CredentialSyntaxFact)
 

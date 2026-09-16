@@ -58,7 +58,7 @@ ADVISORY = _AdvisoryMetadata(
 VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
-def _assess_sa154(version: Fact[EOSVersion], bfd: Fact[BfdAuthenticationFact]) -> VulnerabilityResult:
+def _assess_sa154(version: Fact[EosVersionFact], bfd: Fact[BfdAuthenticationFact]) -> VulnerabilityResult:
     """Assess EOS applicability and configured BFD authentication exposure."""
     if not isinstance(bfd, UnavailableFact) and bfd.value.state is not FeatureState.ENABLED:
         return NotAffectedResult(vulnerability_id=VULNERABILITY_ID, decisive=(bfd,))
@@ -105,7 +105,7 @@ class SA154(OptionalCommandsMixin, _AntaAdvisoryTest):
         retains the runtime declaration consumed by ``FactsBase.collect``.
         """
 
-        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
         bfd_authentication: Fact[BfdAuthenticationFact] = fact_field(BfdAuthenticationFact)
 
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY

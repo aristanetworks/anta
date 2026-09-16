@@ -132,7 +132,7 @@ class ConfigAgentPrivateKeyTraceFact(FeatureFact, CommandsFactDefinition["Config
         """Normalize risky ConfigAgent private-key trace levels."""
         (command,) = commands
         result, source = _parse_agent_trace(command, agent="ConfigAgent", facility="MgmtSecuritySslCertKey", levels=(0, 3, 4))
-        return cls.available(cls(result), source) if isinstance(result, FeatureState) else cls.unavailable(result, source)
+        return cls(result).available(source) if isinstance(result, FeatureState) else cls.unavailable(result, source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -149,7 +149,7 @@ class AaaPasswordTraceFact(FeatureFact, CommandsFactDefinition["AaaPasswordTrace
         """Normalize the risky Aaa user-password trace level."""
         (command,) = commands
         result, source = _parse_agent_trace(command, agent="Aaa", facility="PyServer", levels=(4,))
-        return cls.available(cls(result), source) if isinstance(result, FeatureState) else cls.unavailable(result, source)
+        return cls(result).available(source) if isinstance(result, FeatureState) else cls.unavailable(result, source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -166,4 +166,4 @@ class AaaTacacsKeyTraceFact(FeatureFact, CommandsFactDefinition["AaaTacacsKeyTra
         """Normalize the risky Aaa TACACS+ shared-key trace level."""
         (command,) = commands
         result, source = _parse_agent_trace(command, agent="Aaa", facility="Tacacs", levels=(6,))
-        return cls.available(cls(result), source) if isinstance(result, FeatureState) else cls.unavailable(result, source)
+        return cls(result).available(source) if isinstance(result, FeatureState) else cls.unavailable(result, source)

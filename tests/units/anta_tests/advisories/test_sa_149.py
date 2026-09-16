@@ -23,7 +23,6 @@ from tests.units.anta_tests.advisories import build_expected_advisory_result
 from tests.units.anta_tests.advisories.fact_builders import assert_version_statuses, available_fact, eos_version_fact, unavailable_fact
 
 if TYPE_CHECKING:
-    from anta._eos.platform import PlatformIdentity
     from tests.units.anta_tests import AntaUnitTestData
 
 FIXED_RELEASES = (
@@ -45,11 +44,11 @@ RADIUS_PROXY = """radius proxy
 FeatureFactT = TypeVar("FeatureFactT", Dot1xDynamicAuthorizationFact, RadiusProxyDynamicAuthorizationFact)
 
 
-def platform_fact(model: str) -> AvailableFact[PlatformIdentity]:
+def platform_fact(model: str) -> AvailableFact[PlatformIdentityFact]:
     """Build normalized platform identity for direct assessment tests."""
     platform = build_eos_platform(model)
     assert platform is not None
-    return available_fact(PlatformIdentityFact, platform)
+    return available_fact(PlatformIdentityFact, PlatformIdentityFact.from_identity(platform))
 
 
 def sa149_feature_fact(definition: type[FeatureFactT], state: FeatureState) -> AvailableFact[FeatureFactT]:

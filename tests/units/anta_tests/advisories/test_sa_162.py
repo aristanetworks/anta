@@ -125,17 +125,17 @@ DATA: AntaUnitTestData = {
 }
 
 
-def version_fact(version: str | None) -> Fact[EOSVersion]:
+def version_fact(version: str | None) -> Fact[EosVersionFact]:
     """Build an EOS version fact for assessment tests."""
     if version is None:
         return EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
     parsed = parse_eos_version(version).unwrap()
-    return EosVersionFact.available(parsed, SOURCE)
+    return EosVersionFact.from_version(parsed).available(SOURCE)
 
 
 def feature_fact(definition: type[GnsiFactT], state: FeatureState) -> AvailableFact[GnsiFactT]:
     """Build a normalized gNSI subfeature fact."""
-    return cast("AvailableFact[GnsiFactT]", definition.available(cast("GnsiFactT", definition(state)), SOURCE))
+    return cast("AvailableFact[GnsiFactT]", cast("GnsiFactT", definition(state)).available(SOURCE))
 
 
 class TestSA162VersionMatrix(unittest.TestCase):

@@ -104,7 +104,7 @@ def _logging_remediation_plan(current_version: EOSVersion) -> RemediationPlan:
     )
 
 
-def _assess_bypass(version: Fact[EOSVersion], ip_ah: Fact[VrrpV2IpAhFact]) -> VulnerabilityResult:
+def _assess_bypass(version: Fact[EosVersionFact], ip_ah: Fact[VrrpV2IpAhFact]) -> VulnerabilityResult:
     """Assess the VRRPv2 IP-AH authentication-bypass issue."""
     if not isinstance(ip_ah, UnavailableFact) and ip_ah.value.state is not FeatureState.ENABLED:
         return NotAffectedResult(vulnerability_id=BYPASS_ID, decisive=(ip_ah,))
@@ -121,7 +121,7 @@ def _assess_bypass(version: Fact[EOSVersion], ip_ah: Fact[VrrpV2IpAhFact]) -> Vu
     )
 
 
-def _replay_version_relation(version: AvailableFact[EOSVersion]) -> VersionRelation:
+def _replay_version_relation(version: AvailableFact[EosVersionFact]) -> VersionRelation:
     """Classify releases requiring an update, the post-update setting, or neither."""
     if evaluate_version(version.value, AFFECTED_VERSION_MATRIX).affected_status is AffectedStatus.AFFECTED:
         return VersionRelation.AFFECTED
@@ -131,7 +131,7 @@ def _replay_version_relation(version: AvailableFact[EOSVersion]) -> VersionRelat
 
 
 def _assess_replay(  # noqa: PLR0911  # pylint: disable=too-many-return-statements
-    version: Fact[EOSVersion], ip_ah: Fact[VrrpV2IpAhFact], anti_replay: Fact[VrrpAntiReplayFact]
+    version: Fact[EosVersionFact], ip_ah: Fact[VrrpV2IpAhFact], anti_replay: Fact[VrrpAntiReplayFact]
 ) -> VulnerabilityResult:
     """Require both fixed software and explicitly enabled VRRP replay protection."""
     if not isinstance(ip_ah, UnavailableFact) and ip_ah.value.state is not FeatureState.ENABLED:
@@ -151,7 +151,7 @@ def _assess_replay(  # noqa: PLR0911  # pylint: disable=too-many-return-statemen
             return ErrorResult(vulnerability_id=REPLAY_ID, problems=(ip_ah,))
         return AffectedResult(
             vulnerability_id=REPLAY_ID,
-            conditions=(ip_ah, AffectedFeatureState(anti_replay.definition, anti_replay.value, anti_replay.source)),
+            conditions=(ip_ah, AffectedFeatureState(anti_replay.value, anti_replay.source)),
             context=(release,),
             remediation=RemediationPlan(ANTI_REPLAY_CONFIGURATION),
         )
@@ -161,7 +161,7 @@ def _assess_replay(  # noqa: PLR0911  # pylint: disable=too-many-return-statemen
     return AffectedResult(vulnerability_id=REPLAY_ID, conditions=(ip_ah,), context=(release,), remediation=plan)
 
 
-def _assess_logging(version: Fact[EOSVersion], vrrp: Fact[VrrpFact]) -> VulnerabilityResult:
+def _assess_logging(version: Fact[EosVersionFact], vrrp: Fact[VrrpFact]) -> VulnerabilityResult:
     """Assess the VRRP credential-logging issue."""
     if not isinstance(vrrp, UnavailableFact) and vrrp.value.state is not FeatureState.ENABLED:
         return NotAffectedResult(vulnerability_id=LOGGING_ID, decisive=(vrrp,))
@@ -204,7 +204,7 @@ class SA157(_AntaAdvisoryTest):
     class Facts(FactsBase):
         """Collected facts required to assess the advisory."""
 
-        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
         vrrp: Fact[VrrpFact] = fact_field(VrrpFact)
         ip_ah: Fact[VrrpV2IpAhFact] = fact_field(VrrpV2IpAhFact)
         anti_replay: Fact[VrrpAntiReplayFact] = fact_field(VrrpAntiReplayFact)

@@ -132,4 +132,4 @@ class PasswordManagementServiceFact(FeatureFact, CommandsFactDefinition["Passwor
         telnet_enabled = _enabled_in_configured_scope(telnet, all_vrfs_by_default=False)
         state = FeatureState.ENABLED if ssh_enabled or telnet_enabled else FeatureState.DISABLED
         source = FactSource(", ".join(command.command for command in commands), FactSourceKind.COMMAND)
-        return cls.available(cls(state), source)
+        return cls(state).available(source)

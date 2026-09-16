@@ -70,7 +70,9 @@ ADVISORY = _AdvisoryMetadata(
 VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
-def _assess_sa163(version: Fact[EOSVersion], exposure: Fact[GnmiMtlsAuthorizationFact], mitigation: Fact[LevelZeroCommandAuthorizationFact]) -> VulnerabilityResult:
+def _assess_sa163(
+    version: Fact[EosVersionFact], exposure: Fact[GnmiMtlsAuthorizationFact], mitigation: Fact[LevelZeroCommandAuthorizationFact]
+) -> VulnerabilityResult:
     """Assess EOS scope, exposed OpenConfig transport state, and the documented AAA mitigation."""
     if not isinstance(exposure, UnavailableFact) and exposure.value.state is not FeatureState.ENABLED:
         return NotAffectedResult(vulnerability_id=VULNERABILITY_ID, decisive=(exposure,))
@@ -120,7 +122,7 @@ class SA163(OptionalCommandsMixin, _AntaAdvisoryTest):
     class Facts(FactsBase):
         """Collected facts required to assess the advisory."""
 
-        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
         exposure: Fact[GnmiMtlsAuthorizationFact] = fact_field(GnmiMtlsAuthorizationFact)
         mitigation: Fact[LevelZeroCommandAuthorizationFact] = fact_field(LevelZeroCommandAuthorizationFact)
 

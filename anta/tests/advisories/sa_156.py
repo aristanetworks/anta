@@ -77,7 +77,7 @@ ADVISORY = _AdvisoryMetadata(
 VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
-def _version_relation(version: AvailableFact[EOSVersion]) -> VersionRelation:
+def _version_relation(version: AvailableFact[EosVersionFact]) -> VersionRelation:
     """Classify vulnerable, conditionally fixed, and outside-scope releases."""
     if evaluate_version(version.value, AFFECTED_VERSION_MATRIX).affected_status is AffectedStatus.AFFECTED:
         return VersionRelation.AFFECTED
@@ -113,7 +113,7 @@ def _ip_locking_covers_relay(relay: DhcpRelayScopeFact, coverage: IpLockingCover
     return True
 
 
-def _remediation(version: AvailableFact[EOSVersion], relation: VersionRelation) -> RemediationPlan:
+def _remediation(version: AvailableFact[EosVersionFact], relation: VersionRelation) -> RemediationPlan:
     """Build the remaining source-defined resolution for one affected device."""
     if relation is VersionRelation.CONDITIONAL_FIXED:
         return RemediationPlan(VALIDATION_CONFIGURATION)
@@ -121,7 +121,7 @@ def _remediation(version: AvailableFact[EOSVersion], relation: VersionRelation) 
 
 
 def _assess_sa156(  # noqa: C901, PLR0911  # pylint: disable=too-many-return-statements
-    version: Fact[EOSVersion],
+    version: Fact[EosVersionFact],
     relay: Fact[DhcpRelayActiveFact],
     validation: Fact[DhcpReplySourceValidationFact],
     ip_locking: Fact[IpLockingMitigationFact],
@@ -168,7 +168,7 @@ def _assess_sa156(  # noqa: C901, PLR0911  # pylint: disable=too-many-return-sta
         if isinstance(validation, AvailableFact):
             return AffectedResult(
                 vulnerability_id=VULNERABILITY_ID,
-                conditions=(relay, AffectedFeatureState(validation.definition, validation.value, validation.source)),
+                conditions=(relay, AffectedFeatureState(validation.value, validation.source)),
                 context=(release,),
                 remediation=_remediation(version, relation),
             )
@@ -208,7 +208,7 @@ class SA156(OptionalCommandsMixin, _AntaAdvisoryTest):
     class Facts(FactsBase):
         """Collected facts required to assess the advisory."""
 
-        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
         relay: Fact[DhcpRelayActiveFact] = fact_field(DhcpRelayActiveFact)
         validation: Fact[DhcpReplySourceValidationFact] = fact_field(DhcpReplySourceValidationFact)
         ip_locking: Fact[IpLockingMitigationFact] = fact_field(IpLockingMitigationFact)

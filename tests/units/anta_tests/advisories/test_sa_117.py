@@ -316,11 +316,13 @@ class TestSA117Assessment(unittest.TestCase):
         output = {"transports": {"default": {"enabled": True, "accounting": False}}} if gnmi is None else gnmi
         source = FactSource("unit test", FactSourceKind.DEVICE_METADATA)
         if version is None:
-            version_fact: Fact[EOSVersion] = EosVersionFact.unavailable(FactProblemKind.MISSING, source)
+            version_fact: Fact[EosVersionFact] = EosVersionFact.unavailable(FactProblemKind.MISSING, source)
         else:
             parsed_version = parse_eos_version(version if isinstance(version, str) else str(version)).unwrap_or_none()
             version_fact = (
-                EosVersionFact.available(parsed_version, source) if parsed_version is not None else EosVersionFact.unavailable(FactProblemKind.INVALID, source)
+                EosVersionFact.from_version(parsed_version).available(source)
+                if parsed_version is not None
+                else EosVersionFact.unavailable(FactProblemKind.INVALID, source)
             )
         gnmi_command = _command(GnmiTransportFact.commands[0], dict(output))
         gnmi_fact = GnmiTransportFact.parse((gnmi_command,))
@@ -328,7 +330,7 @@ class TestSA117Assessment(unittest.TestCase):
         trace_fact: Fact[RiskyOpenConfigTraceFact] = (
             RiskyOpenConfigTraceFact.unavailable(FactProblemKind.UNSUPPORTED, source)
             if trace is None
-            else RiskyOpenConfigTraceFact.available(RiskyOpenConfigTraceFact(ConfigurationState.CONFIGURED if trace else ConfigurationState.NOT_CONFIGURED), source)
+            else RiskyOpenConfigTraceFact(ConfigurationState.CONFIGURED if trace else ConfigurationState.NOT_CONFIGURED).available(source)
         )
         return _assess_sa117(version_fact, gnmi_fact, accounting_fact, trace_fact)
 

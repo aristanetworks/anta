@@ -270,7 +270,7 @@ class SA146(OptionalCommandsMixin, _AntaAdvisoryTest):
     class Facts(FactsBase):
         """Collected facts required to assess the advisory."""
 
-        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
         terminattr_version: Fact[TerminAttrVersionFact] = fact_field(TerminAttrVersionFact)
         gnmi: Fact[GnmiTransportFact] = fact_field(GnmiTransportFact)
         gribi: Fact[GribiTransportFact] = fact_field(GribiTransportFact)

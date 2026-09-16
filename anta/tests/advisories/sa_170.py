@@ -52,7 +52,7 @@ ADVISORY = _AdvisoryMetadata(
 VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
-def _assess_sa170(version: Fact[EOSVersion], authorization: Fact[GnmiAuthorizationFact]) -> VulnerabilityResult:
+def _assess_sa170(version: Fact[EosVersionFact], authorization: Fact[GnmiAuthorizationFact]) -> VulnerabilityResult:
     """Assess EOS scope and enabled gNMI request authorization."""
     if not isinstance(authorization, UnavailableFact) and authorization.value.state is not FeatureState.ENABLED:
         return NotAffectedResult(vulnerability_id=VULNERABILITY_ID, decisive=(authorization,))
@@ -91,7 +91,7 @@ class SA170(OptionalCommandsMixin, _AntaAdvisoryTest):
     class Facts(FactsBase):
         """Collected facts required to assess the advisory."""
 
-        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
         authorization: Fact[GnmiAuthorizationFact] = fact_field(GnmiAuthorizationFact)
 
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY

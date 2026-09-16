@@ -92,17 +92,17 @@ DATA: AntaUnitTestData = {
 }
 
 
-def version_fact(version: str | None) -> Fact[EOSVersion]:
+def version_fact(version: str | None) -> Fact[EosVersionFact]:
     """Build an EOS version fact for assessment tests."""
     if version is None:
         return EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
     parsed = parse_eos_version(version).unwrap()
-    return EosVersionFact.available(parsed, SOURCE)
+    return EosVersionFact.from_version(parsed).available(SOURCE)
 
 
 def sparse_mode_fact(state: FeatureState) -> AvailableFact[PimSparseModeFact]:
     """Build a PIM sparse-mode fact."""
-    return PimSparseModeFact.available(PimSparseModeFact(state), SOURCE)
+    return PimSparseModeFact(state).available(SOURCE)
 
 
 class TestSA175VersionMatrix(unittest.TestCase):

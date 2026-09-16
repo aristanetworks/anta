@@ -76,17 +76,17 @@ DATA: AntaUnitTestData = {
 }
 
 
-def version_fact(value: str | None) -> Fact[EOSVersion]:
+def version_fact(value: str | None) -> Fact[EosVersionFact]:
     """Build a version fact."""
     if value is None:
         return EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
     parsed = parse_eos_version(value).unwrap()
-    return EosVersionFact.available(parsed, SOURCE)
+    return EosVersionFact.from_version(parsed).available(SOURCE)
 
 
 def bfd_fact(state: FeatureState) -> AvailableFact[BfdAuthenticationFact]:
     """Build a BFD authentication fact."""
-    return BfdAuthenticationFact.available(BfdAuthenticationFact(state), SOURCE)
+    return BfdAuthenticationFact(state).available(SOURCE)
 
 
 class TestSA154Assessment(unittest.TestCase):

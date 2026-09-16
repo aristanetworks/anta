@@ -64,7 +64,7 @@ VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
 def _assess_sa167(
-    version: Fact[EOSVersion],
+    version: Fact[EosVersionFact],
     transport: Fact[GnsiTransportFact],
     authz: Fact[GnsiAuthzFact],
 ) -> VulnerabilityResult:
@@ -113,7 +113,7 @@ class SA167(OptionalCommandsMixin, _AntaAdvisoryTest):
     class Facts(FactsBase):
         """Collected facts required to assess the advisory."""
 
-        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
         transport: Fact[GnsiTransportFact] = fact_field(GnsiTransportFact)
         authz: Fact[GnsiAuthzFact] = fact_field(GnsiAuthzFact)
 

@@ -75,7 +75,7 @@ ADVISORY = _AdvisoryMetadata(
 
 # pylint: disable-next=too-many-return-statements
 def _assess_sa117(  # noqa: PLR0911
-    version: Fact[EOSVersion],
+    version: Fact[EosVersionFact],
     gnmi: Fact[GnmiTransportFact],
     accounting: Fact[GnmiAccountingFact],
     trace: Fact[RiskyOpenConfigTraceFact],
@@ -151,7 +151,7 @@ class SA117(OptionalCommandsMixin, _AntaAdvisoryTest):
     class Facts(FactsBase):
         """Collected facts required to assess the advisory."""
 
-        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
         gnmi: Fact[GnmiTransportFact] = fact_field(GnmiTransportFact)
         accounting: Fact[GnmiAccountingFact] = fact_field(GnmiAccountingFact)
         trace: Fact[RiskyOpenConfigTraceFact] = fact_field(RiskyOpenConfigTraceFact)

@@ -63,7 +63,7 @@ def _remediation_plan(current_version: EOSVersion) -> RemediationPlan:
     )
 
 
-def _assess_sa168(version: Fact[EOSVersion], services: tuple[Fact[FeatureFact], ...]) -> VulnerabilityResult:
+def _assess_sa168(version: Fact[EosVersionFact], services: tuple[Fact[FeatureFact], ...]) -> VulnerabilityResult:
     """Assess the OR relationship across gNMI, RESTCONF, and NETCONF services."""
     enabled = tuple(fact for fact in services if isinstance(fact, AvailableFact) and fact.value.state is FeatureState.ENABLED)
     if not enabled and all(isinstance(fact, AvailableFact) for fact in services):
@@ -104,7 +104,7 @@ class SA168(OptionalCommandsMixin, _AntaAdvisoryTest):
     class Facts(FactsBase):
         """Collected facts required to assess the advisory."""
 
-        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
         gnmi: Fact[GnmiTransportFact] = fact_field(GnmiTransportFact)
         restconf: Fact[RestconfTransportFact] = fact_field(RestconfTransportFact)
         netconf: Fact[NetconfTransportFact] = fact_field(NetconfTransportFact)

@@ -125,15 +125,15 @@ DATA: AntaUnitTestData = {
 }
 
 
-def version_fact(value: str) -> Fact[EOSVersion]:
+def version_fact(value: str) -> Fact[EosVersionFact]:
     """Build an EOS version fact."""
     parsed = parse_eos_version(value).unwrap()
-    return EosVersionFact.available(parsed, SOURCE)
+    return EosVersionFact.from_version(parsed).available(SOURCE)
 
 
 def feature(definition: type[FeatureFactT], state: FeatureState) -> Fact[FeatureFactT]:
     """Build one feature fact."""
-    return cast("Fact[FeatureFactT]", definition.available(cast("FeatureFactT", definition(state)), SOURCE))
+    return cast("Fact[FeatureFactT]", cast("FeatureFactT", definition(state)).available(SOURCE))
 
 
 def authz(state: FeatureState):  # noqa: ANN201

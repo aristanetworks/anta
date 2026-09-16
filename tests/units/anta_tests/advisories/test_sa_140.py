@@ -146,19 +146,19 @@ class TestSA140Assessment(unittest.TestCase):
     """Validate semantic classification before ANTA projection."""
 
     @staticmethod
-    def version_fact(version: str) -> AvailableFact[EOSVersion]:
+    def version_fact(version: str) -> AvailableFact[EosVersionFact]:
         """Build normalized device-version evidence for assessment tests."""
         parsed_version = parse_eos_version(version).unwrap()
-        return EosVersionFact.available(parsed_version, TEST_SOURCE)
+        return EosVersionFact.from_version(parsed_version).available(TEST_SOURCE)
 
     def test_affected_and_safe_configuration_states(self) -> None:
         affected = _assess_sa140(
             self.version_fact("4.35.1F"),
-            SecureBootFact.available(SecureBootFact(FeatureState.ENABLED), TEST_SOURCE),
+            SecureBootFact(FeatureState.ENABLED).available(TEST_SOURCE),
         )
         disabled = _assess_sa140(
             self.version_fact("4.35.1F"),
-            SecureBootFact.available(SecureBootFact(FeatureState.DISABLED), TEST_SOURCE),
+            SecureBootFact(FeatureState.DISABLED).available(TEST_SOURCE),
         )
 
         assert isinstance(affected, AffectedResult)
@@ -183,7 +183,7 @@ class TestSA140Assessment(unittest.TestCase):
         assert version_assessment.relation is VersionRelation.OUTSIDE_SCOPE
 
     def test_unsupported_secure_boot_is_not_affected(self) -> None:
-        secure_boot = SecureBootFact.available(SecureBootFact(FeatureState.UNSUPPORTED), TEST_SOURCE)
+        secure_boot = SecureBootFact(FeatureState.UNSUPPORTED).available(TEST_SOURCE)
         finding = _assess_sa140(self.version_fact("4.35.1F"), secure_boot)
 
         assert isinstance(finding, NotAffectedResult)

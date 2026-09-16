@@ -88,7 +88,7 @@ def _logging_remediation_plan(current_version: EOSVersion) -> RemediationPlan:
 
 def _assess_gnpsi_issue(
     vulnerability_id: str,
-    version: Fact[EOSVersion],
+    version: Fact[EosVersionFact],
     transport: Fact[GnpsiTransportFact],
     prerequisite: Fact[GnpsiAuthenticationExposureFact],
 ) -> VulnerabilityResult:
@@ -112,7 +112,7 @@ def _assess_gnpsi_issue(
 
 
 def _assess_logging_issue(
-    version: Fact[EOSVersion],
+    version: Fact[EosVersionFact],
     transport: Fact[GnpsiTransportFact],
     trace: Fact[GnpsiEosRpcAuthTraceFact],
     authentication_mitigation: Fact[GnpsiMutualTlsSpiffeMitigationFact],
@@ -172,7 +172,7 @@ class SA158(OptionalCommandsMixin, _AntaAdvisoryTest):
     class Facts(FactsBase):
         """Collected facts required to assess the advisory."""
 
-        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
         transport: Fact[GnpsiTransportFact] = fact_field(GnpsiTransportFact)
         authentication: Fact[GnpsiAuthenticationExposureFact] = fact_field(GnpsiAuthenticationExposureFact)
         trace: Fact[GnpsiEosRpcAuthTraceFact] = fact_field(GnpsiEosRpcAuthTraceFact)

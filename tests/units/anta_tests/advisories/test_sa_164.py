@@ -115,17 +115,17 @@ DATA: AntaUnitTestData = {
 }
 
 
-def version_fact(version: str | None) -> Fact[EOSVersion]:
+def version_fact(version: str | None) -> Fact[EosVersionFact]:
     """Build an EOS version fact for assessment tests."""
     if version is None:
         return EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
     parsed = parse_eos_version(version).unwrap()
-    return EosVersionFact.available(parsed, SOURCE)
+    return EosVersionFact.from_version(parsed).available(SOURCE)
 
 
 def available_gnmi_fact(state: FeatureState) -> AvailableFact[GnmiTransportFact]:
     """Build a normalized gNMI transport fact."""
-    return GnmiTransportFact.available(GnmiTransportFact(state), SOURCE)
+    return GnmiTransportFact(state).available(SOURCE)
 
 
 class TestSA164VersionMatrix(unittest.TestCase):
@@ -160,8 +160,8 @@ class TestSA164Assessment(unittest.TestCase):
         """Return active gNMI, Pathz, and policy-overlap facts."""
         return (
             available_gnmi_fact(FeatureState.ENABLED),
-            GnsiPathzFact.available(GnsiPathzFact(FeatureState.ENABLED), SOURCE),
-            GnsiPathzPolicyOverlapFact.available(GnsiPathzPolicyOverlapFact(FeatureState.ENABLED), SOURCE),
+            GnsiPathzFact(FeatureState.ENABLED).available(SOURCE),
+            GnsiPathzPolicyOverlapFact(FeatureState.ENABLED).available(SOURCE),
         )
 
     def test_overlapping_policy_is_affected(self) -> None:
@@ -177,7 +177,7 @@ class TestSA164Assessment(unittest.TestCase):
         cases = (
             (
                 GnmiTransportFact.unavailable(FactProblemKind.MISSING, SOURCE),
-                GnsiPathzFact.available(GnsiPathzFact(FeatureState.DISABLED), SOURCE),
+                GnsiPathzFact(FeatureState.DISABLED).available(SOURCE),
                 GnsiPathzFact,
             ),
             (

@@ -50,7 +50,7 @@ ADVISORY = _AdvisoryMetadata(
 VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
-def _assess_sa155(version: Fact[EOSVersion], option82: Fact[DhcpOption82Fact]) -> VulnerabilityResult:
+def _assess_sa155(version: Fact[EosVersionFact], option82: Fact[DhcpOption82Fact]) -> VulnerabilityResult:
     """Assess EOS scope and the three DHCP Option 82 exposure alternatives."""
     if not isinstance(option82, UnavailableFact) and option82.value.state is not FeatureState.ENABLED:
         return NotAffectedResult(vulnerability_id=VULNERABILITY_ID, decisive=(option82,))
@@ -89,7 +89,7 @@ class SA155(OptionalCommandsMixin, _AntaAdvisoryTest):
     class Facts(FactsBase):
         """Collected facts required to assess the advisory."""
 
-        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
         option82: Fact[DhcpOption82Fact] = fact_field(DhcpOption82Fact)
 
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY

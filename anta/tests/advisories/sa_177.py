@@ -22,7 +22,7 @@ from anta._advisory.findings.projection import project_vulnerability_result
 from anta._advisory.models import _AdvisoryMetadata, _AdvisoryVulnerability, _AdvisoryVulnerabilitySeverity
 from anta._advisory.optional_commands import OptionalCommandsMixin
 from anta._advisory.remediation import FixedRelease, software_version_plan
-from anta._eos.platform import PlatformFamily, PlatformIdentity
+from anta._eos.platform import PlatformFamily
 from anta._eos.version import EOSVersion
 from anta.decorators import preview_test_class
 
@@ -97,8 +97,8 @@ VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
 def _assess_sa177(  # noqa: PLR0911
-    version: Fact[EOSVersion],
-    platform: Fact[PlatformIdentity],
+    version: Fact[EosVersionFact],
+    platform: Fact[PlatformIdentityFact],
     sparse_mode: Fact[PimSparseModeFact],
     mlag: Fact[MlagConfiguredFact],
 ) -> VulnerabilityResult:
@@ -162,8 +162,8 @@ class SA177(OptionalCommandsMixin, _AntaAdvisoryTest):
     class Facts(FactsBase):
         """Collected facts required to assess the advisory."""
 
-        version: Fact[EOSVersion] = fact_field(EosVersionFact)
-        platform: Fact[PlatformIdentity] = fact_field(PlatformIdentityFact)
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
+        platform: Fact[PlatformIdentityFact] = fact_field(PlatformIdentityFact)
         sparse_mode: Fact[PimSparseModeFact] = fact_field(PimSparseModeFact)
         mlag: Fact[MlagConfiguredFact] = fact_field(MlagConfiguredFact)
 

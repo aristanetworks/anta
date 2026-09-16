@@ -58,7 +58,7 @@ ADVISORY = _AdvisoryMetadata(
 VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
-def _assess_sa161(version: Fact[EOSVersion], local_mlag: Fact[MlagDualPrimaryErrdisableFact]) -> VulnerabilityResult:
+def _assess_sa161(version: Fact[EosVersionFact], local_mlag: Fact[MlagDualPrimaryErrdisableFact]) -> VulnerabilityResult:
     """Assess EOS scope and the stable local MLAG configuration."""
     if not isinstance(local_mlag, UnavailableFact) and local_mlag.value.state is not FeatureState.ENABLED:
         return NotAffectedResult(vulnerability_id=VULNERABILITY_ID, decisive=(local_mlag,))
@@ -99,7 +99,7 @@ class SA161(OptionalCommandsMixin, _AntaAdvisoryTest):
     class Facts(FactsBase):
         """Collected facts required to assess the advisory."""
 
-        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
         local_mlag: Fact[MlagDualPrimaryErrdisableFact] = fact_field(MlagDualPrimaryErrdisableFact)
 
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY

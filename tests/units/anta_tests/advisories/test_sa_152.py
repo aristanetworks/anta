@@ -93,10 +93,10 @@ DATA: AntaUnitTestData = {
 }
 
 
-def version_fact(value: str) -> Fact[EOSVersion]:
+def version_fact(value: str) -> Fact[EosVersionFact]:
     """Build an EOS version fact."""
     parsed = parse_eos_version(value).unwrap()
-    return EosVersionFact.available(parsed, SOURCE)
+    return EosVersionFact.from_version(parsed).available(SOURCE)
 
 
 class TestSA152Assessment(unittest.TestCase):
@@ -125,10 +125,10 @@ class TestSA152Assessment(unittest.TestCase):
 
     def test_states(self) -> None:
         version = version_fact("4.35.5M")
-        login = LoginAuthenticationFact.available(LoginAuthenticationFact(FeatureState.ENABLED), SOURCE)
-        service = PasswordManagementServiceFact.available(PasswordManagementServiceFact(FeatureState.ENABLED), SOURCE)
+        login = LoginAuthenticationFact(FeatureState.ENABLED).available(SOURCE)
+        service = PasswordManagementServiceFact(FeatureState.ENABLED).available(SOURCE)
         assert isinstance(_assess_sa152(version, login, service), AffectedResult)
-        disabled_login = LoginAuthenticationFact.available(LoginAuthenticationFact(FeatureState.DISABLED), SOURCE)
+        disabled_login = LoginAuthenticationFact(FeatureState.DISABLED).available(SOURCE)
         assert isinstance(_assess_sa152(version, disabled_login, service), NotAffectedResult)
         unavailable = PasswordManagementServiceFact.unavailable(FactProblemKind.MISSING, SOURCE)
         assert isinstance(_assess_sa152(version, login, unavailable), ErrorResult)

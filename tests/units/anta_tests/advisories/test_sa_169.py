@@ -99,15 +99,15 @@ DATA: AntaUnitTestData = {
 }
 
 
-def version_fact(value: str) -> Fact[EOSVersion]:
+def version_fact(value: str) -> Fact[EosVersionFact]:
     """Build a version fact."""
     parsed = parse_eos_version(value).unwrap()
-    return EosVersionFact.available(parsed, SOURCE)
+    return EosVersionFact.from_version(parsed).available(SOURCE)
 
 
 def feature_fact(definition: type[GnsiFactT], state: FeatureState) -> AvailableFact[GnsiFactT]:
     """Build one gNSI feature fact."""
-    return cast("AvailableFact[GnsiFactT]", definition.available(cast("GnsiFactT", definition(state)), SOURCE))
+    return cast("AvailableFact[GnsiFactT]", cast("GnsiFactT", definition(state)).available(SOURCE))
 
 
 class TestSA169Assessment(unittest.TestCase):

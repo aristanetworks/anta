@@ -79,7 +79,7 @@ VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
 def _assess_sa140(
-    version_fact: Fact[EOSVersion],
+    version_fact: Fact[EosVersionFact],
     secure_boot: Fact[SecureBootFact],
 ) -> VulnerabilityResult:
     """Return a structured conclusion from normalized SA140 facts."""
@@ -129,7 +129,7 @@ class SA140(_AntaAdvisoryTest):
     class Facts(FactsBase):
         """Collected facts required to assess the advisory."""
 
-        version: Fact[EOSVersion] = fact_field(EosVersionFact)
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
         secure_boot: Fact[SecureBootFact] = fact_field(SecureBootFact)
 
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY

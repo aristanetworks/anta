@@ -257,12 +257,12 @@ class Dot1xControlledAuthenticatorFact(FeatureFact, CommandsFactDefinition["Dot1
         (command,) = commands
         source = _feature_source(command)
         if is_unsupported_optional_command(command):
-            return cls.available(cls(FeatureState.UNSUPPORTED), source)
+            return cls(FeatureState.UNSUPPORTED).available(source)
         parsed = _parse_dot1x_controlled_authenticator(command.json_output)
         if isinstance(parsed, ParseFail):
             return cls.unavailable(FactProblemKind(parsed.reason.value), source)
         state = FeatureState.ENABLED if parsed.value else FeatureState.DISABLED
-        return cls.available(cls(state), source)
+        return cls(state).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -280,17 +280,17 @@ class Dot1xDynamicAuthorizationFact(FeatureFact, CommandsFactDefinition["Dot1xDy
         (command,) = commands
         source = _feature_source(command)
         if is_unsupported_optional_command(command):
-            return cls.available(cls(FeatureState.UNSUPPORTED), source)
+            return cls(FeatureState.UNSUPPORTED).available(source)
         dynamic_authorization = command.json_output.get("dynAuth")
         if not isinstance(dynamic_authorization, bool):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         if not dynamic_authorization:
-            return cls.available(cls(FeatureState.DISABLED), source)
+            return cls(FeatureState.DISABLED).available(source)
         parsed = _parse_dot1x_controlled_authenticator(command.json_output)
         if isinstance(parsed, ParseFail):
             return cls.unavailable(FactProblemKind(parsed.reason.value), source)
         state = FeatureState.ENABLED if parsed.value else FeatureState.DISABLED
-        return cls.available(cls(state), source)
+        return cls(state).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -309,7 +309,7 @@ class RadiusProxyDynamicAuthorizationFact(FeatureFact, CommandsFactDefinition["R
         lines = tuple(line.strip() for line in command.text_output.splitlines() if line.strip() and line.strip() != "!")
         configured = "radius proxy" in lines and "dynamic-authorization" in lines and any(line.startswith("client group ") for line in lines)
         state = FeatureState.ENABLED if configured else FeatureState.DISABLED
-        return cls.available(cls(state), _feature_source(command))
+        return cls(state).available(_feature_source(command))
 
 
 @dataclass(frozen=True, slots=True)
@@ -332,7 +332,7 @@ class SnmpAgentFact(FeatureFact, CommandsFactDefinition["SnmpAgentFact"]):
         if not isinstance(enabled, bool):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         state = FeatureState.ENABLED if enabled else FeatureState.DISABLED
-        return cls.available(cls(state), source)
+        return cls(state).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -351,7 +351,7 @@ class SnmpV3AuthenticationFact(FeatureFact, CommandsFactDefinition["SnmpV3Authen
         (command,) = commands
         source = _feature_source(command)
         if is_unsupported_optional_command(command):
-            return cls.available(cls(FeatureState.UNSUPPORTED), source)
+            return cls(FeatureState.UNSUPPORTED).available(source)
         if "usersByVersion" not in command.json_output:
             return cls.unavailable(FactProblemKind.MISSING, source)
         users_by_version = command.json_output["usersByVersion"]
@@ -359,12 +359,12 @@ class SnmpV3AuthenticationFact(FeatureFact, CommandsFactDefinition["SnmpV3Authen
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         version = users_by_version.get("v3")
         if version is None:
-            return cls.available(cls(FeatureState.DISABLED), source)
+            return cls(FeatureState.DISABLED).available(source)
         if not isinstance(version, Mapping):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         users = version.get("users")
         if users is None:
-            return cls.available(cls(FeatureState.DISABLED), source)
+            return cls(FeatureState.DISABLED).available(source)
         if not isinstance(users, Mapping):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         enabled = False
@@ -381,7 +381,7 @@ class SnmpV3AuthenticationFact(FeatureFact, CommandsFactDefinition["SnmpV3Authen
                 return cls.unavailable(FactProblemKind.MALFORMED, source)
             enabled |= isinstance(authentication_type, str) and authentication_type.casefold() not in {"", "none", "noauth"}
         state = FeatureState.ENABLED if enabled else FeatureState.DISABLED
-        return cls.available(cls(state), source)
+        return cls(state).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -401,7 +401,7 @@ class SnmpV3CredentialSyntaxFact(CredentialSyntaxFact, CommandsFactDefinition["S
         state = _snmpv3_credential_syntax(command.text_output)
         if state is None:
             return cls.unavailable(FactProblemKind.MALFORMED, source)
-        return cls.available(cls(state), source)
+        return cls(state).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -419,7 +419,7 @@ class GnsiTransportFact(FeatureFact, CommandsFactDefinition["GnsiTransportFact"]
         (command,) = commands
         source = _feature_source(command)
         if is_unsupported_optional_command(command):
-            return cls.available(cls(FeatureState.UNSUPPORTED), source)
+            return cls(FeatureState.UNSUPPORTED).available(source)
 
         transports = command.json_output.get("transports")
         if transports is None:
@@ -433,7 +433,7 @@ class GnsiTransportFact(FeatureFact, CommandsFactDefinition["GnsiTransportFact"]
                 return cls.unavailable(FactProblemKind.MALFORMED, source)
             enabled = enabled or transport_enabled
         state = FeatureState.ENABLED if enabled else FeatureState.DISABLED
-        return cls.available(cls(state), source)
+        return cls(state).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -451,7 +451,7 @@ class GnsiMultipleTransportsFact(FeatureFact, CommandsFactDefinition["GnsiMultip
         (command,) = commands
         source = _feature_source(command)
         if is_unsupported_optional_command(command):
-            return cls.available(cls(FeatureState.UNSUPPORTED), source)
+            return cls(FeatureState.UNSUPPORTED).available(source)
 
         transports = command.json_output.get("transports")
         if transports is None:
@@ -465,7 +465,7 @@ class GnsiMultipleTransportsFact(FeatureFact, CommandsFactDefinition["GnsiMultip
                 return cls.unavailable(FactProblemKind.MALFORMED, source)
             enabled_count += transport_enabled
         state = FeatureState.ENABLED if enabled_count >= MIN_ENABLED_GNSI_TRANSPORTS else FeatureState.DISABLED
-        return cls.available(cls(state), source)
+        return cls(state).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -483,7 +483,7 @@ class GnsiCertzFact(FeatureFact, CommandsFactDefinition["GnsiCertzFact"]):
         (command,) = commands
         source = _feature_source(command)
         if is_unsupported_optional_command(command):
-            return cls.available(cls(FeatureState.UNSUPPORTED), source)
+            return cls(FeatureState.UNSUPPORTED).available(source)
 
         enabled = command.json_output.get("certzEnabled")
         if enabled is None:
@@ -491,7 +491,7 @@ class GnsiCertzFact(FeatureFact, CommandsFactDefinition["GnsiCertzFact"]):
         if not isinstance(enabled, bool):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         state = FeatureState.ENABLED if enabled else FeatureState.DISABLED
-        return cls.available(cls(state), source)
+        return cls(state).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -509,14 +509,14 @@ class GnsiCredentialzFact(FeatureFact, CommandsFactDefinition["GnsiCredentialzFa
         (command,) = commands
         source = _feature_source(command)
         if is_unsupported_optional_command(command):
-            return cls.available(cls(FeatureState.UNSUPPORTED), source)
+            return cls(FeatureState.UNSUPPORTED).available(source)
         enabled = command.json_output.get("credentialzEnabled")
         if enabled is None:
             return cls.unavailable(FactProblemKind.MISSING, source)
         if not isinstance(enabled, bool):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         state = FeatureState.ENABLED if enabled else FeatureState.DISABLED
-        return cls.available(cls(state), source)
+        return cls(state).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -534,7 +534,7 @@ class GnsiAuthzFact(FeatureFact, CommandsFactDefinition["GnsiAuthzFact"]):
         (command,) = commands
         source = _feature_source(command)
         if is_unsupported_optional_command(command):
-            return cls.available(cls(FeatureState.UNSUPPORTED), source)
+            return cls(FeatureState.UNSUPPORTED).available(source)
 
         enabled = command.json_output.get("authzEnabled")
         if enabled is None:
@@ -542,7 +542,7 @@ class GnsiAuthzFact(FeatureFact, CommandsFactDefinition["GnsiAuthzFact"]):
         if not isinstance(enabled, bool):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         state = FeatureState.ENABLED if enabled else FeatureState.DISABLED
-        return cls.available(cls(state), source)
+        return cls(state).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -560,14 +560,14 @@ class GnsiAcctzFact(FeatureFact, CommandsFactDefinition["GnsiAcctzFact"]):
         (command,) = commands
         source = _feature_source(command)
         if is_unsupported_optional_command(command):
-            return cls.available(cls(FeatureState.UNSUPPORTED), source)
+            return cls(FeatureState.UNSUPPORTED).available(source)
         enabled = command.json_output.get("acctzEnabled")
         if enabled is None:
             return cls.unavailable(FactProblemKind.MISSING, source)
         if not isinstance(enabled, bool):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         state = FeatureState.ENABLED if enabled else FeatureState.DISABLED
-        return cls.available(cls(state), source)
+        return cls(state).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -585,7 +585,7 @@ class GnsiPathzFact(FeatureFact, CommandsFactDefinition["GnsiPathzFact"]):
         (command,) = commands
         source = _feature_source(command)
         if is_unsupported_optional_command(command):
-            return cls.available(cls(FeatureState.UNSUPPORTED), source)
+            return cls(FeatureState.UNSUPPORTED).available(source)
 
         enabled = command.json_output.get("pathzEnabled")
         if enabled is None:
@@ -593,7 +593,7 @@ class GnsiPathzFact(FeatureFact, CommandsFactDefinition["GnsiPathzFact"]):
         if not isinstance(enabled, bool):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         state = FeatureState.ENABLED if enabled else FeatureState.DISABLED
-        return cls.available(cls(state), source)
+        return cls(state).available(source)
 
 
 def _pathz_policy_has_user_group_overlap(output: str) -> bool | None:
@@ -658,7 +658,7 @@ class GnsiPathzPolicyOverlapFact(FeatureFact, CommandsFactDefinition["GnsiPathzP
             problem = FactProblemKind.MISSING if not command.text_output.strip() else FactProblemKind.MALFORMED
             return cls.unavailable(problem, source)
         state = FeatureState.ENABLED if overlap else FeatureState.DISABLED
-        return cls.available(cls(state), source)
+        return cls(state).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -675,7 +675,7 @@ class GnmiTransportFact(FeatureFact, CommandsFactDefinition["GnmiTransportFact"]
         (command,) = commands
         source = _feature_source(command)
         if is_unsupported_optional_command(command):
-            return cls.available(cls(FeatureState.UNSUPPORTED), source)
+            return cls(FeatureState.UNSUPPORTED).available(source)
         config = _deserialize_gnmi_config(command.json_output)
         if config is None:
             return cls.unavailable(FactProblemKind.MALFORMED, source)
@@ -688,13 +688,13 @@ class GnmiTransportFact(FeatureFact, CommandsFactDefinition["GnmiTransportFact"]
                 continue
             enabled = transport.get("enabled")
             if enabled is True:
-                return cls.available(cls(FeatureState.ENABLED), source)
+                return cls(FeatureState.ENABLED).available(source)
             if enabled is not False:
                 unknown = True
         if unknown:
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         state = FeatureState.DISABLED
-        return cls.available(cls(state), source)
+        return cls(state).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -734,14 +734,14 @@ class GnmiAccountingFact(FeatureFact, CommandsFactDefinition["GnmiAccountingFact
         (command,) = commands
         source = _feature_source(command)
         if is_unsupported_optional_command(command):
-            return cls.available(cls(FeatureState.UNSUPPORTED), source)
+            return cls(FeatureState.UNSUPPORTED).available(source)
         config = _deserialize_gnmi_config(command.json_output)
         if config is None:
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         state = cls._state(config)
         if isinstance(state, FactProblemKind):
             return cls.unavailable(state, source)
-        return cls.available(cls(state), source)
+        return cls(state).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -759,7 +759,7 @@ class GnmiAuthorizationFact(FeatureFact, CommandsFactDefinition["GnmiAuthorizati
         (command,) = commands
         source = _feature_source(command)
         if is_unsupported_optional_command(command):
-            return cls.available(cls(FeatureState.UNSUPPORTED), source)
+            return cls(FeatureState.UNSUPPORTED).available(source)
         config = _deserialize_gnmi_config(command.json_output)
         if config is None:
             return cls.unavailable(FactProblemKind.MALFORMED, source)
@@ -773,12 +773,12 @@ class GnmiAuthorizationFact(FeatureFact, CommandsFactDefinition["GnmiAuthorizati
             enabled = transport.get("enabled")
             authorization = transport.get("authorization")
             if enabled is True and authorization is True:
-                return cls.available(cls(FeatureState.ENABLED), source)
+                return cls(FeatureState.ENABLED).available(source)
             if enabled not in {True, False} or (enabled is True and authorization not in {True, False}):
                 unknown = True
         if unknown:
             return cls.unavailable(FactProblemKind.MISSING, source)
-        return cls.available(cls(FeatureState.DISABLED), source)
+        return cls(FeatureState.DISABLED).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -796,13 +796,13 @@ class RestconfTransportFact(FeatureFact, CommandsFactDefinition["RestconfTranspo
         (command,) = commands
         source = _feature_source(command)
         if is_unsupported_optional_command(command):
-            return cls.available(cls(FeatureState.UNSUPPORTED), source)
+            return cls(FeatureState.UNSUPPORTED).available(source)
         if "enabled" not in command.json_output:
             return cls.unavailable(FactProblemKind.MISSING, source)
         enabled = command.json_output["enabled"]
         if not isinstance(enabled, bool):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
-        return cls.available(cls(FeatureState.ENABLED if enabled else FeatureState.DISABLED), source)
+        return cls(FeatureState.ENABLED if enabled else FeatureState.DISABLED).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -820,13 +820,13 @@ class NetconfTransportFact(FeatureFact, CommandsFactDefinition["NetconfTransport
         (command,) = commands
         source = _feature_source(command)
         if is_unsupported_optional_command(command):
-            return cls.available(cls(FeatureState.UNSUPPORTED), source)
+            return cls(FeatureState.UNSUPPORTED).available(source)
         if "enabled" not in command.json_output:
             return cls.unavailable(FactProblemKind.MISSING, source)
         enabled = command.json_output["enabled"]
         if not isinstance(enabled, bool):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
-        return cls.available(cls(FeatureState.ENABLED if enabled else FeatureState.DISABLED), source)
+        return cls(FeatureState.ENABLED if enabled else FeatureState.DISABLED).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -844,14 +844,14 @@ class GnpsiTransportFact(FeatureFact, CommandsFactDefinition["GnpsiTransportFact
         (command,) = commands
         source = _feature_source(command)
         if is_unsupported_optional_command(command):
-            return cls.available(cls(FeatureState.UNSUPPORTED), source)
+            return cls(FeatureState.UNSUPPORTED).available(source)
         config = _deserialize_gnpsi_config(command.json_output)
         if isinstance(config, FactProblemKind):
             return cls.unavailable(config, source)
         if not isinstance(config.enabled, bool):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         state = FeatureState.ENABLED if config.enabled else FeatureState.DISABLED
-        return cls.available(cls(state), source)
+        return cls(state).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -870,19 +870,19 @@ class GnpsiAuthenticationExposureFact(FeatureFact, CommandsFactDefinition["Gnpsi
         (command,) = commands
         source = _feature_source(command)
         if is_unsupported_optional_command(command):
-            return cls.available(cls(FeatureState.UNSUPPORTED), source)
+            return cls(FeatureState.UNSUPPORTED).available(source)
         config = _deserialize_gnpsi_config(command.json_output)
         if isinstance(config, FactProblemKind):
             return cls.unavailable(config, source)
         if not isinstance(config.enabled, bool):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         if not config.enabled:
-            return cls.available(cls(FeatureState.DISABLED), source)
+            return cls(FeatureState.DISABLED).available(source)
         if any(not isinstance(transport.enabled, bool) for transport in config.transports):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         enabled_transports = tuple(transport for transport in config.transports if transport.enabled is True)
         if not enabled_transports:
-            return cls.available(cls(FeatureState.DISABLED), source)
+            return cls(FeatureState.DISABLED).available(source)
         problem: FactProblemKind | None = None
         for transport in enabled_transports:
             authentication = _gnpsi_authentication(transport)
@@ -893,10 +893,10 @@ class GnpsiAuthenticationExposureFact(FeatureFact, CommandsFactDefinition["Gnpsi
             mutual_tls = security_type in {"mtls", "mutualtls", "tlsmutual"}
             tls = security_type == "tls"
             if (mutual_tls and "x509-common-name" in methods) or (tls and "metadata" in methods):
-                return cls.available(cls(FeatureState.ENABLED), source)
+                return cls(FeatureState.ENABLED).available(source)
         if problem is not None:
             return cls.unavailable(problem, source)
-        return cls.available(cls(FeatureState.DISABLED), source)
+        return cls(FeatureState.DISABLED).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -921,12 +921,12 @@ class GnpsiMutualTlsSpiffeMitigationFact(MitigationFact, CommandsFactDefinition[
         if not isinstance(config.enabled, bool):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         if not config.enabled:
-            return cls.available(cls(MitigationState.INEFFECTIVE), source)
+            return cls(MitigationState.INEFFECTIVE).available(source)
         if any(not isinstance(transport.enabled, bool) for transport in config.transports):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         enabled_transports = tuple(transport for transport in config.transports if transport.enabled is True)
         if not enabled_transports:
-            return cls.available(cls(MitigationState.INEFFECTIVE), source)
+            return cls(MitigationState.INEFFECTIVE).available(source)
         problem: FactProblemKind | None = None
         for transport in enabled_transports:
             authentication = _gnpsi_authentication(transport)
@@ -935,10 +935,10 @@ class GnpsiMutualTlsSpiffeMitigationFact(MitigationFact, CommandsFactDefinition[
                 continue
             security_type, methods = authentication
             if security_type not in {"mtls", "mutualtls", "tlsmutual"} or methods != {"x509-spiffe"}:
-                return cls.available(cls(MitigationState.INEFFECTIVE), source)
+                return cls(MitigationState.INEFFECTIVE).available(source)
         if problem is not None:
             return cls.unavailable(problem, source)
-        return cls.available(cls(MitigationState.EFFECTIVE), source)
+        return cls(MitigationState.EFFECTIVE).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -956,17 +956,17 @@ class GnpsiEosRpcAuthTraceFact(FeatureFact, CommandsFactDefinition["GnpsiEosRpcA
         (command,) = commands
         source = _feature_source(command)
         if is_unsupported_optional_command(command):
-            return cls.available(cls(FeatureState.UNSUPPORTED), source)
+            return cls(FeatureState.UNSUPPORTED).available(source)
         if command.error:
             return cls.unavailable(FactProblemKind.COLLECTION_FAILED, source)
         output = command.text_output.strip()
         if not output:
-            return cls.available(cls(FeatureState.DISABLED), source)
+            return cls(FeatureState.DISABLED).available(source)
         enabled = re.search(r"^EosRpcAuth\s+enabled\b", output, re.MULTILINE) is not None
         disabled = re.search(r"^EosRpcAuth\s+disabled\b", output, re.MULTILINE) is not None
         if enabled == disabled:
             return cls.unavailable(FactProblemKind.MALFORMED, source)
-        return cls.available(cls(FeatureState.ENABLED if enabled else FeatureState.DISABLED), source)
+        return cls(FeatureState.ENABLED if enabled else FeatureState.DISABLED).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -1009,7 +1009,7 @@ class GnmiMtlsAuthorizationFact(FeatureFact, CommandsFactDefinition["GnmiMtlsAut
         """Return candidate profiles or a result decided by gNMI output alone."""
         source = _feature_source(gnmi)
         if is_unsupported_optional_command(gnmi):
-            return cls.available(cls(FeatureState.UNSUPPORTED), source)
+            return cls(FeatureState.UNSUPPORTED).available(source)
         config = _deserialize_gnmi_config(gnmi.json_output)
         if config is None:
             return cls.unavailable(FactProblemKind.MALFORMED, source)
@@ -1028,7 +1028,7 @@ class GnmiMtlsAuthorizationFact(FeatureFact, CommandsFactDefinition["GnmiMtlsAut
             return _GnmiAuthorizationCandidates(tuple(profile_names), incomplete)
         if incomplete:
             return cls.unavailable(FactProblemKind.MISSING, source)
-        return cls.available(cls(FeatureState.DISABLED), source)
+        return cls(FeatureState.DISABLED).available(source)
 
     @classmethod
     def _evaluate_candidates(cls, candidates: _GnmiAuthorizationCandidates, ssl: AntaCommand, gnmi: AntaCommand) -> Fact[GnmiMtlsAuthorizationFact]:
@@ -1039,12 +1039,12 @@ class GnmiMtlsAuthorizationFact(FeatureFact, CommandsFactDefinition["GnmiMtlsAut
 
         states = tuple(_ssl_profile_has_mtls(profile_name, ssl.json_output) for profile_name in candidates.profile_names)
         if True in states:
-            return cls.available(cls(FeatureState.ENABLED), ssl_source)
+            return cls(FeatureState.ENABLED).available(ssl_source)
         if None in states:
             return cls.unavailable(FactProblemKind.MISSING, ssl_source)
         if candidates.incomplete_transport:
             return cls.unavailable(FactProblemKind.MISSING, _feature_source(gnmi))
-        return cls.available(cls(FeatureState.DISABLED), ssl_source)
+        return cls(FeatureState.DISABLED).available(ssl_source)
 
     @classmethod
     def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[GnmiMtlsAuthorizationFact]:
@@ -1081,7 +1081,7 @@ class RiskyOpenConfigTraceFact(ConfigurationFact, CommandsFactDefinition["RiskyO
                 if configured:
                     break
         state = ConfigurationState.CONFIGURED if configured else ConfigurationState.NOT_CONFIGURED
-        return cls.available(cls(state), source)
+        return cls(state).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -1098,11 +1098,11 @@ class GribiTransportFact(FeatureFact, CommandsFactDefinition["GribiTransportFact
         (command,) = commands
         source = _feature_source(command)
         if is_unsupported_optional_command(command):
-            return cls.available(cls(FeatureState.UNSUPPORTED), source)
+            return cls(FeatureState.UNSUPPORTED).available(source)
         enabled = command.json_output.get("enabled")
         if not isinstance(enabled, bool):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
-        return cls.available(cls(FeatureState.ENABLED if enabled else FeatureState.DISABLED), source)
+        return cls(FeatureState.ENABLED if enabled else FeatureState.DISABLED).available(source)
 
 
 def _ssl_profile_is_valid(profile: Mapping[str, object]) -> bool:
@@ -1174,7 +1174,7 @@ class GnmiMtlsFact(MitigationFact, CommandsFactDefinition["GnmiMtlsFact"]):
 
         profile_names = tuple(transport.get("sslProfile") for transport in transports)
         if any(profile_name in (None, "") for profile_name in profile_names):
-            return cls.available(cls(MitigationState.INEFFECTIVE), source)
+            return cls(MitigationState.INEFFECTIVE).available(source)
         if any(not isinstance(profile_name, str) for profile_name in profile_names):
             return cls.unavailable(FactProblemKind.MISSING, source)
         return tuple(profile_name for profile_name in profile_names if isinstance(profile_name, str))
@@ -1188,10 +1188,10 @@ class GnmiMtlsFact(MitigationFact, CommandsFactDefinition["GnmiMtlsFact"]):
 
         states = tuple(_ssl_profile_has_mtls(profile_name, ssl.json_output) for profile_name in profile_names)
         if False in states:
-            return cls.available(cls(MitigationState.INEFFECTIVE), source)
+            return cls(MitigationState.INEFFECTIVE).available(source)
         if None in states:
             return cls.unavailable(FactProblemKind.MISSING, source)
-        return cls.available(cls(MitigationState.EFFECTIVE), source)
+        return cls(MitigationState.EFFECTIVE).available(source)
 
     @classmethod
     def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[GnmiMtlsFact]:
@@ -1220,11 +1220,11 @@ class GribiMtlsFact(MitigationFact, CommandsFactDefinition["GribiMtlsFact"]):
         if not isinstance(enabled, bool):
             return cls.unavailable(FactProblemKind.MISSING, source)
         if not enabled:
-            return cls.available(cls(MitigationState.INEFFECTIVE), source)
+            return cls(MitigationState.INEFFECTIVE).available(source)
 
         profile_name = gribi.json_output.get("sslProfile")
         if profile_name in (None, ""):
-            return cls.available(cls(MitigationState.INEFFECTIVE), source)
+            return cls(MitigationState.INEFFECTIVE).available(source)
         if not isinstance(profile_name, str):
             return cls.unavailable(FactProblemKind.MISSING, source)
         return profile_name
@@ -1239,7 +1239,7 @@ class GribiMtlsFact(MitigationFact, CommandsFactDefinition["GribiMtlsFact"]):
         if mtls is None:
             return cls.unavailable(FactProblemKind.MISSING, source)
         state = MitigationState.EFFECTIVE if mtls else MitigationState.INEFFECTIVE
-        return cls.available(cls(state), source)
+        return cls(state).available(source)
 
     @classmethod
     def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[GribiMtlsFact]:

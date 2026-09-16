@@ -299,7 +299,7 @@ def _version_relation(path: ExposurePath, device_version: EOSVersion | None) -> 
     return VersionRelation.OUTSIDE_SCOPE
 
 
-def _full_remediation_plan(version: AvailableFact[EOSVersion]) -> RemediationPlan:
+def _full_remediation_plan(version: AvailableFact[EosVersionFact]) -> RemediationPlan:
     """Return the required software-version change followed by the configuration."""
     return RemediationPlan(
         Sequence(
@@ -319,8 +319,8 @@ def _configuration_remediation_plan() -> RemediationPlan:
 # pylint: disable-next=too-many-branches,too-many-locals,too-many-return-statements,too-many-statements
 def _assess_sa142(  # noqa: C901, PLR0911, PLR0912, PLR0915
     path_facts: tuple[Fact[ConfigurationFact], ...],
-    version: Fact[EOSVersion],
-    platform: Fact[PlatformIdentity],
+    version: Fact[EosVersionFact],
+    platform: Fact[PlatformIdentityFact],
     mitigation: Fact[MtuDropMitigationFact],
 ) -> VulnerabilityResult:
     """Assess CVE-2026-12546 from normalized redirect-path facts."""
@@ -455,8 +455,8 @@ class SA142(OptionalCommandsMixin, _AntaAdvisoryTest):
     class Facts(FactsBase):
         """Collected facts required to assess the advisory."""
 
-        version: Fact[EOSVersion] = fact_field(EosVersionFact)
-        platform: Fact[PlatformIdentity] = fact_field(PlatformIdentityFact)
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
+        platform: Fact[PlatformIdentityFact] = fact_field(PlatformIdentityFact)
         pbr: Fact[PbrRedirectFact] = fact_field(PbrRedirectFact)
         flowspec: Fact[FlowSpecRedirectFact] = fact_field(FlowSpecRedirectFact)
         traffic_policy: Fact[TrafficPolicyRedirectFact] = fact_field(TrafficPolicyRedirectFact)

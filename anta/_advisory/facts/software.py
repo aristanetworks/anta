@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import ClassVar, Generic, TypeVar, cast
+from typing import Any, ClassVar, Generic, TypeVar, cast
 
 from anta._advisory.facts.models import (
     CommandsFactDefinition,
@@ -22,8 +22,8 @@ from anta._advisory.facts.models import (
 from anta._advisory.optional_commands import OptionalAntaCommand, is_unsupported_optional_command
 from anta.models import AntaCommand
 
-PackageFactT = TypeVar("PackageFactT", bound=ComponentSoftwareFact)
-HotfixFactT = TypeVar("HotfixFactT", bound=MitigationFact)
+PackageFactT = TypeVar("PackageFactT", bound="PackageVersionFact[Any]")
+HotfixFactT = TypeVar("HotfixFactT", bound="PersistentHotfixFact[Any]")
 
 
 class PackageVersionFact(ComponentSoftwareFact, CommandsFactDefinition[PackageFactT], Generic[PackageFactT]):
@@ -62,7 +62,7 @@ class PackageVersionFact(ComponentSoftwareFact, CommandsFactDefinition[PackageFa
             return cls.unavailable(FactProblemKind.MISSING, source)
         if not isinstance(version, str) or not version.strip():
             return cls.unavailable(FactProblemKind.MALFORMED, source)
-        return cls.available(cast("PackageFactT", cls(version.strip())), source)
+        return cast("PackageFactT", cls(version.strip())).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -124,7 +124,7 @@ class PersistentHotfixFact(MitigationFact, CommandsFactDefinition[HotfixFactT], 
 
         extension = extensions.get(cls.extension_name)
         if extension is None:
-            return cls.available(cast("HotfixFactT", cls(MitigationState.INEFFECTIVE)), source)
+            return cast("HotfixFactT", cls(MitigationState.INEFFECTIVE)).available(source)
         if not isinstance(extension, Mapping) or not isinstance(extension.get("status"), str):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         return extension
@@ -141,7 +141,7 @@ class PersistentHotfixFact(MitigationFact, CommandsFactDefinition[HotfixFactT], 
         if not isinstance(boot_extensions, list) or not all(isinstance(item, str) for item in boot_extensions):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         state = MitigationState.EFFECTIVE if cls.extension_name in {item.strip() for item in boot_extensions} else MitigationState.INEFFECTIVE
-        return cls.available(cast("HotfixFactT", cls(state)), source)
+        return cast("HotfixFactT", cls(state)).available(source)
 
     @classmethod
     def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[HotfixFactT]:
@@ -152,7 +152,7 @@ class PersistentHotfixFact(MitigationFact, CommandsFactDefinition[HotfixFactT], 
             return extension
         if extension["status"] != "installed":
             source = FactSource(extensions_command.command, FactSourceKind.COMMAND)
-            return cls.available(cast("HotfixFactT", cls(MitigationState.INEFFECTIVE)), source)
+            return cast("HotfixFactT", cls(MitigationState.INEFFECTIVE)).available(source)
         return cls._boot_state(boot_extensions_command)
 
 

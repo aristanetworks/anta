@@ -50,11 +50,11 @@ class P4RuntimeFact(FeatureFact, CommandsFactDefinition["P4RuntimeFact"]):
         (command,) = commands
         source = _source(command)
         if is_unsupported_optional_command(command):
-            return cls.available(cls(FeatureState.UNSUPPORTED), source)
+            return cls(FeatureState.UNSUPPORTED).available(source)
         enabled = command.json_output.get("enabled")
         if not isinstance(enabled, bool):
             return cls.unavailable(FactProblemKind.MISSING if enabled is None else FactProblemKind.MALFORMED, source)
-        return cls.available(cls(FeatureState.ENABLED if enabled else FeatureState.DISABLED), source)
+        return cls(FeatureState.ENABLED if enabled else FeatureState.DISABLED).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -72,14 +72,14 @@ class P4RuntimeAccountingFact(FeatureFact, CommandsFactDefinition["P4RuntimeAcco
         (command,) = commands
         source = _source(command)
         if is_unsupported_optional_command(command):
-            return cls.available(cls(FeatureState.UNSUPPORTED), source)
+            return cls(FeatureState.UNSUPPORTED).available(source)
         transport = command.json_output.get("transport")
         if not isinstance(transport, Mapping):
             return cls.unavailable(FactProblemKind.MISSING if transport is None else FactProblemKind.MALFORMED, source)
         enabled = transport.get("accountingRequests")
         if not isinstance(enabled, bool):
             return cls.unavailable(FactProblemKind.MISSING if enabled is None else FactProblemKind.MALFORMED, source)
-        return cls.available(cls(FeatureState.ENABLED if enabled else FeatureState.DISABLED), source)
+        return cls(FeatureState.ENABLED if enabled else FeatureState.DISABLED).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -98,13 +98,13 @@ class P4RuntimeMtlsFact(FeatureFact, CommandsFactDefinition["P4RuntimeMtlsFact"]
         p4, ssl = commands
         p4_source = _source(p4)
         if is_unsupported_optional_command(p4):
-            return cls.available(cls(FeatureState.UNSUPPORTED), p4_source)
+            return cls(FeatureState.UNSUPPORTED).available(p4_source)
         transport = p4.json_output.get("transport")
         if not isinstance(transport, Mapping):
             return cls.unavailable(FactProblemKind.MISSING if transport is None else FactProblemKind.MALFORMED, p4_source)
         profile_name = transport.get("sslProfile")
         if profile_name in (None, ""):
-            return cls.available(cls(FeatureState.DISABLED), p4_source)
+            return cls(FeatureState.DISABLED).available(p4_source)
         if not isinstance(profile_name, str):
             return cls.unavailable(FactProblemKind.MALFORMED, p4_source)
 
@@ -119,11 +119,11 @@ class P4RuntimeMtlsFact(FeatureFact, CommandsFactDefinition["P4RuntimeMtlsFact"]
             return cls.unavailable(FactProblemKind.MISSING, ssl_source)
         trusted = profile.get("trustedCertificates")
         if trusted is None or trusted == []:
-            return cls.available(cls(FeatureState.DISABLED), ssl_source)
+            return cls(FeatureState.DISABLED).available(ssl_source)
         if (
             not isinstance(trusted, Sequence)
             or isinstance(trusted, str | bytes)
             or not all(isinstance(certificate, str) and certificate.strip() for certificate in trusted)
         ):
             return cls.unavailable(FactProblemKind.MALFORMED, ssl_source)
-        return cls.available(cls(FeatureState.ENABLED), ssl_source)
+        return cls(FeatureState.ENABLED).available(ssl_source)

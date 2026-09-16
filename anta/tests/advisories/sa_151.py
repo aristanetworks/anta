@@ -27,7 +27,7 @@ from anta._advisory.findings.projection import project_vulnerability_result
 from anta._advisory.models import _AdvisoryMetadata, _AdvisoryVulnerability, _AdvisoryVulnerabilitySeverity
 from anta._advisory.optional_commands import OptionalCommandsMixin
 from anta._advisory.remediation import FixedRelease, software_version_plan
-from anta._eos.platform import PlatformFamily, PlatformIdentity
+from anta._eos.platform import PlatformFamily
 from anta._eos.version import EOSVersion
 from anta.decorators import preview_test_class
 
@@ -69,7 +69,7 @@ ADVISORY = _AdvisoryMetadata(
 VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
-def _assess_sa151(version: Fact[EOSVersion], platform: Fact[PlatformIdentity], acl: Fact[SharedSviIngressAclFact]) -> VulnerabilityResult:
+def _assess_sa151(version: Fact[EosVersionFact], platform: Fact[PlatformIdentityFact], acl: Fact[SharedSviIngressAclFact]) -> VulnerabilityResult:
     """Assess EOS, platform, and shared SVI ACL exposure."""
     if not isinstance(acl, UnavailableFact) and acl.value.state is ConfigurationState.NOT_CONFIGURED:
         return NotAffectedResult(vulnerability_id=VULNERABILITY_ID, decisive=(acl,))
@@ -111,8 +111,8 @@ class SA151(OptionalCommandsMixin, _AntaAdvisoryTest):
     class Facts(FactsBase):
         """Collected facts required to assess the advisory."""
 
-        version: Fact[EOSVersion] = fact_field(EosVersionFact)
-        platform: Fact[PlatformIdentity] = fact_field(PlatformIdentityFact)
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
+        platform: Fact[PlatformIdentityFact] = fact_field(PlatformIdentityFact)
         acl: Fact[SharedSviIngressAclFact] = fact_field(SharedSviIngressAclFact)
 
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
