@@ -31,6 +31,12 @@ def declared_command(declared: AntaCommand, output: dict[str, Any] | str | None)
     return value
 
 
+P4_RUNTIME_DISABLED_WITHOUT_TRANSPORT: tuple[dict[str, object], ...] = (
+    {"devices": {}, "enabled": False, "numClients": 0},
+    {"authzEnabled": False, "devices": {}, "enabled": False, "lastServiceStartTimeStamp": 0, "numClients": 0},
+)
+
+
 @pytest.mark.parametrize(("enabled", "state"), [(True, FeatureState.ENABLED), (False, FeatureState.DISABLED)])
 def test_p4_runtime_states(enabled: bool, state: FeatureState) -> None:
     """Normalize P4Runtime enablement."""
@@ -43,7 +49,7 @@ def test_p4_runtime_states(enabled: bool, state: FeatureState) -> None:
 @pytest.mark.parametrize(("enabled", "state"), [(True, FeatureState.ENABLED), (False, FeatureState.DISABLED)])
 def test_p4_runtime_accounting_states(enabled: bool, state: FeatureState) -> None:
     """Normalize P4Runtime request accounting."""
-    output = {"transport": {"accountingRequests": enabled}}
+    output = {"enabled": True, "transport": {"accountingRequests": enabled}}
     fact = P4RuntimeAccountingFact.derive(OfflineAntaDevice("unit-test"), (command(P4RuntimeAccountingFact, output),))
 
     assert isinstance(fact, AvailableFact)
@@ -53,10 +59,15 @@ def test_p4_runtime_accounting_states(enabled: bool, state: FeatureState) -> Non
 @pytest.mark.parametrize(
     ("p4", "ssl", "state", "source_index"),
     [
-        ({"transport": {"sslProfile": ""}}, {}, FeatureState.DISABLED, 0),
-        ({"transport": {"sslProfile": "campus"}}, {"profileStatus": {"campus": {"trustedCertificates": []}}}, FeatureState.DISABLED, 1),
+        ({"enabled": True, "transport": {"sslProfile": ""}}, {}, FeatureState.DISABLED, 0),
         (
-            {"transport": {"sslProfile": "campus"}},
+            {"enabled": True, "transport": {"sslProfile": "campus"}},
+            {"profileStatus": {"campus": {"trustedCertificates": []}}},
+            FeatureState.DISABLED,
+            1,
+        ),
+        (
+            {"enabled": True, "transport": {"sslProfile": "campus"}},
             {"profileStatus": {"campus": {"trustedCertificates": ["root-ca.crt"]}}},
             FeatureState.ENABLED,
             1,
@@ -73,13 +84,31 @@ def test_p4_runtime_mtls_states(p4: dict[str, object], ssl: dict[str, object], s
     assert fact.source.name == P4RuntimeMtlsFact.commands[source_index].command
 
 
-@pytest.mark.parametrize(("definition", "output"), [(P4RuntimeFact, {}), (P4RuntimeAccountingFact, {"transport": {}})])
+@pytest.mark.parametrize(
+    ("definition", "output"),
+    [
+        (P4RuntimeFact, {}),
+        (P4RuntimeAccountingFact, {}),
+        (P4RuntimeAccountingFact, {"enabled": True}),
+        (P4RuntimeAccountingFact, {"enabled": True, "transport": {}}),
+    ],
+)
 def test_p4_runtime_rejects_missing_fields(definition, output: dict[str, object]) -> None:  # noqa: ANN001
     """Reject incomplete P4Runtime output."""
     fact = definition.derive(OfflineAntaDevice("unit-test"), (command(definition, output),))
 
     assert isinstance(fact, UnavailableFact)
     assert fact.problem is FactProblemKind.MISSING
+
+
+@pytest.mark.parametrize("output", P4_RUNTIME_DISABLED_WITHOUT_TRANSPORT)
+@pytest.mark.parametrize("definition", [P4RuntimeFact, P4RuntimeAccountingFact])
+def test_p4_runtime_disabled_without_transport(definition: type[CommandsFactDefinition[FeatureValue]], output: dict[str, object]) -> None:
+    """Treat a disabled P4Runtime service as absent without requiring transport."""
+    fact = definition.derive(OfflineAntaDevice("unit-test"), (command(definition, output),))
+
+    assert isinstance(fact, AvailableFact)
+    assert fact.value.state is FeatureState.DISABLED
 
 
 @pytest.mark.parametrize("definition", [P4RuntimeFact, P4RuntimeAccountingFact])
@@ -111,7 +140,7 @@ def test_p4_runtime_mtls_unsupported_p4_proves_feature_absence() -> None:
 def test_p4_runtime_mtls_requires_supported_ssl_output_for_named_profile() -> None:
     """Keep SSL-profile state unavailable when a named profile cannot be inspected."""
     p4, ssl = (declared.model_copy() for declared in P4RuntimeMtlsFact.commands)
-    p4.output = {"transport": {"sslProfile": "campus"}}
+    p4.output = {"enabled": True, "transport": {"sslProfile": "campus"}}
     ssl.output = None
     ssl.errors = ["This command is not supported on this hardware platform"]
 
@@ -125,7 +154,7 @@ def test_p4_runtime_mtls_requires_supported_ssl_output_for_named_profile() -> No
 def test_p4_runtime_mtls_ignores_unsupported_ssl_without_named_profile() -> None:
     """Do not require SSL evidence after absent profile configuration proves mTLS disabled."""
     p4, ssl = (declared.model_copy() for declared in P4RuntimeMtlsFact.commands)
-    p4.output = {"transport": {"sslProfile": ""}}
+    p4.output = {"enabled": True, "transport": {"sslProfile": ""}}
     ssl.output = None
     ssl.errors = ["This command is not supported on this hardware platform"]
 
@@ -133,4 +162,32 @@ def test_p4_runtime_mtls_ignores_unsupported_ssl_without_named_profile() -> None
 
     assert isinstance(fact, AvailableFact)
     assert fact.value.state is FeatureState.DISABLED
+    assert fact.source.name == P4RuntimeMtlsFact.commands[0].command
+
+
+@pytest.mark.parametrize("output", P4_RUNTIME_DISABLED_WITHOUT_TRANSPORT)
+def test_p4_runtime_mtls_disabled_without_transport(output: dict[str, object]) -> None:
+    """Treat a disabled P4Runtime service as mTLS-absent without requiring SSL-profile data."""
+    p4, ssl = (declared.model_copy() for declared in P4RuntimeMtlsFact.commands)
+    p4.output = output
+    ssl.output = None
+    ssl.errors = ["This command is not supported on this hardware platform"]
+
+    fact = P4RuntimeMtlsFact.derive(OfflineAntaDevice("unit-test"), (p4, ssl))
+
+    assert isinstance(fact, AvailableFact)
+    assert fact.value.state is FeatureState.DISABLED
+    assert fact.source.name == P4RuntimeMtlsFact.commands[0].command
+
+
+def test_p4_runtime_mtls_rejects_missing_transport_when_enabled() -> None:
+    """Keep mTLS unavailable when an enabled service omits transport."""
+    p4, ssl = (declared.model_copy() for declared in P4RuntimeMtlsFact.commands)
+    p4.output = {"enabled": True}
+    ssl.output = {}
+
+    fact = P4RuntimeMtlsFact.derive(OfflineAntaDevice("unit-test"), (p4, ssl))
+
+    assert isinstance(fact, UnavailableFact)
+    assert fact.problem is FactProblemKind.MISSING
     assert fact.source.name == P4RuntimeMtlsFact.commands[0].command

@@ -33,6 +33,14 @@ def _source(command: AntaCommand) -> FactSource:
     return FactSource(command.command, FactSourceKind.COMMAND)
 
 
+def _p4_runtime_enabled(command: AntaCommand) -> bool | FactProblemKind:
+    """Return whether P4Runtime is enabled, or a problem if the flag is absent or invalid."""
+    enabled = command.json_output.get("enabled")
+    if not isinstance(enabled, bool):
+        return FactProblemKind.MISSING if enabled is None else FactProblemKind.MALFORMED
+    return enabled
+
+
 class P4RuntimeFact(CommandsFactDefinition[FeatureValue]):
     """Effective P4Runtime service state."""
 
@@ -47,9 +55,9 @@ class P4RuntimeFact(CommandsFactDefinition[FeatureValue]):
         source = _source(command)
         if is_unsupported_optional_command(command):
             return cls.available(FeatureValue(FeatureName.P4_RUNTIME, FeatureState.UNSUPPORTED), source)
-        enabled = command.json_output.get("enabled")
-        if not isinstance(enabled, bool):
-            return cls.unavailable(FactProblemKind.MISSING if enabled is None else FactProblemKind.MALFORMED, source)
+        enabled = _p4_runtime_enabled(command)
+        if isinstance(enabled, FactProblemKind):
+            return cls.unavailable(enabled, source)
         return cls.available(FeatureValue(FeatureName.P4_RUNTIME, FeatureState.ENABLED if enabled else FeatureState.DISABLED), source)
 
 
@@ -68,13 +76,18 @@ class P4RuntimeAccountingFact(CommandsFactDefinition[FeatureValue]):
         feature = SubFeature(FeatureName.P4_RUNTIME, "accounting")
         if is_unsupported_optional_command(command):
             return cls.available(FeatureValue(feature, FeatureState.UNSUPPORTED), source)
+        enabled = _p4_runtime_enabled(command)
+        if isinstance(enabled, FactProblemKind):
+            return cls.unavailable(enabled, source)
+        if not enabled:
+            return cls.available(FeatureValue(feature, FeatureState.DISABLED), source)
         transport = command.json_output.get("transport")
         if not isinstance(transport, Mapping):
             return cls.unavailable(FactProblemKind.MISSING if transport is None else FactProblemKind.MALFORMED, source)
-        enabled = transport.get("accountingRequests")
-        if not isinstance(enabled, bool):
-            return cls.unavailable(FactProblemKind.MISSING if enabled is None else FactProblemKind.MALFORMED, source)
-        return cls.available(FeatureValue(feature, FeatureState.ENABLED if enabled else FeatureState.DISABLED), source)
+        accounting = transport.get("accountingRequests")
+        if not isinstance(accounting, bool):
+            return cls.unavailable(FactProblemKind.MISSING if accounting is None else FactProblemKind.MALFORMED, source)
+        return cls.available(FeatureValue(feature, FeatureState.ENABLED if accounting else FeatureState.DISABLED), source)
 
 
 class P4RuntimeMtlsFact(CommandsFactDefinition[FeatureValue]):
@@ -86,13 +99,18 @@ class P4RuntimeMtlsFact(CommandsFactDefinition[FeatureValue]):
 
     @classmethod
     # pylint: disable-next=too-many-return-statements
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:  # noqa: PLR0911
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:  # noqa: C901, PLR0911
         """Normalize whether P4Runtime uses an SSL profile with trusted certificates."""
         p4, ssl = commands
         p4_source = _source(p4)
         feature = SubFeature(FeatureName.P4_RUNTIME, "mTLS")
         if is_unsupported_optional_command(p4):
             return cls.available(FeatureValue(feature, FeatureState.UNSUPPORTED), p4_source)
+        enabled = _p4_runtime_enabled(p4)
+        if isinstance(enabled, FactProblemKind):
+            return cls.unavailable(enabled, p4_source)
+        if not enabled:
+            return cls.available(FeatureValue(feature, FeatureState.DISABLED), p4_source)
         transport = p4.json_output.get("transport")
         if not isinstance(transport, Mapping):
             return cls.unavailable(FactProblemKind.MISSING if transport is None else FactProblemKind.MALFORMED, p4_source)
