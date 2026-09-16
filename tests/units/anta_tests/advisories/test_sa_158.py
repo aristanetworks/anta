@@ -132,15 +132,31 @@ def test_sa158_version_boundaries() -> None:
 
 GNPSI_VULNERABLE: dict[str, object] = {
     "enabled": True,
-    "transports": {"t2": {"enabled": True, "securityType": "tls", "authnUsernamePriority": ["x509-spiffe", "metadata", "x509-common-name"]}},
+    "transports": {
+        "t2": {"enabled": True, "securityType": "tls", "authnUsernamePriority": ["x509-spiffe", "metadata", "x509-common-name"], "configErrors": {}},
+    },
 }
 GNPSI_SAFE: dict[str, object] = {
     "enabled": True,
-    "transports": {"t2": {"enabled": True, "securityType": "mtls", "authnUsernamePriority": ["x509-spiffe"]}},
+    "transports": {"t2": {"enabled": True, "securityType": "mtls", "authnUsernamePriority": ["x509-spiffe"], "configErrors": {}}},
 }
 GNPSI_DISABLED: dict[str, object] = {
     "enabled": False,
     "transports": {"t2": {"enabled": False, "securityType": "unknown", "authnUsernamePriority": []}},
+}
+GNPSI_NON_RUNNING: dict[str, object] = {
+    "enabled": True,
+    "transports": {
+        "default": {
+            "enabled": True,
+            "running": False,
+            "port": 0,
+            "securityType": "unknown",
+            "sslProfile": "",
+            "authnUsernamePriority": [],
+            "configErrors": {"noSslProfileFound": True},
+        }
+    },
 }
 TRACE_ENABLED = "EosRpcAuth           enabled  0123456789"
 
@@ -201,6 +217,17 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.SUCCESS,
             tuple((AntaTestStatus.SUCCESS, "is disabled", None) for _ in ADVISORY.vulnerabilities),
+        ),
+    },
+    (SA158, "success-gnpsi-configured-but-not-running"): {
+        "version": build_eos_version("4.36.1F"),
+        "eos_data": [GNPSI_NON_RUNNING, GNPSI_NON_RUNNING, TRACE_ENABLED, GNPSI_NON_RUNNING],
+        "expected": expected_result(
+            AntaTestStatus.SUCCESS,
+            (
+                (AntaTestStatus.SUCCESS, "gNPSI exposed authentication mode is disabled", None),
+                (AntaTestStatus.SUCCESS, "gNPSI transport is disabled", None),
+            ),
         ),
     },
     (SA158, "success-fixed-version"): {
