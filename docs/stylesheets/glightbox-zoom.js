@@ -11,7 +11,7 @@
       return
     }
 
-    let active = false
+    let activePointerId = null
     let dragged = false
     let offsetX = 0
     let offsetY = 0
@@ -20,7 +20,7 @@
     let suppressClick = false
 
     function reset() {
-      active = false
+      activePointerId = null
       dragged = false
       offsetX = 0
       offsetY = 0
@@ -45,11 +45,11 @@
     })
 
     image.addEventListener("pointerdown", function(event) {
-      if (!slide.classList.contains("zoomed") || event.button !== 0) {
+      if (!slide.classList.contains("zoomed") || event.button !== 0 || activePointerId !== null) {
         return
       }
 
-      active = true
+      activePointerId = event.pointerId
       dragged = false
       startX = event.clientX - offsetX
       startY = event.clientY - offsetY
@@ -57,7 +57,7 @@
     })
 
     image.addEventListener("pointermove", function(event) {
-      if (!active) {
+      if (event.pointerId !== activePointerId) {
         return
       }
 
@@ -72,21 +72,26 @@
       image.style.transform = `translate3d(${offsetX}px, ${offsetY}px, 0)`
     })
 
-    image.addEventListener("pointerup", function(event) {
-      if (!active) {
+    function finishPointer(event) {
+      if (event.pointerId !== activePointerId) {
         return
       }
 
-      active = false
+      activePointerId = null
       image.classList.remove("anta-dragging")
-      image.releasePointerCapture(event.pointerId)
+      if (image.hasPointerCapture(event.pointerId)) {
+        image.releasePointerCapture(event.pointerId)
+      }
       if (dragged) {
         suppressClick = true
         window.setTimeout(function() {
           suppressClick = false
         }, 0)
       }
-    })
+    }
+
+    image.addEventListener("pointerup", finishPointer)
+    image.addEventListener("pointercancel", finishPointer)
   }
 
   function inspect(image) {
