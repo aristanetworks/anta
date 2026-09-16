@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import inspect
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
 import pytest
 
@@ -26,7 +26,7 @@ from anta._advisory.facts.models import (
 from anta._advisory.optional_commands import OptionalAntaCommand
 from anta._advisory.results import _AdvisoryTestResult, _get_advisory_metadata
 from anta._eos.version import parse_eos_version
-from anta.models import AntaCommand, AntaTemplate, AntaTest
+from anta.models import AntaCommand, AntaTest
 from anta.result_manager.models import TestResult as AntaTestResult
 from tests.units._advisory.conftest import ADVISORY
 
@@ -262,24 +262,21 @@ async def test_advisory_allows_metadata_only_facts(device: AntaDevice) -> None:
 
 def test_advisory_rejects_commands_outside_fact_fields() -> None:
     """Prevent advisory authors from bypassing fact-owned command declarations."""
+
+    @facts_dataclass
+    class Facts(FactsBase):
+        """Typed facts required by the invalid advisory."""
+
+        value: Fact[FakeCommandFact] = fact_field(FakeCommandFact)
+
+    class_namespace: dict[str, Any] = {
+        "__doc__": "Advisory that declares a command outside its fact container.",
+        "Facts": Facts,
+        "advisory": ADVISORY,
+        "commands": [AntaCommand(command="show other")],
+    }
     with pytest.raises(AttributeError, match="must declare commands through its nested Facts fields"):
-
-        class CommandsOutsideFactsAdvisoryTest(_AntaAdvisoryTest):
-            """Advisory that declares a command outside its fact container."""
-
-            @facts_dataclass
-            class Facts(FactsBase):
-                """Typed facts required by the invalid advisory."""
-
-                value: Fact[FakeCommandFact] = fact_field(FakeCommandFact)
-
-            advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
-            commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show other")]
-
-            @_AntaAdvisoryTest.anta_test
-            def test(self) -> None:
-                """Set the test result to success."""
-                self.result.is_success()
+        type("CommandsOutsideFactsAdvisoryTest", (_AntaAdvisoryTest,), class_namespace)
 
 
 def test_non_advisory_result_has_no_metadata() -> None:

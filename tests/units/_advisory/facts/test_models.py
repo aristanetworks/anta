@@ -115,14 +115,15 @@ def test_facts_base_rejects_empty_and_non_init_fact_containers() -> None:
 
 def test_facts_base_rejects_duplicate_definitions() -> None:
     """Require one uniquely identified collected fact per container field."""
+
+    class DuplicateFacts(FactsBase):
+        """Fact container that declares one definition under two names."""
+
+        first: Fact[ExampleFactDefinition] = fact_field(DEFINITION)
+        second: Fact[ExampleFactDefinition] = fact_field(DEFINITION)
+
     with pytest.raises(TypeError, match=r"fields 'first' and 'second'.*same fact definition 'ExampleFactDefinition'"):
-
-        @facts_dataclass
-        class DuplicateFacts(FactsBase):
-            """Fact container that declares one definition under two names."""
-
-            first: Fact[ExampleFactDefinition] = fact_field(DEFINITION)
-            second: Fact[ExampleFactDefinition] = fact_field(DEFINITION)
+        facts_dataclass(DuplicateFacts)
 
 
 def test_fact_definition_constructs_available_and_unavailable_facts() -> None:
@@ -140,8 +141,9 @@ def test_fact_definition_constructs_available_and_unavailable_facts() -> None:
 
 def test_fact_wrappers_reject_non_nominal_values() -> None:
     """Reject manual wrappers and contradictory observations that bypass nominal construction."""
+    non_nominal_value = cast("Any", "not a nominal fact")
     with pytest.raises(TypeError, match="must be FactDefinition instances"):
-        AvailableFact(value=cast("Any", "not a nominal fact"), source=SOURCE)
+        AvailableFact(value=non_nominal_value, source=SOURCE)
 
     observations = cast("tuple[ExampleFactDefinition, ...]", ("first", "second"))
     with pytest.raises(TypeError, match="must be instances of ExampleFactDefinition"):
