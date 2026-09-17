@@ -38,7 +38,6 @@ DOT1X_COMMAND = OptionalAntaCommand(command="show dot1x all", revision=1)
 RADIUS_PROXY_CONFIG_COMMAND = AntaCommand(command="show running-config section radius proxy", ofmt="text")
 GNSI_COMMAND = OptionalAntaCommand(command="show management api gnsi", revision=1)
 GNPSI_COMMAND = OptionalAntaCommand(command="show management api gnpsi", revision=1)
-GNPSI_TRACE_COMMAND = OptionalAntaCommand(command="show trace Gnpsi | grep Auth", ofmt="text", defer_errors=True)
 MIN_ENABLED_GNSI_TRANSPORTS = 2
 PATHZ_POLICY_COMMAND = OptionalAntaCommand(
     command="bash timeout 10 sh -c 'if test -f /persist/sys/gnsi/pathz/policy.json; then cat /persist/sys/gnsi/pathz/policy.json; else echo null; fi'",
@@ -873,72 +872,46 @@ class GnpsiAuthenticationExposureFact(CommandsFactDefinition[FeatureValue]):
         return cls.available(FeatureValue(feature, FeatureState.DISABLED), source)
 
 
-class GnpsiMutualTlsSpiffeMitigationFact(CommandsFactDefinition[MitigationValue]):
-    """Mutual TLS with exclusively x509-spiffe authentication on every enabled gNPSI transport."""
+class GnpsiMetadataAuthenticationFact(CommandsFactDefinition[FeatureValue]):
+    """gNPSI transports that accept metadata authentication credentials."""
 
-    key = "mitigation.gnpsi.mutual_tls_spiffe"
-    label = "gNPSI mutual TLS with only x509-spiffe authentication"
+    key = "feature.gnpsi.metadata_authentication"
+    label = "gNPSI metadata authentication state"
     commands = (GNPSI_COMMAND,)
 
     @classmethod
     # pylint: disable-next=too-many-return-statements
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[MitigationValue]:  # noqa: C901, PLR0911
-        """Verify the exact authentication control across every enabled transport."""
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:  # noqa: C901, PLR0911
+        """Normalize whether any enabled transport authenticates with request metadata."""
         (command,) = commands
         source = _feature_source(command)
+        feature = SubFeature(FeatureName.GNPSI, "metadata authentication")
         if is_unsupported_optional_command(command):
-            return cls.unavailable(FactProblemKind.UNSUPPORTED, source)
+            return cls.available(FeatureValue(feature, FeatureState.UNSUPPORTED), source)
         config = _deserialize_gnpsi_config(command.json_output)
         if isinstance(config, FactProblemKind):
             return cls.unavailable(config, source)
         if not isinstance(config.enabled, bool):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         if not config.enabled:
-            return cls.available(MitigationValue(MitigationState.INEFFECTIVE), source)
+            return cls.available(FeatureValue(feature, FeatureState.DISABLED), source)
         if any(not isinstance(transport.enabled, bool) for transport in config.transports):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         enabled_transports = tuple(transport for transport in config.transports if transport.enabled is True)
         if not enabled_transports:
-            return cls.available(MitigationValue(MitigationState.INEFFECTIVE), source)
+            return cls.available(FeatureValue(feature, FeatureState.DISABLED), source)
         problem: FactProblemKind | None = None
         for transport in enabled_transports:
             authentication = _gnpsi_authentication(transport)
             if isinstance(authentication, FactProblemKind):
                 problem = authentication if problem is None or authentication is FactProblemKind.MALFORMED else problem
                 continue
-            security_type, methods = authentication
-            if security_type not in {"mtls", "mutualtls", "tlsmutual"} or methods != {"x509-spiffe"}:
-                return cls.available(MitigationValue(MitigationState.INEFFECTIVE), source)
+            _, methods = authentication
+            if "metadata" in methods:
+                return cls.available(FeatureValue(feature, FeatureState.ENABLED), source)
         if problem is not None:
             return cls.unavailable(problem, source)
-        return cls.available(MitigationValue(MitigationState.EFFECTIVE), source)
-
-
-class GnpsiEosRpcAuthTraceFact(CommandsFactDefinition[FeatureValue]):
-    """Explicit gNPSI EosRpcAuth trace state."""
-
-    key = "feature.gnpsi.eos_rpc_auth_trace"
-    label = "gNPSI EosRpcAuth trace state"
-    commands = (GNPSI_TRACE_COMMAND,)
-
-    @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
-        """Normalize the explicit trace-facility status."""
-        (command,) = commands
-        source = _feature_source(command)
-        feature = SubFeature(FeatureName.GNPSI, "EosRpcAuth trace")
-        if is_unsupported_optional_command(command):
-            return cls.available(FeatureValue(feature, FeatureState.UNSUPPORTED), source)
-        if command.error:
-            return cls.unavailable(FactProblemKind.COLLECTION_FAILED, source)
-        output = command.text_output.strip()
-        if not output:
-            return cls.available(FeatureValue(feature, FeatureState.DISABLED), source)
-        enabled = re.search(r"^EosRpcAuth\s+enabled\b", output, re.MULTILINE) is not None
-        disabled = re.search(r"^EosRpcAuth\s+disabled\b", output, re.MULTILINE) is not None
-        if enabled == disabled:
-            return cls.unavailable(FactProblemKind.MALFORMED, source)
-        return cls.available(FeatureValue(feature, FeatureState.ENABLED if enabled else FeatureState.DISABLED), source)
+        return cls.available(FeatureValue(feature, FeatureState.DISABLED), source)
 
 
 @dataclass(frozen=True, slots=True)
