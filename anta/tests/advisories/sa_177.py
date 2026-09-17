@@ -65,6 +65,7 @@ AFFECTED_PLATFORM_FAMILIES = frozenset(
         PlatformFamily.SERIES_7300_X3,
         PlatformFamily.SERIES_7320_X,
         PlatformFamily.SERIES_7358_X4,
+        PlatformFamily.SERIES_7368_X4,
         PlatformFamily.SERIES_7388_X5,
         PlatformFamily.SERIES_7500_R,
         PlatformFamily.SERIES_7500_R2,
@@ -78,7 +79,7 @@ AFFECTED_PLATFORM_FAMILIES = frozenset(
 
 ADVISORY = _AdvisoryMetadata(
     sa_number="0177",
-    last_updated=date(2026, 9, 9),
+    last_updated=date(2026, 9, 17),
     title="Security Advisory 0177",
     vulnerabilities=(
         _AdvisoryVulnerability(
