@@ -67,8 +67,10 @@ class _GnpsiTransport:
     """Deserialized gNPSI transport fields without fact-specific interpretation."""
 
     enabled: object
+    running: object
     security_type: object
     authentication_methods: object
+    config_errors: object
 
 
 @dataclass(frozen=True, slots=True)
@@ -110,11 +112,48 @@ def _deserialize_gnpsi_config(output: Mapping[str, object]) -> _GnpsiConfig | Fa
         parsed.append(
             _GnpsiTransport(
                 enabled=transport.get("enabled"),
+                running=transport.get("running"),
                 security_type=transport.get("securityType"),
                 authentication_methods=transport.get("authnUsernamePriority"),
+                config_errors=transport.get("configErrors"),
             )
         )
     return _GnpsiConfig(enabled=output["enabled"], transports=tuple(parsed))
+
+
+def _gnpsi_config_errors_present(value: object) -> bool | FactProblemKind:
+    """Return whether a candidate transport reports a truthy configuration error."""
+    if not isinstance(value, Mapping) or not all(isinstance(error, bool) for error in value.values()):
+        return FactProblemKind.MALFORMED
+    return any(value.values())
+
+
+def _effective_gnpsi_transports(transports: tuple[_GnpsiTransport, ...]) -> tuple[_GnpsiTransport, ...] | FactProblemKind:
+    """Return transports that can currently accept gNPSI requests.
+
+    Configured enablement is not enough: EOS can report ``enabled: true`` while ``running`` is
+    false and ``configErrors`` is populated. Explicit ``running: false`` makes the transport
+    ineffective without requiring ``configErrors``. A missing ``running`` field stays a candidate so
+    partial JSON cannot collapse into a false negative. A candidate with missing or invalid
+    ``configErrors`` is malformed.
+    """
+    if any(not isinstance(transport.enabled, bool) for transport in transports):
+        return FactProblemKind.MALFORMED
+    effective: list[_GnpsiTransport] = []
+    for transport in transports:
+        if transport.enabled is not True:
+            continue
+        if transport.running is not None and not isinstance(transport.running, bool):
+            return FactProblemKind.MALFORMED
+        if transport.running is False:
+            continue
+        config_errors = _gnpsi_config_errors_present(transport.config_errors)
+        if isinstance(config_errors, FactProblemKind):
+            return config_errors
+        if config_errors:
+            continue
+        effective.append(transport)
+    return tuple(effective)
 
 
 def _gnpsi_security_type(value: str) -> str:
@@ -123,7 +162,7 @@ def _gnpsi_security_type(value: str) -> str:
 
 
 def _gnpsi_authentication(transport: _GnpsiTransport) -> tuple[str, frozenset[str]] | FactProblemKind:
-    """Return validated security and authentication fields for one enabled transport."""
+    """Return validated security and authentication fields for one effective transport."""
     if transport.security_type is None or transport.authentication_methods is None:
         return FactProblemKind.MISSING
     if not isinstance(transport.security_type, str) or (
@@ -814,7 +853,7 @@ class GnpsiTransportFact(CommandsFactDefinition[FeatureValue]):
 
     @classmethod
     def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
-        """Normalize enabled transports and the explicit disabled state."""
+        """Normalize running transports and the explicit disabled state."""
         (command,) = commands
         source = _feature_source(command)
         feature = SubFeature(FeatureName.GNPSI, "transport")
@@ -825,7 +864,12 @@ class GnpsiTransportFact(CommandsFactDefinition[FeatureValue]):
             return cls.unavailable(config, source)
         if not isinstance(config.enabled, bool):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
-        state = FeatureState.ENABLED if config.enabled else FeatureState.DISABLED
+        if not config.enabled:
+            return cls.available(FeatureValue(feature, FeatureState.DISABLED), source)
+        effective = _effective_gnpsi_transports(config.transports)
+        if isinstance(effective, FactProblemKind):
+            return cls.unavailable(effective, source)
+        state = FeatureState.ENABLED if effective else FeatureState.DISABLED
         return cls.available(FeatureValue(feature, state), source)
 
 
@@ -852,13 +896,13 @@ class GnpsiAuthenticationExposureFact(CommandsFactDefinition[FeatureValue]):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         if not config.enabled:
             return cls.available(FeatureValue(feature, FeatureState.DISABLED), source)
-        if any(not isinstance(transport.enabled, bool) for transport in config.transports):
-            return cls.unavailable(FactProblemKind.MALFORMED, source)
-        enabled_transports = tuple(transport for transport in config.transports if transport.enabled is True)
-        if not enabled_transports:
+        effective_transports = _effective_gnpsi_transports(config.transports)
+        if isinstance(effective_transports, FactProblemKind):
+            return cls.unavailable(effective_transports, source)
+        if not effective_transports:
             return cls.available(FeatureValue(feature, FeatureState.DISABLED), source)
         problem: FactProblemKind | None = None
-        for transport in enabled_transports:
+        for transport in effective_transports:
             authentication = _gnpsi_authentication(transport)
             if isinstance(authentication, FactProblemKind):
                 problem = authentication if problem is None or authentication is FactProblemKind.MALFORMED else problem
@@ -874,7 +918,7 @@ class GnpsiAuthenticationExposureFact(CommandsFactDefinition[FeatureValue]):
 
 
 class GnpsiMutualTlsSpiffeMitigationFact(CommandsFactDefinition[MitigationValue]):
-    """Mutual TLS with exclusively x509-spiffe authentication on every enabled gNPSI transport."""
+    """Mutual TLS with exclusively x509-spiffe authentication on every effective gNPSI transport."""
 
     key = "mitigation.gnpsi.mutual_tls_spiffe"
     label = "gNPSI mutual TLS with only x509-spiffe authentication"
@@ -883,7 +927,7 @@ class GnpsiMutualTlsSpiffeMitigationFact(CommandsFactDefinition[MitigationValue]
     @classmethod
     # pylint: disable-next=too-many-return-statements
     def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[MitigationValue]:  # noqa: C901, PLR0911
-        """Verify the exact authentication control across every enabled transport."""
+        """Verify the exact authentication control across every effective transport."""
         (command,) = commands
         source = _feature_source(command)
         if is_unsupported_optional_command(command):
@@ -895,13 +939,13 @@ class GnpsiMutualTlsSpiffeMitigationFact(CommandsFactDefinition[MitigationValue]
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         if not config.enabled:
             return cls.available(MitigationValue(MitigationState.INEFFECTIVE), source)
-        if any(not isinstance(transport.enabled, bool) for transport in config.transports):
-            return cls.unavailable(FactProblemKind.MALFORMED, source)
-        enabled_transports = tuple(transport for transport in config.transports if transport.enabled is True)
-        if not enabled_transports:
+        effective_transports = _effective_gnpsi_transports(config.transports)
+        if isinstance(effective_transports, FactProblemKind):
+            return cls.unavailable(effective_transports, source)
+        if not effective_transports:
             return cls.available(MitigationValue(MitigationState.INEFFECTIVE), source)
         problem: FactProblemKind | None = None
-        for transport in enabled_transports:
+        for transport in effective_transports:
             authentication = _gnpsi_authentication(transport)
             if isinstance(authentication, FactProblemKind):
                 problem = authentication if problem is None or authentication is FactProblemKind.MALFORMED else problem
