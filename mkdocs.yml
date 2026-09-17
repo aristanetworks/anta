@@ -172,6 +172,7 @@ nav:
   - Inventory and Test catalog: usage-inventory-catalog.md
   - ANTA CLI:
       - Overview: cli/overview.md
+      - Bug Compliance: cli/bug.md
       - NRFU: cli/nrfu.md
       - Execute commands: cli/exec.md
       - Inventory from CVP: cli/inv-from-cvp.md
