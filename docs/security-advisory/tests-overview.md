@@ -31,7 +31,7 @@ page.
 | Security Advisory 0180 | | N/A | VeloCloud; not covered by ANTA |
 | Security Advisory 0179 | | N/A | VeloCloud; not covered by ANTA |
 | Security Advisory 0178 | 2026-09-09 | v1.10 | |
-| Security Advisory 0177 | 2026-09-09 | v1.10 | |
+| Security Advisory 0177 | 2026-09-17 | v1.10 | |
 | Security Advisory 0176 | 2026-09-09 | v1.10 | |
 | Security Advisory 0175 | 2026-09-09 | v1.10 | |
 | Security Advisory 0174 | 2026-09-09 | v1.10 | |
