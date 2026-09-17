@@ -21,7 +21,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install dependencies
-        run: pip install . --group dev
+        run: pip install . --group dev --group benchmark
       - name: Run benchmarks
         uses: CodSpeedHQ/action@373d6868929f444bc08d901fd0eb0ad52a8875ea # v5.2.1
         with:
