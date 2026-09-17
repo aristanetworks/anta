@@ -143,9 +143,11 @@ class SA158(OptionalCommandsMixin, _AntaAdvisoryTest):
     * Error: Required EOS, gNPSI transport, or authentication state cannot be determined.
 
     CVE-2026-73456 evaluates TLS metadata and mTLS common-name authentication. CVE-2026-73457 evaluates metadata
-    authentication on an affected release. EosRpcAuth trace state is not used: the Gnpsi agent reports that facility
-    only once a subscription is active, and timed exec can enable tracing later. Per the advisory assessment decision,
-    future operator actions and unobservable triggering do not prevent an affected result.
+    authentication on an affected release. Exclusive mTLS with only x509-spiffe is not affected: the password-disclosure
+    path is absent, which the assessment decision treats as not affected rather than mitigated. EosRpcAuth trace state
+    is not used: ``show trace Gnpsi`` can be empty until the agent has handled gNPSI work, and it can still report the
+    facility after a subscription that is no longer active. Timed exec can enable tracing later. Future operator actions
+    and unobservable triggering do not prevent an affected result.
 
     Examples
     --------
