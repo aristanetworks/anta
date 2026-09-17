@@ -13,18 +13,15 @@ from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import (
     GnpsiAuthenticationExposureFact,
-    GnpsiEosRpcAuthTraceFact,
-    GnpsiMutualTlsSpiffeMitigationFact,
+    GnpsiMetadataAuthenticationFact,
     GnpsiTransportFact,
 )
-from anta._advisory.facts.models import AvailableFact, Fact, FactDefinition, FeatureState, FeatureValue, MitigationState, MitigationValue, UnavailableFact
+from anta._advisory.facts.models import AvailableFact, Fact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
 from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import (
     AffectedResult,
     EosReleaseAssessment,
     ErrorResult,
-    MitigatedCondition,
-    MitigatedResult,
     NotAffectedResult,
     VulnerabilityResult,
 )
@@ -92,7 +89,7 @@ def _assess_gnpsi_issue(
     transport: Fact[FeatureValue],
     prerequisite: Fact[FeatureValue],
 ) -> VulnerabilityResult:
-    """Assess one gNPSI issue after its independent prerequisite is normalized."""
+    """Assess one gNPSI code-execution issue after its independent prerequisite is normalized."""
     if not isinstance(prerequisite, UnavailableFact) and prerequisite.value.state is not FeatureState.ENABLED:
         return NotAffectedResult(vulnerability_id=vulnerability_id, decisive=(prerequisite,))
     if not isinstance(transport, UnavailableFact) and transport.value.state is not FeatureState.ENABLED:
@@ -114,35 +111,24 @@ def _assess_gnpsi_issue(
 def _assess_logging_issue(
     version: Fact[EOSVersion],
     transport: Fact[FeatureValue],
-    trace: Fact[FeatureValue],
-    authentication_mitigation: Fact[MitigationValue],
+    metadata: Fact[FeatureValue],
 ) -> VulnerabilityResult:
-    """Assess credential logging and the exact source-defined authentication mitigation."""
-    if not isinstance(trace, UnavailableFact) and trace.value.state is not FeatureState.ENABLED:
-        return NotAffectedResult(vulnerability_id=LOGGING_ID, decisive=(trace,))
+    """Assess credential logging when metadata authentication is configured."""
+    if not isinstance(metadata, UnavailableFact) and metadata.value.state is not FeatureState.ENABLED:
+        return NotAffectedResult(vulnerability_id=LOGGING_ID, decisive=(metadata,))
     if not isinstance(transport, UnavailableFact) and transport.value.state is not FeatureState.ENABLED:
         return NotAffectedResult(vulnerability_id=LOGGING_ID, decisive=(transport,))
     eos_release = assess_eos_scope(LOGGING_ID, version, AFFECTED_VERSION_MATRIX)
     if not isinstance(eos_release, EosReleaseAssessment):
         return eos_release
-    problems = tuple(fact for fact in (transport, trace, authentication_mitigation) if isinstance(fact, UnavailableFact))
+    problems = tuple(fact for fact in (transport, metadata) if isinstance(fact, UnavailableFact))
     if problems:
         return ErrorResult(vulnerability_id=LOGGING_ID, problems=problems)
-    remediation = _logging_remediation_plan(eos_release.fact.value)
-    available_trace = cast("AvailableFact[FeatureValue]", trace)
-    available_mitigation = cast("AvailableFact[MitigationValue]", authentication_mitigation)
-    if available_mitigation.value.state is MitigationState.EFFECTIVE:
-        return MitigatedResult(
-            vulnerability_id=LOGGING_ID,
-            mitigated_conditions=(MitigatedCondition(condition=available_trace, mitigations=(available_mitigation,)),),
-            context=(eos_release,),
-            remediation=remediation,
-        )
     return AffectedResult(
         vulnerability_id=LOGGING_ID,
-        conditions=(cast("AvailableFact[FeatureValue]", transport), available_trace),
+        conditions=(cast("AvailableFact[FeatureValue]", transport), cast("AvailableFact[FeatureValue]", metadata)),
         context=(eos_release,),
-        remediation=remediation,
+        remediation=_logging_remediation_plan(eos_release.fact.value),
     )
 
 
@@ -152,13 +138,16 @@ class SA158(OptionalCommandsMixin, _AntaAdvisoryTest):
 
     Expected Results
     ----------------
-    * Success: EOS is outside scope, gNPSI is disabled, or the issue-specific authentication or trace prerequisite is absent.
-    * Failure: An affected EOS release has an enabled gNPSI transport and the issue-specific prerequisite.
-    * Mitigated: Credential tracing is enabled, but every enabled transport uses mutual TLS with only x509-spiffe authentication.
-    * Error: Required EOS, gNPSI transport, authentication, or trace state cannot be determined.
+    * Success: EOS is outside scope, gNPSI is disabled, or the issue-specific authentication prerequisite is absent.
+    * Failure: An affected EOS release has an enabled gNPSI transport and the issue-specific authentication prerequisite.
+    * Error: Required EOS, gNPSI transport, or authentication state cannot be determined.
 
-    CVE-2026-73456 evaluates TLS or mTLS authentication combinations. CVE-2026-73457 evaluates explicit EosRpcAuth tracing and the
-    source-defined mutual-TLS/x509-spiffe mitigation across every enabled transport.
+    CVE-2026-73456 evaluates TLS metadata and mTLS common-name authentication. CVE-2026-73457 evaluates metadata
+    authentication on an affected release. Exclusive mTLS with only x509-spiffe is not affected: the password-disclosure
+    path is absent, which the assessment decision treats as not affected rather than mitigated. EosRpcAuth trace state
+    is not used: ``show trace Gnpsi`` can be empty until the agent has handled gNPSI work, and it can still report the
+    facility after a subscription that is no longer active. Timed exec can enable tracing later. Future operator actions
+    and unobservable triggering do not prevent an affected result.
 
     Examples
     --------
@@ -173,8 +162,7 @@ class SA158(OptionalCommandsMixin, _AntaAdvisoryTest):
         EosVersionFact,
         GnpsiTransportFact,
         GnpsiAuthenticationExposureFact,
-        GnpsiEosRpcAuthTraceFact,
-        GnpsiMutualTlsSpiffeMitigationFact,
+        GnpsiMetadataAuthenticationFact,
     )
     description = "Verify whether the device is impacted by Security Advisory 0158."
     _atomic_support = True
@@ -186,15 +174,7 @@ class SA158(OptionalCommandsMixin, _AntaAdvisoryTest):
         transport = self.fact(GnpsiTransportFact)
         findings = (
             (CODE_EXECUTION_ID, _assess_gnpsi_issue(CODE_EXECUTION_ID, version, transport, self.fact(GnpsiAuthenticationExposureFact))),
-            (
-                LOGGING_ID,
-                _assess_logging_issue(
-                    version,
-                    transport,
-                    self.fact(GnpsiEosRpcAuthTraceFact),
-                    self.fact(GnpsiMutualTlsSpiffeMitigationFact),
-                ),
-            ),
+            (LOGGING_ID, _assess_logging_issue(version, transport, self.fact(GnpsiMetadataAuthenticationFact))),
         )
         for vulnerability_id, finding in findings:
             atomic = self.result.add(f"Verify {vulnerability_id}.", vulnerability_ids=(vulnerability_id,))
