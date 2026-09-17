@@ -672,6 +672,18 @@ def test_gnsi_absent_newer_service_field_is_missing_on_supported_eos(
 
 @pytest.mark.parametrize(
     ("output", "problem"),
+    [({}, FactProblemKind.MISSING), ({"acctzEnabled": None}, FactProblemKind.MALFORMED), ({"acctzEnabled": "yes"}, FactProblemKind.MALFORMED)],
+)
+def test_gnsi_acctz_invalid_output(device: OfflineAntaDevice, output: dict[str, object], problem: FactProblemKind) -> None:
+    """Reject missing and malformed Acctz state."""
+    fact = GnsiAcctzFact.derive(device, (gnsi_command(output),))
+
+    assert isinstance(fact, UnavailableFact)
+    assert fact.problem is problem
+
+
+@pytest.mark.parametrize(
+    ("output", "problem"),
     [({}, FactProblemKind.MISSING), ({"pathzEnabled": None}, FactProblemKind.MALFORMED), ({"pathzEnabled": "yes"}, FactProblemKind.MALFORMED)],
 )
 def test_gnsi_pathz_invalid_output(device: OfflineAntaDevice, output: dict[str, object], problem: FactProblemKind) -> None:
