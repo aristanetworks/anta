@@ -22,6 +22,30 @@ anta.tests.aaa:
         - exec
         - commands
         - dot1x
+  - VerifyAcctMethods:
+      # Verifies the AAA accounting method lists for different accounting types (commands, exec, system, dot1x).
+      accounting:
+        - acct_type: commands
+          method_configs:
+            - name: all
+              default_methods:
+                - tacacs+
+                - logging
+              console_methods:
+                - tacacs+
+                - logging
+        - acct_type: exec
+          method_configs:
+            - name: exec
+              default_methods:
+                - tacacs+
+                - logging
+        - acct_type: system
+          method_configs:
+            - name: system
+              default_methods:
+                - tacacs+
+                - logging
   - VerifyAuthenMethods:
       # Verifies the AAA authentication method lists for different authentication types (login, enable, dot1x).
       methods:
