@@ -26,7 +26,12 @@ class PlatformIdentityFact(PlatformIdentity, FactDefinition["PlatformIdentityFac
     @classmethod
     def from_identity(cls, platform: PlatformIdentity) -> PlatformIdentityFact:
         """Create the nominal fact value from normalized platform identity."""
-        return cls(platform.model, platform.type, platform.modules, platform.platform_families)
+        return cls(
+            model=platform.model,
+            type=platform.type,
+            modules=platform.modules,
+            platform_families=platform.platform_families,
+        )
 
     @classmethod
     def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[PlatformIdentityFact]:
@@ -51,7 +56,12 @@ class SwitchCardIdentityFact(PlatformComponentIdentity, FactDefinition["SwitchCa
     @classmethod
     def from_identity(cls, card: PlatformComponentIdentity) -> SwitchCardIdentityFact:
         """Create the nominal fact value from normalized switch-card identity."""
-        return cls(card.model, card.role, card.slot, card.platform_families)
+        return cls(
+            model=card.model,
+            role=card.role,
+            slot=card.slot,
+            platform_families=card.platform_families,
+        )
 
     @classmethod
     def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[SwitchCardIdentityFact]:

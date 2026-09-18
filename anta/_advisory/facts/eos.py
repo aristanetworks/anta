@@ -37,7 +37,7 @@ class EosVersionFact(EOSVersion, FactDefinition["EosVersionFact"]):
     @classmethod
     def from_version(cls, version: EOSVersion) -> EosVersionFact:
         """Create the nominal fact value from an already normalized EOS version."""
-        return cls(version.major, version.minor, version.patch, version.suffix, version.hotfix)
+        return cls(major=version.major, minor=version.minor, patch=version.patch, suffix=version.suffix, hotfix=version.hotfix)
 
     def __eq__(self, other: object) -> bool:
         """Compare release components with any normalized EOS version.
