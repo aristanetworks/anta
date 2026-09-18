@@ -41,7 +41,7 @@ OVERLAPPING_POLICY = '{"rules": [{"user": "alice", "path": {"elem": [{"name": "i
 DISJOINT_POLICY = '{"rules": [{"user": "alice", "path": {"elem": [{"name": "interfaces"}]}}, {"group": "operators", "path": {"elem": [{"name": "system"}]}}]}'
 
 
-DATA: AntaUnitTestData = {
+_DATA: AntaUnitTestData = {
     (SA164, "affected-overlapping-policy"): {
         "version": build_eos_version("4.35.5M"),
         "eos_data": [{"transports": {"default": {"enabled": True}}}, {"pathzEnabled": True}, OVERLAPPING_POLICY],

@@ -49,7 +49,7 @@ def gnsi_eos_data(output: dict[str, Any]) -> list[dict[str, Any] | str]:
     return [output, output, output]
 
 
-DATA: AntaUnitTestData = {
+_DATA: AntaUnitTestData = {
     (SA169, "inconclusive-prerequisites-active"): {
         "version": build_eos_version("4.35.5M"),
         "eos_data": gnsi_eos_data(gnsi(enabled_transports=1, authz=True)),

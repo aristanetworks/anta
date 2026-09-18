@@ -38,7 +38,7 @@ EXPECTED_4_32_REMEDIATION = software_version_plan(EXPECTED_FIXED_RELEASES, curre
 expected_result = partial(build_expected_advisory_result, ADVISORY.vulnerabilities[0].id)
 
 
-DATA: AntaUnitTestData = {
+_DATA: AntaUnitTestData = {
     (SA175, "failure-canonical-ipv4-sparse-mode"): {
         "version": build_eos_version("4.35.5M"),
         "eos_data": ["pim ipv4 sparse-mode"],

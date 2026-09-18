@@ -50,7 +50,7 @@ def run_tests(ctx: click.Context) -> AntaRunContext:
     inventory: AntaInventory = ctx.obj["inventory"]
 
     print_settings(inventory, catalog)
-    with anta_progress_bar() as AntaTest.progress:
+    with anta_progress_bar(ctx.obj["progress_spinner"]) as AntaTest.progress:
         runner = AntaRunner()
         filters = AntaRunFilters(
             devices=set(device) if device else None,
@@ -233,11 +233,29 @@ SPINNERS["anta"] = {
     ],
 }
 
+# Adding our own security spinner
+SPINNERS["security"] = {
+    "interval": 150,
+    "frames": [
+        "(🔍   🥷)",
+        "( 🔍  🥷)",
+        "(  🔍 🥷)",
+        "(   🔍🥷)",
+        "(     💥)",
+        "(     🚨)",
+        "(    🛡️ )",
+        "(   🛡️  )",
+        "(  🛡️   )",
+        "( 🛡️    )",
+        "(🛡️     )",
+    ],
+}
 
-def anta_progress_bar() -> Progress:
+
+def anta_progress_bar(spinner_name: str = "anta") -> Progress:
     """Return a customized Progress for progress bar."""
     return Progress(
-        SpinnerColumn("anta"),
+        SpinnerColumn(spinner_name),
         TextColumn("•"),
         TextColumn("{task.description}[progress.percentage]{task.percentage:>3.0f}%"),
         BarColumn(bar_width=None),

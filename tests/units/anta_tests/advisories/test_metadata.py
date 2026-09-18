@@ -25,9 +25,6 @@ if TYPE_CHECKING:
     from anta.device import AntaDevice
 
 
-ADVISORY_TEST_CLASSES = (SA117, SA140, SA142, SA146, SA147)
-
-
 def test_published_advisory_metadata() -> None:
     """Verify stable identifiers, URLs, descriptions, and vulnerability metadata."""
     cases = (
@@ -128,10 +125,10 @@ def test_published_advisories_emit_one_shared_preview_warning(caplog: pytest.Log
     """Verify advisory tests emit one shared preview warning."""
     caplog.set_level(logging.WARNING)
 
-    for test_class in ADVISORY_TEST_CLASSES:
+    for test_class in _ADVISORY_TESTS:
         test_class(device)
 
-    assert caplog.messages.count("Security Advisory tests are in preview") == 1
+    assert caplog.messages == ["Security Advisory tests are in preview"]
 
 
 def test_sa148_advance_notice_severities() -> None:

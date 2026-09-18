@@ -69,7 +69,7 @@ def test_sa170_version_boundaries() -> None:
     )
 
 
-DATA: AntaUnitTestData = {
+_DATA: AntaUnitTestData = {
     (SA170, "failure-authorized-gnmi"): {
         "version": build_eos_version("4.36.0.1F"),
         "eos_data": [{"enabled": True, "authorization": True}],

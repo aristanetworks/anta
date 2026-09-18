@@ -160,6 +160,7 @@ def psirt(
     ctx.obj["test"] = test
     ctx.obj["dry_run"] = dry_run
     ctx.obj["disconnect"] = True
+    ctx.obj["progress_spinner"] = "security"
 
 
 psirt.add_command(nrfu_commands.tpl_report)

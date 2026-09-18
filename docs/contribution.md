@@ -38,7 +38,7 @@ $ pip install -e ".[cli]" --group dev
     $ pip list -e
     Package Version Editable project location
     ------- ------- -------------------------
-    anta    1.10.0.dev6   /mnt/lab/projects/anta
+    anta    1.10.0   /mnt/lab/projects/anta
     ```
 
 Then, [`tox`](https://tox.wiki/) is configured with a few environments to run CI locally:
@@ -401,7 +401,7 @@ git diff --exit-code -- docs/snippets
 test -z "$(git status --porcelain -- docs/snippets)"
 ```
 
-The `doc-snippets` pre-commit hook runs the generator for CLI changes, and CI runs the same freshness check before building the documentation.
+The `doc-snippets` pre-commit hook runs the generator for CLI changes, and the autofix workflow commits any updated snippets to the pull request.
 
 ### Curated class diagram
 

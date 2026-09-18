@@ -27,7 +27,6 @@ from tests.units.anta_tests import build_eos_platform, build_eos_version, test
 from tests.units.anta_tests.advisories import build_expected_advisory_result
 
 if TYPE_CHECKING:
-    from anta._eos.platform import PlatformIdentity
     from tests.units.anta_tests import AntaUnitTestData
 
 SOURCE = FactSource("unit test", FactSourceKind.DEVICE_METADATA)
@@ -48,7 +47,7 @@ MLAG_CONFIGURED = {
 MLAG_NOT_CONFIGURED: dict[str, object] = {}
 
 
-DATA: AntaUnitTestData = {
+_DATA: AntaUnitTestData = {
     (SA177, "affected-pim-and-active-mlag"): {
         "version": build_eos_version("4.35.5M"),
         "platform": build_eos_platform("cEOSLab"),
@@ -77,6 +76,17 @@ DATA: AntaUnitTestData = {
         "platform": None,
         "eos_data": ["pim ipv4 sparse-mode", MLAG_CONFIGURED],
         "expected": expected(AntaTestStatus.SUCCESS, "The device is not affected because EOS version '4.35.6M' is outside the affected releases", None),
+    },
+    (SA177, "affected-7368x4-switch-card"): {
+        "version": build_eos_version("4.35.5M"),
+        "platform": build_eos_platform("DCS-7368-CH", {"modules": {"Switchcard1": {"modelName": "7368X4-SC"}}}),
+        "eos_data": ["pim ipv4 sparse-mode", MLAG_CONFIGURED],
+        "expected": expected(
+            AntaTestStatus.FAILURE,
+            "The device is affected because EOS version '4.35.5M' is affected, platform 'DCS-7368-CH' is within the affected platform scope, "
+            "the PIM sparse-mode interface is enabled, and the MLAG configuration is enabled",
+            EXPECTED_REMEDIATION,
+        ),
     },
     (SA177, "not-affected-platform"): {
         "version": None,
@@ -121,11 +131,11 @@ def version_fact(version: str | None) -> Fact[EosVersionFact]:
     return EosVersionFact.from_version(parse_eos_version(version).unwrap()).available(SOURCE)
 
 
-def platform_fact(model: str | None) -> Fact[PlatformIdentityFact]:
+def platform_fact(model: str | None, modules: dict[str, object] | None = None) -> Fact[PlatformIdentityFact]:
     """Build a platform identity fact."""
     if model is None:
         return PlatformIdentityFact.unavailable(FactProblemKind.MISSING, SOURCE)
-    platform = build_eos_platform(model)
+    platform = build_eos_platform(model, modules)
     assert platform is not None
     return PlatformIdentityFact.from_identity(platform).available(SOURCE)
 
@@ -188,6 +198,7 @@ class TestSA177Assessment(unittest.TestCase):
             PlatformFamily.SERIES_7300_X3,
             PlatformFamily.SERIES_7320_X,
             PlatformFamily.SERIES_7358_X4,
+            PlatformFamily.SERIES_7368_X4,
             PlatformFamily.SERIES_7388_X5,
             PlatformFamily.SERIES_7500_R,
             PlatformFamily.SERIES_7500_R2,
@@ -205,6 +216,15 @@ class TestSA177Assessment(unittest.TestCase):
         mlag_not_configured = mlag_fact(FeatureState.DISABLED)
 
         assert isinstance(_assess_sa177(version_fact("4.35.5M"), platform_fact("cEOSLab"), pim_enabled, mlag_configured), AffectedResult)
+        assert isinstance(
+            _assess_sa177(
+                version_fact("4.35.5M"),
+                platform_fact("DCS-7368-CH", {"modules": {"Switchcard1": {"modelName": "7368X4-SC"}}}),
+                pim_enabled,
+                mlag_configured,
+            ),
+            AffectedResult,
+        )
         assert isinstance(_assess_sa177(version_fact(None), platform_fact(None), pim_disabled, mlag_configured), NotAffectedResult)
         assert isinstance(_assess_sa177(version_fact(None), platform_fact(None), pim_enabled, mlag_not_configured), NotAffectedResult)
         assert isinstance(_assess_sa177(version_fact("4.35.6M"), platform_fact(None), pim_enabled, mlag_configured), NotAffectedResult)

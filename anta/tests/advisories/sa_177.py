@@ -9,7 +9,7 @@ from __future__ import annotations
 from datetime import date
 from typing import ClassVar
 
-from anta._advisory.base import _AntaAdvisoryTest
+from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.models import Fact, FactsBase, FeatureState, UnavailableFact, fact_field, facts_dataclass
@@ -65,6 +65,7 @@ AFFECTED_PLATFORM_FAMILIES = frozenset(
         PlatformFamily.SERIES_7300_X3,
         PlatformFamily.SERIES_7320_X,
         PlatformFamily.SERIES_7358_X4,
+        PlatformFamily.SERIES_7368_X4,
         PlatformFamily.SERIES_7388_X5,
         PlatformFamily.SERIES_7500_R,
         PlatformFamily.SERIES_7500_R2,
@@ -78,7 +79,7 @@ AFFECTED_PLATFORM_FAMILIES = frozenset(
 
 ADVISORY = _AdvisoryMetadata(
     sa_number="0177",
-    last_updated=date(2026, 9, 9),
+    last_updated=date(2026, 9, 17),
     title="Security Advisory 0177",
     vulnerabilities=(
         _AdvisoryVulnerability(
@@ -135,7 +136,7 @@ def _assess_sa177(  # noqa: PLR0911
     )
 
 
-@preview_test_class
+@preview_test_class(warning_message=_PREVIEW_WARNING)
 class SA177(OptionalCommandsMixin, _AntaAdvisoryTest):
     """Verify whether the device is impacted by Security Advisory 0177.
 

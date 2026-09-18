@@ -44,7 +44,7 @@ EXPECTED_REMEDIATION = software_version_plan(
 expected = partial(build_expected_advisory_result, ADVISORY.vulnerabilities[0].id)
 
 
-DATA: AntaUnitTestData = {
+_DATA: AntaUnitTestData = {
     (SA152, "affected-default-password-ssh"): {
         "version": build_eos_version("4.35.5M"),
         "eos_data": [AAA_LOCAL, "", ""],
