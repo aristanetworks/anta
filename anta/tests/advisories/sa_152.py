@@ -6,14 +6,14 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import Any, ClassVar, cast
+from typing import ClassVar, cast
 
 from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.aaa import LoginAuthenticationFact
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management_access import PasswordManagementServiceFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
+from anta._advisory.facts.models import AvailableFact, Fact, FactsBase, FeatureState, UnavailableFact, fact_field, facts_dataclass
 from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import AffectedResult, EosReleaseAssessment, ErrorResult, NotAffectedResult, VulnerabilityResult
 from anta._advisory.findings.projection import project_vulnerability_result
@@ -57,7 +57,11 @@ ADVISORY = _AdvisoryMetadata(
 VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
-def _assess_sa152(version: Fact[EOSVersion], login_authentication: Fact[FeatureValue], password_service: Fact[FeatureValue]) -> VulnerabilityResult:
+def _assess_sa152(
+    version: Fact[EosVersionFact],
+    login_authentication: Fact[LoginAuthenticationFact],
+    password_service: Fact[PasswordManagementServiceFact],
+) -> VulnerabilityResult:
     """Assess EOS scope and both required password-authentication conditions."""
     for fact in (login_authentication, password_service):
         if not isinstance(fact, UnavailableFact) and fact.value.state is not FeatureState.ENABLED:
@@ -71,8 +75,8 @@ def _assess_sa152(version: Fact[EOSVersion], login_authentication: Fact[FeatureV
     return AffectedResult(
         vulnerability_id=VULNERABILITY_ID,
         conditions=(
-            cast("AvailableFact[FeatureValue]", login_authentication),
-            cast("AvailableFact[FeatureValue]", password_service),
+            cast("AvailableFact[LoginAuthenticationFact]", login_authentication),
+            cast("AvailableFact[PasswordManagementServiceFact]", password_service),
         ),
         context=(eos_release,),
         remediation=software_version_plan(FIXED_RELEASES, current_version=eos_release.fact.value),
@@ -100,14 +104,22 @@ class SA152(OptionalCommandsMixin, _AntaAdvisoryTest):
     ```
     """
 
+    @facts_dataclass
+    class Facts(FactsBase):
+        """Collected facts required to assess the advisory."""
+
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
+        login_authentication: Fact[LoginAuthenticationFact] = fact_field(LoginAuthenticationFact)
+        password_service: Fact[PasswordManagementServiceFact] = fact_field(PasswordManagementServiceFact)
+
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
-    required_facts: ClassVar[tuple[type[FactDefinition[Any]], ...]] = (EosVersionFact, LoginAuthenticationFact, PasswordManagementServiceFact)
     description = "Verify whether the device is impacted by Security Advisory 0152."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
         """Derive facts, assess the vulnerability, and project it."""
-        finding = _assess_sa152(self.fact(EosVersionFact), self.fact(LoginAuthenticationFact), self.fact(PasswordManagementServiceFact))
+        facts = self.Facts.collect(self)
+        finding = _assess_sa152(facts.version, facts.login_authentication, facts.password_service)
         atomic = self.result.add(f"Verify {VULNERABILITY_ID}.", vulnerability_ids=(VULNERABILITY_ID,))
         project_vulnerability_result(atomic, finding)

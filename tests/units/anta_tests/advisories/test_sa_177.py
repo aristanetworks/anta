@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING
 
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import Fact, FactDefinition, FactProblemKind, FactSource, FactSourceKind, FeatureName, FeatureState, FeatureValue, SubFeature
+from anta._advisory.facts.models import Fact, FactProblemKind, FactSource, FactSourceKind, FeatureState
 from anta._advisory.facts.network_services import MlagConfiguredFact
 from anta._advisory.facts.platform import PlatformIdentityFact
 from anta._advisory.facts.routing import PimSparseModeFact
@@ -27,7 +27,6 @@ from tests.units.anta_tests import build_eos_platform, build_eos_version, test
 from tests.units.anta_tests.advisories import build_expected_advisory_result
 
 if TYPE_CHECKING:
-    from anta._eos.platform import PlatformIdentity
     from tests.units.anta_tests import AntaUnitTestData
 
 SOURCE = FactSource("unit test", FactSourceKind.DEVICE_METADATA)
@@ -125,25 +124,30 @@ _DATA: AntaUnitTestData = {
 }
 
 
-def version_fact(version: str | None) -> Fact[EOSVersion]:
+def version_fact(version: str | None) -> Fact[EosVersionFact]:
     """Build an EOS version fact."""
     if version is None:
         return EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
-    return EosVersionFact.available(parse_eos_version(version).unwrap(), SOURCE)
+    return EosVersionFact.from_version(parse_eos_version(version).unwrap()).available(SOURCE)
 
 
-def platform_fact(model: str | None, modules: dict[str, object] | None = None) -> Fact[PlatformIdentity]:
+def platform_fact(model: str | None, modules: dict[str, object] | None = None) -> Fact[PlatformIdentityFact]:
     """Build a platform identity fact."""
     if model is None:
         return PlatformIdentityFact.unavailable(FactProblemKind.MISSING, SOURCE)
     platform = build_eos_platform(model, modules)
     assert platform is not None
-    return PlatformIdentityFact.available(platform, SOURCE)
+    return PlatformIdentityFact.from_identity(platform).available(SOURCE)
 
 
-def feature_fact(definition: type[FactDefinition[FeatureValue]], feature: SubFeature, state: FeatureState) -> Fact[FeatureValue]:
-    """Build one available feature fact."""
-    return definition.available(FeatureValue(feature, state), SOURCE)
+def pim_fact(state: FeatureState) -> Fact[PimSparseModeFact]:
+    """Build one available PIM sparse-mode fact."""
+    return PimSparseModeFact(state).available(SOURCE)
+
+
+def mlag_fact(state: FeatureState) -> Fact[MlagConfiguredFact]:
+    """Build one available MLAG configuration fact."""
+    return MlagConfiguredFact(state).available(SOURCE)
 
 
 class TestSA177Assessment(unittest.TestCase):
@@ -206,10 +210,10 @@ class TestSA177Assessment(unittest.TestCase):
         } == AFFECTED_PLATFORM_FAMILIES
 
     def test_assessment_states(self) -> None:
-        pim_enabled = feature_fact(PimSparseModeFact, SubFeature(FeatureName.PIM, "sparse-mode interface"), FeatureState.ENABLED)
-        pim_disabled = feature_fact(PimSparseModeFact, SubFeature(FeatureName.PIM, "sparse-mode interface"), FeatureState.DISABLED)
-        mlag_configured = feature_fact(MlagConfiguredFact, SubFeature(FeatureName.MLAG, "configuration"), FeatureState.ENABLED)
-        mlag_not_configured = feature_fact(MlagConfiguredFact, SubFeature(FeatureName.MLAG, "configuration"), FeatureState.DISABLED)
+        pim_enabled = pim_fact(FeatureState.ENABLED)
+        pim_disabled = pim_fact(FeatureState.DISABLED)
+        mlag_configured = mlag_fact(FeatureState.ENABLED)
+        mlag_not_configured = mlag_fact(FeatureState.DISABLED)
 
         assert isinstance(_assess_sa177(version_fact("4.35.5M"), platform_fact("cEOSLab"), pim_enabled, mlag_configured), AffectedResult)
         assert isinstance(
@@ -239,8 +243,8 @@ class TestSA177Assessment(unittest.TestCase):
         assert tuple(problem.definition for problem in finding.problems) == (PimSparseModeFact, MlagConfiguredFact)
 
     def test_unavailable_scope_facts_are_preserved(self) -> None:
-        pim_enabled = feature_fact(PimSparseModeFact, SubFeature(FeatureName.PIM, "sparse-mode interface"), FeatureState.ENABLED)
-        mlag_configured = feature_fact(MlagConfiguredFact, SubFeature(FeatureName.MLAG, "configuration"), FeatureState.ENABLED)
+        pim_enabled = pim_fact(FeatureState.ENABLED)
+        mlag_configured = mlag_fact(FeatureState.ENABLED)
         finding = _assess_sa177(version_fact(None), platform_fact(None), pim_enabled, mlag_configured)
         assert isinstance(finding, ErrorResult)
         assert tuple(problem.definition for problem in finding.problems) == (EosVersionFact, PlatformIdentityFact)

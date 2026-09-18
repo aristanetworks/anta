@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 
 from anta._advisory.eos_versions import AffectedStatus
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import AvailableFact, FeatureName, FeatureState, FeatureValue, SubFeature
+from anta._advisory.facts.models import AvailableFact, FactProblemKind, FeatureState
 from anta._advisory.facts.network_services import MlagDualPrimaryErrdisableFact
 from anta._advisory.findings.models import AffectedResult, ErrorResult, NotAffectedResult
 from anta._advisory.remediation import FixedRelease, software_version_plan
@@ -19,7 +19,7 @@ from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_161 import ADVISORY, AFFECTED_VERSION_MATRIX, SA161, _assess_sa161
 from tests.units.anta_tests import build_eos_version, test
 from tests.units.anta_tests.advisories import build_expected_advisory_result
-from tests.units.anta_tests.advisories.fact_builders import assert_version_statuses, available_fact, eos_version_fact, unavailable_fact
+from tests.units.anta_tests.advisories.fact_builders import SOURCE, assert_version_statuses, eos_version_fact
 
 if TYPE_CHECKING:
     from tests.units.anta_tests import AntaUnitTestData
@@ -34,18 +34,18 @@ REMEDIATION = software_version_plan(FIXED_RELEASES, current_version=EOSVersion(4
 expected_result = partial(build_expected_advisory_result, ADVISORY.vulnerabilities[0].id)
 
 
-def mlag_fact(state: FeatureState) -> AvailableFact[FeatureValue]:
+def mlag_fact(state: FeatureState) -> AvailableFact[MlagDualPrimaryErrdisableFact]:
     """Build normalized local MLAG state for direct assessment tests."""
-    feature = SubFeature(FeatureName.MLAG, "dual-primary heartbeat with errdisable-all action")
-    return available_fact(MlagDualPrimaryErrdisableFact, FeatureValue(feature, state))
+    return MlagDualPrimaryErrdisableFact(state).available(SOURCE)
 
 
 def test_sa161_assessment_contract() -> None:
     """Assess stable local configuration without depending on transient peer state."""
-    assert isinstance(_assess_sa161(unavailable_fact(EosVersionFact), mlag_fact(FeatureState.DISABLED)), NotAffectedResult)
+    missing_version = EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
+    assert isinstance(_assess_sa161(missing_version, mlag_fact(FeatureState.DISABLED)), NotAffectedResult)
     assert isinstance(_assess_sa161(eos_version_fact("4.36.1F"), mlag_fact(FeatureState.ENABLED)), AffectedResult)
     assert isinstance(_assess_sa161(eos_version_fact("4.36.2F"), mlag_fact(FeatureState.ENABLED)), NotAffectedResult)
-    assert isinstance(_assess_sa161(unavailable_fact(EosVersionFact), mlag_fact(FeatureState.ENABLED)), ErrorResult)
+    assert isinstance(_assess_sa161(missing_version, mlag_fact(FeatureState.ENABLED)), ErrorResult)
 
 
 def test_sa161_version_boundaries() -> None:

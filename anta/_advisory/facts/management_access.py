@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 from anta._advisory.facts.models import (
     CommandsFactDefinition,
@@ -14,9 +14,10 @@ from anta._advisory.facts.models import (
     FactProblemKind,
     FactSource,
     FactSourceKind,
+    FeatureFact,
     FeatureName,
+    FeatureRef,
     FeatureState,
-    FeatureValue,
     SubFeature,
 )
 from anta._advisory.optional_commands import OptionalAntaCommand, is_unsupported_optional_command
@@ -98,15 +99,17 @@ def _enabled_in_configured_scope(config: _ServiceConfig, *, all_vrfs_by_default:
     return config.global_enabled or any(config.vrfs.values())
 
 
-class PasswordManagementServiceFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class PasswordManagementServiceFact(FeatureFact, CommandsFactDefinition["PasswordManagementServiceFact"]):
     """Password-capable SSH or Telnet service configured in at least one VRF scope."""
 
-    key = "feature.management.password_service"
-    label = "password-based management service state"
-    commands = (SSH_CONFIG_COMMAND, TELNET_CONFIG_COMMAND)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.AAA, "password-based management service")
+    key: ClassVar[str] = "feature.management.password_service"
+    label: ClassVar[str] = "password-based management service state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (SSH_CONFIG_COMMAND, TELNET_CONFIG_COMMAND)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[PasswordManagementServiceFact]:
         """Normalize SSH protocols and configured SSH/Telnet VRF scope."""
         ssh_command, telnet_command = commands
         for command in commands:
@@ -129,4 +132,4 @@ class PasswordManagementServiceFact(CommandsFactDefinition[FeatureValue]):
         telnet_enabled = _enabled_in_configured_scope(telnet, all_vrfs_by_default=False)
         state = FeatureState.ENABLED if ssh_enabled or telnet_enabled else FeatureState.DISABLED
         source = FactSource(", ".join(command.command for command in commands), FactSourceKind.COMMAND)
-        return cls.available(FeatureValue(SubFeature(FeatureName.AAA, "password-based management service"), state), source)
+        return cls(state).available(source)
