@@ -113,13 +113,11 @@ plugins:
                   kind: danger
                   title: Deprecated
 
-  - search:
-      lang: en
   - mike:
       alias_type: symlink
       redirect_template: null
       deploy_prefix: ""
-      canonical_version: null
+      canonical_version: stable
 
 markdown_extensions:
   - admonition
@@ -223,10 +221,10 @@ nav:
       - VLAN: api/tests/vlan.md
   - Security Advisory:
       - Usage: security-advisory/usage.md
+      - Report formats and results: security-advisory/reports.md
       - Tests:
           - Overview: security-advisory/tests-overview.md
           - Tests: security-advisory/tests.md
-      - Reports: security-advisory/reports.md
       - Test in the lab: security-advisory/lab.md
   - Advanced Usages:
       - Caching in ANTA: advanced_usages/caching.md

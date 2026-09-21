@@ -58,8 +58,14 @@ The `mike` plugin config in `mkdocs.yml` is explicit because the Zensical-compat
     alias_type: symlink
     redirect_template: null
     deploy_prefix: ""
-    canonical_version: null
+    canonical_version: stable
 ```
+
+`canonical_version` keeps every deployed version's page URL canonicalized to
+the equivalent page in the `stable` alias. This prevents search engines from
+treating version-prefixed URLs as independent copies while preserving a useful
+page-level destination instead of canonicalizing unrelated pages to the site
+homepage.
 
 ## Temporary Workarounds
 
