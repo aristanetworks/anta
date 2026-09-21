@@ -591,7 +591,7 @@ class GnsiAcctzFact(FeatureFact, CommandsFactDefinition["GnsiAcctzFact"]):
     @classmethod
     def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[GnsiAcctzFact]:
         """Interpret an absent Acctz field according to the EOS response schema."""
-        fact = super().derive(device, commands)
+        fact = super(GnsiAcctzFact, cls).derive(device, commands)
         return _version_aware_gnsi_service_absence(device, commands, fact, "acctzEnabled", cls(FeatureState.UNSUPPORTED))
 
     @classmethod
@@ -622,7 +622,7 @@ class GnsiPathzFact(FeatureFact, CommandsFactDefinition["GnsiPathzFact"]):
     @classmethod
     def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[GnsiPathzFact]:
         """Interpret an absent Pathz field according to the EOS response schema."""
-        fact = super().derive(device, commands)
+        fact = super(GnsiPathzFact, cls).derive(device, commands)
         return _version_aware_gnsi_service_absence(device, commands, fact, "pathzEnabled", cls(FeatureState.UNSUPPORTED))
 
     @classmethod
