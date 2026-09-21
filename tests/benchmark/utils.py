@@ -15,6 +15,8 @@ from typing import TYPE_CHECKING, Any
 import httpx
 
 from anta.catalog import AntaCatalog, AntaTestDefinition
+from anta.device import AsyncEOSDevice
+from anta.inventory import AntaInventory
 from anta.models import AntaCommand, AntaTest
 from anta.result_manager.models import AntaTestStatus
 
@@ -43,6 +45,22 @@ async def collect_commands(self: AntaDevice, commands: list[AntaCommand], collec
     For the same reason as above, we inject the command index of the test to the eAPI request ID.
     """
     await asyncio.gather(*(self.collect(command=command, collection_id=f"{collection_id}:{idx}") for idx, command in enumerate(commands)))
+
+
+def build_inventory(device_count: int) -> AntaInventory:
+    """Build a fresh inventory for one benchmark invocation."""
+    inventory = AntaInventory()
+    for index in range(device_count):
+        inventory.add_device(
+            AsyncEOSDevice(
+                host=f"device-{index}.anta.arista.com",
+                username="admin",
+                password="password",  # noqa: S106
+                name=f"device-{index}",
+                disable_cache=True,
+            ),
+        )
+    return inventory
 
 
 def _has_error_result(test_data: dict[str, Any]) -> bool:
