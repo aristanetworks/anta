@@ -793,4 +793,44 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
+    (VerifyAcctMethods, "failure-action-key-present-methods-key-absent"): {
+        "eos_data": [
+            {
+                "commandsAcctMethods": {
+                    "privilege0-15": {
+                        "defaultAction": "startStop",
+                        "consoleAction": "startStop",
+                    }
+                },
+                "execAcctMethods": {},
+                "systemAcctMethods": {},
+                "dot1xAcctMethods": {},
+            }
+        ],
+        "inputs": {
+            "accounting": [
+                {
+                    "acct_type": "commands",
+                    "method_configs": [{"name": "all", "default_methods": ["tacacs+", "logging"], "console_methods": ["tacacs+", "logging"]}],
+                }
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "AAA commands accounting - privilege0-15 - Default methods - Not configured",
+                "AAA commands accounting - privilege0-15 - Console methods - Not configured",
+            ],
+            "atomic_results": [
+                {
+                    "description": "AAA commands accounting - privilege0-15",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": [
+                        "Default methods - Not configured",
+                        "Console methods - Not configured",
+                    ],
+                },
+            ],
+        },
+    },
 }

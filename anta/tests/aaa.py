@@ -457,9 +457,11 @@ class VerifyAcctMethods(AntaTest):
 
     def _check_accounting_plane(self, atomic: AtomicTestResult, method_list_data: dict[str, Any], plane: str, expected: list[str]) -> None:
         """Check one accounting plane (default or console) against the expected methods."""
-        if f"{plane}Action" not in method_list_data:
+        action_key = f"{plane}Action"
+        methods_key = f"{plane}Methods"
+        if action_key not in method_list_data or methods_key not in method_list_data:
             atomic.is_failure(f"{plane.capitalize()} methods - Not configured")
-        elif (actual := method_list_data[f"{plane}Methods"]) != expected:
+        elif (actual := method_list_data[methods_key]) != expected:
             atomic.is_failure(f"{plane.capitalize()} methods - Mismatch - Expected: {', '.join(expected)}, Actual: {', '.join(actual)}")
 
     @AntaTest.anta_test
