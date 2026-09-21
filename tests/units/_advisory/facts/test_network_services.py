@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TypeAlias
 
 import pytest
 
@@ -29,8 +29,19 @@ from tests.units.anta_tests.advisories import OfflineAntaDevice
 if TYPE_CHECKING:
     from typing import Any
 
-    from anta._advisory.facts.models import CommandsFactDefinition, FeatureValue
+    from anta._advisory.facts.models import CommandsFactDefinition
     from anta.models import AntaCommand
+
+NetworkFeatureFact: TypeAlias = (
+    DhcpOption82Fact
+    | DhcpRelayActiveFact
+    | DhcpReplySourceValidationFact
+    | MlagConfiguredFact
+    | MlagDualPrimaryErrdisableFact
+    | VrrpAntiReplayFact
+    | VrrpFact
+    | VrrpV2IpAhFact
+)
 
 
 @pytest.fixture(name="device")
@@ -48,7 +59,7 @@ def command(definition: type[CommandsFactDefinition[Any]], output: dict[str, obj
 
 def derive_state(
     device: OfflineAntaDevice,
-    definition: type[CommandsFactDefinition[FeatureValue]],
+    definition: type[NetworkFeatureFact],
     output: dict[str, object] | str,
 ) -> FeatureState:
     """Derive one feature fact and return its state."""

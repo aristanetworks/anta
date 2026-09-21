@@ -1,21 +1,31 @@
 # Copyright (c) 2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""Typed normalized facts used by security-advisory assessments."""
+"""Typed normalized facts and their declarative advisory containers."""
 
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field, fields
 from enum import Enum
 from inspect import isabstract
-from typing import TYPE_CHECKING, ClassVar, Generic, TypeAlias, TypeVar
+from types import MappingProxyType
+from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeAlias, TypeVar, cast
+
+from typing_extensions import dataclass_transform
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
+    from typing_extensions import Self
+
+    from anta._advisory.base import _AntaAdvisoryTest
     from anta.device import AntaDevice
     from anta.models import AntaCommand
 
 T = TypeVar("T")
+T_co = TypeVar("T_co", covariant=True)
+FactsT = TypeVar("FactsT")
 MIN_CONTRADICTORY_OBSERVATIONS = 2
 
 
@@ -51,7 +61,12 @@ class FactSource:
 
 
 class FactDefinition(ABC, Generic[T]):
-    """Typed identity, display label, and derivation contract for one fact."""
+    """Identity and derivation contract shared by every nominal fact class.
+
+    Concrete definitions are also the dataclass type of their collected value.
+    Their generic argument names that same concrete class so ``derive`` and
+    ``unavailable`` preserve it through the observation wrappers.
+    """
 
     key: ClassVar[str]
     label: ClassVar[str]
@@ -63,10 +78,15 @@ class FactDefinition(ABC, Generic[T]):
             msg = "Fact keys and labels must be non-empty and single-line"
             raise ValueError(msg)
 
-    @classmethod
-    def available(cls, value: T, source: FactSource) -> AvailableFact[T]:
-        """Create an available observation of this fact."""
-        return AvailableFact(definition=cls, value=value, source=source)
+    def available(self, source: FactSource) -> AvailableFact[Self]:
+        """Create an available observation from this nominal fact instance.
+
+        Construction lives on the value so callers cannot pair one fact
+        definition with an instance of another fact class. ``AvailableFact``
+        derives its definition from the runtime value type instead of storing a
+        second identity that could disagree.
+        """
+        return AvailableFact(value=self, source=source)
 
     @classmethod
     def unavailable(cls, problem: FactProblemKind, source: FactSource, *, observations: tuple[T, ...] = ()) -> UnavailableFact[T]:
@@ -85,24 +105,40 @@ class FactDefinition(ABC, Generic[T]):
 
 
 @dataclass(frozen=True, slots=True)
-class AvailableFact(Generic[T]):
-    """A typed fact whose normalized value is known."""
+class AvailableFact(Generic[T_co]):
+    """An observation containing one known nominal fact value."""
 
-    definition: type[FactDefinition[T]]
-    value: T
+    value: T_co
     source: FactSource
+
+    def __post_init__(self) -> None:
+        """Reject manually assembled available values that are not nominal facts."""
+        if not isinstance(self.value, FactDefinition):
+            msg = "Available fact values must be FactDefinition instances"
+            raise TypeError(msg)
+
+    @property
+    def definition(self) -> type[FactDefinition[T_co]]:
+        """Return the definition carried inherently by the nominal value class."""
+        return cast("type[FactDefinition[T_co]]", type(self.value))
 
 
 @dataclass(frozen=True, slots=True)
-class UnavailableFact(Generic[T]):
-    """A requested typed fact whose normalized value cannot be established."""
+class UnavailableFact(Generic[T_co]):
+    """A requested nominal fact whose value could not be established."""
 
-    definition: type[FactDefinition[T]]
+    definition: type[FactDefinition[T_co]]
     problem: FactProblemKind
     source: FactSource
-    observations: tuple[T, ...] = ()
+    observations: tuple[T_co, ...] = ()
 
     def __post_init__(self) -> None:
+        if not isinstance(self.definition, type) or not issubclass(self.definition, FactDefinition):
+            msg = "Unavailable facts require a FactDefinition subclass"
+            raise TypeError(msg)
+        if any(not isinstance(observation, self.definition) for observation in self.observations):
+            msg = f"Unavailable fact observations must be instances of {self.definition.__name__}"
+            raise TypeError(msg)
         if self.problem is FactProblemKind.CONTRADICTORY and len(self.observations) < MIN_CONTRADICTORY_OBSERVATIONS:
             msg = "Contradictory facts must retain at least two observations"
             raise ValueError(msg)
@@ -112,6 +148,146 @@ class UnavailableFact(Generic[T]):
 
 
 Fact: TypeAlias = AvailableFact[T] | UnavailableFact[T]
+
+
+def _validate_definitions(facts_type: type[FactsBase]) -> Mapping[str, type[FactDefinition[Any]]]:
+    """Validate one concrete fact container and return its immutable definitions.
+
+    The generic field-to-definition relationship is enforced statically by the
+    signature of ``fact_field``. Runtime validation deliberately avoids resolving
+    type annotations: it only checks that every dataclass field has exactly the
+    expected metadata naming a ``FactDefinition``, participates in the generated
+    initializer, and uses a unique definition.
+
+    A structurally valid metadata mapping can be constructed without calling
+    ``fact_field``, so runtime validation does not prove that the helper was used.
+    It also cannot recheck the erased generic relationship. Callers rely on the
+    type checker for that relationship.
+    """
+    definitions: dict[str, type[FactDefinition[Any]]] = {}
+    definition_fields: dict[type[FactDefinition[Any]], str] = {}
+    for declared_field in fields(facts_type):
+        if set(declared_field.metadata) != {"definition"}:
+            msg = f"Class {facts_type.__module__}.{facts_type.__qualname__} field '{declared_field.name}' must use fact_field(...)"
+            raise TypeError(msg)
+        definition = declared_field.metadata["definition"]
+        if not isinstance(definition, type) or not issubclass(definition, FactDefinition):
+            msg = f"Class {facts_type.__module__}.{facts_type.__qualname__} field '{declared_field.name}' must use fact_field(...)"
+            raise TypeError(msg)
+        if not declared_field.init:
+            msg = f"Class {facts_type.__module__}.{facts_type.__qualname__} field '{declared_field.name}' must be included in the generated initializer"
+            raise TypeError(msg)
+        if previous_field := definition_fields.get(definition):
+            msg = (
+                f"Class {facts_type.__module__}.{facts_type.__qualname__} fields '{previous_field}' and '{declared_field.name}' "
+                f"must not use the same fact definition '{definition.__name__}'"
+            )
+            raise TypeError(msg)
+        definitions[declared_field.name] = definition
+        definition_fields[definition] = declared_field.name
+    if not definitions:
+        msg = f"Class {facts_type.__module__}.{facts_type.__qualname__} must declare one or more fact fields"
+        raise TypeError(msg)
+    return MappingProxyType(definitions)
+
+
+def fact_field(definition: type[FactDefinition[T]]) -> Fact[T]:
+    """Declare a required field populated from one typed fact definition.
+
+    This helper has deliberately different static and runtime representations.
+    Its ``Fact[T]`` return annotation lets a type checker verify that the field's
+    annotation and ``FactDefinition[T]`` agree. At runtime it returns a standard
+    ``dataclasses.Field`` with no default, making the collected value a required
+    constructor argument, and retains ``definition`` in the field metadata used
+    for runtime collection.
+
+    ``facts_dataclass`` registers this helper as a PEP 681 field specifier so the
+    generated constructor is understood correctly by supporting type checkers.
+    Runtime validation checks the metadata shape and definition value but does
+    not inspect the field annotation or its generic type.
+    """
+    return cast("Fact[T]", field(metadata={"definition": definition}))  # pylint: disable=invalid-field-call
+
+
+@dataclass_transform(field_specifiers=(fact_field,), frozen_default=True)
+def facts_dataclass(cls: type[FactsT]) -> type[FactsT]:
+    """Create and validate a frozen, slotted container of collected facts.
+
+    Fact containers must use this decorator rather than applying ``dataclass``
+    directly. Besides performing the runtime dataclass transformation, it tells
+    type checkers that ``fact_field`` declares required instance fields whose
+    values have the helper's annotated ``Fact[T]`` type. Once dataclass fields
+    are available, the decorator validates their runtime declarations and
+    populates the concrete class's immutable definition cache.
+    """
+    facts_type = dataclass(frozen=True, slots=True)(cls)
+    if not issubclass(facts_type, FactsBase):
+        msg = f"Class {facts_type.__module__}.{facts_type.__qualname__} decorated with facts_dataclass must inherit FactsBase"
+        raise TypeError(msg)
+    facts_type._definitions = _validate_definitions(facts_type)  # noqa: SLF001
+    return facts_type
+
+
+@dataclass(frozen=True, slots=True)
+class FactsBase:
+    """Common collection behavior for immutable typed fact containers.
+
+    A concrete container is decorated with ``facts_dataclass`` and declares each
+    required value with ``fact_field``. The field annotations preserve precise
+    fact types for advisory assessment code. The field metadata supplies the
+    corresponding runtime definitions used to derive commands and collect facts.
+
+    ``facts_dataclass`` validates definitions once, immediately after transforming
+    each concrete subclass, and stores an immutable cache. Advisory class creation
+    and subsequent device collections only read that cache.
+    """
+
+    _definitions: ClassVar[Mapping[str, type[FactDefinition[Any]]]]
+
+    @classmethod
+    def definitions(cls) -> Mapping[str, type[FactDefinition[Any]]]:
+        """Return definitions cached when the concrete class was decorated.
+
+        Looking directly in ``cls.__dict__`` prevents an undecorated subclass from
+        accidentally reusing another fact-container class's validated cache.
+        """
+        if "_definitions" not in cls.__dict__:
+            msg = f"Class {cls.__module__}.{cls.__qualname__} must use @facts_dataclass"
+            raise TypeError(msg)
+        return cls._definitions
+
+    @classmethod
+    def required_commands(cls) -> tuple[AntaCommand, ...]:
+        """Return every declared fact command in field declaration order.
+
+        Commands are intentionally not deduplicated. Two fact definitions may
+        require distinct command wrappers with the same EOS command UID, and
+        each definition must receive the response collected for its own field.
+        """
+        return tuple(command for definition in cls.definitions().values() for command in definition.required_commands())
+
+    @classmethod
+    def collect(cls, collector: _AntaAdvisoryTest) -> Self:
+        """Collect every cached definition and construct the concrete container.
+
+        The validated field-name mapping ensures every required constructor value
+        is supplied explicitly. The dynamic loop cannot preserve each field's
+        distinct generic parameter internally, so this boundary relies on the
+        validated declaration and the type-checker contract of ``fact_field``.
+        Each definition receives exactly its own contiguous command slice in
+        declaration order; command-based definitions independently validate the
+        count and identity of that slice before parsing it.
+        Returning ``Self`` preserves the concrete nested ``Facts`` type and its
+        precisely typed fields at the call site.
+        """
+        facts = {}
+        command_offset = 0
+        for name, definition in cls.definitions().items():
+            command_count = len(definition.required_commands())
+            commands = tuple(collector.instance_commands[command_offset : command_offset + command_count])
+            facts[name] = definition.derive(collector.device, commands)
+            command_offset += command_count
+        return cls(**facts)
 
 
 class CommandsFactDefinition(FactDefinition[T], ABC):
@@ -192,11 +368,20 @@ class FeatureState(str, Enum):
 
 
 @dataclass(frozen=True, slots=True)
-class FeatureValue:
-    """Normalized state of one EOS feature."""
+class FeatureFact:
+    """Common state and class-level identity for a nominal feature fact."""
 
-    feature: FeatureRef
+    feature: ClassVar[FeatureRef]
     state: FeatureState
+
+    def __init_subclass__(cls) -> None:
+        """Require every feature-fact subclass to expose a valid identity."""
+        # ``dataclass(slots=True)`` returns a replacement class, so zero-argument
+        # ``super()`` can retain the pre-transformation class on older Python versions.
+        super(FeatureFact, cls).__init_subclass__()
+        if not isinstance(getattr(cls, "feature", None), (FeatureName, SubFeature)):
+            msg = f"Class {cls.__module__}.{cls.__qualname__} must define 'feature' as a FeatureName or SubFeature"
+            raise TypeError(msg)
 
 
 class ConfigurationState(str, Enum):
@@ -207,11 +392,19 @@ class ConfigurationState(str, Enum):
 
 
 @dataclass(frozen=True, slots=True)
-class ConfigurationValue:
-    """Normalized configuration state for a feature or subfeature."""
+class ConfigurationFact:
+    """Common state and class-level identity for a nominal configuration fact."""
 
-    feature: FeatureRef
+    feature: ClassVar[FeatureRef]
     state: ConfigurationState
+
+    def __init_subclass__(cls) -> None:
+        """Require every configuration-fact subclass to expose a valid identity."""
+        # See ``FeatureFact.__init_subclass__`` for why this form of ``super`` is required.
+        super(ConfigurationFact, cls).__init_subclass__()
+        if not isinstance(getattr(cls, "feature", None), (FeatureName, SubFeature)):
+            msg = f"Class {cls.__module__}.{cls.__qualname__} must define 'feature' as a FeatureName or SubFeature"
+            raise TypeError(msg)
 
 
 class CredentialSyntaxState(str, Enum):
@@ -224,18 +417,26 @@ class CredentialSyntaxState(str, Enum):
 
 
 @dataclass(frozen=True, slots=True)
-class CredentialSyntaxValue:
-    """Normalized credential-syntax state for a feature or subfeature."""
+class CredentialSyntaxFact:
+    """Common state and class-level identity for a nominal credential-syntax fact."""
 
-    feature: FeatureRef
+    feature: ClassVar[FeatureRef]
     state: CredentialSyntaxState
+
+    def __init_subclass__(cls) -> None:
+        """Require every credential-syntax fact subclass to expose a valid identity."""
+        # See ``FeatureFact.__init_subclass__`` for why this form of ``super`` is required.
+        super(CredentialSyntaxFact, cls).__init_subclass__()
+        if not isinstance(getattr(cls, "feature", None), (FeatureName, SubFeature)):
+            msg = f"Class {cls.__module__}.{cls.__qualname__} must define 'feature' as a FeatureName or SubFeature"
+            raise TypeError(msg)
 
 
 @dataclass(frozen=True, slots=True)
-class ComponentSoftwareVersion:
-    """Normalized version of an EOS software component."""
+class ComponentSoftwareFact:
+    """Common version and class-level component identity for a nominal software fact."""
 
-    component: str
+    component: ClassVar[str]
     version: str
 
 
@@ -247,22 +448,7 @@ class MitigationState(str, Enum):
 
 
 @dataclass(frozen=True, slots=True)
-class MitigationValue:
-    """Normalized effectiveness of a mitigation fact."""
+class MitigationFact:
+    """Common effectiveness state for a nominal mitigation fact."""
 
     state: MitigationState
-
-
-class IndicatorState(str, Enum):
-    """Observed state of an advisory-relevant indicator."""
-
-    PRESENT = "present"
-    ABSENT = "absent"
-
-
-@dataclass(frozen=True, slots=True)
-class IndicatorValue:
-    """Normalized state of one advisory-relevant indicator."""
-
-    indicator: str
-    state: IndicatorState
