@@ -3970,7 +3970,7 @@ Options:
 <h4 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>--device<span class="w"> </span>dc1-leaf1a<span class="w"> </span>text
 </code></pre></div>
-<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_nrfu_device_dc1leaf1a_text.svg"><img alt="anta nrfu text results" class="img_center" loading="lazy" src="../../imgs/anta_nrfu_device_dc1leaf1a_text.svg" width="1600" /></a></p>
+<p><a class="glightbox" data-type="image" href="../../imgs/anta_nrfu_device_dc1leaf1a_text.svg"><img alt="anta nrfu text results" class="img_center" loading="lazy" src="../../imgs/anta_nrfu_device_dc1leaf1a_text.svg" width="1600" /></a></p>
 <h3 id="performing-nrfu-with-table-rendering">Performing NRFU with table rendering<a class="headerlink" href="#performing-nrfu-with-table-rendering" title="Permanent link">&para;</a></h3>
 <p>The <code>table</code> command under the <code>anta nrfu</code> namespace offers a clear and organized table view of the test results, suitable for filtering. It also has its own set of options for better control over the output.</p>
 <h4 id="command-overview_1">Command overview<a class="headerlink" href="#command-overview_1" title="Permanent link">&para;</a></h4>
@@ -3991,21 +3991,21 @@ Options:
 <h4 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>--tags<span class="w"> </span>leaf<span class="w"> </span>table
 </code></pre></div>
-<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_nrfu_tags_leaf_table.svg"><img alt="anta nrfu table results" class="img_center" loading="lazy" src="../../imgs/anta_nrfu_tags_leaf_table.svg" width="1600" /></a></p>
+<p><a class="glightbox" data-type="image" href="../../imgs/anta_nrfu_tags_leaf_table.svg"><img alt="anta nrfu table results" class="img_center" loading="lazy" src="../../imgs/anta_nrfu_tags_leaf_table.svg" width="1600" /></a></p>
 <p>For larger setups, you can also group the results by host or test to get a summarized view:</p>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>table<span class="w"> </span>--group-by<span class="w"> </span>device
 </code></pre></div>
-<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_nrfu_table_groupby_device.svg"><img alt="anta nrfu table grouped by device" class="img_center" loading="lazy" src="../../imgs/anta_nrfu_table_groupby_device.svg" width="1600" /></a></p>
+<p><a class="glightbox" data-type="image" href="../../imgs/anta_nrfu_table_groupby_device.svg"><img alt="anta nrfu table grouped by device" class="img_center" loading="lazy" src="../../imgs/anta_nrfu_table_groupby_device.svg" width="1600" /></a></p>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>table<span class="w"> </span>--group-by<span class="w"> </span><span class="nb">test</span>
 </code></pre></div>
-<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_nrfu_table_groupby_test.svg"><img alt="anta nrfu table grouped by test" class="img_center" loading="lazy" src="../../imgs/anta_nrfu_table_groupby_test.svg" width="1600" /></a></p>
+<p><a class="glightbox" data-type="image" href="../../imgs/anta_nrfu_table_groupby_test.svg"><img alt="anta nrfu table grouped by test" class="img_center" loading="lazy" src="../../imgs/anta_nrfu_table_groupby_test.svg" width="1600" /></a></p>
 <p>To get more specific information, it is possible to filter on a single device or a single test:</p>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>--device<span class="w"> </span>dc1-spine1<span class="w"> </span>table
 </code></pre></div>
-<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_nrfu_device_dc1spine1_table.svg"><img alt="anta nrfu table filtered by device" class="img_center" loading="lazy" src="../../imgs/anta_nrfu_device_dc1spine1_table.svg" width="1600" /></a></p>
+<p><a class="glightbox" data-type="image" href="../../imgs/anta_nrfu_device_dc1spine1_table.svg"><img alt="anta nrfu table filtered by device" class="img_center" loading="lazy" src="../../imgs/anta_nrfu_device_dc1spine1_table.svg" width="1600" /></a></p>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>--test<span class="w"> </span>VerifyZeroTouch<span class="w"> </span>table
 </code></pre></div>
-<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_nrfu_test_VerifyZeroTouch_table.svg"><img alt="anta nrfu table filtered by test" class="img_center" loading="lazy" src="../../imgs/anta_nrfu_test_VerifyZeroTouch_table.svg" width="1600" /></a></p>
+<p><a class="glightbox" data-type="image" href="../../imgs/anta_nrfu_test_VerifyZeroTouch_table.svg"><img alt="anta nrfu table filtered by test" class="img_center" loading="lazy" src="../../imgs/anta_nrfu_test_VerifyZeroTouch_table.svg" width="1600" /></a></p>
 <h3 id="performing-nrfu-with-json-rendering">Performing NRFU with JSON rendering<a class="headerlink" href="#performing-nrfu-with-json-rendering" title="Permanent link">&para;</a></h3>
 <p>The JSON rendering command in NRFU testing will generate an output of all test results in JSON format.</p>
 <h4 id="command-overview_2">Command overview<a class="headerlink" href="#command-overview_2" title="Permanent link">&para;</a></h4>
@@ -4025,7 +4025,7 @@ Options:
 <h4 id="example_1">Example<a class="headerlink" href="#example_1" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>--tags<span class="w"> </span>leaf<span class="w"> </span>json
 </code></pre></div>
-<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_nrfu_tags_leaf_json.svg"><img alt="anta nrfu json results" class="img_center" loading="lazy" src="../../imgs/anta_nrfu_tags_leaf_json.svg" width="1600" /></a></p>
+<p><a class="glightbox" data-type="image" href="../../imgs/anta_nrfu_tags_leaf_json.svg"><img alt="anta nrfu json results" class="img_center" loading="lazy" src="../../imgs/anta_nrfu_tags_leaf_json.svg" width="1600" /></a></p>
 <h3 id="performing-nrfu-and-saving-results-in-a-csv-file">Performing NRFU and saving results in a CSV file<a class="headerlink" href="#performing-nrfu-and-saving-results-in-a-csv-file" title="Permanent link">&para;</a></h3>
 <p>The <code>csv</code> command in NRFU testing is useful for generating a CSV file with all tests result. This file can be easily analyzed and filtered by operator for reporting purposes.</p>
 <h4 id="command-overview_3">Command overview<a class="headerlink" href="#command-overview_3" title="Permanent link">&para;</a></h4>
@@ -4042,7 +4042,7 @@ Options:
 <h4 id="example_2">Example<a class="headerlink" href="#example_2" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>--tags<span class="w"> </span>leaf<span class="w"> </span>csv<span class="w"> </span>--csv-output<span class="w"> </span>nrfu.csv
 </code></pre></div>
-<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_nrfu_tags_leaf_csv_csvoutput_nrfucsv.svg"><img alt="anta nrfu csv results" class="img_center" loading="lazy" src="../../imgs/anta_nrfu_tags_leaf_csv_csvoutput_nrfucsv.svg" width="1600" /></a></p>
+<p><a class="glightbox" data-type="image" href="../../imgs/anta_nrfu_tags_leaf_csv_csvoutput_nrfucsv.svg"><img alt="anta nrfu csv results" class="img_center" loading="lazy" src="../../imgs/anta_nrfu_tags_leaf_csv_csvoutput_nrfucsv.svg" width="1600" /></a></p>
 <h3 id="performing-nrfu-and-saving-results-in-a-markdown-file">Performing NRFU and saving results in a Markdown file<a class="headerlink" href="#performing-nrfu-and-saving-results-in-a-markdown-file" title="Permanent link">&para;</a></h3>
 <p>The <code>md-report</code> command in NRFU testing generates a comprehensive Markdown report containing various sections, including detailed statistics for devices and test categories.</p>
 <h4 id="command-overview_4">Command overview<a class="headerlink" href="#command-overview_4" title="Permanent link">&para;</a></h4>
@@ -4061,7 +4061,7 @@ Options:
 <h4 id="example_3">Example<a class="headerlink" href="#example_3" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>--tags<span class="w"> </span>leaf<span class="w"> </span>md-report<span class="w"> </span>--md-output<span class="w"> </span>nrfu.md
 </code></pre></div>
-<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_nrfu_tags_leaf_mdreport_mdoutput_nrfumd.svg"><img alt="anta nrfu md-report results" class="img_center" loading="lazy" src="../../imgs/anta_nrfu_tags_leaf_mdreport_mdoutput_nrfumd.svg" width="1600" /></a></p>
+<p><a class="glightbox" data-type="image" href="../../imgs/anta_nrfu_tags_leaf_mdreport_mdoutput_nrfumd.svg"><img alt="anta nrfu md-report results" class="img_center" loading="lazy" src="../../imgs/anta_nrfu_tags_leaf_mdreport_mdoutput_nrfumd.svg" width="1600" /></a></p>
 <h3 id="performing-nrfu-with-custom-reports">Performing NRFU with custom reports<a class="headerlink" href="#performing-nrfu-with-custom-reports" title="Permanent link">&para;</a></h3>
 <p>ANTA offers a CLI option for creating custom reports. This leverages the Jinja2 template system, allowing you to tailor reports to your specific needs.</p>
 <h4 id="command-overview_5">Command overview<a class="headerlink" href="#command-overview_5" title="Permanent link">&para;</a></h4>
@@ -4082,7 +4082,7 @@ Options:
 <h4 id="example_4">Example<a class="headerlink" href="#example_4" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>--tags<span class="w"> </span>leaf<span class="w"> </span>tpl-report<span class="w"> </span>--template<span class="w"> </span>./custom_template.j2
 </code></pre></div>
-<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_nrfu_tags_leaf_tplreport_template__custom_templatej2.svg"><img alt="anta nrfu custom report results" class="img_center" loading="lazy" src="../../imgs/anta_nrfu_tags_leaf_tplreport_template__custom_templatej2.svg" width="1600" /></a></p>
+<p><a class="glightbox" data-type="image" href="../../imgs/anta_nrfu_tags_leaf_tplreport_template__custom_templatej2.svg"><img alt="anta nrfu custom report results" class="img_center" loading="lazy" src="../../imgs/anta_nrfu_tags_leaf_tplreport_template__custom_templatej2.svg" width="1600" /></a></p>
 <p>The template <code>./custom_template.j2</code> is a simple Jinja2 template:</p>
 <div class="highlight"><pre><span></span><code>{% for d in data %}
 * {{ d.test }} is [{{ "green" if d.result == "success" else "red" }}]{{ d.result | upper }}[/] for {{ d.name }}
@@ -4102,7 +4102,7 @@ Options:
 </code></pre></div>
 <h3 id="dry-run-mode">Dry-run mode<a class="headerlink" href="#dry-run-mode" title="Permanent link">&para;</a></h3>
 <p>It is possible to run <code>anta nrfu --dry-run</code> to execute ANTA up to the point where it should communicate with the network to execute the tests. When using <code>--dry-run</code>, all inventory devices are assumed to be online. This can be useful to check how many tests would be run using the catalog and inventory.</p>
-<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_nrfu_dryrun.svg"><img alt="anta nrfu dry-run results" class="img_center" loading="lazy" src="../../imgs/anta_nrfu_dryrun.svg" width="1600" /></a></p>
+<p><a class="glightbox" data-type="image" href="../../imgs/anta_nrfu_dryrun.svg"><img alt="anta nrfu dry-run results" class="img_center" loading="lazy" src="../../imgs/anta_nrfu_dryrun.svg" width="1600" /></a></p>
 
   
 
@@ -4268,6 +4268,8 @@ Options:
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
       
         <script src="../../stylesheets/mermaid-zoom.js"></script>
+      
+        <script src="../../stylesheets/glightbox-zoom.js"></script>
       
     
   </body>

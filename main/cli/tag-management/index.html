@@ -3540,7 +3540,7 @@
 <p>Each device also has its own name automatically added as a tag:</p>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>get<span class="w"> </span>inventory<span class="w"> </span>--tags<span class="w"> </span>dc1-spine1
 </code></pre></div>
-<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_get_inventory_tags_dc1spine1.svg"><img alt="anta get inventory filtered by an automatic device-name tag" class="img_center" loading="lazy" src="../../imgs/anta_get_inventory_tags_dc1spine1.svg" width="1600" /></a></p>
+<p><a class="glightbox" data-type="image" href="../../imgs/anta_get_inventory_tags_dc1spine1.svg"><img alt="anta get inventory filtered by an automatic device-name tag" class="img_center" loading="lazy" src="../../imgs/anta_get_inventory_tags_dc1spine1.svg" width="1600" /></a></p>
 <h4 id="test-tags">Test tags<a class="headerlink" href="#test-tags" title="Permanent link">&para;</a></h4>
 <p>Tags can be defined in the test catalog to restrict tests to tagged devices:</p>
 <div class="highlight"><span class="filename">catalog.yml</span><pre><span></span><code><span class="nn">---</span>
@@ -3617,18 +3617,18 @@
 Tests with tags will only run on devices with matching tags.</p>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>table<span class="w"> </span>--group-by<span class="w"> </span>device
 </code></pre></div>
-<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_nrfu_table_groupby_device.svg"><img alt="anta nrfu results grouped by device without a tag filter" class="img_center" loading="lazy" src="../../imgs/anta_nrfu_table_groupby_device.svg" width="1600" /></a></p>
+<p><a class="glightbox" data-type="image" href="../../imgs/anta_nrfu_table_groupby_device.svg"><img alt="anta nrfu results grouped by device without a tag filter" class="img_center" loading="lazy" src="../../imgs/anta_nrfu_table_groupby_device.svg" width="1600" /></a></p>
 <h5 id="single-tag">Single tag<a class="headerlink" href="#single-tag" title="Permanent link">&para;</a></h5>
 <p>With a tag specified, only tests matching this tag will be run on matching devices.</p>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>--tags<span class="w"> </span>leaf<span class="w"> </span>text
 </code></pre></div>
-<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_nrfu_tags_leaf_text.svg"><img alt="anta nrfu text results filtered by the leaf tag" class="img_center" loading="lazy" src="../../imgs/anta_nrfu_tags_leaf_text.svg" width="1600" /></a></p>
+<p><a class="glightbox" data-type="image" href="../../imgs/anta_nrfu_tags_leaf_text.svg"><img alt="anta nrfu text results filtered by the leaf tag" class="img_center" loading="lazy" src="../../imgs/anta_nrfu_tags_leaf_text.svg" width="1600" /></a></p>
 <p>In this case, only <code>leaf</code> devices defined in the inventory are used to run tests marked with the <code>leaf</code> in the test catalog.</p>
 <h5 id="multiple-tags">Multiple tags<a class="headerlink" href="#multiple-tags" title="Permanent link">&para;</a></h5>
 <p>It is possible to use multiple tags using the <code>--tags tag1,tag2</code> syntax.</p>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>--tags<span class="w"> </span>leaf,spine<span class="w"> </span>text
 </code></pre></div>
-<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_nrfu_tags_leaf_spine_text.svg"><img alt="anta nrfu text results filtered by leaf and spine tags" class="img_center" loading="lazy" src="../../imgs/anta_nrfu_tags_leaf_spine_text.svg" width="1600" /></a></p>
+<p><a class="glightbox" data-type="image" href="../../imgs/anta_nrfu_tags_leaf_spine_text.svg"><img alt="anta nrfu text results filtered by leaf and spine tags" class="img_center" loading="lazy" src="../../imgs/anta_nrfu_tags_leaf_spine_text.svg" width="1600" /></a></p>
 <h3 id="obtaining-all-configured-tags">Obtaining all configured tags<a class="headerlink" href="#obtaining-all-configured-tags" title="Permanent link">&para;</a></h3>
 <p>As most ANTA commands accommodate tag filtering, this command is useful for enumerating all tags configured in the inventory. Running the <code>anta get tags</code> command will return a list of all tags configured in the inventory.</p>
 <h4 id="command-overview">Command overview<a class="headerlink" href="#command-overview" title="Permanent link">&para;</a></h4>
@@ -3677,7 +3677,7 @@ Options:
 <p>To get the list of all configured tags in the inventory, run the following command:</p>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>get<span class="w"> </span>tags
 </code></pre></div>
-<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_get_tags.svg"><img alt="anta get tags results" class="img_center" loading="lazy" src="../../imgs/anta_get_tags.svg" width="1600" /></a></p>
+<p><a class="glightbox" data-type="image" href="../../imgs/anta_get_tags.svg"><img alt="anta get tags results" class="img_center" loading="lazy" src="../../imgs/anta_get_tags.svg" width="1600" /></a></p>
 
   
 
@@ -3843,6 +3843,8 @@ Options:
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
       
         <script src="../../stylesheets/mermaid-zoom.js"></script>
+      
+        <script src="../../stylesheets/glightbox-zoom.js"></script>
       
     
   </body>

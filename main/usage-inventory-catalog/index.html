@@ -3783,7 +3783,7 @@ For instance, if a custom test is defined in the importable Python module <code>
 <p>Run the catalog against a device:</p>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>--device<span class="w"> </span>dc1-spine1<span class="w"> </span>--catalog<span class="w"> </span>docs/snippets/result-overwrite-catalog.yml<span class="w"> </span>table
 </code></pre></div>
-<p><a class="glightbox" data-type="image" data-width="90vw" href="../imgs/anta_nrfu_device_dc1spine1_catalog_docs_snippets_resultoverwritecatalogyml_table.svg"><img alt="ANTA table report with customized result fields" class="img_center" loading="lazy" src="../imgs/anta_nrfu_device_dc1spine1_catalog_docs_snippets_resultoverwritecatalogyml_table.svg" width="1600" /></a></p>
+<p><a class="glightbox" data-type="image" href="../imgs/anta_nrfu_device_dc1spine1_catalog_docs_snippets_resultoverwritecatalogyml_table.svg"><img alt="ANTA table report with customized result fields" class="img_center" loading="lazy" src="../imgs/anta_nrfu_device_dc1spine1_catalog_docs_snippets_resultoverwritecatalogyml_table.svg" width="1600" /></a></p>
 <h4 id="example-script-to-merge-catalogs">Example script to merge catalogs<a class="headerlink" href="#example-script-to-merge-catalogs" title="Permanent link">&para;</a></h4>
 <p>The following script reads all the files in <code>intended/test_catalogs/</code> with names <code>&lt;device_name&gt;-catalog.yml</code> and merge them together inside one big catalog <code>anta-catalog.yml</code> using the new <code>AntaCatalog.merge_catalogs()</code> class method.</p>
 <!-- fmt: off -->
@@ -3989,6 +3989,8 @@ For instance, if a custom test is defined in the importable Python module <code>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
       
         <script src="../stylesheets/mermaid-zoom.js"></script>
+      
+        <script src="../stylesheets/glightbox-zoom.js"></script>
       
     
   </body>

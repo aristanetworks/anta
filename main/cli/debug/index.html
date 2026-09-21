@@ -3475,7 +3475,7 @@ Options:
 <p>This example illustrates how to run the <code>show interfaces description</code> command with a <code>JSON</code> format (default):</p>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>debug<span class="w"> </span>run-cmd<span class="w"> </span>--command<span class="w"> </span><span class="s2">"show interfaces description"</span><span class="w"> </span>--device<span class="w"> </span>dc1-spine1
 </code></pre></div>
-<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_debug_run_cmd_dc1_spine1.svg"><img alt="anta debug run command results" class="img_center" loading="lazy" src="../../imgs/anta_debug_run_cmd_dc1_spine1.svg" width="1600" /></a></p>
+<p><a class="glightbox" data-type="image" href="../../imgs/anta_debug_run_cmd_dc1_spine1.svg"><img alt="anta debug run command results" class="img_center" loading="lazy" src="../../imgs/anta_debug_run_cmd_dc1_spine1.svg" width="1600" /></a></p>
 <h3 id="executing-an-eos-command-using-templates">Executing an EOS command using templates<a class="headerlink" href="#executing-an-eos-command-using-templates" title="Permanent link">&para;</a></h3>
 <p>The <code>run-template</code> entrypoint allows the user to provide an <a href="https://realpython.com/python-f-strings/#f-strings-a-new-and-improved-way-to-format-strings-in-python"><code>f-string</code></a> templated command. It is followed by a list of arguments (key-value pairs) that build a dictionary used as template parameters.</p>
 <h4 id="command-overview_1">Command overview<a class="headerlink" href="#command-overview_1" title="Permanent link">&para;</a></h4>
@@ -3538,7 +3538,7 @@ Options:
 <p>This example uses the <code>show vlan {vlan_id}</code> command in a <code>JSON</code> format:</p>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>debug<span class="w"> </span>run-template<span class="w"> </span>--template<span class="w"> </span><span class="s2">"show vlan {vlan_id}"</span><span class="w"> </span>vlan_id<span class="w"> </span><span class="m">1</span><span class="w"> </span>--device<span class="w"> </span>dc1-leaf1a
 </code></pre></div>
-<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_debug_run_template_dc1_leaf1a.svg"><img alt="anta debug run template results" class="img_center" loading="lazy" src="../../imgs/anta_debug_run_template_dc1_leaf1a.svg" width="1600" /></a></p>
+<p><a class="glightbox" data-type="image" href="../../imgs/anta_debug_run_template_dc1_leaf1a.svg"><img alt="anta debug run template results" class="img_center" loading="lazy" src="../../imgs/anta_debug_run_template_dc1_leaf1a.svg" width="1600" /></a></p>
 <h4 id="example-of-multiple-arguments">Example of multiple arguments<a class="headerlink" href="#example-of-multiple-arguments" title="Permanent link">&para;</a></h4>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -3546,11 +3546,11 @@ Options:
 </div>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>debug<span class="w"> </span>run-template<span class="w"> </span>--ofmt<span class="w"> </span>text<span class="w"> </span>--template<span class="w"> </span><span class="s2">"ping {dst} source {src}"</span><span class="w"> </span>dst<span class="w"> </span><span class="m">8</span>.8.8.8<span class="w"> </span>src<span class="w"> </span>Loopback0<span class="w"> </span>--device<span class="w"> </span>dc1-spine1
 </code></pre></div>
-<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_debug_ping_dc1_spine1.svg"><img alt="anta debug ping template results" class="img_center" loading="lazy" src="../../imgs/anta_debug_ping_dc1_spine1.svg" width="1600" /></a></p>
+<p><a class="glightbox" data-type="image" href="../../imgs/anta_debug_ping_dc1_spine1.svg"><img alt="anta debug ping template results" class="img_center" loading="lazy" src="../../imgs/anta_debug_ping_dc1_spine1.svg" width="1600" /></a></p>
 <p>When a parameter is repeated, only its final value is used:</p>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>debug<span class="w"> </span>run-template<span class="w"> </span>--ofmt<span class="w"> </span>text<span class="w"> </span>--template<span class="w"> </span><span class="s2">"ping {dst} source {src}"</span><span class="w"> </span>dst<span class="w"> </span><span class="m">8</span>.8.8.8<span class="w"> </span>src<span class="w"> </span>Management0<span class="w"> </span>dst<span class="w"> </span><span class="m">1</span>.1.1.1<span class="w"> </span>src<span class="w"> </span>Loopback0<span class="w"> </span>--device<span class="w"> </span>dc1-spine1
 </code></pre></div>
-<p><a class="glightbox" data-type="image" data-width="90vw" href="../../imgs/anta_debug_ping_duplicate_params_dc1_spine1.svg"><img alt="anta debug ping template with repeated parameters" class="img_center" loading="lazy" src="../../imgs/anta_debug_ping_duplicate_params_dc1_spine1.svg" width="1600" /></a></p>
+<p><a class="glightbox" data-type="image" href="../../imgs/anta_debug_ping_duplicate_params_dc1_spine1.svg"><img alt="anta debug ping template with repeated parameters" class="img_center" loading="lazy" src="../../imgs/anta_debug_ping_duplicate_params_dc1_spine1.svg" width="1600" /></a></p>
 
   
 
@@ -3709,6 +3709,8 @@ Options:
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
       
         <script src="../../stylesheets/mermaid-zoom.js"></script>
+      
+        <script src="../../stylesheets/glightbox-zoom.js"></script>
       
     
   </body>
