@@ -489,7 +489,6 @@ class VerifyAcctMethods(AntaTest):
                 if method_list_data is None:
                     atomic.is_failure("Not found")
                     continue
-
                 if method_config.default_methods is not None:
                     self._check_accounting_plane(atomic, method_list_data, "default", method_config.default_methods)
                 if method_config.console_methods is not None:
