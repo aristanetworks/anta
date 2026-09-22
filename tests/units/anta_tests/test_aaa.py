@@ -446,7 +446,7 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.SUCCESS,
             "atomic_results": [
-                {"description": "AAA commands accounting - privilege0-15", "result": AntaTestStatus.SUCCESS},
+                {"description": "AAA commands accounting privilege0-15", "result": AntaTestStatus.SUCCESS},
                 {"description": "AAA exec accounting", "result": AntaTestStatus.SUCCESS},
                 {"description": "AAA system accounting", "result": AntaTestStatus.SUCCESS},
                 {"description": "AAA dot1x accounting", "result": AntaTestStatus.SUCCESS},
@@ -472,21 +472,20 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.SUCCESS,
             "atomic_results": [
-                {"description": "AAA commands accounting - privilege0-15", "result": AntaTestStatus.SUCCESS},
+                {"description": "AAA commands accounting privilege0-15", "result": AntaTestStatus.SUCCESS},
                 {"description": "AAA exec accounting", "result": AntaTestStatus.SUCCESS},
             ],
         },
     },
     (VerifyAcctMethods, "success-both-planes"): {
-        # Both default and console checked for the same method-list entry
         "eos_data": [
             {
                 "commandsAcctMethods": {
                     "privilege0-15": {
                         "defaultAction": "startStop",
-                        "defaultMethods": ["group tacacs+", "logging"],
+                        "defaultMethods": ["logging", "group tacacs+"],
                         "consoleAction": "startStop",
-                        "consoleMethods": ["group tacacs+", "logging"],
+                        "consoleMethods": ["logging", "group tacacs+"],
                     }
                 },
                 "execAcctMethods": {},
@@ -505,7 +504,7 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.SUCCESS,
             "atomic_results": [
-                {"description": "AAA commands accounting - privilege0-15", "result": AntaTestStatus.SUCCESS},
+                {"description": "AAA commands accounting privilege0-15", "result": AntaTestStatus.SUCCESS},
             ],
         },
     },
@@ -526,10 +525,10 @@ DATA: AntaUnitTestData = {
         },
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["AAA commands accounting - privilege1-5 - Not found"],
+            "messages": ["AAA commands accounting privilege1-5 - Not found"],
             "atomic_results": [
                 {
-                    "description": "AAA commands accounting - privilege1-5",
+                    "description": "AAA commands accounting privilege1-5",
                     "result": AntaTestStatus.FAILURE,
                     "messages": ["Not found"],
                 },
@@ -553,10 +552,10 @@ DATA: AntaUnitTestData = {
         },
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["AAA commands accounting - privilege0-15 - Default methods - Not configured"],
+            "messages": ["AAA commands accounting privilege0-15 - Default methods - Not configured"],
             "atomic_results": [
                 {
-                    "description": "AAA commands accounting - privilege0-15",
+                    "description": "AAA commands accounting privilege0-15",
                     "result": AntaTestStatus.FAILURE,
                     "messages": ["Default methods - Not configured"],
                 },
@@ -580,10 +579,10 @@ DATA: AntaUnitTestData = {
         },
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["AAA commands accounting - privilege0-15 - Default methods - Mismatch - Expected: group tacacs+, logging, Actual: group radius, logging"],
+            "messages": ["AAA commands accounting privilege0-15 - Default methods - Mismatch - Expected: group tacacs+, logging, Actual: group radius, logging"],
             "atomic_results": [
                 {
-                    "description": "AAA commands accounting - privilege0-15",
+                    "description": "AAA commands accounting privilege0-15",
                     "result": AntaTestStatus.FAILURE,
                     "messages": ["Default methods - Mismatch - Expected: group tacacs+, logging, Actual: group radius, logging"],
                 },
@@ -607,10 +606,10 @@ DATA: AntaUnitTestData = {
         },
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["AAA commands accounting - privilege0-15 - Console methods - Not configured"],
+            "messages": ["AAA commands accounting privilege0-15 - Console methods - Not configured"],
             "atomic_results": [
                 {
-                    "description": "AAA commands accounting - privilege0-15",
+                    "description": "AAA commands accounting privilege0-15",
                     "result": AntaTestStatus.FAILURE,
                     "messages": ["Console methods - Not configured"],
                 },
@@ -634,10 +633,10 @@ DATA: AntaUnitTestData = {
         },
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["AAA commands accounting - privilege0-15 - Console methods - Mismatch - Expected: group tacacs+, logging, Actual: group radius, logging"],
+            "messages": ["AAA commands accounting privilege0-15 - Console methods - Mismatch - Expected: group tacacs+, logging, Actual: group radius, logging"],
             "atomic_results": [
                 {
-                    "description": "AAA commands accounting - privilege0-15",
+                    "description": "AAA commands accounting privilege0-15",
                     "result": AntaTestStatus.FAILURE,
                     "messages": ["Console methods - Mismatch - Expected: group tacacs+, logging, Actual: group radius, logging"],
                 },
@@ -672,12 +671,12 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "AAA commands accounting - privilege0-15 - Default methods - Mismatch - Expected: group tacacs+, logging, Actual: group radius, logging",
-                "AAA commands accounting - privilege0-15 - Console methods - Mismatch - Expected: group tacacs+, logging, Actual: group radius, logging",
+                "AAA commands accounting privilege0-15 - Default methods - Mismatch - Expected: group tacacs+, logging, Actual: group radius, logging",
+                "AAA commands accounting privilege0-15 - Console methods - Mismatch - Expected: group tacacs+, logging, Actual: group radius, logging",
             ],
             "atomic_results": [
                 {
-                    "description": "AAA commands accounting - privilege0-15",
+                    "description": "AAA commands accounting privilege0-15",
                     "result": AntaTestStatus.FAILURE,
                     "messages": [
                         "Default methods - Mismatch - Expected: group tacacs+, logging, Actual: group radius, logging",
@@ -734,12 +733,12 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "AAA commands accounting - privilege0-15 - Not found",
+                "AAA commands accounting privilege0-15 - Not found",
                 "AAA exec accounting - Default methods - Mismatch - Expected: group tacacs+, logging, Actual: group radius",
             ],
             "atomic_results": [
                 {
-                    "description": "AAA commands accounting - privilege0-15",
+                    "description": "AAA commands accounting privilege0-15",
                     "result": AntaTestStatus.FAILURE,
                     "messages": ["Not found"],
                 },
@@ -776,17 +775,17 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "AAA commands accounting - privilege0-5 - Not found",
-                "AAA commands accounting - privilege6-15 - Default methods - Mismatch - Expected: group tacacs+, logging, Actual: group radius",
+                "AAA commands accounting privilege0-5 - Not found",
+                "AAA commands accounting privilege6-15 - Default methods - Mismatch - Expected: group tacacs+, logging, Actual: group radius",
             ],
             "atomic_results": [
                 {
-                    "description": "AAA commands accounting - privilege0-5",
+                    "description": "AAA commands accounting privilege0-5",
                     "result": AntaTestStatus.FAILURE,
                     "messages": ["Not found"],
                 },
                 {
-                    "description": "AAA commands accounting - privilege6-15",
+                    "description": "AAA commands accounting privilege6-15",
                     "result": AntaTestStatus.FAILURE,
                     "messages": ["Default methods - Mismatch - Expected: group tacacs+, logging, Actual: group radius"],
                 },
@@ -818,12 +817,12 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "AAA commands accounting - privilege0-15 - Default methods - Not configured",
-                "AAA commands accounting - privilege0-15 - Console methods - Not configured",
+                "AAA commands accounting privilege0-15 - Default methods - Not configured",
+                "AAA commands accounting privilege0-15 - Console methods - Not configured",
             ],
             "atomic_results": [
                 {
-                    "description": "AAA commands accounting - privilege0-15",
+                    "description": "AAA commands accounting privilege0-15",
                     "result": AntaTestStatus.FAILURE,
                     "messages": [
                         "Default methods - Not configured",

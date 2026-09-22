@@ -461,8 +461,11 @@ class VerifyAcctMethods(AntaTest):
         methods_key = f"{plane}Methods"
         if action_key not in method_list_data or methods_key not in method_list_data:
             atomic.is_failure(f"{plane.capitalize()} methods - Not configured")
-        elif (actual := method_list_data[methods_key]) != expected:
-            atomic.is_failure(f"{plane.capitalize()} methods - Mismatch - Expected: {', '.join(expected)}, Actual: {', '.join(actual)}")
+            return
+        actual_methods = sorted(method_list_data[methods_key])
+        expected_methods = sorted(expected)
+        if actual_methods != expected_methods:
+            atomic.is_failure(f"{plane.capitalize()} methods - Mismatch - Expected: {', '.join(expected_methods)}, Actual: {', '.join(actual_methods)}")
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -479,7 +482,7 @@ class VerifyAcctMethods(AntaTest):
                 # name is normalized by the input model, e.g. "all" -> "privilege0-15".
                 name = str(method_config.name)
                 # Omit name when it equals the type (exec/system/dot1x); include it for commands privilege ranges.
-                name_label = f" - {name}" if name != acct_type else ""
+                name_label = f" {name}" if name != acct_type else ""
                 atomic = self.result.add(description=f"AAA {acct_type} accounting{name_label}", status=AntaTestStatus.SUCCESS)
 
                 method_list_data = methods.get(name)

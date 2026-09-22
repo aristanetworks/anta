@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     else:
         from typing_extensions import Self
 
-PRIVILEGE_METHOD_LIST_PATTERN = re.compile(r"^privilege(?P<start>\d|1[0-5])(?:-(?P<end>\d|1[0-5]))?$")
+PRIVILEGE_METHOD_LIST_PATTERN = re.compile(r"privilege(?P<start>1[0-5]|\d)(?:-(?P<end>1[0-5]|\d))?")
 MAX_PRIVILEGE_LEVEL = 15
 
 
@@ -58,10 +58,10 @@ class AAAAccountingMethods(BaseModel):
     model_config = ConfigDict(extra="forbid")
     name: str | int
     """Accounting method-list name."""
-    default_methods: list[AAAAuthMethod] | None = None
-    """Expected default accounting methods in order."""
-    console_methods: list[AAAAuthMethod] | None = None
-    """Expected console accounting methods in order."""
+    default_methods: list[AAAAuthMethod] | None = Field(default=None, min_length=1)
+    """Expected default accounting methods."""
+    console_methods: list[AAAAuthMethod] | None = Field(default=None, min_length=1)
+    """Expected console accounting methods."""
 
     @model_validator(mode="after")
     def validate_methods(self) -> Self:

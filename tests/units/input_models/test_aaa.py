@@ -91,10 +91,12 @@ class TestAAAAccounting:
                 [{"name": "exec", "default_methods": ["tacacs+"]}, {"name": "exec", "console_methods": ["logging"]}],
                 id="exec-duplicate-names",
             ),
-            # system/dot1x types: console plane not supported (same validation branch for both)
             pytest.param("system", [{"name": "system", "console_methods": ["tacacs+"]}], id="system-console-methods-not-supported"),
-            # AAAAccountingMethods: neither default nor console methods provided
+            pytest.param("dot1x", [{"name": "dot1x", "console_methods": ["tacacs+"]}], id="dot1x-console-methods-not-supported"),
+            # AAAAccountingMethods: neither default nor console methods provided; empty list not allowed
             pytest.param("exec", [{"name": "exec"}], id="method-config-no-methods-provided"),
+            pytest.param("exec", [{"name": "exec", "default_methods": []}], id="method-config-empty-default-methods"),
+            pytest.param("exec", [{"name": "exec", "console_methods": []}], id="method-config-empty-console-methods"),
         ],
     )
     def test_invalid(self, acct_type: AAAAccountingType, method_configs: list[AAAAccountingMethods]) -> None:
