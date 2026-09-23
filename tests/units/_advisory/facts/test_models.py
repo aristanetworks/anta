@@ -10,8 +10,10 @@ from typing import TYPE_CHECKING, Any, ClassVar, cast
 
 import pytest
 
+from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.models import (
     AvailableFact,
+    CommandsFactDefinition,
     Fact,
     FactDefinition,
     FactProblemKind,
@@ -22,13 +24,15 @@ from anta._advisory.facts.models import (
     FeatureName,
     FeatureRef,
     FeatureState,
+    UnavailableFact,
     fact_field,
     facts_dataclass,
 )
+from anta._eos.version import EOSVersion
+from anta.models import AntaCommand
 
 if TYPE_CHECKING:
     from anta.device import AntaDevice
-    from anta.models import AntaCommand
 
 
 @dataclass(frozen=True, slots=True)
@@ -44,6 +48,52 @@ class ExampleFactDefinition(FeatureFact, FactDefinition["ExampleFactDefinition"]
         """Return a stable value; derivation details are outside these model tests."""
         _ = device, commands
         return ENABLED.available(SOURCE)
+
+
+@dataclass(frozen=True, slots=True)
+class ExampleCommandsFactDefinition(FeatureFact, CommandsFactDefinition["ExampleCommandsFactDefinition"]):
+    """Command-derived feature fact restricted to selected EOS releases."""
+
+    feature: ClassVar[FeatureRef] = FeatureName.SECURE_BOOT
+    key: ClassVar[str] = "feature.example.commands"
+    label: ClassVar[str] = "Example command feature"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (AntaCommand(command="show example", revision=1),)
+    supported_versions: ClassVar[tuple[VersionRule, ...]] = (
+        VersionRule(major=4, minor=33, patch_gte=2),
+        VersionRule(major=4, minor_gt=33, minor_lt=39),
+    )
+
+    @classmethod
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[ExampleCommandsFactDefinition]:
+        """Return an enabled feature after the base class validates the command."""
+        return cls(FeatureState.ENABLED).available(FactSource(commands[0].command, FactSourceKind.COMMAND))
+
+
+@dataclass(frozen=True, slots=True)
+class ExampleNonFeatureCommandsFactDefinition(CommandsFactDefinition["ExampleNonFeatureCommandsFactDefinition"]):
+    """Command-derived non-feature fact used to exercise the default unsupported result."""
+
+    value: str
+    key: ClassVar[str] = "example.commands"
+    label: ClassVar[str] = "Example command value"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (AntaCommand(command="show example", revision=1),)
+    supported_versions: ClassVar[tuple[VersionRule, ...]] = (VersionRule(major=4, minor=33, patch_gte=2),)
+
+    @classmethod
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[ExampleNonFeatureCommandsFactDefinition]:
+        """Return a stable value after the base class validates the command."""
+        return cls("available").available(FactSource(commands[0].command, FactSourceKind.COMMAND))
+
+
+class InvalidDeviceVersion:
+    """Device-version protocol implementation with a non-EOS string representation."""
+
+    def __str__(self) -> str:
+        return "not-an-eos-version"
+
+    def to_dict(self) -> dict[str, str | int]:
+        """Return the protocol representation expected by device metadata consumers."""
+        return {"version": str(self)}
 
 
 SOURCE = FactSource("show example", FactSourceKind.COMMAND)
@@ -183,3 +233,57 @@ def test_fact_definition_rejects_invalid_identity(key: str, label: str) -> None:
     """Require stable, renderable fact identities."""
     with pytest.raises(ValueError, match="non-empty and single-line"):
         type("InvalidFactDefinition", (ExampleFactDefinition,), {"key": key, "label": label})
+
+
+@pytest.mark.parametrize("version", [EOSVersion(4, 33, 2), EOSVersion(4, 34, 0), EOSVersion(4, 38, 99)])
+def test_commands_fact_definition_parses_supported_eos_versions(device: AntaDevice, version: EOSVersion) -> None:
+    """Parse command-derived facts on every declared supported range."""
+    device.version = version
+
+    fact = ExampleCommandsFactDefinition.derive(device, ExampleCommandsFactDefinition.commands)
+
+    assert isinstance(fact, AvailableFact)
+    assert fact.value.state is FeatureState.ENABLED
+
+
+@pytest.mark.parametrize("version", [EOSVersion(4, 33, 1), EOSVersion(4, 39, 0)])
+def test_commands_fact_definition_returns_known_unsupported_feature_before_command_validation(device: AntaDevice, version: EOSVersion) -> None:
+    """Return a known unsupported feature without requiring or parsing collected commands."""
+    device.version = version
+
+    fact = ExampleCommandsFactDefinition.derive(device)
+
+    assert isinstance(fact, AvailableFact)
+    assert fact.value.state is FeatureState.UNSUPPORTED
+    assert fact.source == FactSource("show example", FactSourceKind.COMMAND)
+
+
+def test_commands_fact_definition_returns_unavailable_unsupported_for_other_fact_kinds(device: AntaDevice) -> None:
+    """Use the generic unavailable result when an unsupported fact has no known feature state."""
+    device.version = EOSVersion(4, 33, 1)
+
+    fact = ExampleNonFeatureCommandsFactDefinition.derive(device)
+
+    assert isinstance(fact, UnavailableFact)
+    assert fact.problem is FactProblemKind.UNSUPPORTED
+
+
+def test_commands_fact_definition_validates_commands_when_eos_version_is_unknown(device: AntaDevice) -> None:
+    """Preserve command-driven derivation when EOS version metadata is unavailable."""
+    device.version = None
+
+    fact = ExampleCommandsFactDefinition.derive(device)
+
+    assert isinstance(fact, UnavailableFact)
+    assert fact.problem is FactProblemKind.COLLECTION_FAILED
+
+
+def test_commands_fact_definition_rejects_invalid_device_version(device: AntaDevice) -> None:
+    """Report non-EOS device-version metadata as invalid instead of bypassing the version filter."""
+    device.version = InvalidDeviceVersion()
+
+    fact = ExampleCommandsFactDefinition.derive(device)
+
+    assert isinstance(fact, UnavailableFact)
+    assert fact.problem is FactProblemKind.INVALID
+    assert fact.source == FactSource("device metadata", FactSourceKind.DEVICE_METADATA)
