@@ -95,7 +95,7 @@ env.bak/
 venv.bak/
 .envrc
 
-# mkdocs documentation
+# Zensical documentation
 /site
 
 # VScode settings

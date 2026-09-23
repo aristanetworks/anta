@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, TypeVar
+from typing import TYPE_CHECKING, TypeAlias
 
 import pytest
 
@@ -19,10 +19,9 @@ from anta._advisory.facts.tracing import (
 from tests.units.anta_tests.advisories import OfflineAntaDevice
 
 if TYPE_CHECKING:
-    from anta._advisory.facts.models import CommandsFactDefinition, FeatureValue
     from anta.models import AntaCommand
 
-T = TypeVar("T")
+TraceFact: TypeAlias = ConfigAgentPrivateKeyTraceFact | AaaPasswordTraceFact | AaaTacacsKeyTraceFact
 
 
 @pytest.fixture(name="device")
@@ -31,7 +30,7 @@ def fact_device_fixture() -> OfflineAntaDevice:
     return OfflineAntaDevice("unit-test")
 
 
-def command(definition: type[CommandsFactDefinition[T]], output: str) -> AntaCommand:
+def command(definition: type[TraceFact], output: str) -> AntaCommand:
     """Return one populated command owned by a tracing fact."""
     instance = definition.commands[0].model_copy()
     instance.output = output
@@ -69,7 +68,7 @@ def test_trace_level_expressions(expression: str, target: int, expected: bool | 
 )
 def test_risky_agent_trace_is_enabled(
     device: OfflineAntaDevice,
-    definition: type[CommandsFactDefinition[FeatureValue]],
+    definition: type[TraceFact],
     config: str,
 ) -> None:
     """Recognize every source-documented risky selector form."""
@@ -90,7 +89,7 @@ def test_risky_agent_trace_is_enabled(
 )
 def test_safe_agent_trace_is_disabled(
     device: OfflineAntaDevice,
-    definition: type[CommandsFactDefinition[FeatureValue]],
+    definition: type[TraceFact],
     config: str,
 ) -> None:
     """Recognize absent, unrelated, and explicitly disabled risky levels."""

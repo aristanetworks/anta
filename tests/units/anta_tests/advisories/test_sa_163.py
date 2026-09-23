@@ -22,9 +22,7 @@ from anta._advisory.facts.models import (
     FactSourceKind,
     FeatureName,
     FeatureState,
-    FeatureValue,
     MitigationState,
-    MitigationValue,
     SubFeature,
 )
 from anta._advisory.findings.models import AffectedResult, ErrorResult, MitigatedResult, NotAffectedResult
@@ -123,20 +121,20 @@ _DATA: AntaUnitTestData = {
 }
 
 
-def version_fact(value: str) -> Fact[EOSVersion]:
+def version_fact(value: str) -> Fact[EosVersionFact]:
     """Build an EOS version fact."""
     parsed = parse_eos_version(value).unwrap()
-    return EosVersionFact.available(parsed, SOURCE)
+    return EosVersionFact.from_version(parsed).available(SOURCE)
 
 
 def exposure(state: FeatureState):  # noqa: ANN201
     """Build a gNMI exposure fact."""
-    return GnmiMtlsAuthorizationFact.available(FeatureValue(SubFeature(FeatureName.GNMI, "mTLS request authorization"), state), SOURCE)
+    return GnmiMtlsAuthorizationFact(state).available(SOURCE)
 
 
 def mitigation(state: MitigationState):  # noqa: ANN201
     """Build a level-zero authorization mitigation fact."""
-    return LevelZeroCommandAuthorizationFact.available(MitigationValue(state), SOURCE)
+    return LevelZeroCommandAuthorizationFact(state).available(SOURCE)
 
 
 class TestSA163Assessment(unittest.TestCase):

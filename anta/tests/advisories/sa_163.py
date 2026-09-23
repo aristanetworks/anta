@@ -6,14 +6,14 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import Any, ClassVar, cast
+from typing import ClassVar, cast
 
 from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.aaa import LevelZeroCommandAuthorizationFact
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnmiMtlsAuthorizationFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactDefinition, FeatureState, FeatureValue, MitigationState, MitigationValue, UnavailableFact
+from anta._advisory.facts.models import AvailableFact, Fact, FactsBase, FeatureState, MitigationState, UnavailableFact, fact_field, facts_dataclass
 from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import (
     AffectedResult,
@@ -70,7 +70,9 @@ ADVISORY = _AdvisoryMetadata(
 VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
-def _assess_sa163(version: Fact[EOSVersion], exposure: Fact[FeatureValue], mitigation: Fact[MitigationValue]) -> VulnerabilityResult:
+def _assess_sa163(
+    version: Fact[EosVersionFact], exposure: Fact[GnmiMtlsAuthorizationFact], mitigation: Fact[LevelZeroCommandAuthorizationFact]
+) -> VulnerabilityResult:
     """Assess EOS scope, exposed OpenConfig transport state, and the documented AAA mitigation."""
     if not isinstance(exposure, UnavailableFact) and exposure.value.state is not FeatureState.ENABLED:
         return NotAffectedResult(vulnerability_id=VULNERABILITY_ID, decisive=(exposure,))
@@ -85,13 +87,13 @@ def _assess_sa163(version: Fact[EOSVersion], exposure: Fact[FeatureValue], mitig
     if mitigation.value.state is MitigationState.EFFECTIVE:
         return MitigatedResult(
             vulnerability_id=VULNERABILITY_ID,
-            mitigated_conditions=(MitigatedCondition(condition=cast("AvailableFact[FeatureValue]", exposure), mitigations=(mitigation,)),),
+            mitigated_conditions=(MitigatedCondition(condition=cast("AvailableFact[GnmiMtlsAuthorizationFact]", exposure), mitigations=(mitigation,)),),
             context=(eos_release,),
             remediation=remediation,
         )
     return AffectedResult(
         vulnerability_id=VULNERABILITY_ID,
-        conditions=(cast("AvailableFact[FeatureValue]", exposure),),
+        conditions=(cast("AvailableFact[GnmiMtlsAuthorizationFact]", exposure),),
         context=(eos_release,),
         remediation=remediation,
     )
@@ -116,14 +118,22 @@ class SA163(OptionalCommandsMixin, _AntaAdvisoryTest):
     ```
     """
 
+    @facts_dataclass
+    class Facts(FactsBase):
+        """Collected facts required to assess the advisory."""
+
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
+        exposure: Fact[GnmiMtlsAuthorizationFact] = fact_field(GnmiMtlsAuthorizationFact)
+        mitigation: Fact[LevelZeroCommandAuthorizationFact] = fact_field(LevelZeroCommandAuthorizationFact)
+
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
-    required_facts: ClassVar[tuple[type[FactDefinition[Any]], ...]] = (EosVersionFact, GnmiMtlsAuthorizationFact, LevelZeroCommandAuthorizationFact)
     description = "Verify whether the device is impacted by Security Advisory 0163."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
         """Derive facts, assess the vulnerability, and project it."""
-        finding = _assess_sa163(self.fact(EosVersionFact), self.fact(GnmiMtlsAuthorizationFact), self.fact(LevelZeroCommandAuthorizationFact))
+        facts = self.Facts.collect(self)
+        finding = _assess_sa163(facts.version, facts.exposure, facts.mitigation)
         atomic = self.result.add(f"Verify {VULNERABILITY_ID}.", vulnerability_ids=(VULNERABILITY_ID,))
         project_vulnerability_result(atomic, finding)

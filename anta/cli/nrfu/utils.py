@@ -16,7 +16,7 @@ from rich.progress import BarColumn, MofNCompleteColumn, Progress, SpinnerColumn
 from anta import __version__ as anta_version
 from anta._runner import AntaRunContext, AntaRunFilters, AntaRunner
 from anta.cli.console import console
-from anta.cli.utils import ExitCode
+from anta.cli.utils import ExitCode, exit_with_code
 from anta.models import AntaTest
 from anta.reporter.csv_reporter import ReportCsv
 from anta.reporter.jinja_reporter import ReportJinja
@@ -149,6 +149,13 @@ def print_jinja(results: ResultManager, template: pathlib.Path, output: pathlib.
     if output is not None:
         with output.open(mode="w", encoding="utf-8") as file:
             file.write(report)
+
+
+def run_template_report(ctx: click.Context, template: pathlib.Path, output: pathlib.Path | None) -> None:
+    """Run tests, render the templated report, and exit with the appropriate status."""
+    _ = run_tests(ctx)
+    print_jinja(results=ctx.obj["result_manager"], template=template, output=output)
+    exit_with_code(ctx)
 
 
 def save_to_csv(ctx: click.Context, csv_file: pathlib.Path) -> None:

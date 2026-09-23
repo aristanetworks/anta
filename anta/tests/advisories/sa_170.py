@@ -6,13 +6,13 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import Any, ClassVar, cast
+from typing import ClassVar, cast
 
 from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnmiAuthorizationFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
+from anta._advisory.facts.models import AvailableFact, Fact, FactsBase, FeatureState, UnavailableFact, fact_field, facts_dataclass
 from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import AffectedResult, EosReleaseAssessment, ErrorResult, NotAffectedResult, VulnerabilityResult
 from anta._advisory.findings.projection import project_vulnerability_result
@@ -52,7 +52,7 @@ ADVISORY = _AdvisoryMetadata(
 VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
-def _assess_sa170(version: Fact[EOSVersion], authorization: Fact[FeatureValue]) -> VulnerabilityResult:
+def _assess_sa170(version: Fact[EosVersionFact], authorization: Fact[GnmiAuthorizationFact]) -> VulnerabilityResult:
     """Assess EOS scope and enabled gNMI request authorization."""
     if not isinstance(authorization, UnavailableFact) and authorization.value.state is not FeatureState.ENABLED:
         return NotAffectedResult(vulnerability_id=VULNERABILITY_ID, decisive=(authorization,))
@@ -63,7 +63,7 @@ def _assess_sa170(version: Fact[EOSVersion], authorization: Fact[FeatureValue]) 
         return ErrorResult(vulnerability_id=VULNERABILITY_ID, problems=(authorization,))
     return AffectedResult(
         vulnerability_id=VULNERABILITY_ID,
-        conditions=(cast("AvailableFact[FeatureValue]", authorization),),
+        conditions=(cast("AvailableFact[GnmiAuthorizationFact]", authorization),),
         context=(eos_release,),
         remediation=software_version_plan(FIXED_RELEASES, current_version=eos_release.fact.value),
     )
@@ -87,14 +87,21 @@ class SA170(OptionalCommandsMixin, _AntaAdvisoryTest):
     ```
     """
 
+    @facts_dataclass
+    class Facts(FactsBase):
+        """Collected facts required to assess the advisory."""
+
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
+        authorization: Fact[GnmiAuthorizationFact] = fact_field(GnmiAuthorizationFact)
+
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
-    required_facts: ClassVar[tuple[type[FactDefinition[Any]], ...]] = (EosVersionFact, GnmiAuthorizationFact)
     description = "Verify whether the device is impacted by Security Advisory 0170."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
         """Derive facts, assess the vulnerability, and project it."""
-        finding = _assess_sa170(self.fact(EosVersionFact), self.fact(GnmiAuthorizationFact))
+        facts = self.Facts.collect(self)
+        finding = _assess_sa170(facts.version, facts.authorization)
         atomic = self.result.add(f"Verify {VULNERABILITY_ID}.", vulnerability_ids=(VULNERABILITY_ID,))
         project_vulnerability_result(atomic, finding)
