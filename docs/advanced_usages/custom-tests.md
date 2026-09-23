@@ -384,7 +384,7 @@ anta nrfu --device dc1-spine1 --catalog docs/snippets/custom-tests-catalog.yml t
 <!--
 Regenerate the output from the repository root with docs/fixtures on PYTHONPATH:
 source .personal/doc_env
-PYTHONPATH=docs/fixtures uv run --extra cli python docs/scripts/generate_snippet.py --format svg anta nrfu --device dc1-spine1 --catalog docs/snippets/custom-tests-catalog.yml text
+PYTHONPATH=docs/fixtures uv run --locked --extra cli python docs/scripts/generate_snippet.py --format svg anta nrfu --device dc1-spine1 --catalog docs/snippets/custom-tests-catalog.yml text
 -->
 
 ![ANTA running a custom test](../imgs/anta_nrfu_device_dc1spine1_catalog_docs_snippets_customtestscatalogyml_text.svg){ class="img_center" loading=lazy width="1600" }
