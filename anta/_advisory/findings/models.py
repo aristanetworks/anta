@@ -7,24 +7,28 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import TYPE_CHECKING, Any, TypeAlias
+from typing import TYPE_CHECKING, Any, Generic, TypeAlias, TypeVar
 
 from anta._advisory.facts.models import (
     AvailableFact,
-    ComponentSoftwareVersion,
+    ComponentSoftwareFact,
+    ConfigurationFact,
     ConfigurationState,
-    ConfigurationValue,
+    CredentialSyntaxFact,
+    CredentialSyntaxState,
+    FeatureFact,
     FeatureState,
-    FeatureValue,
+    MitigationFact,
     MitigationState,
-    MitigationValue,
     UnavailableFact,
 )
 
 if TYPE_CHECKING:
+    from anta._advisory.facts.eos import EosVersionFact
+    from anta._advisory.facts.platform import PlatformIdentityFact, SwitchCardIdentityFact
     from anta._advisory.remediation import RemediationPlan
-    from anta._eos.platform import PlatformIdentity
-    from anta._eos.version import EOSVersion
+
+FeatureFactT_co = TypeVar("FeatureFactT_co", bound=FeatureFact, covariant=True)
 
 
 class VersionRelation(str, Enum):
@@ -40,7 +44,7 @@ class VersionRelation(str, Enum):
 class EosReleaseAssessment:
     """Advisory-specific interpretation of an observed EOS release."""
 
-    fact: AvailableFact[EOSVersion]
+    fact: AvailableFact[EosVersionFact]
     relation: VersionRelation
 
 
@@ -55,7 +59,7 @@ class AffectedEosRelease(EosReleaseAssessment):
 class ComponentVersionAssessment:
     """Advisory-specific interpretation of an observed EOS component version."""
 
-    fact: AvailableFact[ComponentSoftwareVersion]
+    fact: AvailableFact[ComponentSoftwareFact]
     relation: VersionRelation
 
 
@@ -64,6 +68,11 @@ class AffectedComponentVersion(ComponentVersionAssessment):
     """An observed EOS component version confirmed to be affected."""
 
     relation: VersionRelation = field(default=VersionRelation.AFFECTED, init=False)
+
+
+@dataclass(frozen=True, slots=True)
+class AffectedFeatureState(AvailableFact[FeatureFactT_co], Generic[FeatureFactT_co]):
+    """A feature state explicitly classified as an affected condition."""
 
 
 class PlatformRelation(str, Enum):
@@ -77,34 +86,37 @@ class PlatformRelation(str, Enum):
 class PlatformAssessment:
     """Advisory-specific interpretation of observed platform identity."""
 
-    fact: AvailableFact[PlatformIdentity]
+    fact: AvailableFact[PlatformIdentityFact] | AvailableFact[SwitchCardIdentityFact]
     relation: PlatformRelation
 
 
-ExposureFact: TypeAlias = AvailableFact[FeatureValue] | AvailableFact[ConfigurationValue]
-MitigatableCondition: TypeAlias = AffectedEosRelease | AffectedComponentVersion | ExposureFact
-AffectedCondition: TypeAlias = MitigatableCondition | AvailableFact[MitigationValue]
+ExposureFact: TypeAlias = AvailableFact[FeatureFact] | AvailableFact[ConfigurationFact] | AvailableFact[CredentialSyntaxFact]
+MitigationEvidence: TypeAlias = AvailableFact[MitigationFact]
+MitigatableCondition: TypeAlias = AffectedEosRelease | AffectedComponentVersion | AffectedFeatureState[FeatureFact] | ExposureFact
+AffectedCondition: TypeAlias = MitigatableCondition | MitigationEvidence
 VersionAssessment: TypeAlias = EosReleaseAssessment | ComponentVersionAssessment
-FindingEvidence: TypeAlias = VersionAssessment | PlatformAssessment | ExposureFact | AvailableFact[MitigationValue]
+FindingEvidence: TypeAlias = VersionAssessment | PlatformAssessment | ExposureFact | MitigationEvidence
 
 
 def _is_affected_condition(value: object) -> bool:
     """Return whether a runtime value has one of the affected-condition shapes."""
-    if isinstance(value, AvailableFact) and isinstance(value.value, MitigationValue):
+    if isinstance(value, AvailableFact) and isinstance(value.value, MitigationFact):
         return value.value.state is MitigationState.INEFFECTIVE
     return _is_mitigatable_condition(value)
 
 
 def _is_mitigatable_condition(value: object) -> bool:
     """Return whether a runtime value is an exposure that a mitigation can cover."""
-    if isinstance(value, (AffectedEosRelease, AffectedComponentVersion)):
+    if isinstance(value, (AffectedEosRelease, AffectedComponentVersion, AffectedFeatureState)):
         return True
     if not isinstance(value, AvailableFact):
         return False
-    if isinstance(value.value, FeatureValue):
+    if isinstance(value.value, FeatureFact):
         return value.value.state is FeatureState.ENABLED
-    if isinstance(value.value, ConfigurationValue):
+    if isinstance(value.value, ConfigurationFact):
         return value.value.state is ConfigurationState.CONFIGURED
+    if isinstance(value.value, CredentialSyntaxFact):
+        return value.value.state in {CredentialSyntaxState.LEGACY, CredentialSyntaxState.MIXED}
     return False
 
 
@@ -113,7 +125,7 @@ class MitigatedCondition:
     """One confirmed affected condition paired with the mitigations that cover it."""
 
     condition: MitigatableCondition
-    mitigations: tuple[AvailableFact[MitigationValue], ...]
+    mitigations: tuple[MitigationEvidence, ...]
 
     def __post_init__(self) -> None:
         if not _is_mitigatable_condition(self.condition):

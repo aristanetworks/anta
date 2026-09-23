@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from anta._advisory.remediation import consolidate_remediations, render_remediation_plain
-from anta._advisory.reporter.reporting import _get_advisory_result, _get_advisory_severity
+from anta._advisory.reporter.reporting import _get_advisory_result, _get_advisory_severity, _iter_advisory_row_results
 from anta._advisory.results import _AdvisoryAtomicTestResult, _AdvisoryTestResult, _get_atomic_vulnerability_ids
 from anta.reporter.csv_reporter import ReportCsv
 
@@ -66,7 +66,7 @@ class SecurityAdvisoryReportCsv(ReportCsv):
     def _convert_to_list(
         cls,
         result: TestResult,
-        row_result: AtomicTestResult,
+        row_result: TestResult | AtomicTestResult,
         advisory: _AdvisoryMetadata,
         vulnerability: _AdvisoryVulnerability | None,
     ) -> list[str]:
@@ -94,11 +94,12 @@ class SecurityAdvisoryReportCsv(ReportCsv):
     def _iter_result_rows(cls, result: TestResult, advisory: _AdvisoryMetadata) -> Iterator[list[str]]:
         """Yield one row per vulnerability assessment emitted by the advisory test."""
         vulnerability_by_id = {vulnerability.id: vulnerability for vulnerability in advisory.vulnerabilities}
-        for atomic_result in result.atomic_results:
-            vulnerability_ids = _get_atomic_vulnerability_ids(atomic_result) or (None,)
+        for row_result in _iter_advisory_row_results(result):
+            vulnerability_ids = _get_atomic_vulnerability_ids(row_result) if isinstance(row_result, _AdvisoryAtomicTestResult) else ()
+            vulnerability_ids = vulnerability_ids or (None,)
             for vulnerability_id in vulnerability_ids:
                 vulnerability = None if vulnerability_id is None else vulnerability_by_id[vulnerability_id]
-                yield cls._convert_to_list(result, atomic_result, advisory, vulnerability)
+                yield cls._convert_to_list(result, row_result, advisory, vulnerability)
 
     @classmethod
     def _advisory_headers(cls) -> list[str]:

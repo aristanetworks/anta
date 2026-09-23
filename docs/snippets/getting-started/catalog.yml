@@ -2,23 +2,38 @@
 anta.tests.software:
   - VerifyEOSVersion: # Verifies the device is running one of the allowed EOS version.
       versions: # List of allowed EOS versions.
-        - 4.25.4M
-        - 4.26.1F
-        - '4.28.3M-28837868.4283M (engineering build)'
+        - 4.31.4M
+        - 4.32.1F
+        - 4.34.0F-41661064.4340F (engineering build)
+      filters:
+        tags: [leaf, spine]
   - VerifyTerminAttrVersion:
       versions:
-        - v1.22.1
+        - v1.38.0
+      filters:
+        tags: [leaf, spine]
 
 anta.tests.system:
   - VerifyUptime: # Verifies the device uptime is higher than a value.
       minimum: 1
+      filters:
+        tags: [leaf, spine]
   - VerifyNTP:
+      filters:
+        tags: [leaf, spine]
 
 anta.tests.mlag:
   - VerifyMlagStatus:
+      filters:
+        tags: [leaf, spine]
   - VerifyMlagInterfaces:
+      filters:
+        tags: [leaf, spine]
   - VerifyMlagConfigSanity:
+      filters:
+        tags: [leaf, spine]
 
 anta.tests.configuration:
   - VerifyZeroTouch: # Verifies ZeroTouch is disabled.
-  - VerifyRunningConfigDiffs:
+      filters:
+        tags: [leaf, spine]

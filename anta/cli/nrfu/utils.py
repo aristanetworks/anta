@@ -16,7 +16,7 @@ from rich.progress import BarColumn, MofNCompleteColumn, Progress, SpinnerColumn
 from anta import __version__ as anta_version
 from anta._runner import AntaRunContext, AntaRunFilters, AntaRunner
 from anta.cli.console import console
-from anta.cli.utils import ExitCode
+from anta.cli.utils import ExitCode, exit_with_code
 from anta.models import AntaTest
 from anta.reporter.csv_reporter import ReportCsv
 from anta.reporter.jinja_reporter import ReportJinja
@@ -37,21 +37,20 @@ logger = logging.getLogger(__name__)
 
 def run_tests(ctx: click.Context) -> AntaRunContext:
     """Run the tests."""
-    # Digging up the parameters from the parent context
+    # Report commands inherit the execution settings object from their parent group.
     if ctx.parent is None:
         ctx.exit()
-    nrfu_ctx_params = ctx.parent.params
-    tags = nrfu_ctx_params["tags"]
-    device = nrfu_ctx_params["device"] or None
-    test = nrfu_ctx_params["test"] or None
-    dry_run = nrfu_ctx_params["dry_run"]
-    disconnect = nrfu_ctx_params["disconnect"]
+    tags = ctx.obj["tags"]
+    device = ctx.obj["device"] or None
+    test = ctx.obj["test"] or None
+    dry_run = ctx.obj["dry_run"]
+    disconnect = ctx.obj["disconnect"]
 
     catalog: AntaCatalog = ctx.obj["catalog"]
     inventory: AntaInventory = ctx.obj["inventory"]
 
     print_settings(inventory, catalog)
-    with anta_progress_bar() as AntaTest.progress:
+    with anta_progress_bar(ctx.obj["progress_spinner"]) as AntaTest.progress:
         runner = AntaRunner()
         filters = AntaRunFilters(
             devices=set(device) if device else None,
@@ -152,6 +151,13 @@ def print_jinja(results: ResultManager, template: pathlib.Path, output: pathlib.
             file.write(report)
 
 
+def run_template_report(ctx: click.Context, template: pathlib.Path, output: pathlib.Path | None) -> None:
+    """Run tests, render the templated report, and exit with the appropriate status."""
+    _ = run_tests(ctx)
+    print_jinja(results=ctx.obj["result_manager"], template=template, output=output)
+    exit_with_code(ctx)
+
+
 def save_to_csv(ctx: click.Context, csv_file: pathlib.Path) -> None:
     """Save results to a CSV file."""
     try:
@@ -234,11 +240,29 @@ SPINNERS["anta"] = {
     ],
 }
 
+# Adding our own security spinner
+SPINNERS["security"] = {
+    "interval": 150,
+    "frames": [
+        "(🔍   🥷)",
+        "( 🔍  🥷)",
+        "(  🔍 🥷)",
+        "(   🔍🥷)",
+        "(     💥)",
+        "(     🚨)",
+        "(    🛡️ )",
+        "(   🛡️  )",
+        "(  🛡️   )",
+        "( 🛡️    )",
+        "(🛡️     )",
+    ],
+}
 
-def anta_progress_bar() -> Progress:
+
+def anta_progress_bar(spinner_name: str = "anta") -> Progress:
     """Return a customized Progress for progress bar."""
     return Progress(
-        SpinnerColumn("anta"),
+        SpinnerColumn(spinner_name),
         TextColumn("•"),
         TextColumn("{task.description}[progress.percentage]{task.percentage:>3.0f}%"),
         BarColumn(bar_width=None),

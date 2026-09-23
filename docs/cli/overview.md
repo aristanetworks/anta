@@ -68,7 +68,7 @@ Below are the environment variables usable with the `anta nrfu` command:
 | ANTA_ENABLE_PASSWORD | The optional enable password, when this variable is set, ANTA_ENABLE or `--enable` is required. | No | - |
 | ANTA_ENABLE | Whether it is necessary to go to enable mode on devices. | No | False |
 | ANTA_PROMPT | Prompt for passwords if they are not provided. | No | False |
-| ANTA_TIMEOUT | The global timeout value for API calls. | No | 30.0 |
+| ANTA_TIMEOUT | The global timeout value for eAPI command requests. See [Device Connection and Refresh](../usage-inventory-catalog.md#device-connection-and-refresh) for the timeout stages during inventory refresh. | No | 30.0 |
 | ANTA_INSECURE | Whether or not to use insecure mode when connecting to the EOS devices HTTP API. | No | False |
 | ANTA_DISABLE_CACHE | A variable to disable caching for all ANTA tests (enabled by default). | No | False |
 | ANTA_USE_SESSION_AUTH | Enable or disable session-based authentication globally. When set to `true`, forces session auth on for all capable devices. When set to `false`, forces it off. When unset, defers to the per-device inventory value. | No | - |
@@ -76,7 +76,7 @@ Below are the environment variables usable with the `anta nrfu` command:
 | ANTA_CATALOG_FORMAT | Format of the catalog file. `json` or `yaml`. | No | `yaml` |
 | ANTA_TAGS | A list of tags to filter which tests to run on which devices. | No | - |
 | ANTA_NRFU_IGNORE_STATUS | Exit code will always be 0. | No | False |
-| ANTA_NRFU_IGNORE_ERROR | Ignore test errors when determining the exit code. | No | False |
+| ANTA_NRFU_IGNORE_ERROR | Exit code will be 0 if no test failed or 4 if any test failed. | No | False |
 | ANTA_NRFU_DRY_RUN | Run `anta nrfu` command but stop before running the tests. | No | False |
 | ANTA_DISCONNECT_INVENTORY | Disconnect inventory devices once the test run is complete. | No | True |
 
@@ -91,11 +91,11 @@ ANTA CLI utilizes the following exit codes:
 - `Exit code 1` - An internal error occurred while executing ANTA.
 - `Exit code 2` - A usage error was raised.
 - `Exit code 3` - Tests were run, but at least one test returned an error.
-- `Exit code 4` - Tests were run, but at least one test returned a failure or an inconclusive result.
+- `Exit code 4` - Tests were run, but at least one test returned a failure.
 
 To ignore the test status, use `anta nrfu --ignore-status`, and the exit code will always be 0.
 
-To ignore errors, use `anta nrfu --ignore-error`. This only ignores the error status; failures and inconclusive results still produce exit code 4.
+To ignore errors, use `anta nrfu --ignore-error`, and the exit code will be 0 if no test failed or 4 if any test failed.
 
 ## Shell Completion
 

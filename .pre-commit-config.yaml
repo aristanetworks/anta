@@ -11,7 +11,7 @@ repos:
         exclude: docs/.*.svg
       - id: end-of-file-fixer
       - id: check-added-large-files
-        exclude: tests/data/.*$
+        exclude: tests/data/.*$|docs/imgs/.*\.gif$
       - id: check-merge-conflict
 
   - repo: https://github.com/Lucas-C/pre-commit-hooks
@@ -75,7 +75,7 @@ repos:
           - pytest-codspeed!=4.1.0
           - respx==0.23.1
           - pydantic-settings==2.14.2
-          - zensical==0.0.51
+          - zensical==0.0.62
 
   - repo: https://github.com/codespell-project/codespell
     rev: 57b21406f092110c18776e39b0bda50d37c945c8  # frozen: v2.4.3
@@ -103,7 +103,7 @@ repos:
           - types-PyYAML==6.0.12.20260518
           - types-requests==2.33.0.20260518
           - types-pyOpenSSL==24.1.0.20240722
-          - zensical==0.0.51
+          - zensical==0.0.62
         files: ^(anta|tests|asynceapi|tools/zensical_extensions)/
 
   - repo: https://github.com/DavidAnson/markdownlint-cli2
@@ -127,7 +127,7 @@ repos:
   - repo: local
     hooks:
       - id: examples-test
-        name: Generate example test catalogs
+        name: Generate examples/tests.yaml
         entry: >-
           sh -c "docs/scripts/generate_examples_tests.py"
         types: [python]

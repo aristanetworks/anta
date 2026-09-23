@@ -74,7 +74,7 @@
 <img alt="Atomic support badge" src="https://img.shields.io/badge/Atomic%20result%20support-brightgreen?style=flat&logoSize=auto">
 {% endif %}
 {% for dec in class.decorators %}
-{% if dec.value.name is defined and dec.value.name == "preview_test_class" %}
+{% if (dec.value.name is defined and dec.value.name == "preview_test_class") or (dec.value.function is defined and dec.value.function.name == "preview_test_class") %}
 <img alt="Preview badge" src="https://img.shields.io/badge/PREVIEW-blue?style=flat&logoSize=auto">
 <div class="admonition warning">
 <p class="admonition-title">Preview</p>

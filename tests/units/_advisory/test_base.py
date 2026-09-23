@@ -6,17 +6,27 @@
 from __future__ import annotations
 
 import inspect
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, ClassVar
 
 import pytest
 
 from anta._advisory.base import _AntaAdvisoryTest
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import AvailableFact, CommandsFactDefinition, Fact, FactDefinition, FactSource, FactSourceKind
+from anta._advisory.facts.models import (
+    AvailableFact,
+    CommandsFactDefinition,
+    Fact,
+    FactsBase,
+    FactSource,
+    FactSourceKind,
+    fact_field,
+    facts_dataclass,
+)
 from anta._advisory.optional_commands import OptionalAntaCommand
 from anta._advisory.results import _AdvisoryTestResult, _get_advisory_metadata
 from anta._eos.version import parse_eos_version
-from anta.models import AntaCommand, AntaTemplate, AntaTest
+from anta.models import AntaCommand, AntaTest
 from anta.result_manager.models import TestResult as AntaTestResult
 from tests.units._advisory.conftest import ADVISORY
 
@@ -25,65 +35,83 @@ if TYPE_CHECKING:
     from anta.device import AntaDevice
 
 
-class FakeAdvisoryTest(_AntaAdvisoryTest):
-    """Fake security advisory test."""
-
-    advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show version")]
-
-    @_AntaAdvisoryTest.anta_test
-    def test(self) -> None:
-        """Set the test result to success."""
-        self.result.is_success()
-
-
-class FakeCommandFact(CommandsFactDefinition[str]):
+@dataclass(frozen=True, slots=True)
+class FakeCommandFact(CommandsFactDefinition["FakeCommandFact"]):
     """Normalize one value from a fake JSON command."""
 
-    key = "fake.value"
-    label = "Fake value"
-    commands = (AntaCommand(command="show fake", revision=1),)
+    value: str
+    key: ClassVar[str] = "fake.value"
+    label: ClassVar[str] = "Fake value"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (AntaCommand(command="show fake", revision=1),)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[str]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FakeCommandFact]:
         """Return the fake value from the collected command."""
         (command,) = commands
-        return cls.available(str(command.json_output["value"]), FactSource(command.command, FactSourceKind.COMMAND))
+        return cls(str(command.json_output["value"])).available(FactSource(command.command, FactSourceKind.COMMAND))
 
 
 class FactAdvisoryTest(_AntaAdvisoryTest):
-    """Fake advisory test whose commands are derived from its required facts."""
+    """Fake advisory test whose commands are derived from its typed fields."""
+
+    @facts_dataclass
+    class Facts(FactsBase):
+        """Typed facts required by the fake advisory."""
+
+        value: Fact[FakeCommandFact] = fact_field(FakeCommandFact)
 
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
-    required_facts: ClassVar[tuple[type[FactDefinition[Any]], ...]] = (FakeCommandFact,)
 
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
         """Set the result from the normalized fact."""
-        fact = self.fact(FakeCommandFact)
-        self.result.is_success(str(fact))
+        facts = self.Facts.collect(self)
+        self.result.is_success(str(facts.value))
 
 
-class RequiredSharedCommandFact(FakeCommandFact):
+@dataclass(frozen=True, slots=True)
+class RequiredSharedCommandFact(CommandsFactDefinition["RequiredSharedCommandFact"]):
     """Normalize a required command that shares its UID with an optional command."""
 
-    key = "fake.required"
-    label = "Required fake value"
+    value: str
+    key: ClassVar[str] = "fake.required"
+    label: ClassVar[str] = "Required fake value"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (AntaCommand(command="show fake", revision=1),)
+
+    @classmethod
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[RequiredSharedCommandFact]:
+        """Return the required fake value."""
+        (command,) = commands
+        return cls(str(command.json_output["value"])).available(FactSource(command.command, FactSourceKind.COMMAND))
 
 
-class OptionalSharedCommandFact(FakeCommandFact):
+@dataclass(frozen=True, slots=True)
+class OptionalSharedCommandFact(CommandsFactDefinition["OptionalSharedCommandFact"]):
     """Normalize an optional command that shares its UID with a required command."""
 
-    key = "fake.optional"
-    label = "Optional fake value"
-    commands = (OptionalAntaCommand(command="show fake", revision=1),)
+    value: str
+    key: ClassVar[str] = "fake.optional"
+    label: ClassVar[str] = "Optional fake value"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (OptionalAntaCommand(command="show fake", revision=1),)
+
+    @classmethod
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[OptionalSharedCommandFact]:
+        """Return the optional fake value."""
+        (command,) = commands
+        return cls(str(command.json_output["value"])).available(FactSource(command.command, FactSourceKind.COMMAND))
 
 
 class SharedCommandAdvisoryTest(_AntaAdvisoryTest):
     """Fake advisory test requiring distinct wrappers for the same EOS command."""
 
+    @facts_dataclass
+    class Facts(FactsBase):
+        """Typed facts requiring distinct wrappers for one EOS command."""
+
+        required: Fact[RequiredSharedCommandFact] = fact_field(RequiredSharedCommandFact)
+        optional: Fact[OptionalSharedCommandFact] = fact_field(OptionalSharedCommandFact)
+
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
-    required_facts: ClassVar[tuple[type[FactDefinition[Any]], ...]] = (RequiredSharedCommandFact, OptionalSharedCommandFact)
 
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
@@ -94,13 +122,19 @@ class SharedCommandAdvisoryTest(_AntaAdvisoryTest):
 class MetadataFactAdvisoryTest(_AntaAdvisoryTest):
     """Fake advisory test requiring only a device-metadata fact."""
 
+    @facts_dataclass
+    class Facts(FactsBase):
+        """Typed metadata facts required by the fake advisory."""
+
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
+
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
-    required_facts: ClassVar[tuple[type[FactDefinition[Any]], ...]] = (EosVersionFact,)
 
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
         """Set the result from the metadata-derived fact."""
-        self.result.is_success(str(self.fact(EosVersionFact)))
+        facts = self.Facts.collect(self)
+        self.result.is_success(str(facts.version))
 
 
 def test_advisory_base_is_abstract() -> None:
@@ -112,7 +146,7 @@ def test_advisory_base_is_abstract() -> None:
 
 def test_advisory_result(device: AntaDevice) -> None:
     """Verify advisory metadata is attached to results but kept off serialized output."""
-    test_instance = FakeAdvisoryTest(
+    test_instance = FactAdvisoryTest(
         device=device,
         inputs={
             "result_overwrite": {
@@ -121,7 +155,7 @@ def test_advisory_result(device: AntaDevice) -> None:
                 "custom_field": "Overridden custom field.",
             }
         },
-        eos_data=[{"version": "4.36.1F"}],
+        eos_data=[{"value": "normalized"}],
     )
 
     assert test_instance.categories == ["advisories"]
@@ -135,33 +169,33 @@ def test_advisory_result(device: AntaDevice) -> None:
     assert "advisory" not in dumped_result
 
 
-def test_advisory_required_facts_own_commands_and_derivation(device: AntaDevice) -> None:
-    """Derive class commands and typed facts from locally declared required facts."""
+def test_advisory_fact_container_owns_commands_and_derivation(device: AntaDevice) -> None:
+    """Derive class commands and nominal values from locally declared fact fields."""
     test_instance = FactAdvisoryTest(device=device, eos_data=[{"value": "normalized"}])
 
-    fact = test_instance.fact(FakeCommandFact)
+    fact = FactAdvisoryTest.Facts.collect(test_instance).value
 
     assert FactAdvisoryTest.commands == [FakeCommandFact.commands[0]]
     assert isinstance(fact, AvailableFact)
-    assert fact.value == "normalized"
-    assert fact.source.name == "show fake"
+    assert fact == FakeCommandFact("normalized").available(FactSource("show fake", FactSourceKind.COMMAND))
 
 
 def test_advisory_preserves_same_uid_commands_and_fact_association(device: AntaDevice) -> None:
     """Keep each fact's command wrapper and collected output when command UIDs match."""
     test_instance = SharedCommandAdvisoryTest(device=device, eos_data=[{"value": "required"}, {"value": "optional"}])
 
-    required_fact = test_instance.fact(RequiredSharedCommandFact)
-    optional_fact = test_instance.fact(OptionalSharedCommandFact)
+    facts = SharedCommandAdvisoryTest.Facts.collect(test_instance)
+    required_fact = facts.required
+    optional_fact = facts.optional
 
     assert len(SharedCommandAdvisoryTest.commands) == 2
     assert isinstance(SharedCommandAdvisoryTest.commands[0], AntaCommand)
     assert not isinstance(SharedCommandAdvisoryTest.commands[0], OptionalAntaCommand)
     assert isinstance(SharedCommandAdvisoryTest.commands[1], OptionalAntaCommand)
     assert isinstance(required_fact, AvailableFact)
-    assert required_fact.value == "required"
+    assert required_fact == RequiredSharedCommandFact("required").available(FactSource("show fake", FactSourceKind.COMMAND))
     assert isinstance(optional_fact, AvailableFact)
-    assert optional_fact.value == "optional"
+    assert optional_fact == OptionalSharedCommandFact("optional").available(FactSource("show fake", FactSourceKind.COMMAND))
 
 
 @pytest.mark.asyncio
@@ -173,24 +207,27 @@ async def test_advisory_allows_metadata_only_facts(device: AntaDevice) -> None:
     await test_instance.test()
 
     assert not MetadataFactAdvisoryTest.commands
-    assert isinstance(test_instance.fact(EosVersionFact), AvailableFact)
+    assert isinstance(MetadataFactAdvisoryTest.Facts.collect(test_instance).version, AvailableFact)
     assert test_instance.result.result == "success"
 
 
-def test_advisory_rejects_undeclared_fact(device: AntaDevice) -> None:
-    """Prevent a test from deriving facts outside its required facts."""
+def test_advisory_rejects_commands_outside_fact_fields() -> None:
+    """Prevent advisory authors from bypassing fact-owned command declarations."""
 
-    class UndeclaredFact(FakeCommandFact):
-        """Fact intentionally omitted from the fake advisory declaration."""
+    @facts_dataclass
+    class Facts(FactsBase):
+        """Typed facts required by the invalid advisory."""
 
-        key = "fake.other"
-        label = "Other fake value"
-        commands = (AntaCommand(command="show other"),)
+        value: Fact[FakeCommandFact] = fact_field(FakeCommandFact)
 
-    test_instance = FactAdvisoryTest(device=device, eos_data=[{"value": "normalized"}])
-
-    with pytest.raises(ValueError, match="is not listed in required_facts"):
-        test_instance.fact(UndeclaredFact)
+    class_namespace: dict[str, Any] = {
+        "__doc__": "Advisory that declares a command outside its fact container.",
+        "Facts": Facts,
+        "advisory": ADVISORY,
+        "commands": [AntaCommand(command="show other")],
+    }
+    with pytest.raises(AttributeError, match="must declare commands through its nested Facts fields"):
+        type("CommandsOutsideFactsAdvisoryTest", (_AntaAdvisoryTest,), class_namespace)
 
 
 def test_non_advisory_result_has_no_metadata() -> None:
@@ -208,7 +245,7 @@ def test_advisory_test_requires_metadata() -> None:
         class MissingAdvisoryTest(_AntaAdvisoryTest):
             """Advisory test without metadata."""
 
-            commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show version")]
+            Facts = FactAdvisoryTest.Facts
 
             @_AntaAdvisoryTest.anta_test
             def test(self) -> None:
@@ -223,8 +260,8 @@ def test_advisory_test_rejects_invalid_metadata() -> None:
         class InvalidAdvisoryTest(_AntaAdvisoryTest):
             """Advisory test with invalid metadata."""
 
+            Facts = FactAdvisoryTest.Facts
             advisory: ClassVar[_AdvisoryMetadata] = "invalid"  # type: ignore[assignment]
-            commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show version")]
 
             @_AntaAdvisoryTest.anta_test
             def test(self) -> None:
@@ -232,12 +269,12 @@ def test_advisory_test_rejects_invalid_metadata() -> None:
                 self.result.is_success()
 
 
-def test_advisory_test_requires_commands_or_facts() -> None:
-    """Verify advisory tests must declare a command or required fact."""
-    with pytest.raises(AttributeError, match="must define at least one command or required fact"):
+def test_advisory_test_requires_fact_container() -> None:
+    """Verify every advisory test declares a nested typed fact container."""
+    with pytest.raises(TypeError, match="must define a nested Facts subclass of FactsBase"):
 
-        class MissingCommandsAdvisoryTest(_AntaAdvisoryTest):
-            """Advisory test without commands."""
+        class MissingFactsAdvisoryTest(_AntaAdvisoryTest):
+            """Advisory test without a fact container."""
 
             advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
 
@@ -252,8 +289,8 @@ def test_advisory_test_requires_description() -> None:
     with pytest.raises(AttributeError, match="Cannot set the description"):
 
         class MissingDescriptionAdvisoryTest(_AntaAdvisoryTest):  # pylint: disable=missing-class-docstring
+            Facts = FactAdvisoryTest.Facts
             advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
-            commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show version")]
 
             @_AntaAdvisoryTest.anta_test
             def test(self) -> None:
@@ -269,7 +306,7 @@ def test_advisory_test_normalizes_docstring_description() -> None:
         {
             "__doc__": "\n        Advisory description on the next line.\n\n            Additional indented details.\n        ",
             "advisory": ADVISORY,
-            "commands": [AntaCommand(command="show version")],
+            "Facts": FactAdvisoryTest.Facts,
         },
     )
 
@@ -285,8 +322,8 @@ def test_advisory_test_preserves_explicit_identity() -> None:
         name: ClassVar[str] = "CustomAdvisoryName"
         description: ClassVar[str] = "Custom advisory description."
         categories: ClassVar[list[str]] = ["overridden"]
+        Facts = FactAdvisoryTest.Facts
         advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
-        commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show version")]
 
         @_AntaAdvisoryTest.anta_test
         def test(self) -> None:

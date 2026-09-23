@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""ANTA extensions for advisory tests with non-terminal optional commands."""
+"""ANTA extensions for advisory tests with non-terminal optional-command errors."""
 # pylint: disable=too-few-public-methods
 
 from __future__ import annotations
@@ -13,7 +13,19 @@ from anta.models import AntaCommand, AntaTest
 
 
 class OptionalAntaCommand(AntaCommand):
-    """Mark a command whose unsupported status is evaluated by the test body."""
+    """Mark a command whose unsupported status is evaluated by the test body.
+
+    Set ``defer_errors`` when every command error must be retained for the test
+    body to interpret. By default, only unsupported-platform errors are
+    non-terminal.
+    """
+
+    defer_errors: bool = False
+
+    @property
+    def errors_deferred(self) -> bool:
+        """Return whether this optional-command error is handled by the test body."""
+        return self.defer_errors or _has_only_unsupported_platform_errors(self)
 
 
 def _has_only_unsupported_platform_errors(command: AntaCommand) -> bool:
@@ -27,7 +39,7 @@ def is_unsupported_optional_command(command: AntaCommand) -> bool:
 
 
 class OptionalCommandsMixin:
-    """Allow tests to handle unsupported optional commands in their test body.
+    """Allow tests to handle selected optional-command errors in their test body.
 
     This mixin must precede ``AntaTest`` in the test class's base classes so its
     ``failed_commands`` property is used by the ANTA test wrapper.
@@ -38,14 +50,14 @@ class OptionalCommandsMixin:
     @property
     def failed_commands(self) -> list[AntaCommand]:
         """Return terminal command failures while retaining optional-command errors."""
-        return [command for command in self.instance_commands if command.error and not is_unsupported_optional_command(command)]
+        return [command for command in self.instance_commands if command.error and not command.errors_deferred]
 
     def _handle_failed_commands(self) -> None:
         """Prevent a mixed optional-command failure from being reported as unsupported."""
         test = cast("AntaTest", self)
         mixed_optional_failures = [
             command
-            for command in self.instance_commands
+            for command in self.failed_commands
             if isinstance(command, OptionalAntaCommand) and command.error and not _has_only_unsupported_platform_errors(command) and not command.supported
         ]
         if mixed_optional_failures:

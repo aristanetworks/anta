@@ -23,6 +23,7 @@ from anta.cli.utils import ExitCode, catalog_options, inventory_options
 
 from .utils import (
     _explore_package,
+    _filter_catalog_examples,
     _filter_tests_via_catalog,
     _get_unique_commands,
     _print_commands,
@@ -152,9 +153,12 @@ def tags(inventory: AntaInventory, **_kwargs: Any) -> None:  # noqa: ANN401
 @click.option("--count", help="Print only the number of tests found.", is_flag=True, default=False)
 @click.pass_context
 def tests(ctx: click.Context, module: str, test: str | None, *, short: bool, count: bool) -> None:
-    """Show all builtin ANTA tests with an example output retrieved from each test documentation."""
+    """Show ANTA tests with catalog examples retrieved from their documentation."""
     try:
         tests_found = _explore_package(module, test_name=test, short=short, count=count)
+        targets_advisories = module == "anta.tests.advisories" or module.startswith("anta.tests.advisories.")
+        if not targets_advisories:
+            tests_found = _filter_catalog_examples(tests_found)
         if len(tests_found) == 0:
             console.print(f"""No test {f"'{test}' " if test else ""}found in '{module}'.""")
         elif count:

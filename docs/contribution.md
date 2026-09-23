@@ -38,7 +38,7 @@ $ pip install -e ".[cli]" --group dev
     $ pip list -e
     Package Version Editable project location
     ------- ------- -------------------------
-    anta    1.10.0.dev3   /mnt/lab/projects/anta
+    anta    1.10.0   /mnt/lab/projects/anta
     ```
 
 Then, [`tox`](https://tox.wiki/) is configured with a few environments to run CI locally:
@@ -184,7 +184,7 @@ And AntaUnitTest have the following keys:
 - `version` (DeviceVersion | None): Optional built software-version metadata assigned directly to `device.version`. Use `None` to test unavailable version metadata.
 - `platform` (DevicePlatform | None): Optional built platform metadata assigned directly to `device.platform`; its string representation is also assigned to `device.hw_model`.
 - `expected` (dict): Expected test result structure, a dictionary containing a key
-    `result` containing one of the allowed statuses (`Literal[AntaTestStatus.SUCCESS, AntaTestStatus.INCONCLUSIVE, AntaTestStatus.FAILURE, AntaTestStatus.ERROR, AntaTestStatus.SKIPPED]`) and optionally a key `messages` which is a list(str) and each message is expected to be a substring of one of the actual messages in the TestResult object.
+    `result` containing one of the allowed statuses (`Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.ERROR, AntaTestStatus.SKIPPED]`) and optionally a key `messages` which is a list(str) and each message is expected to be a substring of one of the actual messages in the TestResult object.
 
 The generic unit-test helper applies the already-built `version` and `platform` metadata to the mocked device before instantiating the test. These fields model metadata populated by `AntaDevice.refresh()` in production, while parser and refresh tests separately cover conversion from raw EOS output. The `eos_data` field remains the output of the test's declared commands.
 
@@ -193,9 +193,7 @@ class AtomicResult(TypedDict):
     """Expected atomic result of a unit test of an AntaTest subclass."""
 
     description: str  # The expected description of this atomic result.
-    result: Literal[
-        AntaTestStatus.SUCCESS, AntaTestStatus.INCONCLUSIVE, AntaTestStatus.FAILURE, AntaTestStatus.ERROR, AntaTestStatus.SKIPPED
-    ]  # The expected status of this atomic result.
+    result: Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.ERROR, AntaTestStatus.SKIPPED]  # The expected status of this atomic result.
     messages: NotRequired[list[str]]  # The expected messages of this atomic result. The strings can be a substrings of the actual messages.
 
 
@@ -205,9 +203,7 @@ class UnitTestResult(TypedDict):
     For our AntaTest unit tests we expect a terminal result, never unset.
     """
 
-    result: Literal[
-        AntaTestStatus.SUCCESS, AntaTestStatus.INCONCLUSIVE, AntaTestStatus.FAILURE, AntaTestStatus.ERROR, AntaTestStatus.SKIPPED
-    ]  # The expected status of this unit test.
+    result: Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.ERROR, AntaTestStatus.SKIPPED]  # The expected status of this unit test.
     messages: NotRequired[list[str]]  # The expected messages of the test. The strings can be a substrings of the actual messages.
     atomic_results: NotRequired[list[AtomicResult]]  # The list of expected atomic results.
 
@@ -405,7 +401,7 @@ git diff --exit-code -- docs/snippets
 test -z "$(git status --porcelain -- docs/snippets)"
 ```
 
-The `doc-snippets` pre-commit hook runs the generator for CLI changes, and CI runs the same freshness check before building the documentation.
+The `doc-snippets` pre-commit hook runs the generator for CLI changes, and the autofix workflow commits any updated snippets to the pull request.
 
 ### Curated class diagram
 

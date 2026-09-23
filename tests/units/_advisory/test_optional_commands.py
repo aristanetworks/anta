@@ -5,14 +5,16 @@
 
 from __future__ import annotations
 
+import logging
 from typing import ClassVar
 
 import pytest
 
 from anta._advisory.optional_commands import OptionalAntaCommand, OptionalCommandsMixin, is_unsupported_optional_command
-from anta.device import AntaDevice
+from anta.device import AntaDevice, AsyncEOSDevice
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.result_manager.models import AntaTestStatus
+from asynceapi import EapiCommandError
 
 UNSUPPORTED_ERROR = "Incomplete command (at token 1: 'module')"
 
@@ -74,6 +76,23 @@ class MixedOptionalCommandFailure(OptionalCommandsMixin, AntaTest):
         self.result.is_failure("Mixed optional-command errors were ignored.")
 
 
+class HandlesDeferredOptionalCommandError(OptionalCommandsMixin, AntaTest):
+    """Probe that handles a deliberately deferred optional-command error."""
+
+    categories: ClassVar[list[str]] = []
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
+        OptionalAntaCommand(command="show agent Example", errors=["Agent 'Example' is not running"], defer_errors=True),
+    ]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Confirm the command error remains available to the test."""
+        if self.instance_commands[0].errors == ["Agent 'Example' is not running"]:
+            self.result.is_success()
+        else:
+            self.result.is_failure()
+
+
 @pytest.mark.asyncio
 async def test_unsupported_optional_command_reaches_test_body() -> None:
     """Verify a solely unsupported optional command remains non-terminal."""
@@ -106,6 +125,17 @@ async def test_mixed_optional_command_errors_are_not_hidden() -> None:
     assert "unexpected transport failure" in test_instance.result.messages[0]
 
 
+@pytest.mark.asyncio
+async def test_deferred_optional_command_error_reaches_test_body() -> None:
+    """Verify an opted-in command error is retained for test interpretation."""
+    test_instance = HandlesDeferredOptionalCommandError(device=NoOpAntaDevice("unit-test"))
+
+    await test_instance.test()
+
+    assert test_instance.result.result is AntaTestStatus.SUCCESS
+    assert test_instance.instance_commands[0].errors == ["Agent 'Example' is not running"]
+
+
 def test_optional_command_preserves_anta_command_contract() -> None:
     """Verify the marker remains a copyable ANTA command with string content."""
     command = OptionalAntaCommand(command="show module")
@@ -113,3 +143,29 @@ def test_optional_command_preserves_anta_command_contract() -> None:
     assert isinstance(command, AntaCommand)
     assert isinstance(command.command, str)
     assert isinstance(command.model_copy(), OptionalAntaCommand)
+    assert command.defer_errors is False
+
+
+@pytest.mark.parametrize(
+    ("error", "defer_errors"),
+    [("Invalid input (at token 2: 'Gnpsi')", True), (UNSUPPORTED_ERROR, False)],
+)
+def test_deferred_optional_command_error_is_not_logged_as_error(
+    async_device: AsyncEOSDevice, caplog: pytest.LogCaptureFixture, error: str, *, defer_errors: bool
+) -> None:
+    """Verify collection does not report consumer-handled command errors as errors."""
+    command = OptionalAntaCommand(command="show trace Gnpsi | grep Auth", defer_errors=defer_errors)
+    exception = EapiCommandError(
+        passed=[],
+        failed=command.command,
+        errors=[error],
+        errmsg="Invalid command",
+        not_exec=[],
+    )
+    caplog.set_level(logging.DEBUG)
+
+    async_device._handle_eapi_command_error(command, exception)
+
+    assert command.errors == [error]
+    assert not any(record.levelno >= logging.ERROR for record in caplog.records)
+    assert "returned an error deferred to the test" in caplog.text

@@ -4687,6 +4687,40 @@ DATA: AntaUnitTestData = {
         "inputs": {"interfaces": ["Ethernet12/1/1", "Ethernet13/2", "Ethernet4/2/1"], "counters_threshold": 0, "link_status_changes_threshold": 100},
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet12/1/1 - Not found", "Interface: Ethernet13/2 - Not found"]},
     },
+    (VerifyInterfacesCounterDetails, "failure-optional-counter-missing"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet1": {
+                        "name": "Ethernet1",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "interfaceCounters": {
+                            "linkStatusChanges": 2,
+                            "totalInErrors": 0,
+                            "totalOutErrors": 0,
+                        },
+                    }
+                }
+            }
+        ],
+        "inputs": {"counters_threshold": 0, "link_status_changes_threshold": 100},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet1 - Input discards not found",
+                "Interface: Ethernet1 - Output discards not found",
+                "Interface: Ethernet1 - Runt frames not found",
+                "Interface: Ethernet1 - Giant frames not found",
+                "Interface: Ethernet1 - CRC errors not found",
+                "Interface: Ethernet1 - Alignment errors not found",
+                "Interface: Ethernet1 - Symbol errors not found",
+                "Interface: Ethernet1 - Collisions not found",
+                "Interface: Ethernet1 - Late collisions not found",
+                "Interface: Ethernet1 - Deferred transmissions not found",
+            ],
+        },
+    },
     (VerifyInterfacesBER, "success"): {
         "eos_data": [
             {

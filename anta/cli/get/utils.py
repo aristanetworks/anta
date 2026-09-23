@@ -26,6 +26,7 @@ import urllib3
 import yaml
 from typing_extensions import deprecated
 
+from anta._advisory.base import _AntaAdvisoryTest
 from anta.cli.console import console
 from anta.cli.utils import ExitCode
 from anta.inventory import AntaInventory
@@ -348,6 +349,11 @@ def _filter_tests_via_catalog(tests: list[type[AntaTest]], catalog: AntaCatalog)
     """
     catalog_test_names = {test.test.name for test in catalog.tests}
     return [test for test in tests if test.name in catalog_test_names]
+
+
+def _filter_catalog_examples(tests: list[type[AntaTest]]) -> list[type[AntaTest]]:
+    """Exclude security advisory tests from catalog-oriented output."""
+    return [test for test in tests if not issubclass(test, _AntaAdvisoryTest)]
 
 
 def print_tests(tests: list[type[AntaTest]], *, short: bool = False) -> None:

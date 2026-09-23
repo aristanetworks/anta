@@ -14,7 +14,17 @@ import pytest
 from pydantic import ValidationError
 
 from anta.device import AsyncEOSDevice
-from anta.settings import DEFAULT_HTTPX_TRUST_ENV, DEFAULT_MAX_CONCURRENCY, DEFAULT_NOFILE, AntaHttpxSettings, AntaRunnerSettings, get_httpx_settings
+from anta.settings import (
+    DEFAULT_HTTPX_TRUST_ENV,
+    DEFAULT_MAX_CONCURRENCY,
+    DEFAULT_NOFILE,
+    DEFAULT_SSL_CIPHERS,
+    AntaHttpxSettings,
+    AntaRunnerSettings,
+    AntaSslSettings,
+    get_httpx_settings,
+    get_ssl_settings,
+)
 
 if os.name == "posix":
     # The function is not defined on non-POSIX system
@@ -158,3 +168,23 @@ class TestAntaHttpxSettings:
         with pytest.raises(ValueError, match=r"Failed to load ANTA HTTPX settings\. Check ANTA_HTTPX_\* environment variables:"):
             get_httpx_settings()
         get_httpx_settings.cache_clear()
+
+
+class TestAntaSslSettings:
+    """Tests for the AntaSslSettings class."""
+
+    def test_defaults(self, setenvvar: pytest.MonkeyPatch) -> None:
+        """Test that SSL settings use Python's default cipher list by default."""
+        assert AntaSslSettings().ciphers is DEFAULT_SSL_CIPHERS
+
+    def test_env_var(self, setenvvar: pytest.MonkeyPatch) -> None:
+        """Test that ANTA_SSL_CIPHERS overrides the default cipher list."""
+        setenvvar.setenv("ANTA_SSL_CIPHERS", "AES256-SHA:AES128-SHA")
+        assert AntaSslSettings().ciphers == "AES256-SHA:AES128-SHA"
+
+    def test_cached_settings(self, setenvvar: pytest.MonkeyPatch) -> None:
+        """Test that get_ssl_settings returns the configured cipher list."""
+        get_ssl_settings.cache_clear()
+        setenvvar.setenv("ANTA_SSL_CIPHERS", "AES256-SHA")
+        assert get_ssl_settings().ciphers == "AES256-SHA"
+        get_ssl_settings.cache_clear()

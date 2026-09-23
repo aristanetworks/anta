@@ -317,6 +317,14 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
+    (VerifyBFDPeersIntervals, "failure-peer-stats-detail-missing"): {
+        "eos_data": [{"vrfs": {"default": {"ipv4Neighbors": {"192.0.255.7": {"peerStats": {"": {}}}}}}}],
+        "inputs": {"bfd_peers": [{"peer_address": "192.0.255.7", "vrf": "default", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3}]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Peer: 192.0.255.7 VRF: default - Peer stats detail not found"],
+        },
+    },
     (VerifyBFDSpecificPeers, "success"): {
         "eos_data": [
             {

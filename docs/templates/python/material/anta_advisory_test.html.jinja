@@ -7,6 +7,8 @@
 {%   elif member_value.name is defined %}
 {%     if member_value.name in class.members and class.members[member_value.name].value.arguments is defined %}
 {%       set advisory_expr.call = class.members[member_value.name].value %}
+{%     elif class.module is defined and member_value.name in class.module.members and class.module.members[member_value.name].value.arguments is defined %}
+{%       set advisory_expr.call = class.module.members[member_value.name].value %}
 {%     elif class.parent is defined and member_value.name in class.parent.members and class.parent.members[member_value.name].value.arguments is defined %}
 {%       set advisory_expr.call = class.parent.members[member_value.name].value %}
 {%     endif %}
@@ -22,6 +24,8 @@
 {%       elif argument.value.name is defined %}
 {%         if argument.value.name in class.members %}
 {%           set raw.value = class.members[argument.value.name].value %}
+{%         elif class.module is defined and argument.value.name in class.module.members %}
+{%           set raw.value = class.module.members[argument.value.name].value %}
 {%         elif class.parent is defined and argument.value.name in class.parent.members %}
 {%           set raw.value = class.parent.members[argument.value.name].value %}
 {%         endif %}

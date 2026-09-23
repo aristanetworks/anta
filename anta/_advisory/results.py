@@ -9,12 +9,22 @@ from pydantic import Field
 
 from anta._advisory.models import _AdvisoryMetadata  # noqa: TC001  # Pydantic resolves this annotation at runtime.
 from anta._advisory.remediation import RemediationGuidance, RemediationPlan  # noqa: TC001  # Pydantic resolves these annotations at runtime.
+from anta._advisory.status import AdvisoryStatus
 from anta.result_manager.models import AntaTestStatus, AtomicTestResult, TestResult
+
+_ADVISORY_STATUS_PRIORITY = {
+    AdvisoryStatus.NOT_AFFECTED: 0,
+    AdvisoryStatus.MITIGATED: 1,
+    AdvisoryStatus.INCONCLUSIVE: 2,
+    AdvisoryStatus.AFFECTED: 3,
+    AdvisoryStatus.ERROR: 4,
+}
 
 
 class _AdvisoryAtomicTestResult(AtomicTestResult):
     """Atomic advisory result with optional vulnerability association and remediation."""
 
+    advisory_status: AdvisoryStatus | None = Field(default=None, exclude=True)
     vulnerability_ids: tuple[str, ...] | None = Field(default=None, exclude=True)
     remediation: RemediationPlan | None = Field(default=None, exclude=True)
     remediation_guidance: frozenset[RemediationGuidance] = Field(default_factory=frozenset, exclude=True)
@@ -24,6 +34,18 @@ class _AdvisoryTestResult(TestResult):
     """Test result carrying private security advisory metadata."""
 
     advisory: _AdvisoryMetadata = Field(exclude=True)
+
+    @property
+    def advisory_status(self) -> AdvisoryStatus | None:
+        """Return the highest-priority semantic status from this advisory result."""
+        if self.result is AntaTestStatus.ERROR:
+            return AdvisoryStatus.ERROR
+        statuses = (atomic.advisory_status for atomic in self.atomic_results if isinstance(atomic, _AdvisoryAtomicTestResult))
+        return max(
+            (status for status in statuses if status is not None),
+            key=_ADVISORY_STATUS_PRIORITY.__getitem__,
+            default=None,
+        )
 
     def add(
         self,
@@ -66,6 +88,15 @@ class _AdvisoryTestResult(TestResult):
 def _get_advisory_metadata(result: TestResult) -> _AdvisoryMetadata | None:
     """Return advisory metadata from an advisory result, otherwise None."""
     return result.advisory if isinstance(result, _AdvisoryTestResult) else None
+
+
+def _get_advisory_status(result: TestResult | AtomicTestResult) -> AdvisoryStatus | None:
+    """Return the semantic status from an advisory result, otherwise None."""
+    if isinstance(result, _AdvisoryTestResult):
+        return result.advisory_status
+    if isinstance(result, _AdvisoryAtomicTestResult):
+        return result.advisory_status
+    return None
 
 
 def _get_atomic_vulnerability_ids(result: AtomicTestResult) -> tuple[str, ...] | None:

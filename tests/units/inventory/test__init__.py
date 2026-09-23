@@ -12,7 +12,7 @@ from unittest.mock import AsyncMock, patch
 import pytest
 from pydantic import ValidationError
 
-from anta.device import AntaDeviceCapabilities, AsyncEOSDevice
+from anta.device import AntaDeviceCapabilities, AsyncEOSDevice, SSLParameters
 from anta.inventory import AntaInventory
 from anta.inventory.exceptions import InventoryIncorrectSchemaError, InventoryRootKeyError
 
@@ -145,6 +145,43 @@ class TestAntaInventory:
         assert devices_by_host["192.168.0.2"]._client._use_session_auth is False
 
     @pytest.mark.parametrize(
+        "yaml_file",
+        [
+            {
+                "anta_inventory": {
+                    "hosts": [{"host": "192.168.0.1", "ssl_params": {"ciphers": "AES256-SHA"}}],
+                    "networks": [{"network": "192.168.1.0/31", "ssl_params": {"ciphers": "AES128-SHA"}}],
+                    "ranges": [{"start": "192.168.2.1", "end": "192.168.2.2", "ssl_params": {"verify": True}}],
+                }
+            }
+        ],
+        indirect=["yaml_file"],
+    )
+    def test_ssl_parameters_propagate_and_dump(self, yaml_file: Path) -> None:
+        """Verify SSL parameters propagate from all inventory entry types and are preserved by dump()."""
+        inventory = AntaInventory.parse(filename=yaml_file, username="arista", password="arista123")
+        devices_by_host = {device._client.host: device for device in inventory.values() if isinstance(device, AsyncEOSDevice)}
+
+        assert devices_by_host["192.168.0.1"].ssl_params is not None
+        assert devices_by_host["192.168.0.1"].ssl_params.ciphers == "AES256-SHA"
+        assert devices_by_host["192.168.1.0"].ssl_params is not None
+        assert devices_by_host["192.168.1.0"].ssl_params.ciphers == "AES128-SHA"
+        assert devices_by_host["192.168.2.1"].ssl_params is not None
+        assert devices_by_host["192.168.2.1"].ssl_params.verify is True
+
+        dumped_hosts = {str(host.host): host for host in inventory.dump().hosts or []}
+        assert dumped_hosts["192.168.0.1"].ssl_params == devices_by_host["192.168.0.1"].ssl_params
+        assert dumped_hosts["192.168.1.0"].ssl_params == devices_by_host["192.168.1.0"].ssl_params
+        assert dumped_hosts["192.168.2.1"].ssl_params == devices_by_host["192.168.2.1"].ssl_params
+
+    def test_dump_omits_unconfigured_ssl_parameters(self, async_device: AsyncEOSDevice) -> None:
+        """Verify unconfigured SSL parameters do not alter serialized inventories."""
+        inventory = AntaInventory()
+        inventory.add_device(async_device)
+
+        assert "ssl_params" not in inventory.dump().to_json()
+
+    @pytest.mark.parametrize(
         ("cli", "inventory", "expected"),
         [
             # CLI unset: inventory value wins, default is False
@@ -176,6 +213,24 @@ class TestAntaInventory:
         result = AntaInventory._resolve_session_auth("unsupported-device", caps, use_session_auth_override=True, inventory_use_session_auth=False)
         assert result is False
         assert "does not support session authentication" in caplog.text
+
+    def test_resolve_ssl_params_supported_device(self) -> None:
+        """Verify SSL parameters pass through unchanged for a supporting device."""
+        ssl_params = SSLParameters(ciphers="AES256-SHA")
+
+        result = AntaInventory._resolve_ssl_params("supported-device", AsyncEOSDevice.capabilities, ssl_params)
+
+        assert result is ssl_params
+
+    def test_resolve_ssl_params_unsupported_device_warns(self, caplog: pytest.LogCaptureFixture) -> None:
+        """Verify unsupported SSL parameters are ignored without preventing inventory parsing."""
+        ssl_params = SSLParameters(ciphers="AES256-SHA")
+        caplog.set_level(logging.WARNING)
+
+        result = AntaInventory._resolve_ssl_params("unsupported-device", AntaDeviceCapabilities(), ssl_params)
+
+        assert result is None
+        assert "does not support SSL" in caplog.text
 
     @pytest.mark.parametrize(
         "yaml_file",

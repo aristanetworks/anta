@@ -1,0 +1,129 @@
+# Copyright (c) 2026 Arista Networks, Inc.
+# Use of this source code is governed by the Apache License 2.0
+# that can be found in the LICENSE file.
+"""Facts derived from EOS P4Runtime state."""
+
+from __future__ import annotations
+
+from collections.abc import Mapping, Sequence
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, ClassVar
+
+from anta._advisory.facts.models import (
+    CommandsFactDefinition,
+    Fact,
+    FactProblemKind,
+    FactSource,
+    FactSourceKind,
+    FeatureFact,
+    FeatureName,
+    FeatureRef,
+    FeatureState,
+    SubFeature,
+)
+from anta._advisory.optional_commands import OptionalAntaCommand, is_unsupported_optional_command
+
+if TYPE_CHECKING:
+    from anta.models import AntaCommand
+
+P4_RUNTIME_COMMAND = OptionalAntaCommand(command="show p4-runtime", revision=1)
+SSL_PROFILE_COMMAND = OptionalAntaCommand(command="show management security ssl profile", revision=1)
+
+
+def _source(command: AntaCommand) -> FactSource:
+    """Return a command fact source."""
+    return FactSource(command.command, FactSourceKind.COMMAND)
+
+
+@dataclass(frozen=True, slots=True)
+class P4RuntimeFact(FeatureFact, CommandsFactDefinition["P4RuntimeFact"]):
+    """Effective P4Runtime service state."""
+
+    feature: ClassVar[FeatureRef] = FeatureName.P4_RUNTIME
+    key: ClassVar[str] = "feature.p4_runtime"
+    label: ClassVar[str] = "P4Runtime state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (P4_RUNTIME_COMMAND,)
+
+    @classmethod
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[P4RuntimeFact]:
+        """Normalize the P4Runtime enablement flag."""
+        (command,) = commands
+        source = _source(command)
+        if is_unsupported_optional_command(command):
+            return cls(FeatureState.UNSUPPORTED).available(source)
+        enabled = command.json_output.get("enabled")
+        if not isinstance(enabled, bool):
+            return cls.unavailable(FactProblemKind.MISSING if enabled is None else FactProblemKind.MALFORMED, source)
+        return cls(FeatureState.ENABLED if enabled else FeatureState.DISABLED).available(source)
+
+
+@dataclass(frozen=True, slots=True)
+class P4RuntimeAccountingFact(FeatureFact, CommandsFactDefinition["P4RuntimeAccountingFact"]):
+    """P4Runtime request-accounting state."""
+
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.P4_RUNTIME, "accounting")
+    key: ClassVar[str] = "feature.p4_runtime.accounting"
+    label: ClassVar[str] = "P4Runtime accounting state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (P4_RUNTIME_COMMAND,)
+
+    @classmethod
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[P4RuntimeAccountingFact]:
+        """Normalize request accounting on the effective P4Runtime transport."""
+        (command,) = commands
+        source = _source(command)
+        if is_unsupported_optional_command(command):
+            return cls(FeatureState.UNSUPPORTED).available(source)
+        transport = command.json_output.get("transport")
+        if not isinstance(transport, Mapping):
+            return cls.unavailable(FactProblemKind.MISSING if transport is None else FactProblemKind.MALFORMED, source)
+        enabled = transport.get("accountingRequests")
+        if not isinstance(enabled, bool):
+            return cls.unavailable(FactProblemKind.MISSING if enabled is None else FactProblemKind.MALFORMED, source)
+        return cls(FeatureState.ENABLED if enabled else FeatureState.DISABLED).available(source)
+
+
+@dataclass(frozen=True, slots=True)
+class P4RuntimeMtlsFact(FeatureFact, CommandsFactDefinition["P4RuntimeMtlsFact"]):
+    """mTLS state of the effective P4Runtime transport."""
+
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.P4_RUNTIME, "mTLS")
+    key: ClassVar[str] = "feature.p4_runtime.mtls"
+    label: ClassVar[str] = "P4Runtime mTLS state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (P4_RUNTIME_COMMAND, SSL_PROFILE_COMMAND)
+
+    @classmethod
+    # pylint: disable-next=too-many-return-statements
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[P4RuntimeMtlsFact]:  # noqa: PLR0911
+        """Normalize whether P4Runtime uses an SSL profile with trusted certificates."""
+        p4, ssl = commands
+        p4_source = _source(p4)
+        if is_unsupported_optional_command(p4):
+            return cls(FeatureState.UNSUPPORTED).available(p4_source)
+        transport = p4.json_output.get("transport")
+        if not isinstance(transport, Mapping):
+            return cls.unavailable(FactProblemKind.MISSING if transport is None else FactProblemKind.MALFORMED, p4_source)
+        profile_name = transport.get("sslProfile")
+        if profile_name in (None, ""):
+            return cls(FeatureState.DISABLED).available(p4_source)
+        if not isinstance(profile_name, str):
+            return cls.unavailable(FactProblemKind.MALFORMED, p4_source)
+
+        ssl_source = _source(ssl)
+        if is_unsupported_optional_command(ssl):
+            return cls.unavailable(FactProblemKind.UNSUPPORTED, ssl_source)
+        profiles = ssl.json_output.get("profileStatus")
+        if not isinstance(profiles, Mapping):
+            return cls.unavailable(FactProblemKind.MISSING if profiles is None else FactProblemKind.MALFORMED, ssl_source)
+        profile = profiles.get(profile_name)
+        if not isinstance(profile, Mapping):
+            return cls.unavailable(FactProblemKind.MISSING, ssl_source)
+        trusted = profile.get("trustedCertificates")
+        if trusted is None or trusted == []:
+            return cls(FeatureState.DISABLED).available(ssl_source)
+        if (
+            not isinstance(trusted, Sequence)
+            or isinstance(trusted, str | bytes)
+            or not all(isinstance(certificate, str) and certificate.strip() for certificate in trusted)
+        ):
+            return cls.unavailable(FactProblemKind.MALFORMED, ssl_source)
+        return cls(FeatureState.ENABLED).available(ssl_source)

@@ -60,7 +60,7 @@ The [AntaInventory](../api/inventory.md#anta.inventory.AntaInventory) class is a
 
 ## Consuming test result statuses
 
-[`AntaTestStatus`](../api/result.md#anta.result_manager.models.AntaTestStatus) can gain new members in a minor ANTA release. For example, `INCONCLUSIVE` was added for tests that cannot determine success or failure from the available data. This is an additive API change, but consumers that exhaustively match known status values must still account for values introduced by newer ANTA versions.
+[`AntaTestStatus`](../api/result.md#anta.result_manager.models.AntaTestStatus) can gain new members in a minor ANTA release. This is an additive API change, but consumers that exhaustively match known status values must still account for values introduced by newer ANTA versions.
 When consuming serialized results, use a fallback handler instead of assuming that every status is already known. The fallback can log, preserve, or reject the unknown value according to the application's compatibility policy.
 
 ## Examples

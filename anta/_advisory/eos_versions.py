@@ -36,7 +36,13 @@ def _matches_bounds(
 
 @dataclass(frozen=True)
 class VersionRule:  # pylint: disable=too-many-instance-attributes
-    """Declarative affected-version rule for a security advisory."""
+    """Declarative affected-version rule for a security advisory.
+
+    Bounds apply independently to each numeric version component. An omitted
+    component bound is unconstrained, so a patch bound without a hotfix bound
+    matches every hotfix of that patch. An upper hotfix boundary should only be
+    used when the advisory identifies a fixed release within the same patch.
+    """
 
     major: int
     minor: int | None = None
