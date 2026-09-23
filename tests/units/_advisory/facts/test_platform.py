@@ -5,13 +5,14 @@
 
 from __future__ import annotations
 
+from dataclasses import asdict
 from typing import Any, cast
 
 import pytest
 
 from anta._advisory.facts.models import AvailableFact, FactProblemKind, UnavailableFact
-from anta._advisory.facts.platform import SwitchCardIdentityFact
-from anta._eos.platform import PlatformComponentRole, PlatformIdentity
+from anta._advisory.facts.platform import PlatformIdentityFact, SwitchCardIdentityFact
+from anta._eos.platform import PlatformComponentIdentity, PlatformComponentRole, PlatformFamily, PlatformIdentity, PlatformType
 from tests.units.anta_tests import build_eos_platform
 from tests.units.anta_tests.advisories import OfflineAntaDevice
 
@@ -29,8 +30,11 @@ def platform_with_modules(output: dict[str, Any]) -> PlatformIdentity:
     return platform
 
 
-@pytest.mark.parametrize("model", ["7358X4-SC", "7368X4-SC"])
-def test_switch_card_identity(device: OfflineAntaDevice, model: str) -> None:
+@pytest.mark.parametrize(
+    ("model", "family"),
+    [("7358X4-SC", PlatformFamily.SERIES_7358_X4), ("7368X4-SC", PlatformFamily.SERIES_7368_X4)],
+)
+def test_switch_card_identity(device: OfflineAntaDevice, model: str, family: PlatformFamily) -> None:
     """Normalize the switch-card model without retaining line-card details."""
     output = {"modules": {"1": {"modelName": "7368-SUP"}, "Switchcard1": {"modelName": model}, "2": {"modelName": "7368-16C"}}}
 
@@ -38,8 +42,71 @@ def test_switch_card_identity(device: OfflineAntaDevice, model: str) -> None:
     fact = SwitchCardIdentityFact.derive(device)
 
     assert isinstance(fact, AvailableFact)
+    assert fact.definition is SwitchCardIdentityFact
+    assert isinstance(fact.value, SwitchCardIdentityFact)
     assert fact.value.model == model
     assert fact.value.role is PlatformComponentRole.SWITCH_CARD
+    assert fact.value.slot == "Switchcard1"
+    assert fact.value.platform_families == frozenset({family})
+
+
+def test_platform_identity_fact_from_identity_preserves_all_fields() -> None:
+    """Copy the complete normalized platform identity into its nominal fact type."""
+    module = PlatformComponentIdentity(
+        model="7358X4-SC",
+        role=PlatformComponentRole.SWITCH_CARD,
+        slot="Switchcard1",
+        platform_families=frozenset({PlatformFamily.SERIES_7358_X4}),
+    )
+    platform = PlatformIdentity(
+        model="DCS-7358-CH",
+        type=PlatformType.CHASSIS,
+        modules=(module,),
+        platform_families=frozenset({PlatformFamily.SERIES_7358_X4}),
+    )
+
+    fact = PlatformIdentityFact.from_identity(platform)
+
+    assert fact.model == platform.model
+    assert fact.type is platform.type
+    assert fact.modules == platform.modules
+    assert fact.platform_families == platform.platform_families
+    assert fact.to_dict() == platform.to_dict()
+
+
+def test_platform_identity_fact_derive_returns_nominal_value(device: OfflineAntaDevice) -> None:
+    """Preserve the refreshed platform fields when deriving a nominal fact."""
+    platform = platform_with_modules({"modules": {"Switchcard1": {"modelName": "7368X4-SC"}}})
+    device.platform = platform
+
+    fact = PlatformIdentityFact.derive(device)
+
+    assert isinstance(fact, AvailableFact)
+    assert fact.definition is PlatformIdentityFact
+    assert isinstance(fact.value, PlatformIdentityFact)
+    assert fact.value.model == platform.model
+    assert fact.value.type is platform.type
+    assert fact.value.modules == platform.modules
+    assert fact.value.platform_families == platform.platform_families
+    assert fact.value.to_dict() == platform.to_dict()
+
+
+def test_switch_card_identity_fact_from_identity_preserves_all_fields() -> None:
+    """Copy every normalized switch-card field into its nominal fact type."""
+    card = PlatformComponentIdentity(
+        model="7368X4-SC",
+        role=PlatformComponentRole.SWITCH_CARD,
+        slot="Switchcard2",
+        platform_families=frozenset({PlatformFamily.SERIES_7368_X4}),
+    )
+
+    fact = SwitchCardIdentityFact.from_identity(card)
+
+    assert fact.model == card.model
+    assert fact.role is card.role
+    assert fact.slot == card.slot
+    assert fact.platform_families == card.platform_families
+    assert asdict(fact) == asdict(card)
 
 
 def test_switch_card_missing(device: OfflineAntaDevice) -> None:

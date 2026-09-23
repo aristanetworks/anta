@@ -6,13 +6,13 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import TYPE_CHECKING, Any, ClassVar, cast
+from typing import TYPE_CHECKING, ClassVar, cast
 
 from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import Dot1xControlledAuthenticatorFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
+from anta._advisory.facts.models import AvailableFact, Fact, FactsBase, FeatureState, UnavailableFact, fact_field, facts_dataclass
 from anta._advisory.facts.platform import PlatformIdentityFact
 from anta._advisory.findings.assessment import assess_eos_scope, assess_platform_scope
 from anta._advisory.findings.models import (
@@ -30,7 +30,7 @@ from anta._advisory.findings.projection import project_vulnerability_result
 from anta._advisory.models import _AdvisoryMetadata, _AdvisoryVulnerability, _AdvisoryVulnerabilitySeverity
 from anta._advisory.optional_commands import OptionalCommandsMixin
 from anta._advisory.remediation import AllOf, ConditionalAction, FixedRelease, RemediationPlan, RunCommand, software_version_action
-from anta._eos.platform import PlatformFamily, PlatformIdentity
+from anta._eos.platform import PlatformFamily
 from anta._eos.version import EOSVersion
 from anta.decorators import preview_test_class
 
@@ -136,9 +136,9 @@ def _remediation_plan(vulnerability_id: str, fixed_releases: Sequence[FixedRelea
 def _assess_sa150_issue(
     *,
     vulnerability_id: str,
-    version: Fact[EOSVersion],
-    platform: Fact[PlatformIdentity],
-    dot1x: Fact[FeatureValue],
+    version: Fact[EosVersionFact],
+    platform: Fact[PlatformIdentityFact],
+    dot1x: Fact[Dot1xControlledAuthenticatorFact],
     affected_versions: Sequence[VersionRule],
     unresolved: tuple[Unobservable, ...],
     fixed_releases: Sequence[FixedRelease],
@@ -161,13 +161,13 @@ def _assess_sa150_issue(
         return ErrorResult(vulnerability_id=vulnerability_id, problems=(dot1x,))
     return InconclusiveResult(
         vulnerability_id=vulnerability_id,
-        indications=(eos_release, platform_scope, cast("AvailableFact[FeatureValue]", dot1x)),
+        indications=(eos_release, platform_scope, cast("AvailableFact[Dot1xControlledAuthenticatorFact]", dot1x)),
         unresolved=unresolved,
         remediation=_remediation_plan(vulnerability_id, fixed_releases, eos_release.fact.value),
     )
 
 
-def _assess_cve_77191(version: Fact[EOSVersion], platform: Fact[PlatformIdentity], dot1x: Fact[FeatureValue]) -> VulnerabilityResult:
+def _assess_cve_77191(version: Fact[EosVersionFact], platform: Fact[PlatformIdentityFact], dot1x: Fact[Dot1xControlledAuthenticatorFact]) -> VulnerabilityResult:
     """Assess CVE-2026-77191."""
     return _assess_sa150_issue(
         vulnerability_id=CVE_77191_ID,
@@ -180,7 +180,7 @@ def _assess_cve_77191(version: Fact[EOSVersion], platform: Fact[PlatformIdentity
     )
 
 
-def _assess_cve_75943(version: Fact[EOSVersion], platform: Fact[PlatformIdentity], dot1x: Fact[FeatureValue]) -> VulnerabilityResult:
+def _assess_cve_75943(version: Fact[EosVersionFact], platform: Fact[PlatformIdentityFact], dot1x: Fact[Dot1xControlledAuthenticatorFact]) -> VulnerabilityResult:
     """Assess CVE-2026-75943."""
     return _assess_sa150_issue(
         vulnerability_id=CVE_75943_ID,
@@ -193,7 +193,7 @@ def _assess_cve_75943(version: Fact[EOSVersion], platform: Fact[PlatformIdentity
     )
 
 
-def _assess_cve_75944(version: Fact[EOSVersion], platform: Fact[PlatformIdentity], dot1x: Fact[FeatureValue]) -> VulnerabilityResult:
+def _assess_cve_75944(version: Fact[EosVersionFact], platform: Fact[PlatformIdentityFact], dot1x: Fact[Dot1xControlledAuthenticatorFact]) -> VulnerabilityResult:
     """Assess CVE-2026-75944."""
     return _assess_sa150_issue(
         vulnerability_id=CVE_75944_ID,
@@ -209,7 +209,7 @@ def _assess_cve_75944(version: Fact[EOSVersion], platform: Fact[PlatformIdentity
     )
 
 
-def _assess_cve_75945(version: Fact[EOSVersion], platform: Fact[PlatformIdentity], dot1x: Fact[FeatureValue]) -> VulnerabilityResult:
+def _assess_cve_75945(version: Fact[EosVersionFact], platform: Fact[PlatformIdentityFact], dot1x: Fact[Dot1xControlledAuthenticatorFact]) -> VulnerabilityResult:
     """Assess CVE-2026-75945."""
     return _assess_sa150_issue(
         vulnerability_id=CVE_75945_ID,
@@ -243,22 +243,27 @@ class SA150(OptionalCommandsMixin, _AntaAdvisoryTest):
     ```
     """
 
+    @facts_dataclass
+    class Facts(FactsBase):
+        """Collected facts required to assess the advisory."""
+
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
+        platform: Fact[PlatformIdentityFact] = fact_field(PlatformIdentityFact)
+        dot1x: Fact[Dot1xControlledAuthenticatorFact] = fact_field(Dot1xControlledAuthenticatorFact)
+
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
-    required_facts: ClassVar[tuple[type[FactDefinition[Any]], ...]] = (EosVersionFact, PlatformIdentityFact, Dot1xControlledAuthenticatorFact)
     description = "Verify whether the device is impacted by Security Advisory 0150."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
         """Derive shared facts, assess each vulnerability, and project it."""
-        version = self.fact(EosVersionFact)
-        platform = self.fact(PlatformIdentityFact)
-        dot1x = self.fact(Dot1xControlledAuthenticatorFact)
+        facts = self.Facts.collect(self)
         findings = (
-            _assess_cve_77191(version, platform, dot1x),
-            _assess_cve_75943(version, platform, dot1x),
-            _assess_cve_75944(version, platform, dot1x),
-            _assess_cve_75945(version, platform, dot1x),
+            _assess_cve_77191(facts.version, facts.platform, facts.dot1x),
+            _assess_cve_75943(facts.version, facts.platform, facts.dot1x),
+            _assess_cve_75944(facts.version, facts.platform, facts.dot1x),
+            _assess_cve_75945(facts.version, facts.platform, facts.dot1x),
         )
         for vulnerability, finding in zip(ADVISORY.vulnerabilities, findings, strict=True):
             atomic = self.result.add(f"Verify {vulnerability.id}.", vulnerability_ids=(vulnerability.id,))

@@ -19,10 +19,7 @@ from anta._advisory.facts.models import (
     FactProblemKind,
     FactSource,
     FactSourceKind,
-    FeatureName,
     FeatureState,
-    FeatureValue,
-    SubFeature,
 )
 from anta._advisory.facts.p4_runtime import P4RuntimeAccountingFact, P4RuntimeFact, P4RuntimeMtlsFact
 from anta._advisory.findings.models import AffectedResult, ErrorResult, InconclusiveResult, NotAffectedResult
@@ -104,6 +101,11 @@ _DATA: AntaUnitTestData = {
         "eos_data": eos_data(p4(), TRUSTED_PROFILE, {"acctzEnabled": False, "authzEnabled": False}),
         "expected": expected(AntaTestStatus.SUCCESS, "the P4Runtime accounting is disabled and the gNSI Acctz service is disabled", None),
     },
+    (SA174, "not-affected-unsupported-acctz"): {
+        "version": build_eos_version("4.31.10M"),
+        "eos_data": eos_data(p4(), TRUSTED_PROFILE, {}),
+        "expected": expected(AntaTestStatus.SUCCESS, "the P4Runtime accounting is disabled and the gNSI Acctz service is not supported", None),
+    },
     (SA174, "not-affected-fixed-version"): {
         "version": build_eos_version("4.35.6M"),
         "eos_data": eos_data({}, {}, {}),
@@ -126,21 +128,15 @@ _DATA: AntaUnitTestData = {
 }
 
 
-def version_fact(value: str) -> Fact[EOSVersion]:
+def version_fact(value: str) -> Fact[EosVersionFact]:
     """Build an EOS version fact."""
     parsed = parse_eos_version(value).unwrap()
-    return EosVersionFact.available(parsed, SOURCE)
+    return EosVersionFact.from_version(parsed).available(SOURCE)
 
 
-def feature(definition, parent: FeatureName, name: str | None, state: FeatureState):  # noqa: ANN001, ANN201
-    """Build one feature fact."""
-    ref = parent if name is None else SubFeature(parent, name)
-    return definition.available(FeatureValue(ref, state), SOURCE)
-
-
-def authz(state: FeatureState):  # noqa: ANN201
+def authz_fact(state: FeatureState) -> Fact[GnsiAuthzFact]:
     """Build a gNSI Authz feature fact."""
-    return feature(GnsiAuthzFact, FeatureName.GNSI, "Authz service", state)
+    return GnsiAuthzFact(state).available(SOURCE)
 
 
 class TestSA174Assessment(unittest.TestCase):
@@ -167,27 +163,27 @@ class TestSA174Assessment(unittest.TestCase):
 
     def test_states(self) -> None:
         version = version_fact("4.35.5M")
-        enabled = feature(P4RuntimeFact, FeatureName.P4_RUNTIME, None, FeatureState.ENABLED)
-        mtls = feature(P4RuntimeMtlsFact, FeatureName.P4_RUNTIME, "mTLS", FeatureState.ENABLED)
-        accounting = feature(P4RuntimeAccountingFact, FeatureName.P4_RUNTIME, "accounting", FeatureState.ENABLED)
-        acctz = feature(GnsiAcctzFact, FeatureName.GNSI, "Acctz service", FeatureState.DISABLED)
-        assert isinstance(_assess_sa174(version, enabled, mtls, accounting, acctz, authz(FeatureState.DISABLED)), AffectedResult)
-        assert isinstance(_assess_sa174(version, enabled, mtls, accounting, acctz, authz(FeatureState.ENABLED)), InconclusiveResult)
-        disabled = feature(P4RuntimeFact, FeatureName.P4_RUNTIME, None, FeatureState.DISABLED)
+        enabled = P4RuntimeFact(FeatureState.ENABLED).available(SOURCE)
+        mtls = P4RuntimeMtlsFact(FeatureState.ENABLED).available(SOURCE)
+        accounting = P4RuntimeAccountingFact(FeatureState.ENABLED).available(SOURCE)
+        acctz = GnsiAcctzFact(FeatureState.DISABLED).available(SOURCE)
+        assert isinstance(_assess_sa174(version, enabled, mtls, accounting, acctz, authz_fact(FeatureState.DISABLED)), AffectedResult)
+        assert isinstance(_assess_sa174(version, enabled, mtls, accounting, acctz, authz_fact(FeatureState.ENABLED)), InconclusiveResult)
+        disabled = P4RuntimeFact(FeatureState.DISABLED).available(SOURCE)
         unavailable = P4RuntimeMtlsFact.unavailable(FactProblemKind.MISSING, SOURCE)
-        assert isinstance(_assess_sa174(version, disabled, unavailable, accounting, acctz, authz(FeatureState.ENABLED)), NotAffectedResult)
-        assert isinstance(_assess_sa174(version, enabled, unavailable, accounting, acctz, authz(FeatureState.ENABLED)), ErrorResult)
+        assert isinstance(_assess_sa174(version, disabled, unavailable, accounting, acctz, authz_fact(FeatureState.ENABLED)), NotAffectedResult)
+        assert isinstance(_assess_sa174(version, enabled, unavailable, accounting, acctz, authz_fact(FeatureState.ENABLED)), ErrorResult)
 
     def test_every_accounting_path_with_authz_is_inconclusive(self) -> None:
         """Keep every accounting path inconclusive until the Authz policy is verified."""
         version = version_fact("4.35.5M")
-        enabled = feature(P4RuntimeFact, FeatureName.P4_RUNTIME, None, FeatureState.ENABLED)
-        mtls = feature(P4RuntimeMtlsFact, FeatureName.P4_RUNTIME, "mTLS", FeatureState.ENABLED)
-        p4_enabled = feature(P4RuntimeAccountingFact, FeatureName.P4_RUNTIME, "accounting", FeatureState.ENABLED)
-        p4_disabled = feature(P4RuntimeAccountingFact, FeatureName.P4_RUNTIME, "accounting", FeatureState.DISABLED)
-        acctz_enabled = feature(GnsiAcctzFact, FeatureName.GNSI, "Acctz service", FeatureState.ENABLED)
-        acctz_disabled = feature(GnsiAcctzFact, FeatureName.GNSI, "Acctz service", FeatureState.DISABLED)
-        enabled_authz = authz(FeatureState.ENABLED)
+        enabled = P4RuntimeFact(FeatureState.ENABLED).available(SOURCE)
+        mtls = P4RuntimeMtlsFact(FeatureState.ENABLED).available(SOURCE)
+        p4_enabled = P4RuntimeAccountingFact(FeatureState.ENABLED).available(SOURCE)
+        p4_disabled = P4RuntimeAccountingFact(FeatureState.DISABLED).available(SOURCE)
+        acctz_enabled = GnsiAcctzFact(FeatureState.ENABLED).available(SOURCE)
+        acctz_disabled = GnsiAcctzFact(FeatureState.DISABLED).available(SOURCE)
+        enabled_authz = authz_fact(FeatureState.ENABLED)
 
         assert isinstance(_assess_sa174(version, enabled, mtls, p4_enabled, acctz_disabled, enabled_authz), InconclusiveResult)
         assert isinstance(_assess_sa174(version, enabled, mtls, p4_disabled, acctz_enabled, enabled_authz), InconclusiveResult)

@@ -15,7 +15,7 @@ from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.aaa import LoginAuthenticationFact
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management_access import PasswordManagementServiceFact
-from anta._advisory.facts.models import Fact, FactProblemKind, FactSource, FactSourceKind, FeatureName, FeatureState, FeatureValue, SubFeature
+from anta._advisory.facts.models import Fact, FactProblemKind, FactSource, FactSourceKind, FeatureState
 from anta._advisory.findings.models import AffectedResult, ErrorResult, NotAffectedResult
 from anta._advisory.remediation import FixedRelease, software_version_plan
 from anta._eos.version import EOSVersion, parse_eos_version
@@ -93,15 +93,10 @@ _DATA: AntaUnitTestData = {
 }
 
 
-def version_fact(value: str) -> Fact[EOSVersion]:
+def version_fact(value: str) -> Fact[EosVersionFact]:
     """Build an EOS version fact."""
     parsed = parse_eos_version(value).unwrap()
-    return EosVersionFact.available(parsed, SOURCE)
-
-
-def feature(definition, name: str, state: FeatureState):  # noqa: ANN001, ANN201
-    """Build an AAA subfeature fact."""
-    return definition.available(FeatureValue(SubFeature(FeatureName.AAA, name), state), SOURCE)
+    return EosVersionFact.from_version(parsed).available(SOURCE)
 
 
 class TestSA152Assessment(unittest.TestCase):
@@ -130,9 +125,10 @@ class TestSA152Assessment(unittest.TestCase):
 
     def test_states(self) -> None:
         version = version_fact("4.35.5M")
-        login = feature(LoginAuthenticationFact, "login authentication", FeatureState.ENABLED)
-        service = feature(PasswordManagementServiceFact, "password-based management service", FeatureState.ENABLED)
+        login = LoginAuthenticationFact(FeatureState.ENABLED).available(SOURCE)
+        service = PasswordManagementServiceFact(FeatureState.ENABLED).available(SOURCE)
         assert isinstance(_assess_sa152(version, login, service), AffectedResult)
-        assert isinstance(_assess_sa152(version, feature(LoginAuthenticationFact, "login authentication", FeatureState.DISABLED), service), NotAffectedResult)
+        disabled_login = LoginAuthenticationFact(FeatureState.DISABLED).available(SOURCE)
+        assert isinstance(_assess_sa152(version, disabled_login, service), NotAffectedResult)
         unavailable = PasswordManagementServiceFact.unavailable(FactProblemKind.MISSING, SOURCE)
         assert isinstance(_assess_sa152(version, login, unavailable), ErrorResult)
