@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import Any, ClassVar, cast
+from typing import ClassVar, cast
 
 from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
@@ -16,7 +16,7 @@ from anta._advisory.facts.management import (
     GnpsiMetadataAuthenticationFact,
     GnpsiTransportFact,
 )
-from anta._advisory.facts.models import AvailableFact, Fact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
+from anta._advisory.facts.models import AvailableFact, Fact, FactsBase, FeatureState, UnavailableFact, fact_field, facts_dataclass
 from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import (
     AffectedResult,
@@ -85,9 +85,9 @@ def _logging_remediation_plan(current_version: EOSVersion) -> RemediationPlan:
 
 def _assess_gnpsi_issue(
     vulnerability_id: str,
-    version: Fact[EOSVersion],
-    transport: Fact[FeatureValue],
-    prerequisite: Fact[FeatureValue],
+    version: Fact[EosVersionFact],
+    transport: Fact[GnpsiTransportFact],
+    prerequisite: Fact[GnpsiAuthenticationExposureFact],
 ) -> VulnerabilityResult:
     """Assess one gNPSI code-execution issue after its independent prerequisite is normalized."""
     if not isinstance(prerequisite, UnavailableFact) and prerequisite.value.state is not FeatureState.ENABLED:
@@ -102,16 +102,16 @@ def _assess_gnpsi_issue(
         return ErrorResult(vulnerability_id=vulnerability_id, problems=problems)
     return AffectedResult(
         vulnerability_id=vulnerability_id,
-        conditions=(cast("AvailableFact[FeatureValue]", transport), cast("AvailableFact[FeatureValue]", prerequisite)),
+        conditions=(cast("AvailableFact[GnpsiTransportFact]", transport), cast("AvailableFact[GnpsiAuthenticationExposureFact]", prerequisite)),
         context=(eos_release,),
         remediation=software_version_plan(FIXED_RELEASES, current_version=eos_release.fact.value),
     )
 
 
 def _assess_logging_issue(
-    version: Fact[EOSVersion],
-    transport: Fact[FeatureValue],
-    metadata: Fact[FeatureValue],
+    version: Fact[EosVersionFact],
+    transport: Fact[GnpsiTransportFact],
+    metadata: Fact[GnpsiMetadataAuthenticationFact],
 ) -> VulnerabilityResult:
     """Assess credential logging when metadata authentication is configured."""
     if not isinstance(metadata, UnavailableFact) and metadata.value.state is not FeatureState.ENABLED:
@@ -126,7 +126,7 @@ def _assess_logging_issue(
         return ErrorResult(vulnerability_id=LOGGING_ID, problems=problems)
     return AffectedResult(
         vulnerability_id=LOGGING_ID,
-        conditions=(cast("AvailableFact[FeatureValue]", transport), cast("AvailableFact[FeatureValue]", metadata)),
+        conditions=(cast("AvailableFact[GnpsiTransportFact]", transport), cast("AvailableFact[GnpsiMetadataAuthenticationFact]", metadata)),
         context=(eos_release,),
         remediation=_logging_remediation_plan(eos_release.fact.value),
     )
@@ -145,9 +145,9 @@ class SA158(OptionalCommandsMixin, _AntaAdvisoryTest):
     CVE-2026-73456 evaluates TLS metadata and mTLS common-name authentication. CVE-2026-73457 evaluates metadata
     authentication on an affected release. Exclusive mTLS with only x509-spiffe is not affected: the password-disclosure
     path is absent, which the assessment decision treats as not affected rather than mitigated. EosRpcAuth trace state
-    is not used: ``show trace Gnpsi`` can be empty until the agent has handled gNPSI work, and it can still report the
-    facility after a subscription that is no longer active. Timed exec can enable tracing later. Future operator actions
-    and unobservable triggering do not prevent an affected result.
+    is not used: presence or absence of ``show trace Gnpsi`` is not a reliable indicator of vulnerability. Output can
+    be empty until the agent has handled gNPSI work, can still report a subscription that is no longer active, and
+    timed exec can enable tracing at any later time. Future operator actions therefore do not prevent an affected result.
 
     Examples
     --------
@@ -157,24 +157,26 @@ class SA158(OptionalCommandsMixin, _AntaAdvisoryTest):
     ```
     """
 
+    @facts_dataclass
+    class Facts(FactsBase):
+        """Collected facts required to assess the advisory."""
+
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
+        transport: Fact[GnpsiTransportFact] = fact_field(GnpsiTransportFact)
+        authentication: Fact[GnpsiAuthenticationExposureFact] = fact_field(GnpsiAuthenticationExposureFact)
+        metadata: Fact[GnpsiMetadataAuthenticationFact] = fact_field(GnpsiMetadataAuthenticationFact)
+
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
-    required_facts: ClassVar[tuple[type[FactDefinition[Any]], ...]] = (
-        EosVersionFact,
-        GnpsiTransportFact,
-        GnpsiAuthenticationExposureFact,
-        GnpsiMetadataAuthenticationFact,
-    )
     description = "Verify whether the device is impacted by Security Advisory 0158."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
         """Derive facts, assess both vulnerabilities, and project them."""
-        version = self.fact(EosVersionFact)
-        transport = self.fact(GnpsiTransportFact)
+        facts = self.Facts.collect(self)
         findings = (
-            (CODE_EXECUTION_ID, _assess_gnpsi_issue(CODE_EXECUTION_ID, version, transport, self.fact(GnpsiAuthenticationExposureFact))),
-            (LOGGING_ID, _assess_logging_issue(version, transport, self.fact(GnpsiMetadataAuthenticationFact))),
+            (CODE_EXECUTION_ID, _assess_gnpsi_issue(CODE_EXECUTION_ID, facts.version, facts.transport, facts.authentication)),
+            (LOGGING_ID, _assess_logging_issue(facts.version, facts.transport, facts.metadata)),
         )
         for vulnerability_id, finding in findings:
             atomic = self.result.add(f"Verify {vulnerability_id}.", vulnerability_ids=(vulnerability_id,))

@@ -20,8 +20,10 @@ jobs:
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
+      - name: Pin pip
+        run: pip install "pip>=25.1"
       - name: Install dependencies
-        run: pip install . --group dev
+        run: pip install . --group dev --group benchmark
       - name: Run benchmarks
         uses: CodSpeedHQ/action@373d6868929f444bc08d901fd0eb0ad52a8875ea # v5.2.1
         with:

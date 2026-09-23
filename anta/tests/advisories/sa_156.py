@@ -6,19 +6,17 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import Any, ClassVar
+from typing import ClassVar
 
 from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import AffectedStatus, VersionRule, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactDefinition, FeatureState, FeatureValue, MitigationState, MitigationValue, UnavailableFact
+from anta._advisory.facts.models import AvailableFact, Fact, FactsBase, FeatureState, MitigationState, UnavailableFact, fact_field, facts_dataclass
 from anta._advisory.facts.network_services import (
     DhcpRelayActiveFact,
-    DhcpRelayScope,
     DhcpRelayScopeFact,
     DhcpReplySourceValidationFact,
     IpAddressFamily,
-    IpLockingCoverage,
     IpLockingCoverageFact,
     IpLockingMitigationFact,
     IpLockingScope,
@@ -79,7 +77,7 @@ ADVISORY = _AdvisoryMetadata(
 VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
-def _version_relation(version: AvailableFact[EOSVersion]) -> VersionRelation:
+def _version_relation(version: AvailableFact[EosVersionFact]) -> VersionRelation:
     """Classify vulnerable, conditionally fixed, and outside-scope releases."""
     if evaluate_version(version.value, AFFECTED_VERSION_MATRIX).affected_status is AffectedStatus.AFFECTED:
         return VersionRelation.AFFECTED
@@ -102,7 +100,7 @@ def _vlan_name(interface: str) -> str | None:
     return str(int(vlan))
 
 
-def _ip_locking_covers_relay(relay: DhcpRelayScope, coverage: IpLockingCoverage) -> bool:
+def _ip_locking_covers_relay(relay: DhcpRelayScopeFact, coverage: IpLockingCoverageFact) -> bool:
     """Return whether enforcement-disabled IP locking covers every relay path."""
     if not relay.interfaces:
         return False
@@ -115,7 +113,7 @@ def _ip_locking_covers_relay(relay: DhcpRelayScope, coverage: IpLockingCoverage)
     return True
 
 
-def _remediation(version: AvailableFact[EOSVersion], relation: VersionRelation) -> RemediationPlan:
+def _remediation(version: AvailableFact[EosVersionFact], relation: VersionRelation) -> RemediationPlan:
     """Build the remaining source-defined resolution for one affected device."""
     if relation is VersionRelation.CONDITIONAL_FIXED:
         return RemediationPlan(VALIDATION_CONFIGURATION)
@@ -123,12 +121,12 @@ def _remediation(version: AvailableFact[EOSVersion], relation: VersionRelation) 
 
 
 def _assess_sa156(  # noqa: C901, PLR0911  # pylint: disable=too-many-return-statements
-    version: Fact[EOSVersion],
-    relay: Fact[FeatureValue],
-    validation: Fact[FeatureValue],
-    ip_locking: Fact[MitigationValue],
-    relay_scope: Fact[DhcpRelayScope],
-    ip_locking_coverage: Fact[IpLockingCoverage],
+    version: Fact[EosVersionFact],
+    relay: Fact[DhcpRelayActiveFact],
+    validation: Fact[DhcpReplySourceValidationFact],
+    ip_locking: Fact[IpLockingMitigationFact],
+    relay_scope: Fact[DhcpRelayScopeFact],
+    ip_locking_coverage: Fact[IpLockingCoverageFact],
 ) -> VulnerabilityResult:
     """Require the complete resolution or source-defined operational IP-locking coverage."""
     if not isinstance(relay, UnavailableFact) and relay.value.state is not FeatureState.ENABLED:
@@ -170,7 +168,7 @@ def _assess_sa156(  # noqa: C901, PLR0911  # pylint: disable=too-many-return-sta
         if isinstance(validation, AvailableFact):
             return AffectedResult(
                 vulnerability_id=VULNERABILITY_ID,
-                conditions=(relay, AffectedFeatureState(validation.definition, validation.value, validation.source)),
+                conditions=(relay, AffectedFeatureState(validation.value, validation.source)),
                 context=(release,),
                 remediation=_remediation(version, relation),
             )
@@ -206,28 +204,25 @@ class SA156(OptionalCommandsMixin, _AntaAdvisoryTest):
     ```
     """
 
+    @facts_dataclass
+    class Facts(FactsBase):
+        """Collected facts required to assess the advisory."""
+
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
+        relay: Fact[DhcpRelayActiveFact] = fact_field(DhcpRelayActiveFact)
+        validation: Fact[DhcpReplySourceValidationFact] = fact_field(DhcpReplySourceValidationFact)
+        ip_locking: Fact[IpLockingMitigationFact] = fact_field(IpLockingMitigationFact)
+        relay_scope: Fact[DhcpRelayScopeFact] = fact_field(DhcpRelayScopeFact)
+        ip_locking_coverage: Fact[IpLockingCoverageFact] = fact_field(IpLockingCoverageFact)
+
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
-    required_facts: ClassVar[tuple[type[FactDefinition[Any]], ...]] = (
-        EosVersionFact,
-        DhcpRelayActiveFact,
-        DhcpReplySourceValidationFact,
-        IpLockingMitigationFact,
-        DhcpRelayScopeFact,
-        IpLockingCoverageFact,
-    )
     description = "Verify whether the device is impacted by Security Advisory 0156."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
         """Derive facts, assess the vulnerability, and project it."""
-        finding = _assess_sa156(
-            self.fact(EosVersionFact),
-            self.fact(DhcpRelayActiveFact),
-            self.fact(DhcpReplySourceValidationFact),
-            self.fact(IpLockingMitigationFact),
-            self.fact(DhcpRelayScopeFact),
-            self.fact(IpLockingCoverageFact),
-        )
+        facts = self.Facts.collect(self)
+        finding = _assess_sa156(facts.version, facts.relay, facts.validation, facts.ip_locking, facts.relay_scope, facts.ip_locking_coverage)
         atomic = self.result.add(f"Verify {VULNERABILITY_ID}.", vulnerability_ids=(VULNERABILITY_ID,))
         project_vulnerability_result(atomic, finding)

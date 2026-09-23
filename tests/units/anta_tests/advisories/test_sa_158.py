@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, Any, Literal, TypeAlias
 from anta._advisory.eos_versions import AffectedStatus
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnpsiAuthenticationExposureFact, GnpsiMetadataAuthenticationFact, GnpsiTransportFact
-from anta._advisory.facts.models import AvailableFact, FeatureName, FeatureState, FeatureValue, SubFeature
+from anta._advisory.facts.models import AvailableFact, FactProblemKind, FeatureState
 from anta._advisory.findings.models import AffectedResult, ErrorResult, NotAffectedResult
 from anta._advisory.remediation import (
     AllOf,
@@ -26,7 +26,7 @@ from anta._eos.version import EOSVersion
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_158 import ADVISORY, AFFECTED_VERSION_MATRIX, SA158, _assess_gnpsi_issue, _assess_logging_issue
 from tests.units.anta_tests import build_eos_version, test
-from tests.units.anta_tests.advisories.fact_builders import assert_version_statuses, available_fact, eos_version_fact, unavailable_fact
+from tests.units.anta_tests.advisories.fact_builders import SOURCE, assert_version_statuses, eos_version_fact
 
 if TYPE_CHECKING:
     from tests.units.anta_tests import AntaUnitTestData, AtomicResult, UnitTestResult
@@ -56,55 +56,69 @@ LOGGING_REMEDIATION = RemediationPlan(
 )
 
 
-def gnpsi_fact(
-    definition: type[GnpsiTransportFact | GnpsiAuthenticationExposureFact | GnpsiMetadataAuthenticationFact], name: str, state: FeatureState
-) -> AvailableFact[FeatureValue]:
-    """Build one normalized gNPSI fact for direct assessment tests."""
-    return available_fact(definition, FeatureValue(SubFeature(FeatureName.GNPSI, name), state))
+def transport_fact(state: FeatureState) -> AvailableFact[GnpsiTransportFact]:
+    """Build normalized gNPSI transport state for direct assessment tests."""
+    return GnpsiTransportFact(state).available(SOURCE)
+
+
+def authentication_exposure_fact(state: FeatureState) -> AvailableFact[GnpsiAuthenticationExposureFact]:
+    """Build normalized gNPSI authentication exposure for direct assessment tests."""
+    return GnpsiAuthenticationExposureFact(state).available(SOURCE)
+
+
+def metadata_authentication_fact(state: FeatureState) -> AvailableFact[GnpsiMetadataAuthenticationFact]:
+    """Build normalized gNPSI metadata authentication for direct assessment tests."""
+    return GnpsiMetadataAuthenticationFact(state).available(SOURCE)
 
 
 def test_sa158_assessment_contract() -> None:
     """Evaluate transport and issue-specific gNPSI prerequisites independently."""
-    transport_enabled = gnpsi_fact(GnpsiTransportFact, "transport", FeatureState.ENABLED)
-    transport_disabled = gnpsi_fact(GnpsiTransportFact, "transport", FeatureState.DISABLED)
-    authentication_enabled = gnpsi_fact(GnpsiAuthenticationExposureFact, "exposed authentication mode", FeatureState.ENABLED)
-    authentication_disabled = gnpsi_fact(GnpsiAuthenticationExposureFact, "exposed authentication mode", FeatureState.DISABLED)
-    authentication_unsupported = gnpsi_fact(GnpsiAuthenticationExposureFact, "exposed authentication mode", FeatureState.UNSUPPORTED)
-    metadata_enabled = gnpsi_fact(GnpsiMetadataAuthenticationFact, "metadata authentication", FeatureState.ENABLED)
-    metadata_disabled = gnpsi_fact(GnpsiMetadataAuthenticationFact, "metadata authentication", FeatureState.DISABLED)
-    metadata_unsupported = gnpsi_fact(GnpsiMetadataAuthenticationFact, "metadata authentication", FeatureState.UNSUPPORTED)
+    transport_enabled = transport_fact(FeatureState.ENABLED)
+    transport_disabled = transport_fact(FeatureState.DISABLED)
+    authentication_enabled = authentication_exposure_fact(FeatureState.ENABLED)
+    authentication_disabled = authentication_exposure_fact(FeatureState.DISABLED)
+    authentication_unsupported = authentication_exposure_fact(FeatureState.UNSUPPORTED)
+    metadata_enabled = metadata_authentication_fact(FeatureState.ENABLED)
+    metadata_disabled = metadata_authentication_fact(FeatureState.DISABLED)
+    metadata_unsupported = metadata_authentication_fact(FeatureState.UNSUPPORTED)
+    missing_version = EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
     vulnerability_id = "CVE-2026-73456"
-    assert isinstance(_assess_gnpsi_issue(vulnerability_id, unavailable_fact(EosVersionFact), transport_enabled, authentication_disabled), NotAffectedResult)
-    assert isinstance(_assess_gnpsi_issue(vulnerability_id, unavailable_fact(EosVersionFact), transport_enabled, authentication_unsupported), NotAffectedResult)
-    assert isinstance(_assess_gnpsi_issue(vulnerability_id, unavailable_fact(EosVersionFact), transport_disabled, authentication_enabled), NotAffectedResult)
+    assert isinstance(_assess_gnpsi_issue(vulnerability_id, missing_version, transport_enabled, authentication_disabled), NotAffectedResult)
+    assert isinstance(_assess_gnpsi_issue(vulnerability_id, missing_version, transport_enabled, authentication_unsupported), NotAffectedResult)
+    assert isinstance(_assess_gnpsi_issue(vulnerability_id, missing_version, transport_disabled, authentication_enabled), NotAffectedResult)
     affected_execution = _assess_gnpsi_issue(vulnerability_id, eos_version_fact("4.36.1F"), transport_enabled, authentication_enabled)
     assert isinstance(affected_execution, AffectedResult)
     assert affected_execution.remediation == SOFTWARE_REMEDIATION
     assert isinstance(_assess_gnpsi_issue(vulnerability_id, eos_version_fact("4.36.2F"), transport_enabled, authentication_enabled), NotAffectedResult)
-    assert isinstance(_assess_gnpsi_issue(vulnerability_id, unavailable_fact(EosVersionFact), transport_enabled, authentication_enabled), ErrorResult)
+    assert isinstance(_assess_gnpsi_issue(vulnerability_id, missing_version, transport_enabled, authentication_enabled), ErrorResult)
     assert isinstance(
-        _assess_gnpsi_issue(vulnerability_id, eos_version_fact("4.36.1F"), transport_enabled, unavailable_fact(GnpsiAuthenticationExposureFact)),
+        _assess_gnpsi_issue(
+            vulnerability_id,
+            eos_version_fact("4.36.1F"),
+            transport_enabled,
+            GnpsiAuthenticationExposureFact.unavailable(FactProblemKind.MISSING, SOURCE),
+        ),
         ErrorResult,
     )
     assert isinstance(
-        _assess_gnpsi_issue(vulnerability_id, eos_version_fact("4.36.1F"), unavailable_fact(GnpsiTransportFact), authentication_enabled),
+        _assess_gnpsi_issue(vulnerability_id, eos_version_fact("4.36.1F"), GnpsiTransportFact.unavailable(FactProblemKind.MISSING, SOURCE), authentication_enabled),
         ErrorResult,
     )
 
-    assert isinstance(_assess_logging_issue(unavailable_fact(EosVersionFact), transport_enabled, metadata_disabled), NotAffectedResult)
-    assert isinstance(_assess_logging_issue(unavailable_fact(EosVersionFact), transport_enabled, metadata_unsupported), NotAffectedResult)
-    assert isinstance(_assess_logging_issue(unavailable_fact(EosVersionFact), transport_disabled, metadata_enabled), NotAffectedResult)
+    assert isinstance(_assess_logging_issue(missing_version, transport_enabled, metadata_disabled), NotAffectedResult)
+    assert isinstance(_assess_logging_issue(missing_version, transport_enabled, metadata_unsupported), NotAffectedResult)
+    assert isinstance(_assess_logging_issue(missing_version, transport_disabled, metadata_enabled), NotAffectedResult)
     affected = _assess_logging_issue(eos_version_fact("4.36.1F"), transport_enabled, metadata_enabled)
     assert isinstance(affected, AffectedResult)
     assert affected.remediation == LOGGING_REMEDIATION
     assert isinstance(_assess_logging_issue(eos_version_fact("4.36.2F"), transport_enabled, metadata_enabled), NotAffectedResult)
-    assert isinstance(_assess_logging_issue(unavailable_fact(EosVersionFact), transport_enabled, metadata_enabled), ErrorResult)
+    assert isinstance(_assess_logging_issue(missing_version, transport_enabled, metadata_enabled), ErrorResult)
     assert isinstance(
-        _assess_logging_issue(eos_version_fact("4.36.1F"), transport_enabled, unavailable_fact(GnpsiMetadataAuthenticationFact)),
+        _assess_logging_issue(eos_version_fact("4.36.1F"), transport_enabled, GnpsiMetadataAuthenticationFact.unavailable(FactProblemKind.MISSING, SOURCE)),
         ErrorResult,
     )
     assert isinstance(
-        _assess_logging_issue(eos_version_fact("4.36.1F"), unavailable_fact(GnpsiTransportFact), metadata_enabled),
+        _assess_logging_issue(eos_version_fact("4.36.1F"), GnpsiTransportFact.unavailable(FactProblemKind.MISSING, SOURCE), metadata_enabled),
         ErrorResult,
     )
 

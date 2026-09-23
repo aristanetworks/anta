@@ -5,23 +5,25 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from datetime import date
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, ClassVar, cast
 
 import pytest
 
 from anta._advisory.facts.models import (
-    ComponentSoftwareVersion,
+    ComponentSoftwareFact,
     Fact,
     FactDefinition,
     FactProblemKind,
     FactSource,
     FactSourceKind,
+    FeatureFact,
     FeatureName,
+    FeatureRef,
     FeatureState,
-    FeatureValue,
+    MitigationFact,
     MitigationState,
-    MitigationValue,
 )
 from anta._advisory.findings.models import (
     AffectedResult,
@@ -44,40 +46,45 @@ if TYPE_CHECKING:
     from anta.models import AntaCommand
 
 
-class ExampleFeatureFact(FactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class ExampleFeatureFact(FeatureFact, FactDefinition["ExampleFeatureFact"]):
     """Feature fact identity for projection tests."""
 
-    key = "feature.example"
-    label = "Example feature"
+    feature: ClassVar[FeatureRef] = FeatureName.SECURE_BOOT
+    key: ClassVar[str] = "feature.example"
+    label: ClassVar[str] = "Example feature"
 
     @classmethod
-    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[FeatureValue]:
+    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[ExampleFeatureFact]:
         """Reject derivation because these tests provide already normalized values."""
         _ = cls, device, commands
         pytest.fail("Projection tests do not derive facts")
 
 
-class ExampleMitigationFact(FactDefinition[MitigationValue]):
+@dataclass(frozen=True, slots=True)
+class ExampleMitigationFact(MitigationFact, FactDefinition["ExampleMitigationFact"]):
     """Mitigation fact identity for projection tests."""
 
-    key = "mitigation.example"
-    label = "Example mitigation"
+    key: ClassVar[str] = "mitigation.example"
+    label: ClassVar[str] = "Example mitigation"
 
     @classmethod
-    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[MitigationValue]:
+    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[ExampleMitigationFact]:
         """Reject derivation because these tests provide already normalized values."""
         _ = cls, device, commands
         pytest.fail("Projection tests do not derive facts")
 
 
-class ExampleComponentVersionFact(FactDefinition[ComponentSoftwareVersion]):
+@dataclass(frozen=True, slots=True)
+class ExampleComponentVersionFact(ComponentSoftwareFact, FactDefinition["ExampleComponentVersionFact"]):
     """Component-version fact identity for projection tests."""
 
-    key = "component.example.version"
-    label = "Example component version"
+    component: ClassVar[str] = "example"
+    key: ClassVar[str] = "component.example.version"
+    label: ClassVar[str] = "Example component version"
 
     @classmethod
-    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[ComponentSoftwareVersion]:
+    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[ExampleComponentVersionFact]:
         """Reject derivation because these tests provide already normalized values."""
         _ = cls, device, commands
         pytest.fail("Projection tests do not derive facts")
@@ -109,7 +116,7 @@ def _parent() -> _AdvisoryTestResult:
 
 def test_project_affected_result() -> None:
     """Render a retained exposure fact and project its semantic status."""
-    exposure = ExampleFeatureFact.available(FeatureValue(FeatureName.SECURE_BOOT, FeatureState.ENABLED), SOURCE)
+    exposure = ExampleFeatureFact(FeatureState.ENABLED).available(SOURCE)
     parent = _parent()
     atomic = parent.add("Verify vulnerability.", vulnerability_ids=(VULNERABILITY_ID,))
 
@@ -125,8 +132,8 @@ def test_project_affected_result() -> None:
 
 def test_project_affected_result_with_ineffective_control() -> None:
     """Retain an ineffective control as a condition explaining an affected result."""
-    exposure = ExampleFeatureFact.available(FeatureValue(FeatureName.SECURE_BOOT, FeatureState.ENABLED), SOURCE)
-    ineffective = ExampleMitigationFact.available(MitigationValue(MitigationState.INEFFECTIVE), SOURCE)
+    exposure = ExampleFeatureFact(FeatureState.ENABLED).available(SOURCE)
+    ineffective = ExampleMitigationFact(MitigationState.INEFFECTIVE).available(SOURCE)
     parent = _parent()
     atomic = parent.add("Verify vulnerability.", vulnerability_ids=(VULNERABILITY_ID,))
 
@@ -141,7 +148,7 @@ def test_project_affected_result_with_ineffective_control() -> None:
 
 def test_affected_result_rejects_effective_control_as_a_condition() -> None:
     """Prevent an effective control from explaining an affected result."""
-    effective = ExampleMitigationFact.available(MitigationValue(MitigationState.EFFECTIVE), SOURCE)
+    effective = ExampleMitigationFact(MitigationState.EFFECTIVE).available(SOURCE)
 
     with pytest.raises(ValueError, match="confirmed affected conditions"):
         AffectedResult(vulnerability_id=VULNERABILITY_ID, conditions=(effective,), remediation=REMEDIATION)
@@ -149,7 +156,7 @@ def test_affected_result_rejects_effective_control_as_a_condition() -> None:
 
 def test_project_not_affected_result() -> None:
     """Render a decisive retained feature fact without remediation."""
-    decisive = ExampleFeatureFact.available(FeatureValue(FeatureName.SECURE_BOOT, FeatureState.DISABLED), SOURCE)
+    decisive = ExampleFeatureFact(FeatureState.DISABLED).available(SOURCE)
     parent = _parent()
     atomic = parent.add("Verify vulnerability.", vulnerability_ids=(VULNERABILITY_ID,))
 
@@ -197,8 +204,8 @@ def test_project_unsupported_command_names_the_unsupported_command() -> None:
 
 def test_project_mitigated_result_renders_relationship() -> None:
     """Render the assessment-owned relationship between exposure and mitigation facts."""
-    exposure = ExampleFeatureFact.available(FeatureValue(FeatureName.SECURE_BOOT, FeatureState.ENABLED), SOURCE)
-    mitigation = ExampleMitigationFact.available(MitigationValue(MitigationState.EFFECTIVE), SOURCE)
+    exposure = ExampleFeatureFact(FeatureState.ENABLED).available(SOURCE)
+    mitigation = ExampleMitigationFact(MitigationState.EFFECTIVE).available(SOURCE)
     parent = _parent()
     atomic = parent.add("Verify vulnerability.", vulnerability_ids=(VULNERABILITY_ID,))
 
@@ -218,8 +225,8 @@ def test_project_mitigated_result_renders_relationship() -> None:
 
 def test_mitigated_exposure_rejects_ineffective_mitigation() -> None:
     """Prevent an ineffective mitigation fact from closing an exposure."""
-    exposure = ExampleFeatureFact.available(FeatureValue(FeatureName.SECURE_BOOT, FeatureState.ENABLED), SOURCE)
-    mitigation = ExampleMitigationFact.available(MitigationValue(MitigationState.INEFFECTIVE), SOURCE)
+    exposure = ExampleFeatureFact(FeatureState.ENABLED).available(SOURCE)
+    mitigation = ExampleMitigationFact(MitigationState.INEFFECTIVE).available(SOURCE)
 
     with pytest.raises(ValueError, match="effective mitigation"):
         MitigatedCondition(exposure, (mitigation,))
@@ -227,9 +234,9 @@ def test_mitigated_exposure_rejects_ineffective_mitigation() -> None:
 
 def test_mitigated_condition_rejects_fixed_component_version() -> None:
     """Prevent a fixed component assessment from serving as an affected condition."""
-    version = ExampleComponentVersionFact.available(ComponentSoftwareVersion("example", "2.0.0"), SOURCE)
+    version = ExampleComponentVersionFact("2.0.0").available(SOURCE)
     fixed = ComponentVersionAssessment(version, VersionRelation.FIXED)
-    mitigation = ExampleMitigationFact.available(MitigationValue(MitigationState.EFFECTIVE), SOURCE)
+    mitigation = ExampleMitigationFact(MitigationState.EFFECTIVE).available(SOURCE)
     invalid_condition = cast("Any", fixed)
 
     with pytest.raises(ValueError, match="confirmed affected condition"):
@@ -238,8 +245,8 @@ def test_mitigated_condition_rejects_fixed_component_version() -> None:
 
 def test_mitigated_condition_rejects_inactive_feature() -> None:
     """Prevent a disabled feature from serving as an affected condition."""
-    inactive = ExampleFeatureFact.available(FeatureValue(FeatureName.SECURE_BOOT, FeatureState.DISABLED), SOURCE)
-    mitigation = ExampleMitigationFact.available(MitigationValue(MitigationState.EFFECTIVE), SOURCE)
+    inactive = ExampleFeatureFact(FeatureState.DISABLED).available(SOURCE)
+    mitigation = ExampleMitigationFact(MitigationState.EFFECTIVE).available(SOURCE)
 
     with pytest.raises(ValueError, match="confirmed affected condition"):
         MitigatedCondition(inactive, (mitigation,))
@@ -247,7 +254,7 @@ def test_mitigated_condition_rejects_inactive_feature() -> None:
 
 def test_projection_rejects_mismatched_vulnerability() -> None:
     """Require a finding to match its atomic vulnerability association."""
-    decisive = ExampleFeatureFact.available(FeatureValue(FeatureName.SECURE_BOOT, FeatureState.DISABLED), SOURCE)
+    decisive = ExampleFeatureFact(FeatureState.DISABLED).available(SOURCE)
     parent = _parent()
     atomic = parent.add("Verify vulnerability.", vulnerability_ids=(VULNERABILITY_ID,))
     finding = NotAffectedResult(vulnerability_id="CVE-2026-9999", decisive=(decisive,))

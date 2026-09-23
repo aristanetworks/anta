@@ -18,6 +18,7 @@ from anta._advisory.facts.management import (
     GnpsiAuthenticationExposureFact,
     GnpsiMetadataAuthenticationFact,
     GnpsiTransportFact,
+    GnsiAcctzFact,
     GnsiAuthzFact,
     GnsiCertzFact,
     GnsiCredentialzFact,
@@ -35,6 +36,7 @@ from anta._advisory.facts.management import (
 )
 from anta._advisory.facts.models import AvailableFact, CredentialSyntaxState, FactProblemKind, FeatureState, UnavailableFact
 from anta._eos.parsing import ParseFail, ParseFailureReason, ParseSuccessful
+from anta._eos.version import EOSVersion
 from tests.units.anta_tests.advisories import OfflineAntaDevice
 
 if TYPE_CHECKING:
@@ -627,9 +629,56 @@ def test_gnsi_pathz_states(device: OfflineAntaDevice, enabled: bool, state: Feat
     assert fact.value.state is state
 
 
+@pytest.mark.parametrize("definition", [GnsiAcctzFact, GnsiPathzFact])
+@pytest.mark.parametrize("version", [EOSVersion(4, 31, 10, suffix="M"), EOSVersion(4, 33, 1, suffix="F")])
+def test_gnsi_absent_newer_service_field_is_unsupported_on_older_eos(
+    device: OfflineAntaDevice,
+    definition: type,
+    version: EOSVersion,
+) -> None:
+    """Treat fields omitted by older EOS gNSI schemas as unsupported services."""
+    device.version = version
+
+    fact = definition.derive(device, (gnsi_command({"transports": {}}),))
+
+    assert isinstance(fact, AvailableFact)
+    assert fact.value.state is FeatureState.UNSUPPORTED
+
+
+@pytest.mark.parametrize(
+    "definition",
+    [GnsiAcctzFact, GnsiPathzFact],
+)
+@pytest.mark.parametrize("version", [EOSVersion(4, 33, 2, suffix="F"), EOSVersion(4, 34, 0, suffix="F")])
+def test_gnsi_absent_newer_service_field_is_missing_on_supported_eos(
+    device: OfflineAntaDevice,
+    definition: type,
+    version: EOSVersion,
+) -> None:
+    """Keep missing service fields incomplete once the EOS gNSI schema supports them."""
+    device.version = version
+
+    fact = definition.derive(device, (gnsi_command({"transports": {}}),))
+
+    assert isinstance(fact, UnavailableFact)
+    assert fact.problem is FactProblemKind.MISSING
+
+
 @pytest.mark.parametrize(
     ("output", "problem"),
-    [({}, FactProblemKind.MISSING), ({"pathzEnabled": "yes"}, FactProblemKind.MALFORMED)],
+    [({}, FactProblemKind.MISSING), ({"acctzEnabled": None}, FactProblemKind.MALFORMED), ({"acctzEnabled": "yes"}, FactProblemKind.MALFORMED)],
+)
+def test_gnsi_acctz_invalid_output(device: OfflineAntaDevice, output: dict[str, object], problem: FactProblemKind) -> None:
+    """Reject missing and malformed Acctz state."""
+    fact = GnsiAcctzFact.derive(device, (gnsi_command(output),))
+
+    assert isinstance(fact, UnavailableFact)
+    assert fact.problem is problem
+
+
+@pytest.mark.parametrize(
+    ("output", "problem"),
+    [({}, FactProblemKind.MISSING), ({"pathzEnabled": None}, FactProblemKind.MALFORMED), ({"pathzEnabled": "yes"}, FactProblemKind.MALFORMED)],
 )
 def test_gnsi_pathz_invalid_output(device: OfflineAntaDevice, output: dict[str, object], problem: FactProblemKind) -> None:
     """Reject missing and malformed Pathz state."""

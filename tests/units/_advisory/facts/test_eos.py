@@ -43,7 +43,8 @@ def test_eos_version_fact_from_device_metadata(device: OfflineAntaDevice) -> Non
 
     assert isinstance(available, AvailableFact)
     assert available.definition is EosVersionFact
-    assert available.value is version
+    assert isinstance(available.value, EosVersionFact)
+    assert available.value == version
     assert available.source.name == "device metadata"
     assert isinstance(missing, UnavailableFact)
     assert missing.definition is EosVersionFact
@@ -74,6 +75,53 @@ def test_eos_version_fact_normalizes_device_version_protocol(device: OfflineAnta
 
     assert isinstance(fact, AvailableFact)
     assert fact.value == EOSVersion(4, 35, 1, suffix="F")
+
+
+def test_eos_version_fact_preserves_normalized_version_value_semantics() -> None:
+    """Keep nominal EOS facts equal and hash-compatible with normalized EOS versions."""
+    version = EOSVersion(4, 35, 1, suffix="F")
+    fact = EosVersionFact.from_version(version)
+
+    assert fact == version
+    assert version == fact
+    assert hash(fact) == hash(version)
+
+
+def test_eos_version_fact_from_version_preserves_all_fields() -> None:
+    """Copy every EOS release component without depending on dataclass field order."""
+    version = EOSVersion(major=4, minor=35, patch=1, suffix="F", hotfix=7)
+
+    fact = EosVersionFact.from_version(version)
+
+    assert fact.major == version.major
+    assert fact.minor == version.minor
+    assert fact.patch == version.patch
+    assert fact.suffix == version.suffix
+    assert fact.hotfix == version.hotfix
+    assert str(fact) == str(version)
+    assert fact.to_dict() == version.to_dict()
+
+
+def test_eos_version_fact_preserves_cross_type_ordering() -> None:
+    """Order nominal and normalized EOS versions in either operand position."""
+    lower_fact = EosVersionFact.from_version(EOSVersion(major=4, minor=35, patch=1, suffix="F"))
+    higher_version = EOSVersion(major=4, minor=35, patch=2, suffix="F")
+    lower_version = EOSVersion(major=4, minor=35, patch=1, suffix="F")
+    higher_fact = EosVersionFact.from_version(EOSVersion(major=4, minor=35, patch=2, suffix="F"))
+
+    assert lower_fact < higher_version
+    assert lower_version < higher_fact
+
+
+def test_eos_version_fact_is_interchangeable_as_mapping_key() -> None:
+    """Use equal nominal and normalized EOS versions as the same mapping key."""
+    version = EOSVersion(major=4, minor=35, patch=1, suffix="F", hotfix=7)
+    fact = EosVersionFact.from_version(version)
+    normalized_keyed: dict[EOSVersion, str] = {version: "normalized"}
+    nominal_keyed: dict[EOSVersion, str] = {fact: "nominal"}
+
+    assert normalized_keyed[fact] == "normalized"
+    assert nominal_keyed[version] == "nominal"
 
 
 def test_eos_version_fact_rejects_invalid_device_version_protocol(device: OfflineAntaDevice) -> None:
