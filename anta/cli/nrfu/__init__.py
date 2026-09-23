@@ -125,6 +125,7 @@ def nrfu(
     ctx.obj["test"] = test
     ctx.obj["dry_run"] = dry_run
     ctx.obj["disconnect"] = disconnect
+    ctx.obj["progress_spinner"] = "anta"
 
     if not ctx.invoked_subcommand:
         ctx.invoke(commands.table)

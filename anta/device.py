@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import ssl
 from abc import ABC, abstractmethod
 from collections import OrderedDict, defaultdict
 from collections.abc import Mapping
@@ -17,7 +18,7 @@ from typing import TYPE_CHECKING, Any, ClassVar, Literal, Protocol
 import asyncssh
 import httpcore
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
-from httpx import ConnectError, HTTPError, TimeoutException
+from httpx import ConnectError, HTTPError, TimeoutException, create_ssl_context
 
 import asynceapi
 from anta import __DEBUG__
@@ -26,7 +27,7 @@ from anta._eos.platform import PlatformIdentity, PlatformType, parse_eos_platfor
 from anta._eos.version import parse_eos_version
 from anta.logger import anta_log_exception, exc_to_str
 from anta.models import AntaCommand
-from anta.settings import get_httpx_settings
+from anta.settings import get_httpx_settings, get_ssl_settings
 from asynceapi._models import EAPIClientConnectionOptions
 from asynceapi._types import EapiComplexCommand
 from asynceapi.errors import EapiAuthenticationError
@@ -95,9 +96,70 @@ class AntaDeviceCapabilities:
 
     Subclasses of AntaDevice set this as a ClassVar to advertise which
     ANTA capabilities they implement. The base default is all-False.
+
+    Attributes
+    ----------
+    supports_session_auth : bool
+        Whether the device supports eAPI cookie-session authentication.
+    supports_ssl : bool
+        Whether the device accepts SSL parameters from an ANTA inventory.
     """
 
     supports_session_auth: bool = False
+    supports_ssl: bool = False
+
+
+@dataclass(frozen=True, slots=True)
+class SSLParameters:
+    """Parameters used to build an SSL context for an HTTPS eAPI connection.
+
+    Attributes
+    ----------
+    ciphers : str | None
+        OpenSSL cipher list. None uses the Python defaults.
+    verify : bool
+        Whether to verify the peer certificate. Defaults to False.
+    check_hostname : bool
+        Whether to verify that the certificate matches the device hostname. Defaults to False and requires ``verify=True``.
+    """
+
+    ciphers: str | None = None
+    verify: bool = False
+    check_hostname: bool = False
+
+    def __post_init__(self) -> None:
+        """Validate the SSL parameter combination."""
+        if self.check_hostname and not self.verify:
+            msg = "SSL hostname checking requires certificate verification"
+            raise ValueError(msg)
+
+    def create_ssl_context(self, *, trust_env: bool = True) -> ssl.SSLContext:
+        """Build an HTTPX-compatible SSL context from these parameters.
+
+        Parameters
+        ----------
+        trust_env
+            Use the SSL certificate environment variables supported by HTTPX.
+
+        Returns
+        -------
+        ssl.SSLContext
+            Configured SSL context.
+
+        Raises
+        ------
+        ValueError
+            If the cipher list is invalid or selects no supported cipher.
+        """
+        context = create_ssl_context(verify=self.verify, trust_env=trust_env)
+        context.check_hostname = self.check_hostname
+        if self.ciphers is not None:
+            try:
+                context.set_ciphers(self.ciphers)
+            except ssl.SSLError as exc:
+                msg = f"Invalid SSL cipher list: {self.ciphers!r}"
+                raise ValueError(msg) from exc
+        return context
 
 
 class AntaCache:
@@ -432,9 +494,11 @@ class AsyncEOSDevice(AntaDevice):
         Tags for this device.
     enable : bool
         When True, commands are collected in privileged (enable) mode.
+    ssl_params : SSLParameters | None
+        Per-device SSL parameters. None inherits the global SSL cipher setting.
     """
 
-    capabilities = AntaDeviceCapabilities(supports_session_auth=True)
+    capabilities = AntaDeviceCapabilities(supports_session_auth=True, supports_ssl=True)
     """Features supported by this device type."""
 
     _client: asynceapi.Device
@@ -450,6 +514,8 @@ class AsyncEOSDevice(AntaDevice):
     """
     SSH client connection options used to establish transient SSH connections in `copy()`.
     """
+    _ssl_params: SSLParameters | None
+    """Explicit per-device SSL parameters, or None to inherit global SSL settings."""
 
     def __init__(  # noqa: PLR0913 # noqa: S107
         self,
@@ -468,6 +534,7 @@ class AsyncEOSDevice(AntaDevice):
         insecure: bool = False,
         disable_cache: bool = False,
         use_session_auth: bool = False,
+        ssl_params: SSLParameters | None = None,
     ) -> None:
         """Instantiate an AsyncEOSDevice.
 
@@ -501,6 +568,8 @@ class AsyncEOSDevice(AntaDevice):
             Disable caching for all commands for this device.
         use_session_auth
             Use eAPI cookie-session authentication for this device.
+        ssl_params
+            SSL parameters for HTTPS eAPI connections. None inherits ``ANTA_SSL_CIPHERS``.
         """
         if host is None:
             message = "'host' is required to create an AsyncEOSDevice"
@@ -522,6 +591,7 @@ class AsyncEOSDevice(AntaDevice):
         self._eapi_opts = EAPIClientConnectionOptions(
             host=host, username=username, password=password, port=port, proto=proto, timeout=timeout, use_session_auth=use_session_auth
         )
+        self._ssl_params = ssl_params
         self._client = self._create_client()
         ssh_params: dict[str, Any] = {}
         if insecure:
@@ -533,6 +603,15 @@ class AsyncEOSDevice(AntaDevice):
     def _create_client(self) -> asynceapi.Device:
         """Create and return a new asynceapi.Device client using stored connection options."""
         eapi_opts = self._eapi_opts
+        httpx_settings = get_httpx_settings()
+        ssl_params = self._ssl_params
+        if ssl_params is None and (global_ciphers := get_ssl_settings().ciphers) is not None:
+            ssl_params = SSLParameters(ciphers=global_ciphers)
+
+        verify: ssl.SSLContext | bool = False
+        if eapi_opts.proto == "https" and ssl_params is not None:
+            verify = ssl_params.create_ssl_context(trust_env=httpx_settings.trust_env)
+
         return asynceapi.Device(
             host=eapi_opts.host,
             port=eapi_opts.port,
@@ -540,7 +619,8 @@ class AsyncEOSDevice(AntaDevice):
             password=eapi_opts.password,
             proto=eapi_opts.proto,
             timeout=eapi_opts.timeout,
-            trust_env=get_httpx_settings().trust_env,
+            trust_env=httpx_settings.trust_env,
+            verify=verify,
             use_session_auth=eapi_opts.use_session_auth,
         )
 
@@ -556,6 +636,8 @@ class AsyncEOSDevice(AntaDevice):
         yield ("username", self._ssh_opts.username)
         yield ("enable", self.enable)
         yield ("insecure", self._ssh_opts.known_hosts is None)
+        if self.ssl_params is not None:
+            yield ("ssl_params", self.ssl_params)
         if __DEBUG__:
             _ssh_opts = vars(self._ssh_opts).copy()
             removed_pw = "<removed>"
@@ -576,6 +658,7 @@ class AsyncEOSDevice(AntaDevice):
     def __repr__(self) -> str:
         """Return a printable representation of an AsyncEOSDevice."""
         version = repr(str(self.version)) if self.version is not None else "None"
+        ssl_params = f", ssl_params={self.ssl_params!r}" if self.ssl_params is not None else ""
         return (
             f"AsyncEOSDevice({self.name!r}, "
             f"tags={self.tags!r}, "
@@ -589,7 +672,8 @@ class AsyncEOSDevice(AntaDevice):
             f"eapi_port={self._client.port!r}, "
             f"username={self._ssh_opts.username!r}, "
             f"enable={self.enable!r}, "
-            f"insecure={self._ssh_opts.known_hosts is None!r})"
+            f"insecure={self._ssh_opts.known_hosts is None!r}"
+            f"{ssl_params})"
         )
 
     @property
@@ -612,6 +696,11 @@ class AsyncEOSDevice(AntaDevice):
     def use_session_auth(self) -> bool:
         """Whether eAPI cookie-session authentication is enabled for this device."""
         return self._eapi_opts.use_session_auth
+
+    @property
+    def ssl_params(self) -> SSLParameters | None:
+        """Explicit per-device SSL parameters, or None when global defaults are inherited."""
+        return self._ssl_params
 
     async def _collect(self, command: AntaCommand, *, collection_id: str | None = None) -> None:
         """Collect device command output from EOS using asynceapi.
@@ -703,7 +792,9 @@ class AsyncEOSDevice(AntaDevice):
         # Join errors for cleaner logging
         error_message_str = ", ".join(command.errors)
 
-        if command.requires_privileges:
+        if command.errors_deferred:
+            logger.debug("Command '%s' on device %s returned an error deferred to the test: %s", command.command, self.name, error_message_str)
+        elif command.requires_privileges:
             logger.error(
                 "Command '%s' on device %s requires privileged mode. Verify user permissions and if the 'enable' option is required.",
                 command.command,

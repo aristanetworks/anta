@@ -89,6 +89,17 @@ def yaml_file(request: pytest.FixtureRequest, tmp_path: Path) -> Path:
 
 @pytest.fixture
 def setenvvar(monkeypatch: pytest.MonkeyPatch) -> Generator[pytest.MonkeyPatch, None, None]:
-    """Fixture to set environment variables for testing."""
-    with mock.patch.dict(os.environ, clear=True):
+    """Set environment variables in an isolated environment.
+
+    On Windows, preserve ``SYSTEMROOT`` because socket service lookups use it to locate
+    the system services database. Also preserve ``USERNAME`` so user lookup does not
+    fall back to importing the unavailable POSIX-only ``pwd`` module. Preserve
+    ``USERPROFILE``, ``HOMEDRIVE``, and ``HOMEPATH`` so home directories can be expanded.
+    """
+    preserved_environment: dict[str, str] = {}
+    if os.name == "nt":
+        for variable in ("SYSTEMROOT", "USERNAME", "USERPROFILE", "HOMEDRIVE", "HOMEPATH"):
+            if (value := os.environ.get(variable)) is not None:
+                preserved_environment[variable] = value
+    with mock.patch.dict(os.environ, preserved_environment, clear=True):
         yield monkeypatch

@@ -6,8 +6,9 @@
 from __future__ import annotations
 
 import sys
-from typing import TYPE_CHECKING, Any, ClassVar, TypeVar
+from typing import ClassVar
 
+from anta._advisory.facts.models import FactsBase
 from anta._advisory.models import _AdvisoryMetadata
 from anta._advisory.results import _AdvisoryTestResult
 from anta.models import AntaCommand, AntaTemplate, AntaTest, _description_from_docstring
@@ -17,21 +18,22 @@ if sys.version_info >= (3, 12):
 else:
     from typing_extensions import override
 
-if TYPE_CHECKING:
-    from anta._advisory.facts.models import Fact, FactDefinition
-
-T = TypeVar("T")
+_PREVIEW_WARNING = "Security Advisory tests are in preview"
 
 
 class _AntaAdvisoryTest(AntaTest):
-    """Base class for ANTA security advisory tests."""
+    """Base class for advisories driven by a nested typed ``Facts`` container.
+
+    Every concrete advisory declares ``Facts`` with ``@facts_dataclass``. The
+    validated definitions own command declaration and collection; advisory test
+    methods consume only the resulting precisely typed container.
+    """
 
     # `_create_result` guarantees this narrower runtime type. Pyright cannot infer
     # an instance attribute's type from an overridden factory method.
     result: _AdvisoryTestResult  # pyright: ignore[reportIncompatibleVariableOverride]
     categories: ClassVar[list[str]] = ["advisories"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = []
-    required_facts: ClassVar[tuple[type[FactDefinition[Any]], ...]] = ()
     advisory: ClassVar[_AdvisoryMetadata]
 
     @override
@@ -46,15 +48,17 @@ class _AntaAdvisoryTest(AntaTest):
         )
 
     def __init_subclass__(cls) -> None:
-        """Derive commands, set subclass identity, and validate advisory attributes."""
+        """Validate the nested fact contract and derive the advisory command list."""
         has_own_name = "name" in cls.__dict__
         has_own_description = "description" in cls.__dict__
-        required_facts = cls.__dict__.get("required_facts", ())
-        if required_facts:
-            if "commands" in cls.__dict__:
-                msg = f"Class {cls.__module__}.{cls.__name__} cannot define both 'required_facts' and 'commands'"
-                raise AttributeError(msg)
-            cls.commands = cls._commands_from_required_facts(required_facts)
+        facts_type = cls.__dict__.get("Facts")
+        if not isinstance(facts_type, type) or not issubclass(facts_type, FactsBase):
+            msg = f"Class {cls.__module__}.{cls.__name__} must define a nested Facts subclass of FactsBase"
+            raise TypeError(msg)
+        if "commands" in cls.__dict__:
+            msg = f"Class {cls.__module__}.{cls.__name__} must declare commands through its nested Facts fields"
+            raise AttributeError(msg)
+        cls.commands = list(facts_type.required_commands())
 
         super().__init_subclass__()
 
@@ -71,24 +75,3 @@ class _AntaAdvisoryTest(AntaTest):
         if not isinstance(cls.advisory, _AdvisoryMetadata):
             msg = f"Class {cls.__module__}.{cls.__name__} class attribute 'advisory' must be an _AdvisoryMetadata instance"
             raise TypeError(msg)
-        if not cls.commands and not required_facts:
-            msg = f"Class {cls.__module__}.{cls.__name__} must define at least one command or required fact"
-            raise AttributeError(msg)
-
-    @classmethod
-    def _commands_from_required_facts(cls, required_facts: tuple[type[FactDefinition[Any]], ...]) -> list[AntaCommand | AntaTemplate]:
-        """Return the commands needed by the required facts in declaration order."""
-        return [command for definition in required_facts for command in definition.required_commands()]
-
-    def fact(self, definition: type[FactDefinition[T]]) -> Fact[T]:
-        """Derive one required fact from device metadata or collected command data."""
-        command_offset = 0
-        for candidate in self.required_facts:
-            command_count = len(candidate.required_commands())
-            if candidate is definition:
-                commands = tuple(self.instance_commands[command_offset : command_offset + command_count])
-                return definition.derive(self.device, commands)
-            command_offset += command_count
-
-        msg = f"Fact '{definition.key}' is not listed in required_facts for {self.__class__.__name__}"
-        raise ValueError(msg)

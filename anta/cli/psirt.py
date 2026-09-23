@@ -17,9 +17,8 @@ from anta._advisory.reporter.reporting import (
 )
 from anta.cli.console import console
 from anta.cli.nrfu import IgnoreRequiredWithHelp
-from anta.cli.nrfu import commands as nrfu_commands
-from anta.cli.nrfu.utils import _get_result_manager, run_tests
-from anta.cli.utils import ExitCode, exit_with_code, inventory_options, result_options
+from anta.cli.nrfu.utils import _get_result_manager, run_template_report, run_tests
+from anta.cli.utils import ExitCode, exit_with_code, inventory_options, result_options, template_report_options
 from anta.result_manager import ResultManager
 from anta.tests.advisories import get_catalog
 
@@ -81,6 +80,14 @@ def _md_report(ctx: click.Context, md_output: pathlib.Path) -> None:
 
     console.print(f"Security advisory Markdown report saved to {md_output} ✅", style="cyan")
     exit_with_code(ctx)
+
+
+@click.command(name="tpl-report")
+@click.pass_context
+@template_report_options
+def _tpl_report(ctx: click.Context, template: pathlib.Path, output: pathlib.Path | None) -> None:
+    """Generate a detailed security advisory report from a template."""
+    run_template_report(ctx, template, output)
 
 
 @click.group(
@@ -160,9 +167,10 @@ def psirt(
     ctx.obj["test"] = test
     ctx.obj["dry_run"] = dry_run
     ctx.obj["disconnect"] = True
+    ctx.obj["progress_spinner"] = "security"
 
 
-psirt.add_command(nrfu_commands.tpl_report)
+psirt.add_command(_tpl_report)
 psirt.add_command(_csv)
 psirt.add_command(_md_report)
 

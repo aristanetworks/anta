@@ -63,14 +63,14 @@ def parse_tags(_ctx: click.Context, _param: Option, value: str | None) -> set[st
 def exit_with_code(ctx: click.Context) -> None:
     """Exit the Click application with an exit code.
 
-    This function determines the global test status to be either `unset`, `skipped`, `success`, `inconclusive`, `failure`, or `error`
+    This function determines the global test status to be either `unset`, `skipped`, `success`, `failure` or `error`
     from the `ResultManager` instance.
     If flag `ignore_error` is set, the `error` status will be ignored in all the tests.
     If flag `ignore_status` is set, the exit code will always be 0.
     Exit the application with the following exit code:
         * 0 if `ignore_status` is `True` or global test status is `unset`, `skipped` or `success`
-        * 4 if status is `inconclusive` or `failure`
-        * 3 if status is `error`.
+        * 3 if status is `error`
+        * 4 if status is `failure`.
 
     Parameters
     ----------
@@ -86,7 +86,7 @@ def exit_with_code(ctx: click.Context) -> None:
 
     if status in {"unset", "skipped", "success"}:
         ctx.exit(ExitCode.OK)
-    if status in {"inconclusive", "failure"}:
+    if status == "failure":
         ctx.exit(ExitCode.TESTS_FAILED)
     if status == "error":
         ctx.exit(ExitCode.TESTS_ERROR)
@@ -133,7 +133,7 @@ def result_options(f: Callable[..., R]) -> Callable[..., R]:
         default=None,
         type=click.Choice(_HIDE_STATUS, case_sensitive=False),
         multiple=True,
-        help="Hide results by type: success / inconclusive / failure / error / skipped.",
+        help="Hide results by type: success / failure / error / skipped.",
         required=False,
     )(f)
     f = click.option(
@@ -149,6 +149,26 @@ def result_options(f: Callable[..., R]) -> Callable[..., R]:
         show_envvar=True,
         is_flag=True,
         default=False,
+    )(f)
+
+
+def template_report_options(f: Callable[..., R]) -> Callable[..., R]:
+    """Click common options for template report commands."""
+    f = click.option(
+        "--output",
+        "-o",
+        type=click.Path(file_okay=True, dir_okay=False, exists=False, writable=True, path_type=Path),
+        show_envvar=True,
+        required=False,
+        help="Path to save report as a file",
+    )(f)
+    return click.option(
+        "--template",
+        "-tpl",
+        type=click.Path(file_okay=True, dir_okay=False, exists=True, readable=True, path_type=Path),
+        show_envvar=True,
+        required=True,
+        help="Path to the template to use for the report",
     )(f)
 
 

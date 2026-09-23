@@ -47,19 +47,10 @@ You can use the `run-cmd` entrypoint to run a command, which includes the follow
 This example illustrates how to run the `show interfaces description` command with a `JSON` format (default):
 
 ```bash
-anta debug run-cmd --command "show interfaces description" --device DC1-SPINE1
-Run command show interfaces description on DC1-SPINE1
-{
-    'interfaceDescriptions': {
-        'Ethernet1': {'lineProtocolStatus': 'up', 'description': 'P2P_LINK_TO_DC1-LEAF1A_Ethernet1', 'interfaceStatus': 'up'},
-        'Ethernet2': {'lineProtocolStatus': 'up', 'description': 'P2P_LINK_TO_DC1-LEAF1B_Ethernet1', 'interfaceStatus': 'up'},
-        'Ethernet3': {'lineProtocolStatus': 'up', 'description': 'P2P_LINK_TO_DC1-BL1_Ethernet1', 'interfaceStatus': 'up'},
-        'Ethernet4': {'lineProtocolStatus': 'up', 'description': 'P2P_LINK_TO_DC1-BL2_Ethernet1', 'interfaceStatus': 'up'},
-        'Loopback0': {'lineProtocolStatus': 'up', 'description': 'EVPN_Overlay_Peering', 'interfaceStatus': 'up'},
-        'Management0': {'lineProtocolStatus': 'up', 'description': 'oob_management', 'interfaceStatus': 'up'}
-    }
-}
+anta debug run-cmd --command "show interfaces description" --device dc1-spine1
 ```
+
+![anta debug run command results](../imgs/anta_debug_run_cmd_dc1_spine1.svg){ class="img_center" loading=lazy width="1600" }
 
 ## Executing an EOS command using templates
 
@@ -78,24 +69,10 @@ The `run-template` entrypoint allows the user to provide an [`f-string`](https:/
 This example uses the `show vlan {vlan_id}` command in a `JSON` format:
 
 ```bash
-anta debug run-template --template "show vlan {vlan_id}" vlan_id 10 --device DC1-LEAF1A
-Run templated command 'show vlan {vlan_id}' with {'vlan_id': '10'} on DC1-LEAF1A
-{
-    'vlans': {
-        '10': {
-            'name': 'VRFPROD_VLAN10',
-            'dynamic': False,
-            'status': 'active',
-            'interfaces': {
-                'Cpu': {'privatePromoted': False, 'blocked': None},
-                'Port-Channel11': {'privatePromoted': False, 'blocked': None},
-                'Vxlan1': {'privatePromoted': False, 'blocked': None}
-            }
-        }
-    },
-    'sourceDetail': ''
-}
+anta debug run-template --template "show vlan {vlan_id}" vlan_id 1 --device dc1-leaf1a
 ```
+
+![anta debug run template results](../imgs/anta_debug_run_template_dc1_leaf1a.svg){ class="img_center" loading=lazy width="1600" }
 
 ### Example of multiple arguments
 
@@ -103,10 +80,15 @@ Run templated command 'show vlan {vlan_id}' with {'vlan_id': '10'} on DC1-LEAF1A
     If multiple arguments of the same key are provided, only the last argument value will be kept in the template parameters.
 
 ```bash
-anta -l DEBUG --log-file anta.log debug run-template --template "ping {dst} source {src}" dst "8.8.8.8" src Loopback0 --device DC1-SPINE1
-> {'dst': '8.8.8.8', 'src': 'Loopback0'}
-
-anta -l DEBUG --log-file anta.log debug run-template --template "ping {dst} source {src}" dst "8.8.8.8" src Loopback0 dst "1.1.1.1" src Loopback1 --device DC1-SPINE1
-> {'dst': '1.1.1.1', 'src': 'Loopback1'}
-# Notice how `src` and `dst` keep only the latest value
+anta debug run-template --ofmt text --template "ping {dst} source {src}" dst 8.8.8.8 src Loopback0 --device dc1-spine1
 ```
+
+![anta debug ping template results](../imgs/anta_debug_ping_dc1_spine1.svg){ class="img_center" loading=lazy width="1600" }
+
+When a parameter is repeated, only its final value is used:
+
+```bash
+anta debug run-template --ofmt text --template "ping {dst} source {src}" dst 8.8.8.8 src Management0 dst 1.1.1.1 src Loopback0 --device dc1-spine1
+```
+
+![anta debug ping template with repeated parameters](../imgs/anta_debug_ping_duplicate_params_dc1_spine1.svg){ class="img_center" loading=lazy width="1600" }

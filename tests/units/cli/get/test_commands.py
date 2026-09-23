@@ -194,7 +194,7 @@ def test_from_ansible(
 
     if expected_exit != ExitCode.OK:
         assert expected_log
-        assert expected_log in result.output
+        assert expected_log in " ".join(result.output.split())
     else:
         assert output.exists()
         # TODO: check size of generated inventory to validate the group functionality!
@@ -413,7 +413,7 @@ def test_from_ansible_overwrite(
             None,
             False,
             False,
-            "VerifySA117",
+            "SA117",
             ExitCode.OK,
             id="Explicitly get advisory test catalog output",
         ),
@@ -450,7 +450,7 @@ def test_get_tests_excludes_security_advisories_by_default(click_runner: CliRunn
     result = click_runner.invoke(anta, ["get", "tests", "--short"])
 
     assert result.exit_code == ExitCode.OK
-    assert "VerifySA117" not in result.output
+    assert "SA117" not in result.output
 
 
 def test_get_tests_local_module(click_runner: CliRunner) -> None:
@@ -496,7 +496,7 @@ def test_get_tests_local_module(click_runner: CliRunner) -> None:
             "anta.tests.advisories",
             None,
             None,
-            "VerifySA117",
+            "SA117",
             ExitCode.OK,
             id="Get commands for advisory tests",
         ),

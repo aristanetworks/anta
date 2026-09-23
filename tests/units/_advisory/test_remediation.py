@@ -151,7 +151,7 @@ def test_consolidate_remediations() -> None:
         url="TBD",
         description="Example advisory.",
     )
-    result = _AdvisoryTestResult(name="leaf1", test="VerifySA1", categories=[], description="", advisory=advisory)
+    result = _AdvisoryTestResult(name="leaf1", test="SA1", categories=[], description="", advisory=advisory)
     plan = software_version_plan(RELEASES, current_version=CURRENT_EOS_VERSION)
     result.add("One", vulnerability_ids=("CVE-1",), remediation=plan, remediation_guidance=frozenset({RemediationGuidance.NEW_RELEASES}))
     result.add(

@@ -459,6 +459,16 @@
     margin-right: auto;
     border-radius: 1%;
   }
+  .md-typeset .md-button.button_center {
+    display: block;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .md-typeset .table_center + table {
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
 
 /* mkdocstrings css from official repo to indent sub-elements nicely */
@@ -478,6 +488,11 @@ h5.doc-heading {
 
 .dataclass_green {
   color: #2F9E44;
+}
+
+.timeout-sequence-diagram-source ~ .mermaid {
+  display: flex;
+  justify-content: center;
 }
 
 .mermaid-zoom-open {
@@ -571,6 +586,194 @@ h5.doc-heading {
   background-color: var(--md-default-bg-color);
   height: auto;
   max-width: none;
+}
+
+/*
+ * Keep GLightbox usable when its CDN-hosted stylesheet is unavailable.
+ * Zensical loads the lightbox JavaScript and CSS dynamically, so a blocked or
+ * failed CSS request would otherwise render the slide at the end of the page.
+ */
+.glightbox-container {
+  height: 100%;
+  left: 0;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  touch-action: none;
+  width: 100%;
+  z-index: 999999 !important;
+}
+
+.glightbox-container.inactive {
+  display: none;
+}
+
+.glightbox-container .gcontainer,
+.glightbox-container .gslider {
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.glightbox-container .gslider {
+  align-items: center;
+  display: flex !important;
+  justify-content: center;
+}
+
+.glightbox-container .gslide {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  opacity: 0;
+  position: absolute;
+  user-select: none;
+  width: 100%;
+}
+
+.glightbox-container .gslide.current {
+  opacity: 1;
+  position: relative;
+  z-index: 99999;
+}
+
+.glightbox-container .gslide:not(.current) {
+  pointer-events: none;
+}
+
+.glightbox-container .gslide-inner-content,
+.glightbox-container .ginner-container {
+  width: 100%;
+}
+
+.glightbox-container .ginner-container {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  justify-content: center;
+  margin: auto;
+  max-width: 100%;
+  position: relative;
+}
+
+@media (min-width: 769px) {
+  .glightbox-container .ginner-container {
+    flex-direction: row;
+    height: auto;
+    width: auto;
+  }
+}
+
+.glightbox-container .gslide-media,
+.glightbox-container .gslide-image {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+.glightbox-container .goverlay {
+  background: rgb(0 0 0 / 92%);
+  height: calc(100vh + 1px);
+  left: 0;
+  position: fixed;
+  top: -1px;
+  width: 100%;
+}
+
+.glightbox-container .gclose,
+.glightbox-container .gnext,
+.glightbox-container .gprev {
+  align-items: center;
+  background-color: rgb(0 0 0 / 32%);
+  border: 0;
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  z-index: 999999;
+}
+
+.glightbox-container .gclose {
+  height: 35px;
+  right: 20px;
+  top: 15px;
+  width: 35px;
+}
+
+.glightbox-container .gnext,
+.glightbox-container .gprev {
+  height: 50px;
+  top: 45%;
+  width: 40px;
+}
+
+.glightbox-container .gnext {
+  right: 30px;
+}
+
+.glightbox-container .gprev {
+  left: 30px;
+}
+
+.glightbox-container .gclose svg,
+.glightbox-container .gnext svg,
+.glightbox-container .gprev svg {
+  display: block;
+  fill: currentcolor;
+  height: auto;
+  width: 25px;
+}
+
+.glightbox-container .gclose svg {
+  width: 18px;
+}
+
+.glightbox-container .glightbox-button-hidden {
+  display: none;
+}
+
+.glightbox-open {
+  overflow: hidden;
+}
+
+/* GLightbox uses object-fit: cover by default, which crops tall screenshots. */
+.glightbox-container .gslide.current .gslide-image img {
+  background: transparent !important;
+  height: 90vh !important;
+  max-height: 90vh !important;
+  max-width: 90vw !important;
+  object-fit: contain !important;
+  width: 90vw !important;
+}
+
+.glightbox-container .gslide.current .gslide-media {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Use one predictable two-times zoom level for every image format. */
+.glightbox-container .gslide.current.zoomed .gslide-image img {
+  height: 180vh !important;
+  max-height: none !important;
+  max-width: none !important;
+  object-fit: contain !important;
+  width: 180vw !important;
+}
+
+.glightbox-container .gslide-image img.anta-zoomable {
+  cursor: zoom-in;
+}
+
+.glightbox-container .gslide.zoomed .gslide-image img.anta-zoomable {
+  cursor: grab;
+}
+
+.glightbox-container .gslide.zoomed .gslide-image img.anta-zoomable.anta-dragging {
+  cursor: grabbing;
 }
 
 /* Zensical header: keep the same footer-blue treatment in light and dark modes. */

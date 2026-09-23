@@ -26,7 +26,9 @@ A test is a Python class where a test function is defined and will be run by the
 ANTA provides an abstract class [AntaTest](../api/tests/anta_test.md#anta.models.AntaTest). This class does the heavy lifting and provide the logic to define, collect and test data. The code below is an example of a simple test in ANTA, which is an [AntaTest](../api/tests/anta_test.md#anta.models.AntaTest) subclass:
 
 ````python
-from anta.models import AntaTest, AntaCommand
+from typing import ClassVar
+
+from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.decorators import skip_on_platforms
 
 
@@ -290,12 +292,7 @@ The logic usually includes the following different stages:
 
 1. Parse the command outputs using the `self.instance_commands` instance attribute.
 2. If needed, access the test inputs using the `self.inputs` instance attribute and write your conditional logic.
-3. Set the `result` instance attribute to reflect the test result. Use `self.result.is_success()` when the assertion passes and `self.result.is_failure("<FAILURE REASON>")` when it does not. Use `self.result.is_inconclusive("<REASON>")` when the collected data is insufficient to determine success or failure. Use `self.result.is_skipped("<SKIPPED REASON>")` when the test does not apply (for example, an optional feature is not configured). You should not need to catch exceptions and set the result to `error`; framework and collection errors are handled by ANTA, as described below.
-
-An inconclusive result means that the test ran but the available evidence could not support either outcome. It is distinct from a failure, which is a negative assertion; a skipped result, where the assertion does not apply; and an error, where ANTA could not execute or evaluate the test normally.
-
-!!! note
-    `INCONCLUSIVE` was added after many existing ANTA tests were implemented. Some tests may therefore still return `SKIPPED` in cases where `INCONCLUSIVE` would better describe the result. If you encounter such a case, feel free to [open a GitHub issue](https://github.com/aristanetworks/anta/issues/new/choose).
+3. Set the `result` instance attribute to reflect the test result by either calling `self.result.is_success()` or `self.result.is_failure("<FAILURE REASON>")`. Sometimes, setting the test result to `skipped` using `self.result.is_skipped("<SKIPPED REASON>")` can make sense (e.g. testing the OSPF neighbor states but no neighbor was found). However, you should not need to catch any exception and set the test result to `error` since the error handling is done by the framework, see below.
 
 The example below is based on the [VerifyTemperature](../api/tests/hardware.md#anta.tests.hardware.VerifyTemperature) test.
 
@@ -316,7 +313,7 @@ class VerifyTemperature(AntaTest):
             self.result.is_failure(f"Device temperature exceeds acceptable limits. Current system status: '{temperature_status}'")
 ```
 
-As you can see there is no error handling to do in your code. Everything is packaged in the `AntaTest.anta_tests` decorator and below is a simple example of error captured when trying to access a dictionary with an incorrect key:
+As you can see, there is no error handling to do in your code. Everything is handled in the `AntaTest.anta_test` decorator. Below is a simple example of an error being captured when attempting to access a dictionary with an invalid key:
 
 ```python
 class VerifyTemperature(AntaTest):
@@ -343,7 +340,7 @@ ERROR    Exception raised for test VerifyTemperature (on device 192.168.0.10) - 
 
 ### Test decorators
 
-In addition to the required `AntaTest.anta_tests` decorator, ANTA offers a set of optional decorators for further test customization:
+In addition to the required `AntaTest.anta_test` decorator, ANTA provides optional decorators for further test customization:
 
 - `anta.decorators.deprecated_test`: Use this to log a message of WARNING severity when a test is deprecated.
 - `anta.decorators.skip_on_platforms`: Use this to skip tests for functionalities that are not supported on specific platforms.
@@ -370,22 +367,24 @@ For that, you need to create your own Python package as described in this [hitch
 
 It is very similar to what is documented in [catalog section](../usage-inventory-catalog.md) but you have to use your own package name.
 
-Let say the custom Python package is `anta_custom` and the test is defined in `anta_custom.dc_project` Python module, the test catalog would look like:
+If the custom package is named `anta_custom` and the test is defined in the `anta_custom.dc_project` Python module, ANTA resolves the class using the following catalog entry:
 
 ```yaml
-anta_custom.dc_project:
-  - VerifyFeatureX:
-      minimum: 1
+--8<-- "custom-tests-catalog.yml"
 ```
 
-And now you can run your NRFU tests with the CLI:
+When ANTA parses the catalog, the package must already be installed in the same Python environment, and the module must be importable. ANTA then imports the module and instantiates the referenced `AntaTest` subclass with its catalog inputs.
+
+The custom test can then be selected and reported like any built-in ANTA test:
 
 ```bash
-anta nrfu text --catalog test_custom.yml
-spine01 :: verify_dynamic_vlan :: FAILURE (Device has 0 configured, we expect at least 1)
-spine02 :: verify_dynamic_vlan :: FAILURE (Device has 0 configured, we expect at least 1)
-leaf01 :: verify_dynamic_vlan :: SUCCESS
-leaf02 :: verify_dynamic_vlan :: SUCCESS
-leaf03 :: verify_dynamic_vlan :: SUCCESS
-leaf04 :: verify_dynamic_vlan :: SUCCESS
+anta nrfu --device dc1-spine1 --catalog docs/snippets/custom-tests-catalog.yml text
 ```
+
+<!--
+Regenerate the output from the repository root with docs/fixtures on PYTHONPATH:
+source .personal/doc_env
+PYTHONPATH=docs/fixtures uv run --extra cli python docs/scripts/generate_snippet.py --format svg anta nrfu --device dc1-spine1 --catalog docs/snippets/custom-tests-catalog.yml text
+-->
+
+![ANTA running a custom test](../imgs/anta_nrfu_device_dc1spine1_catalog_docs_snippets_customtestscatalogyml_text.svg){ class="img_center" loading=lazy width="1600" }

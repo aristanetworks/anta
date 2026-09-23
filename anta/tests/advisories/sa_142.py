@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from datetime import date
 from typing import Any, ClassVar
 
-from anta._advisory.base import _AntaAdvisoryTest
+from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import (
     AffectedStatus,
     VersionRule,
@@ -18,14 +18,15 @@ from anta._advisory.eos_versions import (
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.models import (
     AvailableFact,
+    ConfigurationFact,
     ConfigurationState,
-    ConfigurationValue,
     Fact,
-    FactDefinition,
     FactProblemKind,
+    FactsBase,
     MitigationState,
-    MitigationValue,
     UnavailableFact,
+    fact_field,
+    facts_dataclass,
 )
 from anta._advisory.facts.platform import PlatformIdentityFact
 from anta._advisory.facts.redirection import (
@@ -70,7 +71,7 @@ from anta._eos.version import EOSVersion
 from anta.decorators import preview_test_class
 
 REDIRECT_AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
-    VersionRule(major=4, minor=36, patch_eq=0, hotfix_lte=1),
+    VersionRule(major=4, minor=36, patch_eq=0),
     VersionRule(major=4, minor=35, patch_lte=3),
     VersionRule(major=4, minor=34, patch_lte=5),
     VersionRule(major=4, minor=33, patch_lte=7),
@@ -168,7 +169,7 @@ TRAFFIC_POLICY_PATH = ExposurePath(
         PlatformFamily.SERIES_720_D,
         PlatformFamily.SERIES_720_XP,
         PlatformFamily.SERIES_722_XPM,
-        PlatformFamily.SERIES_755_758,
+        PlatformFamily.SERIES_750,
         PlatformFamily.SERIES_7010_X,
         PlatformFamily.SERIES_7020_R,
         PlatformFamily.SERIES_7050_X3,
@@ -198,7 +199,7 @@ DIRECTFLOW_PATH = ExposurePath(
     name="DirectFlow",
     platform_families=(
         PlatformFamily.SERIES_720_XP,
-        PlatformFamily.SERIES_755_758,
+        PlatformFamily.SERIES_750,
         PlatformFamily.SERIES_7010_X,
         PlatformFamily.SERIES_7050_X3,
         PlatformFamily.SERIES_7050_X4,
@@ -221,7 +222,7 @@ SEGMENT_SECURITY_PATH = ExposurePath(
         PlatformFamily.SERIES_720_D,
         PlatformFamily.SERIES_720_XP,
         PlatformFamily.SERIES_722_XPM,
-        PlatformFamily.SERIES_755_758,
+        PlatformFamily.SERIES_750,
         PlatformFamily.SERIES_7010_X,
         PlatformFamily.SERIES_7050_X3,
         PlatformFamily.SERIES_7280_R3,
@@ -298,7 +299,7 @@ def _version_relation(path: ExposurePath, device_version: EOSVersion | None) -> 
     return VersionRelation.OUTSIDE_SCOPE
 
 
-def _full_remediation_plan(version: AvailableFact[EOSVersion]) -> RemediationPlan:
+def _full_remediation_plan(version: AvailableFact[EosVersionFact]) -> RemediationPlan:
     """Return the required software-version change followed by the configuration."""
     return RemediationPlan(
         Sequence(
@@ -317,17 +318,17 @@ def _configuration_remediation_plan() -> RemediationPlan:
 
 # pylint: disable-next=too-many-branches,too-many-locals,too-many-return-statements,too-many-statements
 def _assess_sa142(  # noqa: C901, PLR0911, PLR0912, PLR0915
-    path_facts: tuple[Fact[ConfigurationValue], ...],
-    version: Fact[EOSVersion],
-    platform: Fact[PlatformIdentity],
-    mitigation: Fact[MitigationValue],
+    path_facts: tuple[Fact[ConfigurationFact], ...],
+    version: Fact[EosVersionFact],
+    platform: Fact[PlatformIdentityFact],
+    mitigation: Fact[MtuDropMitigationFact],
 ) -> VulnerabilityResult:
     """Assess CVE-2026-12546 from normalized redirect-path facts."""
     vulnerability_id = ADVISORY.vulnerabilities[0].id
     decisive: list[FindingEvidence] = []
     problems: list[UnavailableFact[Any]] = []
-    affected: list[AvailableFact[ConfigurationValue]] = []
-    conditional_fixed: list[AvailableFact[ConfigurationValue]] = []
+    affected: list[AvailableFact[ConfigurationFact]] = []
+    conditional_fixed: list[AvailableFact[ConfigurationFact]] = []
     conservative_affected: list[FindingEvidence] = []
     conservative_conditional_fixed: list[FindingEvidence] = []
     affected_context: list[EosReleaseAssessment | PlatformAssessment] = []
@@ -426,9 +427,9 @@ def _assess_sa142(  # noqa: C901, PLR0911, PLR0912, PLR0915
     return NotAffectedResult(vulnerability_id=vulnerability_id, decisive=tuple(decisive))
 
 
-@preview_test_class
-class VerifySA142(OptionalCommandsMixin, _AntaAdvisoryTest):
-    """Verify that Security Advisory 142 next-hop redirects are fully remediated.
+@preview_test_class(warning_message=_PREVIEW_WARNING)
+class SA142(OptionalCommandsMixin, _AntaAdvisoryTest):
+    """Verify whether the device is impacted by Security Advisory 0142.
 
     Notes
     -----
@@ -445,40 +446,40 @@ class VerifySA142(OptionalCommandsMixin, _AntaAdvisoryTest):
     Examples
     --------
     ```yaml
-    anta.tests.advisories.sa_142:
-      - VerifySA142:
+    anta.tests.advisories:
+      - SA142:
     ```
     """
 
+    @facts_dataclass
+    class Facts(FactsBase):
+        """Collected facts required to assess the advisory."""
+
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
+        platform: Fact[PlatformIdentityFact] = fact_field(PlatformIdentityFact)
+        pbr: Fact[PbrRedirectFact] = fact_field(PbrRedirectFact)
+        flowspec: Fact[FlowSpecRedirectFact] = fact_field(FlowSpecRedirectFact)
+        traffic_policy: Fact[TrafficPolicyRedirectFact] = fact_field(TrafficPolicyRedirectFact)
+        directflow: Fact[DirectFlowRedirectFact] = fact_field(DirectFlowRedirectFact)
+        segment_security: Fact[SegmentSecurityRedirectFact] = fact_field(SegmentSecurityRedirectFact)
+        mtu_drop: Fact[MtuDropMitigationFact] = fact_field(MtuDropMitigationFact)
+
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
-    required_facts: ClassVar[tuple[type[FactDefinition[Any]], ...]] = (
-        EosVersionFact,
-        PlatformIdentityFact,
-        PbrRedirectFact,
-        FlowSpecRedirectFact,
-        TrafficPolicyRedirectFact,
-        DirectFlowRedirectFact,
-        SegmentSecurityRedirectFact,
-        MtuDropMitigationFact,
-    )
-    description = "Verify whether the device is impacted by SA 0142."
+    description = "Verify whether the device is impacted by Security Advisory 0142."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
         """Assess and project the advisory vulnerability."""
-        finding = _assess_sa142(
-            (
-                self.fact(PbrRedirectFact),
-                self.fact(FlowSpecRedirectFact),
-                self.fact(TrafficPolicyRedirectFact),
-                self.fact(DirectFlowRedirectFact),
-                self.fact(SegmentSecurityRedirectFact),
-            ),
-            self.fact(EosVersionFact),
-            self.fact(PlatformIdentityFact),
-            self.fact(MtuDropMitigationFact),
+        facts = self.Facts.collect(self)
+        paths: tuple[Fact[ConfigurationFact], ...] = (
+            facts.pbr,
+            facts.flowspec,
+            facts.traffic_policy,
+            facts.directflow,
+            facts.segment_security,
         )
+        finding = _assess_sa142(paths, facts.version, facts.platform, facts.mtu_drop)
         vulnerability = ADVISORY.vulnerabilities[0]
         atomic_result = self.result.add(
             f"Verify {vulnerability.id}.",

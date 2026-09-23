@@ -52,6 +52,7 @@ def test_anta_psirt_help(click_runner: CliRunner) -> None:
     assert "disconnect" not in option_names
     for report in ("csv", "md-report", "tpl-report"):
         assert report in help_output
+    assert "tpl-report Generate a detailed security advisory report from a template." in help_output
     for report in ("json", "table", "text"):
         assert report not in psirt.commands
     catalog_mock.assert_not_called()
@@ -98,19 +99,19 @@ def test_anta_psirt_fixed_options(click_runner: CliRunner) -> None:
     """Run selected advisory tests and always disconnect inventory devices."""
 
     def check_context(ctx: click.Context) -> None:
-        assert ctx.obj["test"] == ("VerifySA117", "VerifySA140")
+        assert ctx.obj["test"] == ("SA117", "SA140")
         assert ctx.obj["disconnect"] is True
         ctx.exit()
 
-    with patch("anta.cli.nrfu.commands.run_tests", side_effect=check_context):
+    with patch("anta.cli.nrfu.utils.run_tests", side_effect=check_context):
         result = click_runner.invoke(
             anta,
             [
                 "psirt",
                 "--test",
-                "VerifySA117",
+                "SA117",
                 "--test",
-                "VerifySA140",
+                "SA140",
                 "tpl-report",
                 "--template",
                 str(DATA_DIR / "template.j2"),
@@ -153,8 +154,30 @@ def test_anta_psirt_report_help(click_runner: CliRunner, report: str) -> None:
 
     assert result.exit_code == ExitCode.OK
     assert f"Usage: anta psirt {report}" in result.output
+    if report == "tpl-report":
+        assert "Generate a detailed security advisory report from a template." in result.output
+        for option in ("--template", "--output", "ANTA_PSIRT_TPL_REPORT_TEMPLATE", "ANTA_PSIRT_TPL_REPORT_OUTPUT"):
+            assert option in result.output
     assert "--expand" not in result.output
     assert "ANTA_PSIRT_MD_REPORT_EXPAND" not in result.output
+
+
+@pytest.mark.parametrize(
+    "report_args",
+    [
+        pytest.param(["csv", "--csv-output", "report.csv"], id="csv"),
+        pytest.param(["tpl-report", "--template", str(DATA_DIR / "template.j2")], id="template"),
+        pytest.param(["md-report", "--md-output", "report.md"], id="markdown"),
+    ],
+)
+def test_anta_psirt_uses_security_progress_spinner(click_runner: CliRunner, report_args: list[str]) -> None:
+    """Use the security spinner for every PSIRT report command."""
+    catalog = AntaCatalog.parse(DATA_DIR / "test_catalog.yml")
+    with patch("anta.cli.psirt.get_catalog", return_value=catalog), patch("anta.cli.nrfu.utils.anta_progress_bar") as progress_bar_mock:
+        result = click_runner.invoke(anta, ["psirt", "--dry-run", *report_args], env={"ANTA_CATALOG": None})
+
+    assert result.exit_code == ExitCode.OK
+    progress_bar_mock.assert_called_once_with("security")
 
 
 @pytest.mark.parametrize(

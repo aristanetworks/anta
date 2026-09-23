@@ -12,6 +12,7 @@ import httpx
 import pytest
 
 from asynceapi._auth import EapiSessionAuth, _cookie_fingerprint
+from asynceapi._constants import EAPI_CONNECTIVITY_TIMEOUT
 from asynceapi.errors import EapiAsyncOnlyError, EapiAuthenticationError
 
 _HOST = "192.0.2.1"
@@ -81,6 +82,7 @@ async def test_auth_flow_login_success(session_auth: EapiSessionAuth) -> None:
 
     login_req = await anext(gen)
     assert login_req.url.path == "/login"
+    assert login_req.extensions["timeout"] == httpx.Timeout(EAPI_CONNECTIVITY_TIMEOUT).as_dict()
 
     login_response = httpx.Response(200, headers={"Set-Cookie": f"Session={_SESSION_COOKIE}; Path=/"}, request=login_req)
     cmd_req = await gen.asend(login_response)

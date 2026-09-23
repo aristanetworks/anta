@@ -39,17 +39,23 @@ anta_inventory:
       tags: < list of tags to use to filter inventory during tests >
       disable_cache: < Disable cache per hosts. Default is False. >
       use_session_auth: < Enable session-based authentication for this host. Default is False. >
+      ssl_params:
+        ciphers: < OpenSSL cipher list. Default is inherited from ANTA_SSL_CIPHERS. >
+        verify: < Verify the HTTPS certificate. Default is False. >
+        check_hostname: < Verify the certificate hostname. Requires verify. Default is False. >
   networks:
     - network: < network using CIDR notation >
       tags: < list of tags to use to filter inventory during tests >
       disable_cache: < Disable cache per network. Default is False. >
       use_session_auth: < Enable session-based authentication for all hosts in this network. Default is False. >
+      ssl_params: < SSL parameters applied to all hosts in this network. >
   ranges:
     - start: < first ip address value of the range >
       end: < last ip address value of the range >
       tags: < list of tags to use to filter inventory during tests >
       disable_cache: < Disable cache per range. Default is False. >
       use_session_auth: < Enable session-based authentication for all hosts in this range. Default is False. >
+      ssl_params: < SSL parameters applied to all hosts in this range. >
 ```
 
 The inventory file must start with the `anta_inventory` key then define one or multiple methods:
@@ -65,6 +71,9 @@ A full description of the inventory model is available in [API documentation](ap
 
 !!! info
     Session-based authentication can be enabled per device, network or range by setting `use_session_auth: true`. The per-device value can be overridden globally via the `--use-session-auth` / `--no-session-auth` CLI flags or the `ANTA_USE_SESSION_AUTH` environment variable. Session-based authentication is only available on device types that advertise the `supports_session_auth` capability (e.g. `AsyncEOSDevice`). If `use_session_auth` is enabled in the inventory for a device type that does not support it, ANTA raises an exception during inventory loading; if it is requested globally from the CLI or environment variable, ANTA logs a warning for unsupported devices.
+
+!!! info
+    SSL parameters can be configured per device, network or range. When `ssl_params` is omitted, HTTPS connections inherit the cipher list from `ANTA_SSL_CIPHERS`. An explicit `ssl_params` mapping takes precedence; use `ssl_params: {}` to keep Python's default ciphers for one inventory entry when the global variable is set. Inventory parsing is independent of the device implementation: if a device type does not support SSL, parsing succeeds and ANTA warns that the SSL parameters are ignored for that device.
 
 ### Example
 
@@ -86,6 +95,22 @@ anta_inventory:
     end: 10.0.0.11
     tags: ['fabric', 'l2leaf']
 ```
+
+### Device Connection and Refresh
+
+Before running tests or other eAPI commands, ANTA refreshes each device to verify its endpoint and collect platform information. ANTA refreshes inventory devices concurrently, while the requests shown below occur sequentially for each device.
+
+`--timeout` and `ANTA_TIMEOUT` configure the timeout used for eAPI command requests, including inventory refresh, tests, `anta exec`, and `anta debug`. They do not configure the preliminary eAPI endpoint check or session login; each of those requests gets its own fixed five-second HTTPX timeout window.
+
+<textarea hidden class="mermaid-zoom-source timeout-sequence-diagram-source" data-title="ANTA Device Connection and Refresh">
+--8<-- "inventory-refresh.mmd"
+</textarea>
+
+```mermaid
+--8<-- "inventory-refresh.mmd"
+```
+
+With session authentication, login occurs before the endpoint check. The timeout values are independent and do not form a single overall deadline.
 
 ## Test Catalog
 
@@ -256,41 +281,19 @@ anta.tests.software:
 }
 ```
 
-The following example is a very minimal test catalog:
+The following example is the catalog used throughout this documentation:
 
 ```yaml
----
-# Load anta.tests.software
-anta.tests.software:
-  # Verifies the device is running one of the allowed EOS version.
-  - VerifyEOSVersion:
-      # List of allowed EOS versions.
-      versions:
-        - 4.25.4M
-        - 4.26.1F
-
-# Load anta.tests.system
-anta.tests.system:
-  # Verifies the device uptime is higher than a value.
-  - VerifyUptime:
-      minimum: 1
-
-# Load anta.tests.configuration
-anta.tests.configuration:
-  # Verifies ZeroTouch is disabled.
-  - VerifyZeroTouch:
-  - VerifyRunningConfigDiffs:
+--8<-- "getting-started/catalog.yml"
 ```
 
 ### Catalog with custom tests
 
 In case you want to leverage your own tests collection, use your own Python package in the test catalog.
-So for instance, if my custom tests are defined in the `custom.tests.system` Python module, the test catalog will be:
+For instance, if a custom test is defined in the importable Python module `anta_custom.dc_project`, the test catalog entry is:
 
 ```yaml
-custom.tests.system:
-  - VerifyPlatform:
-    type: ['cEOS-LAB']
+--8<-- "custom-tests-catalog.yml"
 ```
 
 !!! tip
@@ -302,30 +305,19 @@ custom.tests.system:
 
 It might be interesting to use your own categories and customized test description to build a better report for your environment. ANTA comes with a handy feature to define your own `categories` and `description` in the report.
 
-In your test catalog, use `result_overwrite` dictionary with `categories` and `description` to just overwrite these values in your report:
+In your test catalog, use the `result_overwrite` dictionary with the `categories` and `description` keys to override these values in your report:
 
 ```yaml
-anta.tests.configuration:
-  - VerifyZeroTouch: # Verifies ZeroTouch is disabled.
-      result_overwrite:
-        categories: ['demo', 'pr296']
-        description: A custom test
-  - VerifyRunningConfigDiffs:
-anta.tests.interfaces:
-  - VerifyInterfaceUtilization:
+--8<-- "result-overwrite-catalog.yml"
 ```
 
-Once you run `anta nrfu table`, you will see following output:
+Run the catalog against a device:
 
 ```bash
-┏━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓
-┃ Device IP ┃ Test Name                  ┃ Test Status ┃ Message(s) ┃ Test description                              ┃ Test category ┃
-┡━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━┩
-│ spine01   │ VerifyZeroTouch            │ success     │            │ A custom test                                 │ demo, pr296   │
-│ spine01   │ VerifyRunningConfigDiffs   │ success     │            │                                               │ configuration │
-│ spine01   │ VerifyInterfaceUtilization │ success     │            │ Verifies interfaces utilization is below 75%. │ interfaces    │
-└───────────┴────────────────────────────┴─────────────┴────────────┴───────────────────────────────────────────────┴───────────────┘
+anta nrfu --device dc1-spine1 --catalog docs/snippets/result-overwrite-catalog.yml table
 ```
+
+![ANTA table report with customized result fields](imgs/anta_nrfu_device_dc1spine1_catalog_docs_snippets_resultoverwritecatalogyml_table.svg){ class="img_center" loading=lazy width="1600" }
 
 ### Example script to merge catalogs
 

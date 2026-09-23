@@ -224,6 +224,11 @@ class AntaCommand(BaseModel):
         return len(self.errors) > 0
 
     @property
+    def errors_deferred(self) -> bool:
+        """Return whether error reporting is delegated to the test body."""
+        return False
+
+    @property
     def collected(self) -> bool:
         """Return True if the command has been collected, False otherwise.
 

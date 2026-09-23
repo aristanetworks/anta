@@ -24,6 +24,7 @@ VERSION_MATRIX = (
         pytest.param(VersionRule(major=4, minor=30, patch_eq=1), EOSVersion(4, 30, 2), False, id="exact-patch-mismatch"),
         pytest.param(VersionRule(major=4, minor=30, patch_lt=10), EOSVersion(4, 30, 10), False, id="patch-upper-bound"),
         pytest.param(VersionRule(major=4, minor=30, patch_gte=1), EOSVersion(4, 30, 0), False, id="patch-lower-bound"),
+        pytest.param(VersionRule(major=4, minor=30, patch_eq=1), EOSVersion(4, 30, 1, hotfix=99), True, id="unbounded-hotfix"),
         pytest.param(
             VersionRule(major=4, minor=33, patch_eq=1, exclude_suffixes=("FX-fixed",)),
             EOSVersion(4, 33, 1, suffix="FX-fixed"),
