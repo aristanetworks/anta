@@ -29,7 +29,7 @@ The documentation dependency group installs:
 CI and release workflows install the docs dependencies with:
 
 ```bash
-pip install --group doc -e tools/zensical_extensions
+uv sync --locked --no-default-groups --group doc
 ```
 
 After that install step, documentation commands do not need `PYTHONPATH`:
@@ -85,7 +85,7 @@ canonical_version = "stable"
 
 Zensical 0.0.62 does not run the MkDocs hook used by `mkdocs-git-revision-date-localized-plugin`, so ANTA cannot keep that plugin for the page "Last update" footer.
 
-ANTA uses `_extensions.zensical_git_dates` from the local `anta-zensical-extensions` package instead. Contributors and CI install it explicitly with `-e tools/zensical_extensions` alongside the root `doc` dependency group, which keeps zensical pinned in one place. The extension reads the current page path from Zensical's rendering context and sets `page.meta.git_revision_date_localized`, which lets the upstream Zensical/Material `partials/source-file.html` render the normal footer.
+ANTA uses `_extensions.zensical_git_dates` from the local `anta-zensical-extensions` package instead. The root `doc` dependency group declares the package, and `tool.uv.sources` installs it editably from `tools/zensical_extensions`. The extension reads the current page path from Zensical's rendering context and sets `page.meta.git_revision_date_localized`, which lets the upstream Zensical/Material `partials/source-file.html` render the normal footer.
 
 This workaround is tied to zensical/backlog#18, which remains open as of Zensical 0.0.62. Re-test it when upgrading Zensical and remove the local extension once native support exists.
 
@@ -151,11 +151,11 @@ Historical deployed versions should not be rebuilt just to match the new Zensica
 Local validation for the current version:
 
 ```bash
-uv run --group doc zensical --version
-uv run --group doc --with-editable tools/zensical_extensions zensical build --clean
-uv run --group doc --with-editable tools/zensical_extensions zensical build --strict
-uv run --group doc --with-editable tools/zensical_extensions mike deploy --ignore-remote-status --branch zensical-preview main
-uv run --group doc --with-editable tools/zensical_extensions mike set-default --branch zensical-preview main
+uv run --locked --no-default-groups --group doc zensical --version
+uv run --locked --no-default-groups --group doc zensical build --clean
+uv run --locked --no-default-groups --group doc zensical build --strict
+uv run --locked --no-default-groups --group doc mike deploy --ignore-remote-status --branch zensical-preview main
+uv run --locked --no-default-groups --group doc mike set-default --branch zensical-preview main
 ```
 
 Expected result:
@@ -177,11 +177,11 @@ The following commands build three local versions:
 - `v0.0.1-zensical`, aliased as `stable`
 
 ```bash
-uv run --group doc --with-editable tools/zensical_extensions mike deploy --ignore-remote-status --branch zensical-preview main
-uv run --group doc --with-editable tools/zensical_extensions mike deploy --ignore-remote-status --branch zensical-preview v0.0.0-zensical
-uv run --group doc --with-editable tools/zensical_extensions mike deploy --update-alias --ignore-remote-status --branch zensical-preview v0.0.1-zensical stable
-uv run --group doc --with-editable tools/zensical_extensions mike set-default --branch zensical-preview stable
-uv run --group doc --with-editable tools/zensical_extensions mike serve --branch zensical-preview --dev-addr 127.0.0.1:8001
+uv run --locked --no-default-groups --group doc mike deploy --ignore-remote-status --branch zensical-preview main
+uv run --locked --no-default-groups --group doc mike deploy --ignore-remote-status --branch zensical-preview v0.0.0-zensical
+uv run --locked --no-default-groups --group doc mike deploy --update-alias --ignore-remote-status --branch zensical-preview v0.0.1-zensical stable
+uv run --locked --no-default-groups --group doc mike set-default --branch zensical-preview stable
+uv run --locked --no-default-groups --group doc mike serve --branch zensical-preview --dev-addr 127.0.0.1:8001
 ```
 
 Expected result:

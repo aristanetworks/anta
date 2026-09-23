@@ -1,9 +1,7 @@
 ################################
 # Tox
-# Not in pyproject.toml because: 
-# https://github.com/mbarkhau/bumpver/issues/247
 ################################
-requires = ["tox>=4.21", "tox-gh-actions"]
+requires = ["tox>=4.61.4,<5.0.0", "tox-uv-bare>=1.36.0,<2.0.0"]
 env_list = [
   "clean",
   "lint",
@@ -13,36 +11,25 @@ env_list = [
   "py312",
   "py313",
   "py314",
-  "report"
+  "report",
 ]
-# https://github.com/ymyzk/tox-gh-actions/issues/198
-# Consider moving to tox-gh instead of tox-gh-actions
-
-[gh-actions]
-python = """
-  3.10: py310
-  3.11: clean, py311, report
-  3.12: py312
-  3.13: py313
-  3.14: py314
-"""
 
 [env_run_base]
+runner = "uv-venv-lock-runner"
 description = "Run pytest with {basepython}"
 extras = ["cli"]
-dependency_groups = ["dev", "benchmark"]
-# posargs allows to run only a specific test using tox -e <env> -- path/to/my/test::test
+dependency_groups = ["test"]
+# posargs allows running a specific test with `tox -e <env> -- path/to/test::test`.
 commands = [["pytest", { replace = "posargs", extend = true }]]
-# To test on non-POSIX system
-# https://github.com/tox-dev/tox/issues/1455
+# Required to test on non-POSIX systems.
 passenv = ["USERNAME"]
-# New tox is breaking column width set in our tests..
-set_env = { COLUMNS = "165"}
+# A tox release changed the detected terminal width and broke snapshot tests.
+set_env = { COLUMNS = "165" }
 
 [env.lint]
 description = "Check the code style"
-dependency_groups = ["dev", "benchmark"]
-commands =[
+dependency_groups = ["lint", "test", "benchmark"]
+commands = [
   ["ruff", "check", "."],
   ["ruff", "format", ".", "--check"],
   ["pylint", "anta"],
@@ -52,24 +39,23 @@ commands =[
 
 [env.type]
 description = "Check typing"
-dependency_groups = ["dev", "benchmark"]
-commands =[
+dependency_groups = ["lint", "test", "benchmark"]
+commands = [
   ["pyright", "anta"],
   ["pyright", "tests"],
   ["pyright", "asynceapi"],
 ]
 
 [env.clean]
-skip_install=true
-description = "Clean existing coverage"
-commands =[
-  ["coverage", "erase"],
-]
+description = "Erase previous coverage reports"
+package = "skip"
+dependency_groups = ["test"]
+commands = [["coverage", "erase"]]
 
 [env.report]
-description = "Generate coverage report"
-skip_install=true
-deps = ["coverage[toml]"]
+description = "Generate coverage reports"
+package = "skip"
+dependency_groups = ["test"]
 commands = [
   ["coverage", "--version"],
   ["coverage", "html", "--rcfile=pyproject.toml"],

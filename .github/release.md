@@ -64,7 +64,13 @@ The workflow works as follow:
 
 #### Install from test pypi to run local tests between steps 2 and 4
 
-   ```bash
-   # In a brand new venv
-   pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple --no-cache anta[cli]
-   ```
+Run the same locked test harness used by the release workflow from a checkout of the release commit. Replace `<version>` with the version uploaded to TestPyPI:
+
+```bash
+uv sync --locked --no-install-project --no-default-groups --group test --extra cli
+uv pip install --index https://test.pypi.org/simple/ \
+  --default-index https://pypi.org/simple/ "anta[cli]==<version>"
+uv run --no-sync pytest tests/units
+```
+
+`--no-install-project` keeps the checkout out of the environment, and `--no-sync` ensures the test command exercises the TestPyPI installation instead of replacing it with the local project.

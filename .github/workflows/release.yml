@@ -30,15 +30,17 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
-      - name: Install `bumpver`
-        run: |-
-          pip install bumpver
+      - name: Setup uv
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          version: "0.12.17" # renovate: uv
+          enable-cache: false
       - name: Set target version
         id: target_version
         env:
           INPUT_VALUE: ${{ inputs.TESTPYPI_VERSION }}
         run: |-
-          CURRENT_VERSION=$(bumpver show --environ | grep PEP | cut -f "2" -d "=")
+          CURRENT_VERSION=$(uv run --locked --only-group release bumpver show --environ | grep PEP | cut -f "2" -d "=")
           TARGET_VERSION="${INPUT_VALUE:-$CURRENT_VERSION}"
           echo "TARGET_VERSION=$TARGET_VERSION" >> $GITHUB_OUTPUT
           echo "CURRENT_VERSION=$CURRENT_VERSION" >> $GITHUB_OUTPUT
@@ -55,9 +57,13 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
-      - name: Install Python requirements
-        run: |-
-          pip install bumpver build setuptools
+      - name: Setup uv
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          version: "0.12.17" # renovate: uv
+          enable-cache: false
+      - name: Install build requirements
+        run: uv sync --locked --only-group release
       - name: Update version
         if: needs.target_version.outputs.target_version != needs.target_version.outputs.current_version
         env:
@@ -65,10 +71,9 @@ jobs:
         run: |-
           git config --global user.email "anta-dev@arista.com"
           git config --global user.name "ANTA CI BOT"
-          bumpver update --set-version "$TARGET_VERSION"
+          uv run --no-sync bumpver update --set-version "$TARGET_VERSION"
       - name: Build
-        run: |-
-          python -m build
+        run: uv run --no-sync python -m build --no-isolation
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: anta-dist
@@ -125,19 +130,27 @@ jobs:
           persist-credentials: false
           sparse-checkout: |-
             tests
+            tools/zensical_extensions
             pyproject.toml
+            uv.lock
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: ${{ matrix.python }}
+      - name: Setup uv
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          version: "0.12.17" # renovate: uv
+          enable-cache: false
+      - name: Install locked test dependencies
+        run: uv sync --locked --no-install-project --no-default-groups --group test --extra cli
       - name: Install `anta` from test Pypi
         env:
           TARGET_VERSION: ${{ needs.target_version.outputs.target_version }}
         shell: bash
         run: |-
-          pip install -i https://test.pypi.org/simple/ "anta[cli]==$TARGET_VERSION" --group test --extra-index-url https://pypi.org/simple
+          uv pip install --index https://test.pypi.org/simple/ --default-index https://pypi.org/simple/ "anta[cli]==$TARGET_VERSION"
       - name: Run tests
-        run: |-
-          pytest tests/units
+        run: uv run --no-sync pytest tests/units
 
   publish-anta-pypi:
     name: 📦 🐍 Publish ANTA Python distribution to PyPI
@@ -183,7 +196,13 @@ jobs:
       - name: 'Setup Python 3 on runner'
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
-          python-version: '3.x'
+          python-version: '3.12'
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          version: "0.12.17" # renovate: uv
+          enable-cache: false
       - name: Setup Git config
         run: |
           git config --global user.name 'github-actions[bot]'
@@ -196,11 +215,10 @@ jobs:
           REF_NAME: ${{ github.ref_name }}
         run: |
           git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          pip install --group doc -e tools/zensical_extensions
           if [[ "$PRERELEASE" == "true" ]]; then
-            docs/scripts/deploy_doc_version.sh "$REF_NAME"
+            uv run --locked --no-default-groups --group doc docs/scripts/deploy_doc_version.sh "$REF_NAME"
           else
-            docs/scripts/deploy_doc_version.sh "$REF_NAME" --final
+            uv run --locked --no-default-groups --group doc docs/scripts/deploy_doc_version.sh "$REF_NAME" --final
           fi
 
   docker:

@@ -10,14 +10,14 @@ This maintainer runbook describes how to refresh ANTA CLI output embedded in the
 
 ## Choose the capture type
 
-- Keep `--help` output as searchable text. Run `uv run --extra cli python docs/scripts/generate_doc_snippets.py` to update the text files under `docs/snippets/` and the literal help block in `README.md`. The README cannot use a snippet include because the same file is rendered on PyPI.
+- Keep `--help` output as searchable text. Run `uv run --locked --extra cli python docs/scripts/generate_doc_snippets.py` to update the text files under `docs/snippets/` and the literal help block in `README.md`. The README cannot use a snippet include because the same file is rendered on PyPI.
 - Use `docs/scripts/generate_snippet.py --format svg` for terminal output shown in documentation pages.
 - Use `--format txt` only when a new searchable text snippet is required.
 
 The capture options must come before `anta`:
 
 ```bash
-uv run --extra cli python docs/scripts/generate_snippet.py \
+uv run --locked --extra cli python docs/scripts/generate_snippet.py \
   --format svg \
   --max-results 5 \
   anta ...
@@ -48,7 +48,7 @@ set +a
 Run the capture commands from the worktree root. For example:
 
 ```bash
-uv run --extra cli python docs/scripts/generate_snippet.py \
+uv run --locked --extra cli python docs/scripts/generate_snippet.py \
   --format svg \
   --max-results 5 \
   anta \
@@ -88,7 +88,7 @@ Review both GIFs for legibility, spinner/progress motion, the final result or sa
 The custom-test example is reproducible with the committed package under `docs/fixtures/`; it does not require installing a public Python package. Add that directory to `PYTHONPATH` only for the capture command:
 
 ```bash
-PYTHONPATH=docs/fixtures uv run --extra cli python docs/scripts/generate_snippet.py \
+PYTHONPATH=docs/fixtures uv run --locked --extra cli python docs/scripts/generate_snippet.py \
   --format svg \
   --max-results 5 \
   anta \
@@ -112,7 +112,7 @@ Before committing a regenerated snapshot:
 Run the focused tests and documentation checks:
 
 ```bash
-uv run --extra cli --group test pytest tests/docs/test_generate_snippet.py tests/docs/test_doc_output_examples.py tests/docs/test_asciinema.py
-pre-commit run --files <changed-file> [<changed-file> ...]
-uv run --group doc --with-editable tools/zensical_extensions zensical build --clean --strict
+uv run --locked --extra cli --group test pytest tests/docs/test_generate_snippet.py tests/docs/test_doc_output_examples.py tests/docs/test_asciinema.py
+uv run --locked pre-commit run --files <changed-file> [<changed-file> ...]
+uv run --locked --no-default-groups --group doc zensical build --clean --strict
 ```

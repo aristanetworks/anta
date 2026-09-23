@@ -18,30 +18,35 @@ To help development, open your PR as soon as possible even in draft mode. It hel
 
 ## Create a development environment
 
-Run the following commands to create an ANTA development environment:
+!!! important "uv is required for ANTA development"
+    Developing ANTA from this repository requires [`uv`](https://docs.astral.sh/uv/getting-started/installation/). This does not apply to users installing or running ANTA from PyPI. The repository configuration enforces the supported uv version.
+
+After installing uv, run the following commands to create an ANTA development environment:
 
 ```bash
 # Clone repository
 $ git clone https://github.com/aristanetworks/anta.git
 $ cd anta
 
-# Install ANTA in editable mode and its development tools
-$ pip install -e . --group dev
-# To also install the CLI
-$ pip install -e ".[cli]" --group dev
+# Install ANTA, its CLI, and the development tools from the lock file
+$ uv sync --locked --extra cli
+
+# Activate the environment (Linux and macOS)
+$ source .venv/bin/activate
+# On Windows PowerShell, run: .\.venv\Scripts\Activate.ps1
 ```
 
 !!! tip "Verify editable installation"
-    Run `pip list -e` from the repository root to confirm the editable install:
+    Run `uv pip list --editable` from the repository root to confirm the editable install:
 
     ```bash
-    $ pip list -e
+    $ uv pip list --editable
     Package Version Editable project location
     ------- ------- -------------------------
     anta    1.10.0   /mnt/lab/projects/anta
     ```
 
-Then, [`tox`](https://tox.wiki/) is configured with a few environments to run CI locally:
+Tox provides the local task and Python-version interface. Its environments use tox-uv's lock runner, so dependencies are installed from `uv.lock` with `uv sync --locked`:
 
 ```bash
 $ tox list -d
@@ -54,51 +59,19 @@ py311  -> Run pytest with py311
 py312  -> Run pytest with py312
 py313  -> Run pytest with py313
 py314  -> Run pytest with py314
-report -> Generate coverage report
+report -> Generate coverage reports
 ```
 
 ### Code linting
 
 ```bash
 tox -e lint
-[...]
-lint: commands[0]> ruff check .
-All checks passed!
-lint: commands[1]> ruff format . --check
-224 files already formatted
-lint: commands[2]> pylint anta
-
---------------------------------------------------------------------
-Your code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)
-
-lint: commands[3]> pylint tests
-
---------------------------------------------------------------------
-Your code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)
-
-lint: commands[4]> pylint asynceapi
-
---------------------------------------------------------------------
-Your code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)
-
-  lint: OK (38.75=setup[12.60]+cmd[0.98,0.08,9.51,13.49,2.09] seconds)
-  congratulations :) (38.78 seconds)
 ```
 
 ### Code Typing
 
 ```bash
 tox -e type
-
-[...]
-type: commands[0]> pyright anta
-0 errors, 0 warnings, 0 informations
-type: commands[1]> pyright tests
-0 errors, 0 warnings, 0 informations
-type: commands[2]> pyright asynceapi
-0 errors, 0 warnings, 0 informations
-  type: OK (20.77=setup[15.14]+cmd[2.67,2.31,0.64] seconds)
-  congratulations :) (20.79 seconds)
 ```
 
 > NOTE: Typing is configured quite strictly, do not hesitate to reach out if you have any questions, struggles, nightmares.
@@ -111,50 +84,33 @@ Add the unit test to the appropriate submodule test file under `tests/units/anta
 
 ### How to run unit tests
 
-To run the unit test suite from an activated development environment:
+To run the unit test suite with Python 3.12 and the locked test dependencies:
 
 ```bash
-pytest tests/units
+tox -e py312 -- tests/units
 ```
 
 To run a specific unit test module or test node:
 
 ```bash
-pytest tests/units/anta_tests/test_system.py
-pytest tests/units/anta_tests/test_system.py::test
+tox -e py312 -- tests/units/anta_tests/test_system.py
+tox -e py312 -- tests/units/anta_tests/test_system.py::test
 ```
 
-If you use [`uv`](https://docs.astral.sh/uv/) for your local workflow, it can create or update the environment before running pytest:
-
-```bash
-uv run --group dev --extra cli pytest tests/units
-```
-
-Use tox when you want to run the unit tests in the same isolated environments used by CI:
+Select the corresponding tox environment to run the tests with another supported Python version:
 
 ```bash
 tox -e py311 -- tests/units
+```
+
+Install every supported interpreter and reproduce the complete CI Python matrix locally with:
+
+```bash
+uv python install 3.10 3.11 3.12 3.13 3.14
 tox -e py310,py311,py312,py313,py314 -- tests/units
 ```
 
-The `--` separator passes the remaining arguments to pytest, so the same file or test-node selection works with tox:
-
-```bash
-tox -e py311 -- tests/units/anta_tests/system.py
-tox -e py311 -- tests/units/anta_tests/test_system.py
-tox -e py311 -- tests/units/anta_tests/test_system.py::test
-```
-
-!!! note "Python versions and tox"
-    The tox environments are mapped to concrete Python versions (`py310`, `py311`, `py312`, `py313`, and `py314`). Running one tox environment requires that matching Python interpreter to be installed and discoverable on your machine; running the full matrix requires all of them.
-
-    `uv` can help install and manage Python interpreters, for example:
-
-    ```bash
-    uv python install 3.10 3.11 3.12 3.13 3.14
-    ```
-
-    This does not replace tox for matrix testing in this repository. It only makes it easier to provide the Python interpreters that tox needs.
+Run `tox` to execute the complete local suite, including linting, typing, all supported Python versions, and the coverage reports. Operating-system coverage remains in GitHub Actions because a local run cannot reproduce Linux, Windows, and macOS simultaneously.
 
 ### How to write a unit test for an AntaTest subclass
 
@@ -324,14 +280,13 @@ DATA: AntaUnitTestData = {
 ## Git Pre-commit hook
 
 ```bash
-pip install pre-commit
-pre-commit install
+uv run --locked pre-commit install
 ```
 
 When running a commit or a pre-commit check:
 
 ``` bash
-❯ pre-commit
+❯ uv run --locked pre-commit run --all-files
 trim trailing whitespace.................................................Passed
 fix end of files.........................................................Passed
 check for added large files..............................................Passed
@@ -357,38 +312,30 @@ Generate doc snippets....................................................Passed
 
 Documentation source lives under `docs/` and is built from the repository root. Do not commit rendered `site/` output.
 
-### Install documentation requirements
-
-Run pip to install the documentation requirements from the root of the repo:
-
-```bash
-pip install -e . --group doc -e tools/zensical_extensions
-```
-
 ### Testing documentation
 
-You can then preview the documentation locally using the following command from the root of the repo:
+Preview the documentation locally using the locked documentation dependencies from the root of the repo:
 
 ```bash
-zensical serve
+uv run --locked --no-default-groups --group doc zensical serve
 ```
 
 By default, `zensical` listens to <http://127.0.0.1:8000/>, if you need to expose the documentation to another IP or port (for instance all IPs on port 8080), use the following command:
 
 ```bash
-zensical serve --dev-addr=0.0.0.0:8080
+uv run --locked --no-default-groups --group doc zensical serve --dev-addr=0.0.0.0:8080
 ```
 
 Run the same build command used by CI before opening a documentation PR:
 
 ```bash
-zensical build --strict
+uv run --locked --no-default-groups --group doc zensical build --strict
 ```
 
 Use `zensical build --clean` when you want to remove the previous generated output before building locally:
 
 ```bash
-zensical build --clean
+uv run --locked --no-default-groups --group doc zensical build --clean
 ```
 
 ### Generated CLI snippets
@@ -396,7 +343,7 @@ zensical build --clean
 The CLI help blocks published in the documentation are generated from the current Click output. After changing CLI commands, options, or help text, refresh the snippets and verify that the generated files are committed:
 
 ```bash
-uv run --extra cli python docs/scripts/generate_doc_snippets.py
+uv run --locked --extra cli python docs/scripts/generate_doc_snippets.py
 git diff --exit-code -- docs/snippets
 test -z "$(git status --porcelain -- docs/snippets)"
 ```
@@ -422,7 +369,7 @@ Use the existing Mermaid conventions in `docs/api/class-diagram.mmd`:
 Build the documentation locally and inspect the rendered diagram after editing it:
 
 ```bash
-uv run --group doc --with-editable tools/zensical_extensions zensical build --clean --strict
+uv run --locked --no-default-groups --group doc zensical build --clean --strict
 ```
 
 The rendered diagram has a fullscreen button for readability. Use it to check that labels are visible and that the layout still reads correctly on a screen.
