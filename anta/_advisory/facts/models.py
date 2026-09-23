@@ -14,12 +14,15 @@ from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeAlias, TypeVar, ca
 
 from typing_extensions import dataclass_transform
 
+from anta._eos.version import EOSVersion, parse_eos_version
+
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
     from typing_extensions import Self
 
     from anta._advisory.base import _AntaAdvisoryTest
+    from anta._advisory.eos_versions import VersionRule
     from anta.device import AntaDevice
     from anta.models import AntaCommand
 
@@ -291,9 +294,10 @@ class FactsBase:
 
 
 class CommandsFactDefinition(FactDefinition[T], ABC):
-    """Fact definition derived from one or more declared ANTA commands."""
+    """Fact definition derived from ANTA commands on optionally filtered EOS versions."""
 
     commands: ClassVar[tuple[AntaCommand, ...]]
+    supported_versions: ClassVar[tuple[VersionRule, ...]] = ()
 
     @classmethod
     def required_commands(cls) -> tuple[AntaCommand, ...]:
@@ -302,12 +306,32 @@ class CommandsFactDefinition(FactDefinition[T], ABC):
 
     @classmethod
     def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[T]:
-        """Validate the collected commands and normalize their output."""
-        _ = device
+        """Validate EOS support and the collected commands, then normalize their output."""
+        source = FactSource(", ".join(command.command for command in cls.commands), FactSourceKind.COMMAND)
+        if cls.supported_versions:
+            device_version = device.version
+            if isinstance(device_version, EOSVersion):
+                version = device_version
+            elif device_version is not None:
+                version = parse_eos_version(str(device_version)).unwrap_or_none()
+                if version is None:
+                    return cls.unavailable(FactProblemKind.INVALID, FactSource("device metadata", FactSourceKind.DEVICE_METADATA))
+            else:
+                version = None
+            if version is not None and not any(rule.matches(version) for rule in cls.supported_versions):
+                return cls._version_unsupported(source)
+
         if len(commands) != len(cls.commands) or any(command.uid != declared.uid for command, declared in zip(commands, cls.commands, strict=True)):
-            source = FactSource(", ".join(command.command for command in cls.commands), FactSourceKind.COMMAND)
             return cls.unavailable(FactProblemKind.COLLECTION_FAILED, source)
         return cls.parse(commands)
+
+    @classmethod
+    def _version_unsupported(cls, source: FactSource) -> Fact[T]:
+        """Return a known unsupported feature state or an unavailable result for other fact kinds."""
+        if issubclass(cls, FeatureFact):
+            feature_fact_type = cast("type[FeatureFact]", cls)
+            return cast("Fact[T]", AvailableFact(value=feature_fact_type(FeatureState.UNSUPPORTED), source=source))
+        return cls.unavailable(FactProblemKind.UNSUPPORTED, source)
 
     @classmethod
     @abstractmethod
