@@ -27,7 +27,7 @@ from anta.result_manager import ResultManager
 from anta.result_manager.models import AntaTestStatus
 from anta.result_manager.models import TestResult as AntaTestResult
 from tests.units._advisory.conftest import ADVISORY
-from tests.units._advisory.test_base import FakeAdvisoryTest
+from tests.units._advisory.test_base import FactAdvisoryTest
 
 if TYPE_CHECKING:
     from anta.device import AntaDevice
@@ -35,7 +35,7 @@ if TYPE_CHECKING:
 
 def test_advisory_result_survives_result_manager_operations(device: AntaDevice) -> None:
     """Preserve advisory result identity and metadata through result manager operations."""
-    advisory_result = FakeAdvisoryTest(device=device, eos_data=[{"version": "4.36.1F"}]).result
+    advisory_result = FactAdvisoryTest(device=device, eos_data=[{"value": "normalized"}]).result
     remediation = software_version_plan((FixedRelease(EOSVersion(4, 36, 3, suffix="F")),), current_version=EOSVersion(4, 35, 1, suffix="F"))
     advisory_result.add("Issue", vulnerability_ids=("CVE-2026-0001",), remediation=remediation)
     ordinary_result = AntaTestResult(name="ordinary", test="VerifyNTP", categories=["ntp"], description="Verify NTP.")
@@ -68,7 +68,7 @@ def test_advisory_result_survives_result_manager_operations(device: AntaDevice) 
 
 def test_advisory_atomic_result_without_vulnerability_association(device: AntaDevice) -> None:
     """Treat omitted vulnerability IDs as an advisory-wide atomic result."""
-    result = FakeAdvisoryTest(device=device, eos_data=[{"version": "4.36.1F"}]).result
+    result = FactAdvisoryTest(device=device, eos_data=[{"value": "normalized"}]).result
 
     atomic_result = result.add("Advisory-wide check", status=AntaTestStatus.SUCCESS)
 
@@ -82,7 +82,7 @@ def test_advisory_atomic_result_without_vulnerability_association(device: AntaDe
 
 def test_advisory_atomic_result_with_vulnerability_association(device: AntaDevice) -> None:
     """Associate an atomic result with a deterministic subset of advisory vulnerabilities."""
-    result = FakeAdvisoryTest(device=device, eos_data=[{"version": "4.36.1F"}]).result
+    result = FactAdvisoryTest(device=device, eos_data=[{"value": "normalized"}]).result
 
     atomic_result = result.add(
         "Vulnerability-specific check",
@@ -106,7 +106,7 @@ def test_advisory_atomic_result_with_vulnerability_association(device: AntaDevic
 )
 def test_advisory_atomic_result_rejects_invalid_vulnerability_association(device: AntaDevice, vulnerability_ids: tuple[str, ...], message: str) -> None:
     """Reject invalid atomic-to-vulnerability associations."""
-    result = FakeAdvisoryTest(device=device, eos_data=[{"version": "4.36.1F"}]).result
+    result = FactAdvisoryTest(device=device, eos_data=[{"value": "normalized"}]).result
 
     with pytest.raises(ValueError, match=message):
         result.add("Invalid vulnerability association", vulnerability_ids=vulnerability_ids)
@@ -114,7 +114,7 @@ def test_advisory_atomic_result_rejects_invalid_vulnerability_association(device
 
 def test_advisory_result_copy_and_pickle(device: AntaDevice) -> None:
     """Preserve advisory metadata, vulnerability associations, and parent links across copies and pickle."""
-    result = FakeAdvisoryTest(device=device, eos_data=[{"version": "4.36.1F"}]).result
+    result = FactAdvisoryTest(device=device, eos_data=[{"value": "normalized"}]).result
     atomic_result = result.add("Vulnerability-specific check", vulnerability_ids=("CVE-2026-0001",))
     remediation = software_version_plan((FixedRelease(EOSVersion(4, 36, 3, suffix="F")),), current_version=EOSVersion(4, 35, 1, suffix="F"))
     project_advisory_status(atomic_result, AdvisoryStatus.INCONCLUSIVE, "Assessment is inconclusive.", remediation)

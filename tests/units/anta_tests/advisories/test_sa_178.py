@@ -17,15 +17,11 @@ from anta._advisory.facts.management import SnmpV3AuthenticationFact, SnmpV3Cred
 from anta._advisory.facts.models import (
     AvailableFact,
     CredentialSyntaxState,
-    CredentialSyntaxValue,
     Fact,
     FactProblemKind,
     FactSource,
     FactSourceKind,
-    FeatureName,
     FeatureState,
-    FeatureValue,
-    SubFeature,
 )
 from anta._advisory.findings.models import AffectedResult, ErrorResult, NotAffectedResult, VersionRelation
 from anta._advisory.remediation import FixedRelease, RemediationPlan, RunCommand, Sequence, software_version_action
@@ -147,22 +143,22 @@ _DATA: AntaUnitTestData = {
 }
 
 
-def version_fact(version: str | None) -> Fact[EOSVersion]:
+def version_fact(version: str | None) -> Fact[EosVersionFact]:
     """Build an EOS version fact for assessment tests."""
     if version is None:
         return EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
     parsed = parse_eos_version(version).unwrap()
-    return EosVersionFact.available(parsed, SOURCE)
+    return EosVersionFact.from_version(parsed).available(SOURCE)
 
 
-def syntax_fact(state: CredentialSyntaxState) -> AvailableFact[CredentialSyntaxValue]:
+def syntax_fact(state: CredentialSyntaxState) -> AvailableFact[SnmpV3CredentialSyntaxFact]:
     """Build an SNMPv3 credential syntax fact."""
-    return SnmpV3CredentialSyntaxFact.available(CredentialSyntaxValue(SubFeature(FeatureName.SNMPV3, "credential syntax"), state), SOURCE)
+    return SnmpV3CredentialSyntaxFact(state).available(SOURCE)
 
 
-def authentication_fact(state: FeatureState) -> AvailableFact[FeatureValue]:
+def authentication_fact(state: FeatureState) -> AvailableFact[SnmpV3AuthenticationFact]:
     """Build an SNMPv3 authentication-key fact."""
-    return SnmpV3AuthenticationFact.available(FeatureValue(SubFeature(FeatureName.SNMPV3, "authentication key"), state), SOURCE)
+    return SnmpV3AuthenticationFact(state).available(SOURCE)
 
 
 class TestSA178VersionMatrix(unittest.TestCase):

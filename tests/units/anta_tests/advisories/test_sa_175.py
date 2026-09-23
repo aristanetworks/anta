@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING
 
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactProblemKind, FactSource, FactSourceKind, FeatureName, FeatureState, FeatureValue, SubFeature
+from anta._advisory.facts.models import AvailableFact, Fact, FactProblemKind, FactSource, FactSourceKind, FeatureState
 from anta._advisory.facts.routing import PimSparseModeFact
 from anta._advisory.findings.models import AffectedResult, ErrorResult, NotAffectedResult, VersionRelation
 from anta._advisory.remediation import FixedRelease, software_version_plan
@@ -92,17 +92,17 @@ _DATA: AntaUnitTestData = {
 }
 
 
-def version_fact(version: str | None) -> Fact[EOSVersion]:
+def version_fact(version: str | None) -> Fact[EosVersionFact]:
     """Build an EOS version fact for assessment tests."""
     if version is None:
         return EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
     parsed = parse_eos_version(version).unwrap()
-    return EosVersionFact.available(parsed, SOURCE)
+    return EosVersionFact.from_version(parsed).available(SOURCE)
 
 
-def sparse_mode_fact(state: FeatureState) -> AvailableFact[FeatureValue]:
+def sparse_mode_fact(state: FeatureState) -> AvailableFact[PimSparseModeFact]:
     """Build a PIM sparse-mode fact."""
-    return PimSparseModeFact.available(FeatureValue(SubFeature(FeatureName.PIM, "sparse-mode interface"), state), SOURCE)
+    return PimSparseModeFact(state).available(SOURCE)
 
 
 class TestSA175VersionMatrix(unittest.TestCase):

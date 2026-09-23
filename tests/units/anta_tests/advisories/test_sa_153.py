@@ -18,10 +18,7 @@ from anta._advisory.facts.models import (
     FactProblemKind,
     FactSource,
     FactSourceKind,
-    FeatureName,
     FeatureState,
-    FeatureValue,
-    SubFeature,
 )
 from anta._advisory.facts.tracing import (
     AaaPasswordTraceFact,
@@ -46,9 +43,6 @@ from anta.tests.advisories.sa_153 import (
 from tests.units.anta_tests import build_eos_version, test
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
-
-    from anta._advisory.facts.models import CommandsFactDefinition
     from tests.units.anta_tests import AntaUnitTestData, AtomicResult, UnitTestResult
 
 SOURCE = FactSource("unit test", FactSourceKind.DEVICE_METADATA)
@@ -57,6 +51,8 @@ IssueExpectation: TypeAlias = tuple[ProductionStatus, str, RemediationPlan | Non
 EXPECTED_FIXED_RELEASES = (
     FixedRelease(EOSVersion(4, 36, 2, suffix="F")),
     FixedRelease(EOSVersion(4, 35, 5, suffix="M")),
+    FixedRelease(EOSVersion(4, 34, 8, suffix="M")),
+    FixedRelease(EOSVersion(4, 33, 10, suffix="M")),
 )
 EXPECTED_CLEAN_LOGS = OperationalAction("Clean current and rotated agent logs if the affected trace levels were enabled.")
 EXPECTED_REMEDIATION = RemediationPlan(
@@ -191,17 +187,12 @@ _DATA: AntaUnitTestData = {
 }
 
 
-def version_fact(version: str | None) -> Fact[EOSVersion]:
+def version_fact(version: str | None) -> Fact[EosVersionFact]:
     """Build an EOS version fact for assessment tests."""
     if version is None:
         return EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
     parsed = parse_eos_version(version).unwrap()
-    return EosVersionFact.available(parsed, SOURCE)
-
-
-def trace_fact(definition: type[CommandsFactDefinition[FeatureValue]], state: FeatureState) -> AvailableFact[FeatureValue]:
-    """Build one agent-trace fact."""
-    return definition.available(FeatureValue(SubFeature(FeatureName.AGENT_TRACING, "test trace"), state), SOURCE)
+    return EosVersionFact.from_version(parsed).available(SOURCE)
 
 
 class TestSA153VersionMatrix(unittest.TestCase):
@@ -216,8 +207,10 @@ class TestSA153VersionMatrix(unittest.TestCase):
             ("4.35.4M", AffectedStatus.AFFECTED),
             ("4.35.5M", AffectedStatus.NOT_AFFECTED),
             ("4.34.0F", AffectedStatus.AFFECTED),
-            ("4.34.99M", AffectedStatus.AFFECTED),
-            ("4.33.99M", AffectedStatus.AFFECTED),
+            ("4.34.7M", AffectedStatus.AFFECTED),
+            ("4.34.8M", AffectedStatus.NOT_AFFECTED),
+            ("4.33.9M", AffectedStatus.AFFECTED),
+            ("4.33.10M", AffectedStatus.NOT_AFFECTED),
             ("4.32.99M", AffectedStatus.AFFECTED),
             ("4.31.99M", AffectedStatus.AFFECTED),
             ("4.30.99M", AffectedStatus.NOT_AFFECTED),
@@ -230,34 +223,28 @@ class TestSA153VersionMatrix(unittest.TestCase):
 class TestSA153Assessment(unittest.TestCase):
     """Validate shared semantics through every vulnerability wrapper."""
 
-    ASSESSMENTS: tuple[
-        tuple[
-            Callable[[Fact[EOSVersion], Fact[FeatureValue]], object],
-            str,
-            type[CommandsFactDefinition[FeatureValue]],
-        ],
-        ...,
-    ] = (
-        (_assess_private_key, PRIVATE_KEY_ID, ConfigAgentPrivateKeyTraceFact),
-        (_assess_password, PASSWORD_ID, AaaPasswordTraceFact),
-        (_assess_tacacs_key, TACACS_KEY_ID, AaaTacacsKeyTraceFact),
-    )
-
     def test_risky_trace_is_affected(self) -> None:
-        for assess, vulnerability_id, trace_definition in self.ASSESSMENTS:
+        version = version_fact("4.36.1F")
+        findings = (
+            (_assess_private_key(version, ConfigAgentPrivateKeyTraceFact(FeatureState.ENABLED).available(SOURCE)), PRIVATE_KEY_ID),
+            (_assess_password(version, AaaPasswordTraceFact(FeatureState.ENABLED).available(SOURCE)), PASSWORD_ID),
+            (_assess_tacacs_key(version, AaaTacacsKeyTraceFact(FeatureState.ENABLED).available(SOURCE)), TACACS_KEY_ID),
+        )
+        for finding, vulnerability_id in findings:
             with self.subTest(vulnerability_id=vulnerability_id):
-                finding = assess(
-                    version_fact("4.36.1F"),
-                    trace_fact(trace_definition, FeatureState.ENABLED),
-                )
                 assert isinstance(finding, AffectedResult)
                 assert finding.vulnerability_id == vulnerability_id
                 assert finding.context[0].relation is VersionRelation.AFFECTED
 
     def test_disabled_trace_is_not_affected(self) -> None:
-        for assess, vulnerability_id, trace_definition in self.ASSESSMENTS:
+        missing_version = version_fact(None)
+        findings = (
+            (_assess_private_key(missing_version, ConfigAgentPrivateKeyTraceFact(FeatureState.DISABLED).available(SOURCE)), PRIVATE_KEY_ID),
+            (_assess_password(missing_version, AaaPasswordTraceFact(FeatureState.DISABLED).available(SOURCE)), PASSWORD_ID),
+            (_assess_tacacs_key(missing_version, AaaTacacsKeyTraceFact(FeatureState.DISABLED).available(SOURCE)), TACACS_KEY_ID),
+        )
+        for finding, vulnerability_id in findings:
             with self.subTest(vulnerability_id=vulnerability_id):
-                finding = assess(version_fact(None), trace_fact(trace_definition, FeatureState.DISABLED))
                 assert isinstance(finding, NotAffectedResult)
                 assert finding.vulnerability_id == vulnerability_id
 

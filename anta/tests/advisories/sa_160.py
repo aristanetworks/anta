@@ -6,12 +6,12 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import Any, ClassVar, cast
+from typing import ClassVar, TypeVar, cast
 
 from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
+from anta._advisory.facts.models import AvailableFact, Fact, FactsBase, FeatureFact, FeatureState, UnavailableFact, fact_field, facts_dataclass
 from anta._advisory.facts.routing import IsisConfiguredFact, IsisGracefulRestartFact, IsisNonPassiveBroadcastInterfaceFact
 from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import (
@@ -72,12 +72,13 @@ ADVISORY = _AdvisoryMetadata(
     description="On affected EOS releases, crafted IS-IS packets may disrupt adjacencies, link-state data, or graceful restart.",
 )
 BROADCAST_ID, LSP_ID, GRACEFUL_RESTART_ID = (vulnerability.id for vulnerability in ADVISORY.vulnerabilities)
+FeatureFactT = TypeVar("FeatureFactT", bound=FeatureFact)
 
 
 def _assess_isis_issue(
     vulnerability_id: str,
-    version: Fact[EOSVersion],
-    prerequisite: Fact[FeatureValue],
+    version: Fact[EosVersionFact],
+    prerequisite: Fact[FeatureFactT],
     affected_versions: tuple[VersionRule, ...],
     fixed_releases: tuple[FixedRelease, ...],
 ) -> VulnerabilityResult:
@@ -91,16 +92,16 @@ def _assess_isis_issue(
         return ErrorResult(vulnerability_id=vulnerability_id, problems=(prerequisite,))
     return AffectedResult(
         vulnerability_id=vulnerability_id,
-        conditions=(cast("AvailableFact[FeatureValue]", prerequisite),),
+        conditions=(cast("AvailableFact[FeatureFactT]", prerequisite),),
         context=(eos_release,),
         remediation=software_version_plan(fixed_releases, current_version=eos_release.fact.value),
     )
 
 
 def _assess_broadcast_issue(
-    version: Fact[EOSVersion],
-    interface: Fact[FeatureValue],
-    isis: Fact[FeatureValue],
+    version: Fact[EosVersionFact],
+    interface: Fact[IsisNonPassiveBroadcastInterfaceFact],
+    isis: Fact[IsisConfiguredFact],
 ) -> VulnerabilityResult:
     """Assess modeled broadcast-interface state, retaining unresolved inactive configurations."""
     if not isinstance(interface, UnavailableFact) and interface.value.state is FeatureState.ENABLED:
@@ -153,34 +154,36 @@ class SA160(OptionalCommandsMixin, _AntaAdvisoryTest):
     ```
     """
 
+    @facts_dataclass
+    class Facts(FactsBase):
+        """Collected facts required to assess the advisory."""
+
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
+        broadcast_interface: Fact[IsisNonPassiveBroadcastInterfaceFact] = fact_field(IsisNonPassiveBroadcastInterfaceFact)
+        isis: Fact[IsisConfiguredFact] = fact_field(IsisConfiguredFact)
+        graceful_restart: Fact[IsisGracefulRestartFact] = fact_field(IsisGracefulRestartFact)
+
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
-    required_facts: ClassVar[tuple[type[FactDefinition[Any]], ...]] = (
-        EosVersionFact,
-        IsisNonPassiveBroadcastInterfaceFact,
-        IsisConfiguredFact,
-        IsisGracefulRestartFact,
-    )
     description = "Verify whether the device is impacted by Security Advisory 0160."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
         """Derive facts, assess all three vulnerabilities, and project them."""
-        version = self.fact(EosVersionFact)
-        isis_configured = self.fact(IsisConfiguredFact)
+        facts = self.Facts.collect(self)
         findings = (
-            _assess_broadcast_issue(version, self.fact(IsisNonPassiveBroadcastInterfaceFact), isis_configured),
+            _assess_broadcast_issue(facts.version, facts.broadcast_interface, facts.isis),
             _assess_isis_issue(
                 LSP_ID,
-                version,
-                isis_configured,
+                facts.version,
+                facts.isis,
                 LSP_AND_GRACEFUL_RESTART_AFFECTED_VERSIONS,
                 LSP_AND_GRACEFUL_RESTART_FIXED_RELEASES,
             ),
             _assess_isis_issue(
                 GRACEFUL_RESTART_ID,
-                version,
-                self.fact(IsisGracefulRestartFact),
+                facts.version,
+                facts.graceful_restart,
                 LSP_AND_GRACEFUL_RESTART_AFFECTED_VERSIONS,
                 LSP_AND_GRACEFUL_RESTART_FIXED_RELEASES,
             ),

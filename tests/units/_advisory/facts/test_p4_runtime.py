@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Any
 
 import pytest
 
-from anta._advisory.facts.models import AvailableFact, CommandsFactDefinition, FactProblemKind, FeatureState, FeatureValue, UnavailableFact
+from anta._advisory.facts.models import AvailableFact, FactProblemKind, FeatureState, UnavailableFact
 from anta._advisory.facts.p4_runtime import P4RuntimeAccountingFact, P4RuntimeFact, P4RuntimeMtlsFact
 from tests.units.anta_tests.advisories import OfflineAntaDevice
 
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from anta.models import AntaCommand
 
 
-def command(definition: type[CommandsFactDefinition[FeatureValue]], output: dict[str, Any] | str | None) -> AntaCommand:
+def command(definition: type[P4RuntimeFact | P4RuntimeAccountingFact], output: dict[str, Any] | str | None) -> AntaCommand:
     """Return a copied fact command populated with output."""
     value = definition.commands[0].model_copy()
     value.output = output
@@ -83,7 +83,7 @@ def test_p4_runtime_rejects_missing_fields(definition, output: dict[str, object]
 
 
 @pytest.mark.parametrize("definition", [P4RuntimeFact, P4RuntimeAccountingFact])
-def test_p4_runtime_unsupported_proves_feature_absence(definition: type[CommandsFactDefinition[FeatureValue]]) -> None:
+def test_p4_runtime_unsupported_proves_feature_absence(definition: type[P4RuntimeFact | P4RuntimeAccountingFact]) -> None:
     """Normalize the feature-specific unsupported response as absence."""
     value = command(definition, None)
     value.errors = ["This command is not supported on this hardware platform"]

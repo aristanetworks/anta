@@ -78,6 +78,9 @@ def test_anta_nrfu_template_help(click_runner: CliRunner) -> None:
     result = click_runner.invoke(anta, ["nrfu", "tpl-report", "--help"])
     assert result.exit_code == ExitCode.OK
     assert "Usage: anta nrfu tpl-report" in result.output
+    assert "ANTA command to check network state with templated report." in result.output
+    for option in ("--template", "--output", "ANTA_NRFU_TPL_REPORT_TEMPLATE", "ANTA_NRFU_TPL_REPORT_OUTPUT"):
+        assert option in result.output
 
 
 def test_anta_nrfu_table(click_runner: CliRunner) -> None:

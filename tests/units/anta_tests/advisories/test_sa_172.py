@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 
 from anta._advisory.eos_versions import AffectedStatus
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import AvailableFact, FeatureName, FeatureState, FeatureValue, MitigationState, MitigationValue, SubFeature
+from anta._advisory.facts.models import FactProblemKind, FeatureState, MitigationState
 from anta._advisory.facts.routing import LegacyOspfv3ConfiguredFact, Ospfv3ConfiguredFact, Ospfv3IpsecAuthenticationFact
 from anta._advisory.findings.models import AffectedResult, ErrorResult, MitigatedResult, NotAffectedResult
 from anta._advisory.remediation import FixedRelease, software_version_plan
@@ -19,7 +19,7 @@ from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_172 import ADVISORY, AFFECTED_VERSION_MATRIX, SA172, _assess_sa172
 from tests.units.anta_tests import build_eos_version, test
 from tests.units.anta_tests.advisories import build_expected_advisory_result
-from tests.units.anta_tests.advisories.fact_builders import assert_version_statuses, available_fact, eos_version_fact, unavailable_fact
+from tests.units.anta_tests.advisories.fact_builders import SOURCE, assert_version_statuses, eos_version_fact
 
 if TYPE_CHECKING:
     from tests.units.anta_tests import AntaUnitTestData
@@ -40,41 +40,41 @@ LEGACY_OSPFV3 = {"vrfs": {"default": {"instList": {"0": {}}}}}
 MALFORMED_OSPFV3 = {"vrfs": []}
 
 
-def ospfv3_fact(definition: type[Ospfv3ConfiguredFact | LegacyOspfv3ConfiguredFact], state: FeatureState) -> AvailableFact[FeatureValue]:
-    """Build one normalized OSPFv3 observation for direct assessment tests."""
-    name = "routing process" if definition is Ospfv3ConfiguredFact else "legacy IPv6 routing process"
-    return available_fact(definition, FeatureValue(SubFeature(FeatureName.OSPFV3, name), state))
-
-
-def authentication_fact(state: MitigationState) -> AvailableFact[MitigationValue]:
-    """Build normalized OSPFv3 IPsec authentication coverage for direct assessment tests."""
-    return available_fact(Ospfv3IpsecAuthenticationFact, MitigationValue(state))
-
-
 def test_sa172_assessment_contract() -> None:
     """Evaluate both OSPFv3 observations without hiding unavailable alternatives."""
-    current_disabled = ospfv3_fact(Ospfv3ConfiguredFact, FeatureState.DISABLED)
-    legacy_disabled = ospfv3_fact(LegacyOspfv3ConfiguredFact, FeatureState.DISABLED)
-    current_enabled = ospfv3_fact(Ospfv3ConfiguredFact, FeatureState.ENABLED)
-    legacy_missing = unavailable_fact(LegacyOspfv3ConfiguredFact)
-    ineffective = authentication_fact(MitigationState.INEFFECTIVE)
-    assert isinstance(_assess_sa172(unavailable_fact(EosVersionFact), current_disabled, legacy_disabled, ineffective), NotAffectedResult)
+    current_disabled = Ospfv3ConfiguredFact(FeatureState.DISABLED).available(SOURCE)
+    legacy_disabled = LegacyOspfv3ConfiguredFact(FeatureState.DISABLED).available(SOURCE)
+    current_enabled = Ospfv3ConfiguredFact(FeatureState.ENABLED).available(SOURCE)
+    legacy_missing = LegacyOspfv3ConfiguredFact.unavailable(FactProblemKind.MISSING, SOURCE)
+    ineffective = Ospfv3IpsecAuthenticationFact(MitigationState.INEFFECTIVE).available(SOURCE)
+    missing_version = EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
+    assert isinstance(_assess_sa172(missing_version, current_disabled, legacy_disabled, ineffective), NotAffectedResult)
     assert isinstance(_assess_sa172(eos_version_fact("4.36.1F"), current_enabled, legacy_missing, ineffective), AffectedResult)
     assert isinstance(
-        _assess_sa172(eos_version_fact("4.36.1F"), current_enabled, legacy_missing, authentication_fact(MitigationState.EFFECTIVE)),
+        _assess_sa172(
+            eos_version_fact("4.36.1F"),
+            current_enabled,
+            legacy_missing,
+            Ospfv3IpsecAuthenticationFact(MitigationState.EFFECTIVE).available(SOURCE),
+        ),
         MitigatedResult,
     )
     assert isinstance(
-        _assess_sa172(eos_version_fact("4.36.1F"), current_enabled, legacy_missing, unavailable_fact(Ospfv3IpsecAuthenticationFact)),
+        _assess_sa172(
+            eos_version_fact("4.36.1F"),
+            current_enabled,
+            legacy_missing,
+            Ospfv3IpsecAuthenticationFact.unavailable(FactProblemKind.MISSING, SOURCE),
+        ),
         ErrorResult,
     )
     assert isinstance(_assess_sa172(eos_version_fact("4.36.2F"), current_enabled, legacy_missing, ineffective), NotAffectedResult)
     assert isinstance(
         _assess_sa172(
             eos_version_fact("4.36.2F"),
-            unavailable_fact(Ospfv3ConfiguredFact),
+            Ospfv3ConfiguredFact.unavailable(FactProblemKind.MISSING, SOURCE),
             legacy_missing,
-            unavailable_fact(Ospfv3IpsecAuthenticationFact),
+            Ospfv3IpsecAuthenticationFact.unavailable(FactProblemKind.MISSING, SOURCE),
         ),
         NotAffectedResult,
     )

@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING
 
 from anta._advisory.eos_versions import AffectedStatus
 from anta._advisory.facts.eos import EosVersionFact
+from anta._advisory.facts.models import FactProblemKind
 from anta._advisory.findings.models import AffectedResult, ErrorResult, NotAffectedResult
 from anta._advisory.remediation import FixedRelease, software_version_plan
 from anta._eos.version import EOSVersion
@@ -17,7 +18,7 @@ from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_159 import ADVISORY, AFFECTED_VERSION_MATRIX, SA159, _assess_sa159
 from tests.units.anta_tests import build_eos_version, test
 from tests.units.anta_tests.advisories import build_expected_advisory_result
-from tests.units.anta_tests.advisories.fact_builders import assert_version_statuses, eos_version_fact, unavailable_fact
+from tests.units.anta_tests.advisories.fact_builders import SOURCE, assert_version_statuses, eos_version_fact
 
 if TYPE_CHECKING:
     from tests.units.anta_tests import AntaUnitTestData
@@ -36,7 +37,7 @@ def test_sa159_assessment_contract() -> None:
     """Treat default IGMP snooping exposure as a version-only assessment."""
     assert isinstance(_assess_sa159(eos_version_fact("4.36.1F")), AffectedResult)
     assert isinstance(_assess_sa159(eos_version_fact("4.36.2F")), NotAffectedResult)
-    assert isinstance(_assess_sa159(unavailable_fact(EosVersionFact)), ErrorResult)
+    assert isinstance(_assess_sa159(EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)), ErrorResult)
 
 
 def test_sa159_version_boundaries() -> None:

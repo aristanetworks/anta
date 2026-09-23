@@ -14,7 +14,7 @@ from unittest.mock import AsyncMock
 
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact, SecureBootFact
-from anta._advisory.facts.models import AvailableFact, FactProblemKind, FactSource, FactSourceKind, FeatureName, FeatureState, FeatureValue
+from anta._advisory.facts.models import AvailableFact, FactProblemKind, FactSource, FactSourceKind, FeatureState
 from anta._advisory.findings.models import AffectedResult, EosReleaseAssessment, ErrorResult, NotAffectedResult, VersionRelation
 from anta._advisory.remediation import FixedRelease, software_version_plan
 from anta._advisory.results import _get_atomic_vulnerability_ids
@@ -146,30 +146,32 @@ class TestSA140Assessment(unittest.TestCase):
     """Validate semantic classification before ANTA projection."""
 
     @staticmethod
-    def version_fact(version: str) -> AvailableFact[EOSVersion]:
+    def version_fact(version: str) -> AvailableFact[EosVersionFact]:
         """Build normalized device-version evidence for assessment tests."""
         parsed_version = parse_eos_version(version).unwrap()
-        return EosVersionFact.available(parsed_version, TEST_SOURCE)
+        return EosVersionFact.from_version(parsed_version).available(TEST_SOURCE)
 
     def test_affected_and_safe_configuration_states(self) -> None:
         affected = _assess_sa140(
             self.version_fact("4.35.1F"),
-            SecureBootFact.available(FeatureValue(FeatureName.SECURE_BOOT, FeatureState.ENABLED), TEST_SOURCE),
+            SecureBootFact(FeatureState.ENABLED).available(TEST_SOURCE),
         )
         disabled = _assess_sa140(
             self.version_fact("4.35.1F"),
-            SecureBootFact.available(FeatureValue(FeatureName.SECURE_BOOT, FeatureState.DISABLED), TEST_SOURCE),
+            SecureBootFact(FeatureState.DISABLED).available(TEST_SOURCE),
         )
 
         assert isinstance(affected, AffectedResult)
         condition = affected.conditions[0]
         assert isinstance(condition, AvailableFact)
-        assert isinstance(condition.value, FeatureValue)
+        assert isinstance(condition.value, SecureBootFact)
         assert condition.value.state is FeatureState.ENABLED
         assert affected.context[0].relation is VersionRelation.AFFECTED
         assert affected.remediation == EXPECTED_REMEDIATION
         assert isinstance(disabled, NotAffectedResult)
-        disabled_evidence = cast("AvailableFact[FeatureValue]", disabled.decisive[0])
+        disabled_evidence = disabled.decisive[0]
+        assert isinstance(disabled_evidence, AvailableFact)
+        assert isinstance(disabled_evidence.value, SecureBootFact)
         assert disabled_evidence.value.state is FeatureState.DISABLED
 
     def test_fixed_version_short_circuits_boot_evidence(self) -> None:
@@ -179,15 +181,18 @@ class TestSA140Assessment(unittest.TestCase):
         )
 
         assert isinstance(finding, NotAffectedResult)
-        version_assessment = cast("EosReleaseAssessment", finding.decisive[0])
+        version_assessment = finding.decisive[0]
+        assert isinstance(version_assessment, EosReleaseAssessment)
         assert version_assessment.relation is VersionRelation.OUTSIDE_SCOPE
 
     def test_unsupported_secure_boot_is_not_affected(self) -> None:
-        secure_boot = SecureBootFact.available(FeatureValue(FeatureName.SECURE_BOOT, FeatureState.UNSUPPORTED), TEST_SOURCE)
+        secure_boot = SecureBootFact(FeatureState.UNSUPPORTED).available(TEST_SOURCE)
         finding = _assess_sa140(self.version_fact("4.35.1F"), secure_boot)
 
         assert isinstance(finding, NotAffectedResult)
-        secure_boot_evidence = cast("AvailableFact[FeatureValue]", finding.decisive[0])
+        secure_boot_evidence = finding.decisive[0]
+        assert isinstance(secure_boot_evidence, AvailableFact)
+        assert isinstance(secure_boot_evidence.value, SecureBootFact)
         assert secure_boot_evidence.value.state is FeatureState.UNSUPPORTED
 
     def test_unavailable_required_fact_is_error(self) -> None:

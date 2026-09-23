@@ -18,6 +18,10 @@ Published advisories are available on the
 [Arista Security Advisories](https://www.arista.com/en/support/advisories-notices/securityadvisory)
 page.
 
+The ANTA version identifies the first release aligned with the advisory revision
+shown in the **Last updated** column. It is updated when a later advisory revision
+requires a behavioral change in ANTA.
+
 !!! note "Detailed security advisory tests"
     To view the implementation details and inputs for each available test, see
     [Security Advisory Tests](tests.md).
@@ -31,7 +35,7 @@ page.
 | Security Advisory 0180 | | N/A | VeloCloud; not covered by ANTA |
 | Security Advisory 0179 | | N/A | VeloCloud; not covered by ANTA |
 | Security Advisory 0178 | 2026-09-09 | v1.10 | |
-| Security Advisory 0177 | 2026-09-09 | v1.10 | |
+| Security Advisory 0177 | 2026-09-17 | v1.11 | |
 | Security Advisory 0176 | 2026-09-09 | v1.10 | |
 | Security Advisory 0175 | 2026-09-09 | v1.10 | |
 | Security Advisory 0174 | 2026-09-09 | v1.10 | |
@@ -45,7 +49,7 @@ page.
 | Security Advisory 0166 | 2026-09-09 | v1.10 | |
 | Security Advisory 0165 | 2026-09-09 | v1.10 | |
 | Security Advisory 0164 | 2026-09-09 | v1.10 | |
-| Security Advisory 0163 | 2026-09-09 | v1.10 | |
+| Security Advisory 0163 | 2026-09-22 | v1.11 | |
 | Security Advisory 0162 | 2026-09-09 | v1.10 | |
 | Security Advisory 0161 | 2026-09-09 | v1.10 | |
 | Security Advisory 0160 | 2026-09-09 | v1.10 | |
@@ -55,7 +59,7 @@ page.
 | Security Advisory 0156 | 2026-09-09 | v1.10 | |
 | Security Advisory 0155 | 2026-09-09 | v1.10 | |
 | Security Advisory 0154 | 2026-09-09 | v1.10 | |
-| Security Advisory 0153 | 2026-09-09 | v1.10 | |
+| Security Advisory 0153 | 2026-09-22 | v1.11 | |
 | Security Advisory 0152 | 2026-09-09 | v1.10 | |
 | Security Advisory 0151 | 2026-09-09 | v1.10 | |
 | Security Advisory 0150 | 2026-09-09 | v1.10 | |

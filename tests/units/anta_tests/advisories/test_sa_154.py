@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING
 
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactProblemKind, FactSource, FactSourceKind, FeatureName, FeatureState, FeatureValue, SubFeature
+from anta._advisory.facts.models import AvailableFact, Fact, FactProblemKind, FactSource, FactSourceKind, FeatureState
 from anta._advisory.facts.routing import BfdAuthenticationFact
 from anta._advisory.findings.models import AffectedResult, ErrorResult, NotAffectedResult
 from anta._advisory.remediation import FixedRelease, software_version_plan
@@ -76,17 +76,17 @@ _DATA: AntaUnitTestData = {
 }
 
 
-def version_fact(value: str | None) -> Fact[EOSVersion]:
+def version_fact(value: str | None) -> Fact[EosVersionFact]:
     """Build a version fact."""
     if value is None:
         return EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
     parsed = parse_eos_version(value).unwrap()
-    return EosVersionFact.available(parsed, SOURCE)
+    return EosVersionFact.from_version(parsed).available(SOURCE)
 
 
-def bfd_fact(state: FeatureState) -> AvailableFact[FeatureValue]:
+def bfd_fact(state: FeatureState) -> AvailableFact[BfdAuthenticationFact]:
     """Build a BFD authentication fact."""
-    return BfdAuthenticationFact.available(FeatureValue(SubFeature(FeatureName.BFD, "authentication"), state), SOURCE)
+    return BfdAuthenticationFact(state).available(SOURCE)
 
 
 class TestSA154Assessment(unittest.TestCase):
