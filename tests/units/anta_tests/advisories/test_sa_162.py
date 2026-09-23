@@ -224,8 +224,8 @@ class TestSA162Assessment(unittest.TestCase):
 
     def test_bootz_introduction_boundary(self) -> None:
         """Disabled Certz is Not Affected before BootZ, inconclusive at and after 4.33.2F."""
-        enabled_transport = feature_fact(GnsiTransportFact, "transport", FeatureState.ENABLED)
-        disabled_certz = feature_fact(GnsiCertzFact, "Certz service", FeatureState.DISABLED)
+        enabled_transport = transport_fact(FeatureState.ENABLED)
+        disabled_certz = certz_fact(FeatureState.DISABLED)
         for version, expected in (
             ("4.33.1F", NotAffectedResult),
             ("4.33.2F", InconclusiveResult),
@@ -239,7 +239,7 @@ class TestSA162Assessment(unittest.TestCase):
         missing_certz = GnsiCertzFact.unavailable(FactProblemKind.MISSING, SOURCE)
         for state in (FeatureState.DISABLED, FeatureState.UNSUPPORTED):
             with self.subTest(state=state):
-                transport = feature_fact(GnsiTransportFact, "transport", state)
+                transport = transport_fact(state)
                 finding = _assess_sa162(version_fact("4.33.1F"), transport, missing_certz)
                 assert isinstance(finding, NotAffectedResult)
                 assert finding.decisive == (transport,)
