@@ -21,7 +21,7 @@ from anta._advisory.remediation import FixedRelease, software_version_plan
 from anta._advisory.results import _get_atomic_vulnerability_ids
 from anta._eos.version import EOSVersion, parse_eos_version
 from anta.result_manager.models import AntaTestStatus
-from anta.tests.advisories.sa_162 import ADVISORY, AFFECTED_VERSION_MATRIX, SA162, _assess_sa162
+from anta.tests.advisories.sa_162 import ADVISORY, AFFECTED_VERSION_MATRIX, FIXED_RELEASES, SA162, _assess_sa162
 from tests.units.anta_tests import build_eos_version, test
 from tests.units.anta_tests.advisories import OfflineAntaDevice, build_expected_advisory_result
 
@@ -64,6 +64,34 @@ _DATA: AntaUnitTestData = {
             "The assessment is inconclusive and the device may be affected. Indications: EOS version '4.35.5M' is affected. Unresolved: "
             "initial Bootz CertzProfile certificate contents is historical state",
             EXPECTED_REMEDIATION,
+        ),
+    },
+    (SA162, "inconclusive-bootz-introduced"): {
+        "version": build_eos_version("4.33.2F"),
+        "eos_data": gnsi_eos_data({"transports": {"default": {"enabled": True}}, "certzEnabled": False}),
+        "expected": expected_result(
+            AntaTestStatus.FAILURE,
+            "The assessment is inconclusive and the device may be affected. Indications: EOS version '4.33.2F' is affected. Unresolved: "
+            "initial Bootz CertzProfile certificate contents is historical state",
+            software_version_plan(FIXED_RELEASES, current_version=EOSVersion(4, 33, 2, suffix="F")),
+        ),
+    },
+    (SA162, "success-pre-bootz-disabled-certz"): {
+        "version": build_eos_version("4.33.1F"),
+        "eos_data": gnsi_eos_data({"transports": {"default": {"enabled": True}}, "certzEnabled": False}),
+        "expected": expected_result(
+            AntaTestStatus.SUCCESS,
+            "The device is not affected because the gNSI Certz service is disabled",
+            None,
+        ),
+    },
+    (SA162, "success-pre-bootz-disabled-transport"): {
+        "version": build_eos_version("4.33.1F"),
+        "eos_data": gnsi_eos_data({"transports": {"default": {"enabled": False}}}),
+        "expected": expected_result(
+            AntaTestStatus.SUCCESS,
+            "The device is not affected because the gNSI transport is disabled",
+            None,
         ),
     },
     (SA162, "inconclusive-disabled-transport-leaves-bootz-history"): {
@@ -194,6 +222,28 @@ class TestSA162Assessment(unittest.TestCase):
         assert finding.unresolved[0].kind.name == "HISTORICAL_STATE"
         assert finding.remediation == EXPECTED_REMEDIATION
 
+    def test_bootz_introduction_boundary(self) -> None:
+        """Disabled Certz is Not Affected before BootZ, inconclusive at and after 4.33.2F."""
+        enabled_transport = transport_fact(FeatureState.ENABLED)
+        disabled_certz = certz_fact(FeatureState.DISABLED)
+        for version, expected in (
+            ("4.33.1F", NotAffectedResult),
+            ("4.33.2F", InconclusiveResult),
+            ("4.33.3F", InconclusiveResult),
+        ):
+            with self.subTest(version=version):
+                finding = _assess_sa162(version_fact(version), enabled_transport, disabled_certz)
+                assert isinstance(finding, expected)
+
+    def test_pre_bootz_closed_path_is_not_affected(self) -> None:
+        missing_certz = GnsiCertzFact.unavailable(FactProblemKind.MISSING, SOURCE)
+        for state in (FeatureState.DISABLED, FeatureState.UNSUPPORTED):
+            with self.subTest(state=state):
+                transport = transport_fact(state)
+                finding = _assess_sa162(version_fact("4.33.1F"), transport, missing_certz)
+                assert isinstance(finding, NotAffectedResult)
+                assert finding.decisive == (transport,)
+
     def test_no_transport_still_leaves_bootz_history_inconclusive(self) -> None:
         missing_certz = GnsiCertzFact.unavailable(FactProblemKind.MISSING, SOURCE)
         for state in (FeatureState.DISABLED, FeatureState.UNSUPPORTED):
@@ -229,6 +279,12 @@ class TestSA162Assessment(unittest.TestCase):
                 GnsiCertzFact.unavailable(FactProblemKind.MISSING, SOURCE),
                 GnsiCertzFact,
             ),
+            (
+                version_fact("4.33.1F"),
+                enabled_transport,
+                GnsiCertzFact.unavailable(FactProblemKind.MISSING, SOURCE),
+                GnsiCertzFact,
+            ),
         ):
             with self.subTest(definition=definition.key):
                 finding = _assess_sa162(version, transport, certz)
@@ -257,3 +313,20 @@ class TestSA162(unittest.IsolatedAsyncioTestCase):
         assert test_instance.result.result is AntaTestStatus.FAILURE
         assert _get_atomic_vulnerability_ids(test_instance.result.atomic_results[0]) == (ADVISORY.vulnerabilities[0].id,)
         assert "initial Bootz CertzProfile certificate contents is historical state" in test_instance.result.messages[0]
+
+    async def test_unsupported_gnsi_command_is_not_affected_before_bootz(self) -> None:
+        device = OfflineAntaDevice("unit-test")
+        device.version = parse_eos_version("4.33.1F").unwrap()
+        await device.refresh()
+        test_instance = cast("Any", SA162)(device=device, eos_data=[{}, {}])
+        for command in test_instance.instance_commands:
+            command.output = None
+            command.errors = ["This command is not supported on this hardware platform"]
+        test_instance.collect = AsyncMock()
+
+        await test_instance.test()
+
+        assert test_instance.result.result is AntaTestStatus.SUCCESS
+        assert _get_atomic_vulnerability_ids(test_instance.result.atomic_results[0]) == (ADVISORY.vulnerabilities[0].id,)
+        expected = "The device is not affected because the gNSI transport is not supported and the gNSI Certz service is not supported"
+        assert expected in test_instance.result.messages[0]
