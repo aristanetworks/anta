@@ -5215,9 +5215,11 @@ unresolved inactive one.</p>
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: The test will pass if the EOS version is outside the affected releases.</li>
+<li>Success: The test will pass if the EOS version is outside the affected releases, or if an affected
+  release older than 4.33.2F has the current Certz path disabled or unsupported.</li>
 <li>Failure: The test will fail if an affected EOS version has an enabled gNSI transport and Certz service.</li>
-<li>Inconclusive: The test is inconclusive when the Certz path is closed but Bootz certificate use during initial provisioning is unknown.</li>
+<li>Inconclusive: The test is inconclusive when EOS 4.33.2F or later has the Certz path closed but Bootz
+  certificate use during initial provisioning is unknown.</li>
 <li>Error: The test will error if EOS or current Certz-path state needed for the assessment cannot be determined.</li>
 </ul>
 </details>
