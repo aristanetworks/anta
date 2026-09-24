@@ -11,7 +11,7 @@ from warnings import warn
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from anta.custom_types import Interface, PortChannelInterface
+from anta.custom_types import Interface, InterfaceRange, PortChannelInterface
 
 
 class InterfaceState(BaseModel):
@@ -21,8 +21,11 @@ class InterfaceState(BaseModel):
     """
 
     model_config = ConfigDict(extra="forbid")
-    name: Interface
-    """Interface to validate."""
+    name: InterfaceRange | Interface
+    """Interface name or range pattern (e.g., 'Ethernet1', 'Ethernet1-3', 'et1-3', 'Ethernet1,et2').
+
+    Range patterns are expanded to a list of interface names by the InterfaceRange validator.
+    """
     description: str | None = None
     """Optional metadata describing the interface. Used for reporting."""
     status: Literal["up", "down", "adminDown"] | None = None
@@ -52,6 +55,23 @@ class InterfaceState(BaseModel):
     """The speed of the interface in Gigabits per second. Valid range is 1 to 1000. Required field in the `VerifyInterfacesSpeed` test."""
     lanes: int | None = Field(default=None, ge=1, le=8)
     """The number of lanes in the interface. Valid range is 1 to 8. Can be provided in the `VerifyInterfacesSpeed` test."""
+    media_type: str | None = None
+    """Expected transceiver media type (e.g., '100GBASE-SR4'). Required for the `VerifyInterfacesTransceiverType` test."""
+
+    def expand(self) -> list[InterfaceState]:
+        """Return one InterfaceState per interface name, expanding range names into individual entries.
+
+        Examples
+        --------
+        >>> interface = InterfaceState(name="Ethernet1-3", media_type="100GBASE-SR4")
+        >>> [entry.name for entry in interface.expand()]
+        ['Ethernet1', 'Ethernet2', 'Ethernet3']
+        """
+        if isinstance(self.name, list):
+            # Clone this entry for each interface, replacing only the name field
+            return [self.model_copy(update={"name": interface_name}) for interface_name in self.name]
+        # Single interface: no expansion needed
+        return [self]
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the InterfaceState for reporting.
