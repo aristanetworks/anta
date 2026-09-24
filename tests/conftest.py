@@ -24,6 +24,7 @@ def inventory(request: pytest.FixtureRequest) -> Iterator[AntaInventory]:
     count = params.get("count", 1)
     disable_cache = params.get("disable_cache", True)
     reachable = params.get("reachable", True)
+    version = params.get("version", "4.31.1F")
     if "filename" in params:
         inv = AntaInventory.parse(DATA_DIR / params["filename"], username=user, password=password, disable_cache=disable_cache)
     else:
@@ -40,15 +41,14 @@ def inventory(request: pytest.FixtureRequest) -> Iterator[AntaInventory]:
             )
     if reachable:
         # This context manager makes all devices reachable
+        show_version = {"modelName": "pytest"}
+        if version is not None:
+            show_version["version"] = version
         with respx.mock:
             respx.head(path="/command-api")
             respx.post(path="/command-api", headers={"Content-Type": "application/json-rpc"}, json__params__cmds__0__cmd="show version").respond(
                 json={
-                    "result": [
-                        {
-                            "modelName": "pytest",
-                        }
-                    ],
+                    "result": [show_version],
                 }
             )
             yield inv
