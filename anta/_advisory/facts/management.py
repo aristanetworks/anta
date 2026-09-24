@@ -10,8 +10,9 @@ import re
 import shlex
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, ClassVar, TypeVar
+from typing import ClassVar
 
+from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.models import (
     CommandsFactDefinition,
     ConfigurationFact,
@@ -19,7 +20,6 @@ from anta._advisory.facts.models import (
     CredentialSyntaxFact,
     CredentialSyntaxState,
     Fact,
-    FactDefinition,
     FactProblemKind,
     FactSource,
     FactSourceKind,
@@ -30,15 +30,10 @@ from anta._advisory.facts.models import (
     MitigationFact,
     MitigationState,
     SubFeature,
-    UnavailableFact,
 )
 from anta._advisory.optional_commands import OptionalAntaCommand, is_unsupported_optional_command
 from anta._eos.parsing import ParseFail, ParseFailureReason, ParseResult, ParseSuccessful
-from anta._eos.version import EOSVersion, parse_eos_version
 from anta.models import AntaCommand
-
-if TYPE_CHECKING:
-    from anta.device import AntaDevice
 
 RISKY_TRACE_SELECTORS = ("service/9", "interceptor/9", "transport_socketcli/9")
 GNMI_COMMAND = OptionalAntaCommand(command="show management api gnmi", revision=1)
@@ -48,8 +43,6 @@ GNSI_COMMAND = OptionalAntaCommand(command="show management api gnsi", revision=
 GNPSI_COMMAND = OptionalAntaCommand(command="show management api gnpsi", revision=1)
 GNPSI_TRACE_COMMAND = OptionalAntaCommand(command="show trace Gnpsi | grep Auth", ofmt="text", defer_errors=True)
 MIN_ENABLED_GNSI_TRANSPORTS = 2
-MIN_GNSI_ACCTZ_PATHZ_VERSION = EOSVersion(4, 33, 2)
-FeatureFactT = TypeVar("FeatureFactT", bound=FactDefinition[Any])
 PATHZ_POLICY_COMMAND = OptionalAntaCommand(
     command="bash timeout 10 sh -c 'if test -f /persist/sys/gnsi/pathz/policy.json; then cat /persist/sys/gnsi/pathz/policy.json; else echo null; fi'",
     ofmt="text",
@@ -151,32 +144,6 @@ def _gnpsi_authentication(transport: _GnpsiTransport) -> tuple[str, frozenset[st
 def _feature_source(command: AntaCommand) -> FactSource:
     """Return the source for one command-derived fact."""
     return FactSource(command.command, FactSourceKind.COMMAND)
-
-
-def _version_aware_gnsi_service_absence(
-    device: AntaDevice,
-    commands: tuple[AntaCommand, ...],
-    fact: Fact[FeatureFactT],
-    field: str,
-    unsupported: FeatureFactT,
-) -> Fact[FeatureFactT]:
-    """Interpret a missing Acctz or Pathz field using the EOS schema boundary."""
-    if (
-        not isinstance(fact, UnavailableFact)
-        or fact.problem is not FactProblemKind.MISSING
-        or len(commands) != 1
-        or commands[0].errors
-        or field in commands[0].json_output
-    ):
-        return fact
-
-    device_version = device.version
-    version = device_version if isinstance(device_version, EOSVersion) else parse_eos_version(str(device_version)).unwrap_or_none()
-    if version is None:
-        return fact
-    if version < MIN_GNSI_ACCTZ_PATHZ_VERSION:
-        return unsupported.available(fact.source)
-    return fact
 
 
 _SNMPV3_CREDENTIAL_CLAUSES = frozenset({"auth", "priv"})
@@ -581,18 +548,16 @@ class GnsiAuthzFact(FeatureFact, CommandsFactDefinition["GnsiAuthzFact"]):
 
 @dataclass(frozen=True, slots=True)
 class GnsiAcctzFact(FeatureFact, CommandsFactDefinition["GnsiAcctzFact"]):
-    """Effective gNSI Acctz service state."""
+    """Effective gNSI Acctz service state, exposed by EOS starting in release 4.33.2."""
 
     feature: ClassVar[FeatureRef] = SubFeature(FeatureName.GNSI, "Acctz service")
     key: ClassVar[str] = "feature.gnsi.acctz"
     label: ClassVar[str] = "gNSI Acctz service state"
     commands: ClassVar[tuple[AntaCommand, ...]] = (GNSI_COMMAND,)
-
-    @classmethod
-    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[GnsiAcctzFact]:
-        """Interpret an absent Acctz field according to the EOS response schema."""
-        fact = super(GnsiAcctzFact, cls).derive(device, commands)
-        return _version_aware_gnsi_service_absence(device, commands, fact, "acctzEnabled", cls(FeatureState.UNSUPPORTED))
+    supported_versions: ClassVar[tuple[VersionRule, ...]] = (
+        VersionRule(major=4, minor=33, patch_gte=2),
+        VersionRule(major=4, minor_gt=33),
+    )
 
     @classmethod
     def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[GnsiAcctzFact]:
@@ -612,18 +577,16 @@ class GnsiAcctzFact(FeatureFact, CommandsFactDefinition["GnsiAcctzFact"]):
 
 @dataclass(frozen=True, slots=True)
 class GnsiPathzFact(FeatureFact, CommandsFactDefinition["GnsiPathzFact"]):
-    """Effective gNSI Pathz service state."""
+    """Effective gNSI Pathz service state, exposed by EOS starting in release 4.33.2."""
 
     feature: ClassVar[FeatureRef] = SubFeature(FeatureName.GNSI, "Pathz service")
     key: ClassVar[str] = "feature.gnsi.pathz"
     label: ClassVar[str] = "gNSI Pathz service state"
     commands: ClassVar[tuple[AntaCommand, ...]] = (GNSI_COMMAND,)
-
-    @classmethod
-    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[GnsiPathzFact]:
-        """Interpret an absent Pathz field according to the EOS response schema."""
-        fact = super(GnsiPathzFact, cls).derive(device, commands)
-        return _version_aware_gnsi_service_absence(device, commands, fact, "pathzEnabled", cls(FeatureState.UNSUPPORTED))
+    supported_versions: ClassVar[tuple[VersionRule, ...]] = (
+        VersionRule(major=4, minor=33, patch_gte=2),
+        VersionRule(major=4, minor_gt=33),
+    )
 
     @classmethod
     def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[GnsiPathzFact]:
