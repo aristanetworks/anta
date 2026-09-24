@@ -201,26 +201,16 @@ class VerifyAuthenMethods(AntaTest):
         """Main test function for VerifyAuthenMethods."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        not_matching: list[str] = []
-        for k, v in command_output.items():
-            auth_type = k.replace("AuthenMethods", "")
-            if auth_type not in self.inputs.types:
-                # We do not need to verify this accounting type
-                continue
-            # Starting with EOS 4.36, the login method list for console authentication is named console.
-            if auth_type == "login":
-                auth_details = v.get("console", v.get("login"))
-                if auth_details is None:
-                    self.result.is_failure("AAA authentication methods are not configured for login console")
-                    continue
-                if sorted(auth_details["methods"]) != sorted(self.inputs.methods):
-                    self.result.is_failure(f"AAA authentication methods {', '.join(self.inputs.methods)} are not matching for login console")
-                    continue
-            if any(sorted(methods["methods"]) != sorted(self.inputs.methods) for methods in v.values()):
-                not_matching.append(auth_type)
 
-        if not_matching:
-            self.result.is_failure(f"AAA authentication methods {', '.join(self.inputs.methods)} are not matching for {', '.join(not_matching)}")
+        for auth_type in self.inputs.types:
+            auth_type_lookup = f"{auth_type}AuthenMethods"
+            if not (auth_details := command_output.get(auth_type_lookup)):
+                self.result.is_failure(f"AAA authentication methods are not configured for {auth_type}")
+                continue
+
+            for method, details in auth_details.items():
+                if sorted(details["methods"]) != sorted(self.inputs.methods):
+                    self.result.is_failure(f"AAA authentication methods {', '.join(self.inputs.methods)} are not matching for {auth_type}/{method}")
 
 
 class VerifyAuthzMethods(AntaTest):
