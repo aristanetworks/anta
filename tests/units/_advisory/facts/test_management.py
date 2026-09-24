@@ -248,15 +248,17 @@ GNPSI_DISABLED: dict[str, object] = {
 }
 GNPSI_TLS_METADATA: dict[str, object] = {
     "enabled": True,
-    "transports": {"t2": {"enabled": True, "securityType": "tls", "authnUsernamePriority": ["x509-spiffe", "metadata", "x509-common-name"]}},
+    "transports": {
+        "t2": {"enabled": True, "securityType": "tls", "authnUsernamePriority": ["x509-spiffe", "metadata", "x509-common-name"], "configErrors": {}},
+    },
 }
 GNPSI_MTLS_COMMON_NAME: dict[str, object] = {
     "enabled": True,
-    "transports": {"t2": {"enabled": True, "securityType": "mtls", "authnUsernamePriority": ["x509-spiffe", "x509-common-name"]}},
+    "transports": {"t2": {"enabled": True, "securityType": "mtls", "authnUsernamePriority": ["x509-spiffe", "x509-common-name"], "configErrors": {}}},
 }
 GNPSI_MTLS_SPIFFE: dict[str, object] = {
     "enabled": True,
-    "transports": {"t2": {"enabled": True, "securityType": "mtls", "authnUsernamePriority": ["x509-spiffe"]}},
+    "transports": {"t2": {"enabled": True, "securityType": "mtls", "authnUsernamePriority": ["x509-spiffe"], "configErrors": {}}},
 }
 
 
@@ -308,8 +310,8 @@ def test_gnpsi_exposure_short_circuits_incomplete_transport(device: OfflineAntaD
     output = {
         "enabled": True,
         "transports": {
-            "incomplete": {"enabled": True},
-            "exposed": {"enabled": True, "securityType": "tls", "authnUsernamePriority": ["metadata"]},
+            "incomplete": {"enabled": True, "configErrors": {}},
+            "exposed": {"enabled": True, "securityType": "tls", "authnUsernamePriority": ["metadata"], "configErrors": {}},
         },
     }
 
@@ -324,8 +326,8 @@ def test_gnpsi_mitigation_short_circuits_ineffective_transport(device: OfflineAn
     output = {
         "enabled": True,
         "transports": {
-            "incomplete": {"enabled": True},
-            "exposed": {"enabled": True, "securityType": "tls", "authnUsernamePriority": ["metadata"]},
+            "incomplete": {"enabled": True, "configErrors": {}},
+            "exposed": {"enabled": True, "securityType": "tls", "authnUsernamePriority": ["metadata"], "configErrors": {}},
         },
     }
 
@@ -345,8 +347,8 @@ def test_gnpsi_mitigation_short_circuits_ineffective_transport(device: OfflineAn
             {
                 "enabled": True,
                 "transports": {
-                    "t2": {"enabled": True, "securityType": "mtls", "authnUsernamePriority": ["x509-spiffe"]},
-                    "t3": {"enabled": True, "securityType": "mtls", "authnUsernamePriority": ["x509-common-name"]},
+                    "t2": {"enabled": True, "securityType": "mtls", "authnUsernamePriority": ["x509-spiffe"], "configErrors": {}},
+                    "t3": {"enabled": True, "securityType": "mtls", "authnUsernamePriority": ["x509-common-name"], "configErrors": {}},
                 },
             },
             MitigationState.INEFFECTIVE,
@@ -354,7 +356,7 @@ def test_gnpsi_mitigation_short_circuits_ineffective_transport(device: OfflineAn
     ],
 )
 def test_gnpsi_mutual_tls_spiffe_mitigation(device: OfflineAntaDevice, output: dict[str, object], state: MitigationState) -> None:
-    """Require mutual TLS and exclusively x509-spiffe authentication on every enabled transport."""
+    """Require mutual TLS and exclusively x509-spiffe authentication on every effective transport."""
     fact = GnpsiMutualTlsSpiffeMitigationFact.derive(device, (json_command(GnpsiMutualTlsSpiffeMitigationFact, output),))
     assert isinstance(fact, AvailableFact)
     assert fact.value.state is state
@@ -362,10 +364,127 @@ def test_gnpsi_mutual_tls_spiffe_mitigation(device: OfflineAntaDevice, output: d
 
 def test_gnpsi_mutual_tls_spiffe_mitigation_rejects_missing_authentication(device: OfflineAntaDevice) -> None:
     """Keep incomplete enabled-transport output unavailable."""
-    output = {"enabled": True, "transports": {"t2": {"enabled": True, "securityType": "mtls"}}}
+    output = {"enabled": True, "transports": {"t2": {"enabled": True, "securityType": "mtls", "configErrors": {}}}}
     fact = GnpsiMutualTlsSpiffeMitigationFact.derive(device, (json_command(GnpsiMutualTlsSpiffeMitigationFact, output),))
     assert isinstance(fact, UnavailableFact)
     assert fact.problem is FactProblemKind.MISSING
+
+
+GNPSI_BROKEN_TRANSPORT: dict[str, object] = {
+    "enabled": True,
+    "running": False,
+    "port": 0,
+    "securityType": "unknown",
+    "sslProfile": "",
+    "authnUsernamePriority": [],
+    "configErrors": {"noSslProfileFound": True},
+}
+GNPSI_NON_RUNNING_NO_SSL_PROFILE: dict[str, object] = {"enabled": True, "transports": {"default": GNPSI_BROKEN_TRANSPORT}}
+GNPSI_NON_RUNNING_INVALID_SSL_PROFILE: dict[str, object] = {
+    "enabled": True,
+    "transports": {
+        "default": {
+            "enabled": True,
+            "running": False,
+            "port": 0,
+            "securityType": "unknown",
+            "sslProfile": "custom",
+            "authnUsernamePriority": [],
+            "configErrors": {"invalidSslProfile": True},
+        }
+    },
+}
+GNPSI_NON_RUNNING_TLS_METADATA: dict[str, object] = {
+    "enabled": True,
+    "transports": {
+        "default": {
+            "enabled": True,
+            "running": False,
+            "securityType": "tls",
+            "authnUsernamePriority": ["metadata"],
+        }
+    },
+}
+
+
+def _assert_ineffective_gnpsi_facts(device: OfflineAntaDevice, output: dict[str, object]) -> None:
+    """Require a non-running or errored transport to look disabled rather than malformed."""
+    transport = GnpsiTransportFact.derive(device, (json_command(GnpsiTransportFact, output),))
+    exposure = GnpsiAuthenticationExposureFact.derive(device, (json_command(GnpsiAuthenticationExposureFact, output),))
+    mitigation = GnpsiMutualTlsSpiffeMitigationFact.derive(device, (json_command(GnpsiMutualTlsSpiffeMitigationFact, output),))
+
+    assert isinstance(transport, AvailableFact)
+    assert transport.value.state is FeatureState.DISABLED
+    assert isinstance(exposure, AvailableFact)
+    assert exposure.value.state is FeatureState.DISABLED
+    assert isinstance(mitigation, AvailableFact)
+    assert mitigation.value.state is MitigationState.INEFFECTIVE
+
+
+@pytest.mark.parametrize(
+    "output",
+    [GNPSI_NON_RUNNING_NO_SSL_PROFILE, GNPSI_NON_RUNNING_INVALID_SSL_PROFILE, GNPSI_NON_RUNNING_TLS_METADATA],
+)
+def test_gnpsi_non_running_transport_is_not_effective(device: OfflineAntaDevice, output: dict[str, object]) -> None:
+    """Ignore configured transports that are not running or that report configuration errors."""
+    _assert_ineffective_gnpsi_facts(device, output)
+
+
+def test_gnpsi_exposure_ignores_non_running_sibling(device: OfflineAntaDevice) -> None:
+    """Keep a running exposed transport decisive when another transport cannot accept requests."""
+    output = {
+        "enabled": True,
+        "transports": {
+            "broken": GNPSI_BROKEN_TRANSPORT,
+            "exposed": {"enabled": True, "running": True, "securityType": "tls", "authnUsernamePriority": ["metadata"], "configErrors": {}},
+        },
+    }
+
+    transport = GnpsiTransportFact.derive(device, (json_command(GnpsiTransportFact, output),))
+    exposure = GnpsiAuthenticationExposureFact.derive(device, (json_command(GnpsiAuthenticationExposureFact, output),))
+
+    assert isinstance(transport, AvailableFact)
+    assert transport.value.state is FeatureState.ENABLED
+    assert isinstance(exposure, AvailableFact)
+    assert exposure.value.state is FeatureState.ENABLED
+
+
+def test_gnpsi_mitigation_ignores_non_running_sibling(device: OfflineAntaDevice) -> None:
+    """Keep an effective mTLS/SPIFFE transport when a sibling cannot accept requests."""
+    output = {
+        "enabled": True,
+        "transports": {
+            "broken": GNPSI_BROKEN_TRANSPORT,
+            "safe": {"enabled": True, "running": True, "securityType": "mtls", "authnUsernamePriority": ["x509-spiffe"], "configErrors": {}},
+        },
+    }
+
+    fact = GnpsiMutualTlsSpiffeMitigationFact.derive(device, (json_command(GnpsiMutualTlsSpiffeMitigationFact, output),))
+
+    assert isinstance(fact, AvailableFact)
+    assert fact.value.state is MitigationState.EFFECTIVE
+
+
+@pytest.mark.parametrize(
+    "output",
+    [
+        {"enabled": True, "transports": {"t2": {"enabled": True, "running": "yes"}}},
+        {"enabled": True, "transports": {"t2": {"enabled": True, "configErrors": {"noSslProfileFound": "true"}}}},
+        {"enabled": True, "transports": {"t2": {"enabled": True, "running": True}}},
+    ],
+)
+def test_gnpsi_effective_transport_rejects_malformed_runtime_fields(device: OfflineAntaDevice, output: dict[str, object]) -> None:
+    """Reject enabled candidate transports with invalid running or configuration-error fields."""
+    transport = GnpsiTransportFact.derive(device, (json_command(GnpsiTransportFact, output),))
+    exposure = GnpsiAuthenticationExposureFact.derive(device, (json_command(GnpsiAuthenticationExposureFact, output),))
+    mitigation = GnpsiMutualTlsSpiffeMitigationFact.derive(device, (json_command(GnpsiMutualTlsSpiffeMitigationFact, output),))
+
+    assert isinstance(transport, UnavailableFact)
+    assert transport.problem is FactProblemKind.MALFORMED
+    assert isinstance(exposure, UnavailableFact)
+    assert exposure.problem is FactProblemKind.MALFORMED
+    assert isinstance(mitigation, UnavailableFact)
+    assert mitigation.problem is FactProblemKind.MALFORMED
 
 
 @pytest.mark.parametrize(
