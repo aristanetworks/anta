@@ -35,6 +35,14 @@ def _source(command: AntaCommand) -> FactSource:
     return FactSource(command.command, FactSourceKind.COMMAND)
 
 
+def _p4_runtime_enabled(command: AntaCommand) -> bool | FactProblemKind:
+    """Return whether P4Runtime is enabled, or a problem if the flag is absent or invalid."""
+    enabled = command.json_output.get("enabled")
+    if not isinstance(enabled, bool):
+        return FactProblemKind.MISSING if enabled is None else FactProblemKind.MALFORMED
+    return enabled
+
+
 @dataclass(frozen=True, slots=True)
 class P4RuntimeFact(FeatureFact, CommandsFactDefinition["P4RuntimeFact"]):
     """Effective P4Runtime service state."""
@@ -51,9 +59,9 @@ class P4RuntimeFact(FeatureFact, CommandsFactDefinition["P4RuntimeFact"]):
         source = _source(command)
         if is_unsupported_optional_command(command):
             return cls(FeatureState.UNSUPPORTED).available(source)
-        enabled = command.json_output.get("enabled")
-        if not isinstance(enabled, bool):
-            return cls.unavailable(FactProblemKind.MISSING if enabled is None else FactProblemKind.MALFORMED, source)
+        enabled = _p4_runtime_enabled(command)
+        if isinstance(enabled, FactProblemKind):
+            return cls.unavailable(enabled, source)
         return cls(FeatureState.ENABLED if enabled else FeatureState.DISABLED).available(source)
 
 
@@ -73,13 +81,18 @@ class P4RuntimeAccountingFact(FeatureFact, CommandsFactDefinition["P4RuntimeAcco
         source = _source(command)
         if is_unsupported_optional_command(command):
             return cls(FeatureState.UNSUPPORTED).available(source)
+        enabled = _p4_runtime_enabled(command)
+        if isinstance(enabled, FactProblemKind):
+            return cls.unavailable(enabled, source)
+        if not enabled:
+            return cls(FeatureState.DISABLED).available(source)
         transport = command.json_output.get("transport")
         if not isinstance(transport, Mapping):
             return cls.unavailable(FactProblemKind.MISSING if transport is None else FactProblemKind.MALFORMED, source)
-        enabled = transport.get("accountingRequests")
-        if not isinstance(enabled, bool):
-            return cls.unavailable(FactProblemKind.MISSING if enabled is None else FactProblemKind.MALFORMED, source)
-        return cls(FeatureState.ENABLED if enabled else FeatureState.DISABLED).available(source)
+        accounting = transport.get("accountingRequests")
+        if not isinstance(accounting, bool):
+            return cls.unavailable(FactProblemKind.MISSING if accounting is None else FactProblemKind.MALFORMED, source)
+        return cls(FeatureState.ENABLED if accounting else FeatureState.DISABLED).available(source)
 
 
 @dataclass(frozen=True, slots=True)
@@ -93,12 +106,17 @@ class P4RuntimeMtlsFact(FeatureFact, CommandsFactDefinition["P4RuntimeMtlsFact"]
 
     @classmethod
     # pylint: disable-next=too-many-return-statements
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[P4RuntimeMtlsFact]:  # noqa: PLR0911
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[P4RuntimeMtlsFact]:  # noqa: C901, PLR0911
         """Normalize whether P4Runtime uses an SSL profile with trusted certificates."""
         p4, ssl = commands
         p4_source = _source(p4)
         if is_unsupported_optional_command(p4):
             return cls(FeatureState.UNSUPPORTED).available(p4_source)
+        enabled = _p4_runtime_enabled(p4)
+        if isinstance(enabled, FactProblemKind):
+            return cls.unavailable(enabled, p4_source)
+        if not enabled:
+            return cls(FeatureState.DISABLED).available(p4_source)
         transport = p4.json_output.get("transport")
         if not isinstance(transport, Mapping):
             return cls.unavailable(FactProblemKind.MISSING if transport is None else FactProblemKind.MALFORMED, p4_source)
