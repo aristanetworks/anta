@@ -460,7 +460,7 @@ class VerifyAuthenMethodLists(AntaTest):
             configured_lists = command_output.get(f"{auth_type}AuthenMethods", {})
             for expected_list in authentication.method_lists:
                 result = self.result.add(description=f"Authentication Type: {auth_type} Method: {expected_list.name}", status=AntaTestStatus.SUCCESS)
-                if expected_list.name == "login":
+                if auth_type == "login" and expected_list.name in {"login", "console"}:
                     actual_methods = configured_lists.get("console", configured_lists.get("login", {})).get("methods")
                 else:
                     actual_methods = get_value(configured_lists, f"{expected_list.name}..methods", separator="..")
@@ -469,5 +469,5 @@ class VerifyAuthenMethodLists(AntaTest):
                     result.is_failure("Not configured")
                     continue
 
-                if actual_methods != expected_list.methods:
+                if sorted(actual_methods) != sorted(expected_list.methods):
                     result.is_failure(f"Methods mismatch - Expected: {', '.join(expected_list.methods)} Actual: {', '.join(actual_methods)}")

@@ -483,6 +483,27 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
+    (VerifyAuthenMethodLists, "success-console-fallback-to-login"): {
+        "eos_data": [
+            {
+                "loginAuthenMethods": {"default": {"methods": ["group tacacs+", "local"]}, "login": {"methods": ["local"]}},
+            }
+        ],
+        "inputs": {
+            "authentication": [
+                {"auth_type": "login", "method_lists": [{"name": "console", "methods": ["local"]}]},
+            ]
+        },
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Authentication Type: login Method: console",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
+    },
     (VerifyAuthenMethodLists, "failure-missing-and-mismatch"): {
         "eos_data": [
             {
