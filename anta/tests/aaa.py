@@ -202,7 +202,11 @@ class VerifyAuthenMethods(AntaTest):
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
 
-        for auth_type in self.inputs.types:
+        for auth_type in ("login", "enable", "dot1x"):
+            # We do not need to verify this authentication type
+            if auth_type not in self.inputs.types:
+                continue
+
             auth_type_lookup = f"{auth_type}AuthenMethods"
             if not (auth_details := command_output.get(auth_type_lookup)):
                 self.result.is_failure(f"AAA authentication methods are not configured for {auth_type}")
