@@ -96,6 +96,11 @@ _DATA: AntaUnitTestData = {
         "eos_data": eos_data({"enabled": False}, {}, {}),
         "expected": expected(AntaTestStatus.SUCCESS, "The device is not affected because the P4Runtime feature is disabled", None),
     },
+    (SA174, "not-affected-disabled-omitted-transport"): {
+        "version": build_eos_version("4.35.5M"),
+        "eos_data": eos_data({"devices": {}, "enabled": False, "numClients": 0}, {}, {}),
+        "expected": expected(AntaTestStatus.SUCCESS, "The device is not affected because the P4Runtime feature is disabled", None),
+    },
     (SA174, "not-affected-no-accounting"): {
         "version": build_eos_version("4.35.5M"),
         "eos_data": eos_data(p4(), TRUSTED_PROFILE, {"acctzEnabled": False, "authzEnabled": False}),
