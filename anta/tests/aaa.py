@@ -408,7 +408,7 @@ class VerifyAuthenMethodLists(AntaTest):
 
     Expected Results
     ----------------
-    * Success: The test passes when every specified method list is configured with the expected methods in the expected order.
+    * Success: The test passes when every specified method list is configured with the expected methods.
     * Failure: The test fails when any specified method list is missing or its configured methods do not match.
 
     Examples
