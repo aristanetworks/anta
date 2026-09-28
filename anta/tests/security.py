@@ -747,11 +747,8 @@ class VerifySpecificIPSecConn(AntaTest):
                     result.is_failure("Connection not found")
 
 
-def _get_ipsec_connections(command_output: Any) -> dict[str, dict[str, Any]]:  # noqa: ANN401
+def _get_ipsec_connections(command_output: dict[str, Any]) -> dict[str, dict[str, Any]]:
     """Return the EOS IPsec connection map when it has the expected shape."""
-    if not isinstance(command_output, dict):
-        return {}
-
     connections = command_output.get("connections")
     if not isinstance(connections, dict):
         return {}
