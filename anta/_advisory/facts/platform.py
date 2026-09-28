@@ -5,7 +5,8 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, ClassVar
 
 from anta._advisory.facts.models import Fact, FactDefinition, FactProblemKind, FactSource, FactSourceKind
 from anta._eos.platform import PlatformComponentIdentity, PlatformComponentRole, PlatformIdentity
@@ -15,14 +16,25 @@ if TYPE_CHECKING:
     from anta.models import AntaCommand
 
 
-class PlatformIdentityFact(FactDefinition[PlatformIdentity]):
+@dataclass(frozen=True, slots=True)
+class PlatformIdentityFact(PlatformIdentity, FactDefinition["PlatformIdentityFact"]):
     """Normalized platform identity from refreshed device metadata."""
 
-    key = "platform.identity"
-    label = "platform identity"
+    key: ClassVar[str] = "platform.identity"
+    label: ClassVar[str] = "platform identity"
 
     @classmethod
-    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[PlatformIdentity]:
+    def from_identity(cls, platform: PlatformIdentity) -> PlatformIdentityFact:
+        """Create the nominal fact value from normalized platform identity."""
+        return cls(
+            model=platform.model,
+            type=platform.type,
+            modules=platform.modules,
+            platform_families=platform.platform_families,
+        )
+
+    @classmethod
+    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[PlatformIdentityFact]:
         """Return the refreshed platform identity or a missing fact when unavailable."""
         _ = commands
         source = FactSource("device metadata", FactSourceKind.DEVICE_METADATA)
@@ -31,17 +43,28 @@ class PlatformIdentityFact(FactDefinition[PlatformIdentity]):
             return cls.unavailable(FactProblemKind.MISSING, source)
         if not isinstance(platform, PlatformIdentity):
             return cls.unavailable(FactProblemKind.INVALID, source)
-        return cls.available(platform, source)
+        return cls.from_identity(platform).available(source)
 
 
-class SwitchCardIdentityFact(FactDefinition[PlatformComponentIdentity]):
+@dataclass(frozen=True, slots=True)
+class SwitchCardIdentityFact(PlatformComponentIdentity, FactDefinition["SwitchCardIdentityFact"]):
     """Switch-card identity from refreshed platform metadata."""
 
-    key = "platform.component.switch_card"
-    label = "switch-card platform identity"
+    key: ClassVar[str] = "platform.component.switch_card"
+    label: ClassVar[str] = "switch-card platform identity"
 
     @classmethod
-    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[PlatformComponentIdentity]:
+    def from_identity(cls, card: PlatformComponentIdentity) -> SwitchCardIdentityFact:
+        """Create the nominal fact value from normalized switch-card identity."""
+        return cls(
+            model=card.model,
+            role=card.role,
+            slot=card.slot,
+            platform_families=card.platform_families,
+        )
+
+    @classmethod
+    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[SwitchCardIdentityFact]:
         """Return the single switch card discovered during device refresh."""
         _ = commands
         source = FactSource("device metadata", FactSourceKind.DEVICE_METADATA)
@@ -53,5 +76,7 @@ class SwitchCardIdentityFact(FactDefinition[PlatformComponentIdentity]):
             return cls.unavailable(FactProblemKind.MISSING, source)
         distinct = tuple({(card.model, card.platform_families): card for card in switch_cards}.values())
         if len(distinct) > 1:
-            return cls.unavailable(FactProblemKind.CONTRADICTORY, source, observations=distinct)
-        return cls.available(next(iter(distinct)), source)
+            observations = tuple(cls.from_identity(card) for card in distinct)
+            return cls.unavailable(FactProblemKind.CONTRADICTORY, source, observations=observations)
+        card = next(iter(distinct))
+        return cls.from_identity(card).available(source)

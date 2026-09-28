@@ -6,13 +6,13 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import Any, ClassVar
+from typing import ClassVar
 
 from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.acl import SharedSviIngressAclFact
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import ConfigurationState, ConfigurationValue, Fact, FactDefinition, UnavailableFact
+from anta._advisory.facts.models import ConfigurationState, Fact, FactsBase, UnavailableFact, fact_field, facts_dataclass
 from anta._advisory.facts.platform import PlatformIdentityFact
 from anta._advisory.findings.assessment import assess_eos_scope, assess_platform_scope
 from anta._advisory.findings.models import (
@@ -27,7 +27,7 @@ from anta._advisory.findings.projection import project_vulnerability_result
 from anta._advisory.models import _AdvisoryMetadata, _AdvisoryVulnerability, _AdvisoryVulnerabilitySeverity
 from anta._advisory.optional_commands import OptionalCommandsMixin
 from anta._advisory.remediation import FixedRelease, software_version_plan
-from anta._eos.platform import PlatformFamily, PlatformIdentity
+from anta._eos.platform import PlatformFamily
 from anta._eos.version import EOSVersion
 from anta.decorators import preview_test_class
 
@@ -69,7 +69,7 @@ ADVISORY = _AdvisoryMetadata(
 VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
-def _assess_sa151(version: Fact[EOSVersion], platform: Fact[PlatformIdentity], acl: Fact[ConfigurationValue]) -> VulnerabilityResult:
+def _assess_sa151(version: Fact[EosVersionFact], platform: Fact[PlatformIdentityFact], acl: Fact[SharedSviIngressAclFact]) -> VulnerabilityResult:
     """Assess EOS, platform, and shared SVI ACL exposure."""
     if not isinstance(acl, UnavailableFact) and acl.value.state is ConfigurationState.NOT_CONFIGURED:
         return NotAffectedResult(vulnerability_id=VULNERABILITY_ID, decisive=(acl,))
@@ -107,14 +107,22 @@ class SA151(OptionalCommandsMixin, _AntaAdvisoryTest):
     ```
     """
 
+    @facts_dataclass
+    class Facts(FactsBase):
+        """Collected facts required to assess the advisory."""
+
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
+        platform: Fact[PlatformIdentityFact] = fact_field(PlatformIdentityFact)
+        acl: Fact[SharedSviIngressAclFact] = fact_field(SharedSviIngressAclFact)
+
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
-    required_facts: ClassVar[tuple[type[FactDefinition[Any]], ...]] = (EosVersionFact, PlatformIdentityFact, SharedSviIngressAclFact)
     description = "Verify whether the device is impacted by Security Advisory 0151."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
         """Derive facts, assess the vulnerability, and project it."""
-        finding = _assess_sa151(self.fact(EosVersionFact), self.fact(PlatformIdentityFact), self.fact(SharedSviIngressAclFact))
+        facts = self.Facts.collect(self)
+        finding = _assess_sa151(facts.version, facts.platform, facts.acl)
         atomic = self.result.add(f"Verify {VULNERABILITY_ID}.", vulnerability_ids=(VULNERABILITY_ID,))
         project_vulnerability_result(atomic, finding)

@@ -18,12 +18,8 @@ from anta._advisory.facts.models import (
     FactProblemKind,
     FactSource,
     FactSourceKind,
-    FeatureName,
     FeatureState,
-    FeatureValue,
     MitigationState,
-    MitigationValue,
-    SubFeature,
 )
 from anta._advisory.facts.routing import LegacyOspfv3ConfiguredFact, Ospfv3ConfiguredFact, Ospfv3IpsecAuthenticationFact
 from anta._advisory.facts.software import SA173HotfixFact
@@ -211,28 +207,32 @@ _DATA: AntaUnitTestData = {
 }
 
 
-def version_fact(version: str | None) -> Fact[EOSVersion]:
+def version_fact(version: str | None) -> Fact[EosVersionFact]:
     """Build an EOS version fact for assessment tests."""
     if version is None:
         return EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
     parsed = parse_eos_version(version).unwrap()
-    return EosVersionFact.available(parsed, SOURCE)
+    return EosVersionFact.from_version(parsed).available(SOURCE)
 
 
-def ospfv3_fact(definition: type[Ospfv3ConfiguredFact | LegacyOspfv3ConfiguredFact], state: FeatureState) -> AvailableFact[FeatureValue]:
-    """Build one current or legacy OSPFv3 configuration fact."""
-    name = "routing process" if definition is Ospfv3ConfiguredFact else "legacy IPv6 routing process"
-    return definition.available(FeatureValue(SubFeature(FeatureName.OSPFV3, name), state), SOURCE)
+def current_ospfv3_fact(state: FeatureState) -> AvailableFact[Ospfv3ConfiguredFact]:
+    """Build one current OSPFv3 configuration fact."""
+    return Ospfv3ConfiguredFact(state).available(SOURCE)
 
 
-def authentication_fact(state: MitigationState) -> AvailableFact[MitigationValue]:
+def legacy_ospfv3_fact(state: FeatureState) -> AvailableFact[LegacyOspfv3ConfiguredFact]:
+    """Build one legacy OSPFv3 configuration fact."""
+    return LegacyOspfv3ConfiguredFact(state).available(SOURCE)
+
+
+def authentication_fact(state: MitigationState) -> AvailableFact[Ospfv3IpsecAuthenticationFact]:
     """Build an OSPFv3 IPsec authentication fact."""
-    return Ospfv3IpsecAuthenticationFact.available(MitigationValue(state), SOURCE)
+    return Ospfv3IpsecAuthenticationFact(state).available(SOURCE)
 
 
-def hotfix_fact(state: MitigationState) -> AvailableFact[MitigationValue]:
+def hotfix_fact(state: MitigationState) -> AvailableFact[SA173HotfixFact]:
     """Build a persistent SA173 hotfix fact."""
-    return SA173HotfixFact.available(MitigationValue(state), SOURCE)
+    return SA173HotfixFact(state).available(SOURCE)
 
 
 class TestSA173VersionMatrix(unittest.TestCase):
@@ -266,8 +266,8 @@ class TestSA173Assessment(unittest.TestCase):
     def test_configured_ospfv3_without_authentication_is_affected(self) -> None:
         finding = _assess_sa173(
             version_fact("4.35.4M"),
-            ospfv3_fact(Ospfv3ConfiguredFact, FeatureState.ENABLED),
-            ospfv3_fact(LegacyOspfv3ConfiguredFact, FeatureState.DISABLED),
+            current_ospfv3_fact(FeatureState.ENABLED),
+            legacy_ospfv3_fact(FeatureState.DISABLED),
             authentication_fact(MitigationState.INEFFECTIVE),
             hotfix_fact(MitigationState.INEFFECTIVE),
         )
@@ -278,8 +278,8 @@ class TestSA173Assessment(unittest.TestCase):
     def test_legacy_ospfv3_configuration_is_affected(self) -> None:
         finding = _assess_sa173(
             version_fact("4.31.99M"),
-            ospfv3_fact(Ospfv3ConfiguredFact, FeatureState.UNSUPPORTED),
-            ospfv3_fact(LegacyOspfv3ConfiguredFact, FeatureState.ENABLED),
+            current_ospfv3_fact(FeatureState.UNSUPPORTED),
+            legacy_ospfv3_fact(FeatureState.ENABLED),
             authentication_fact(MitigationState.INEFFECTIVE),
             hotfix_fact(MitigationState.INEFFECTIVE),
         )
@@ -292,8 +292,8 @@ class TestSA173Assessment(unittest.TestCase):
         authentication = authentication_fact(MitigationState.EFFECTIVE)
         finding = _assess_sa173(
             version_fact("4.35.4M"),
-            ospfv3_fact(Ospfv3ConfiguredFact, FeatureState.ENABLED),
-            ospfv3_fact(LegacyOspfv3ConfiguredFact, FeatureState.DISABLED),
+            current_ospfv3_fact(FeatureState.ENABLED),
+            legacy_ospfv3_fact(FeatureState.DISABLED),
             authentication,
             hotfix_fact(MitigationState.INEFFECTIVE),
         )
@@ -307,8 +307,8 @@ class TestSA173Assessment(unittest.TestCase):
         hotfix = hotfix_fact(MitigationState.EFFECTIVE)
         finding = _assess_sa173(
             version_fact("4.35.4M"),
-            ospfv3_fact(Ospfv3ConfiguredFact, FeatureState.ENABLED),
-            ospfv3_fact(LegacyOspfv3ConfiguredFact, FeatureState.DISABLED),
+            current_ospfv3_fact(FeatureState.ENABLED),
+            legacy_ospfv3_fact(FeatureState.DISABLED),
             Ospfv3IpsecAuthenticationFact.unavailable(FactProblemKind.MISSING, SOURCE),
             hotfix,
         )
@@ -323,8 +323,8 @@ class TestSA173Assessment(unittest.TestCase):
             with self.subTest(version=version, applicable=True):
                 finding = _assess_sa173(
                     version_fact(version),
-                    ospfv3_fact(Ospfv3ConfiguredFact, FeatureState.ENABLED),
-                    ospfv3_fact(LegacyOspfv3ConfiguredFact, FeatureState.DISABLED),
+                    current_ospfv3_fact(FeatureState.ENABLED),
+                    legacy_ospfv3_fact(FeatureState.DISABLED),
                     Ospfv3IpsecAuthenticationFact.unavailable(FactProblemKind.MISSING, SOURCE),
                     hotfix,
                 )
@@ -335,8 +335,8 @@ class TestSA173Assessment(unittest.TestCase):
             with self.subTest(version=version, applicable=False):
                 finding = _assess_sa173(
                     version_fact(version),
-                    ospfv3_fact(Ospfv3ConfiguredFact, FeatureState.ENABLED),
-                    ospfv3_fact(LegacyOspfv3ConfiguredFact, FeatureState.DISABLED),
+                    current_ospfv3_fact(FeatureState.ENABLED),
+                    legacy_ospfv3_fact(FeatureState.DISABLED),
                     authentication_fact(MitigationState.INEFFECTIVE),
                     hotfix,
                 )
@@ -347,8 +347,8 @@ class TestSA173Assessment(unittest.TestCase):
             with self.subTest(state=state):
                 finding = _assess_sa173(
                     version_fact(None),
-                    ospfv3_fact(Ospfv3ConfiguredFact, state),
-                    ospfv3_fact(LegacyOspfv3ConfiguredFact, state),
+                    current_ospfv3_fact(state),
+                    legacy_ospfv3_fact(state),
                     Ospfv3IpsecAuthenticationFact.unavailable(FactProblemKind.MALFORMED, SOURCE),
                     SA173HotfixFact.unavailable(FactProblemKind.MALFORMED, SOURCE),
                 )
@@ -369,8 +369,8 @@ class TestSA173Assessment(unittest.TestCase):
         cases = (
             (
                 version_fact(None),
-                ospfv3_fact(Ospfv3ConfiguredFact, FeatureState.ENABLED),
-                ospfv3_fact(LegacyOspfv3ConfiguredFact, FeatureState.DISABLED),
+                current_ospfv3_fact(FeatureState.ENABLED),
+                legacy_ospfv3_fact(FeatureState.DISABLED),
                 authentication_fact(MitigationState.INEFFECTIVE),
                 hotfix_fact(MitigationState.INEFFECTIVE),
                 EosVersionFact,
@@ -378,23 +378,23 @@ class TestSA173Assessment(unittest.TestCase):
             (
                 version_fact("4.35.4M"),
                 Ospfv3ConfiguredFact.unavailable(FactProblemKind.MISSING, SOURCE),
-                ospfv3_fact(LegacyOspfv3ConfiguredFact, FeatureState.DISABLED),
+                legacy_ospfv3_fact(FeatureState.DISABLED),
                 authentication_fact(MitigationState.INEFFECTIVE),
                 hotfix_fact(MitigationState.INEFFECTIVE),
                 Ospfv3ConfiguredFact,
             ),
             (
                 version_fact("4.35.4M"),
-                ospfv3_fact(Ospfv3ConfiguredFact, FeatureState.ENABLED),
-                ospfv3_fact(LegacyOspfv3ConfiguredFact, FeatureState.DISABLED),
+                current_ospfv3_fact(FeatureState.ENABLED),
+                legacy_ospfv3_fact(FeatureState.DISABLED),
                 Ospfv3IpsecAuthenticationFact.unavailable(FactProblemKind.MALFORMED, SOURCE),
                 hotfix_fact(MitigationState.INEFFECTIVE),
                 Ospfv3IpsecAuthenticationFact,
             ),
             (
                 version_fact("4.35.4M"),
-                ospfv3_fact(Ospfv3ConfiguredFact, FeatureState.ENABLED),
-                ospfv3_fact(LegacyOspfv3ConfiguredFact, FeatureState.DISABLED),
+                current_ospfv3_fact(FeatureState.ENABLED),
+                legacy_ospfv3_fact(FeatureState.DISABLED),
                 authentication_fact(MitigationState.INEFFECTIVE),
                 SA173HotfixFact.unavailable(FactProblemKind.MISSING, SOURCE),
                 SA173HotfixFact,

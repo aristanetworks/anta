@@ -36,7 +36,7 @@ def _matches_bounds(
 
 @dataclass(frozen=True)
 class VersionRule:  # pylint: disable=too-many-instance-attributes
-    """Declarative affected-version rule for a security advisory.
+    """Declarative EOS version filter rule.
 
     Bounds apply independently to each numeric version component. An omitted
     component bound is unconstrained, so a patch bound without a hotfix bound
@@ -64,7 +64,7 @@ class VersionRule:  # pylint: disable=too-many-instance-attributes
     exclude_suffixes: tuple[str, ...] = ()
 
     def matches(self, version: EOSVersion) -> bool:
-        """Return True when the EOS version falls in this rule's affected range."""
+        """Return True when the EOS version falls in this rule's range."""
         return (
             version.major == self.major
             and _matches_bounds(

@@ -6,7 +6,8 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, ClassVar
 
 from anta._advisory.facts.models import (
     CommandsFactDefinition,
@@ -14,9 +15,10 @@ from anta._advisory.facts.models import (
     FactProblemKind,
     FactSource,
     FactSourceKind,
+    FeatureFact,
     FeatureName,
+    FeatureRef,
     FeatureState,
-    FeatureValue,
     SubFeature,
 )
 from anta._advisory.optional_commands import OptionalAntaCommand, is_unsupported_optional_command
@@ -99,70 +101,69 @@ def _trace_levels_enabled(config: str, agent: str, facility: str, levels: tuple[
 
 
 def _parse_agent_trace(
-    definition: type[CommandsFactDefinition[FeatureValue]],
     command: AntaCommand,
     *,
     agent: str,
     facility: str,
     levels: tuple[int, ...],
-    subfeature: str,
-) -> Fact[FeatureValue]:
+) -> tuple[FeatureState | FactProblemKind, FactSource]:
     """Normalize one advisory-specific risky trace selection."""
     source = FactSource(command.command, FactSourceKind.COMMAND)
     if is_unsupported_optional_command(command):
-        return definition.unavailable(FactProblemKind.UNSUPPORTED, source)
+        return FactProblemKind.UNSUPPORTED, source
     enabled = _trace_levels_enabled(command.text_output, agent, facility, levels)
     if enabled is None:
-        return definition.unavailable(FactProblemKind.MALFORMED, source)
-    feature = SubFeature(FeatureName.AGENT_TRACING, subfeature)
+        return FactProblemKind.MALFORMED, source
     state = FeatureState.ENABLED if enabled else FeatureState.DISABLED
-    return definition.available(FeatureValue(feature, state), source)
+    return state, source
 
 
-class ConfigAgentPrivateKeyTraceFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class ConfigAgentPrivateKeyTraceFact(FeatureFact, CommandsFactDefinition["ConfigAgentPrivateKeyTraceFact"]):
     """Risky ConfigAgent private-key trace levels."""
 
-    key = "feature.agent_tracing.config_agent_private_key"
-    label = "ConfigAgent private-key trace state"
-    commands = (TRACE_CONFIG_COMMAND,)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.AGENT_TRACING, "risk for ConfigAgent private keys")
+    key: ClassVar[str] = "feature.agent_tracing.config_agent_private_key"
+    label: ClassVar[str] = "ConfigAgent private-key trace state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (TRACE_CONFIG_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[ConfigAgentPrivateKeyTraceFact]:
         """Normalize risky ConfigAgent private-key trace levels."""
         (command,) = commands
-        return _parse_agent_trace(
-            cls,
-            command,
-            agent="ConfigAgent",
-            facility="MgmtSecuritySslCertKey",
-            levels=(0, 3, 4),
-            subfeature="risk for ConfigAgent private keys",
-        )
+        result, source = _parse_agent_trace(command, agent="ConfigAgent", facility="MgmtSecuritySslCertKey", levels=(0, 3, 4))
+        return cls(result).available(source) if isinstance(result, FeatureState) else cls.unavailable(result, source)
 
 
-class AaaPasswordTraceFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class AaaPasswordTraceFact(FeatureFact, CommandsFactDefinition["AaaPasswordTraceFact"]):
     """Risky Aaa user-password trace level."""
 
-    key = "feature.agent_tracing.aaa_password"
-    label = "Aaa user-password trace state"
-    commands = (TRACE_CONFIG_COMMAND,)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.AGENT_TRACING, "risk for Aaa user passwords")
+    key: ClassVar[str] = "feature.agent_tracing.aaa_password"
+    label: ClassVar[str] = "Aaa user-password trace state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (TRACE_CONFIG_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[AaaPasswordTraceFact]:
         """Normalize the risky Aaa user-password trace level."""
         (command,) = commands
-        return _parse_agent_trace(cls, command, agent="Aaa", facility="PyServer", levels=(4,), subfeature="risk for Aaa user passwords")
+        result, source = _parse_agent_trace(command, agent="Aaa", facility="PyServer", levels=(4,))
+        return cls(result).available(source) if isinstance(result, FeatureState) else cls.unavailable(result, source)
 
 
-class AaaTacacsKeyTraceFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class AaaTacacsKeyTraceFact(FeatureFact, CommandsFactDefinition["AaaTacacsKeyTraceFact"]):
     """Risky Aaa TACACS+ shared-key trace level."""
 
-    key = "feature.agent_tracing.aaa_tacacs_key"
-    label = "Aaa TACACS+ shared-key trace state"
-    commands = (TRACE_CONFIG_COMMAND,)
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.AGENT_TRACING, "risk for Aaa TACACS+ shared keys")
+    key: ClassVar[str] = "feature.agent_tracing.aaa_tacacs_key"
+    label: ClassVar[str] = "Aaa TACACS+ shared-key trace state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (TRACE_CONFIG_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[AaaTacacsKeyTraceFact]:
         """Normalize the risky Aaa TACACS+ shared-key trace level."""
         (command,) = commands
-        return _parse_agent_trace(cls, command, agent="Aaa", facility="Tacacs", levels=(6,), subfeature="risk for Aaa TACACS+ shared keys")
+        result, source = _parse_agent_trace(command, agent="Aaa", facility="Tacacs", levels=(6,))
+        return cls(result).available(source) if isinstance(result, FeatureState) else cls.unavailable(result, source)

@@ -17,15 +17,11 @@ from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.models import (
     AvailableFact,
     ConfigurationState,
-    ConfigurationValue,
     Fact,
     FactProblemKind,
     FactSource,
     FactSourceKind,
-    FeatureName,
     MitigationState,
-    MitigationValue,
-    SubFeature,
     UnavailableFact,
 )
 from anta._advisory.facts.platform import PlatformIdentityFact
@@ -487,17 +483,20 @@ class TestSA142PlatformScope(unittest.TestCase):
     """Validate precise and accepted conservative platform qualification."""
 
     def test_platform_fact_uses_refreshed_platform_identity(self) -> None:
-        """Do not reconstruct advisory platform facts from the legacy hardware model."""
+        """Build a nominal platform fact from refreshed metadata rather than the legacy hardware model."""
         device = OfflineAntaDevice("unit-test")
         device.hw_model = "DCS-7050SX3-48YC12-F"
 
         missing = PlatformIdentityFact.derive(device)
         assert isinstance(missing, UnavailableFact)
 
-        device.platform = platform_identity("DCS-7050SX3-48YC12-F")
+        platform = platform_identity("DCS-7050SX3-48YC12-F")
+        assert platform is not None
+        device.platform = platform
         available = PlatformIdentityFact.derive(device)
         assert isinstance(available, AvailableFact)
-        assert available.value is device.platform
+        assert isinstance(available.value, PlatformIdentityFact)
+        assert available.value.model == platform.model
 
     def test_platform_fact_rejects_non_eos_platform_identity(self) -> None:
         """Return invalid evidence for a generic platform identity instead of raising at assessment time."""
@@ -631,9 +630,9 @@ class TestSA142Assessment(unittest.TestCase):
     precise_platform = "DCS-7050SX3-48YC12-F"
     conservative_platform = "DCS-7508N"
     source = FactSource("unit test", FactSourceKind.DEVICE_METADATA)
-    affected_version = EosVersionFact.available(EOSVersion(4, 35, 3, suffix="M"), source)
-    conditional_fixed_version = EosVersionFact.available(EOSVersion(4, 35, 4, suffix="M"), source)
-    outside_scope_version = EosVersionFact.available(EOSVersion(4, 37, 0, suffix="F"), source)
+    affected_version = EosVersionFact(4, 35, 3, suffix="M").available(source)
+    conditional_fixed_version = EosVersionFact(4, 35, 4, suffix="M").available(source)
+    outside_scope_version = EosVersionFact(4, 37, 0, suffix="F").available(source)
     missing_version = EosVersionFact.unavailable(FactProblemKind.MISSING, source)
     invalid_version = EosVersionFact.unavailable(FactProblemKind.INVALID, source)
 
@@ -641,39 +640,40 @@ class TestSA142Assessment(unittest.TestCase):
         self,
         states: tuple[bool | None, ...],
         *,
-        version: Fact[EOSVersion],
+        version: Fact[EosVersionFact],
         platform: str | None = precise_platform,
         mitigation: bool = False,
         mitigation_unsupported: bool = False,
     ) -> VulnerabilityResult:
         """Assess a compact combination of normalized facts."""
         assert len(states) == len(EXPOSURE_PATHS)
-        definitions = (PbrRedirectFact, FlowSpecRedirectFact, TrafficPolicyRedirectFact, DirectFlowRedirectFact, SegmentSecurityRedirectFact)
-        path_facts = tuple(
-            definition.unavailable(FactProblemKind.MALFORMED, self.source)
-            if state is None
-            else definition.available(
-                ConfigurationValue(
-                    SubFeature(FeatureName.NEXT_HOP_REDIRECTION, f"path using {definition.path_name}"),
-                    ConfigurationState.CONFIGURED if state else ConfigurationState.NOT_CONFIGURED,
-                ),
-                self.source,
-            )
-            for definition, state in zip(definitions, states, strict=True)
+        path_facts = (
+            PbrRedirectFact.unavailable(FactProblemKind.MALFORMED, self.source)
+            if states[0] is None
+            else PbrRedirectFact(ConfigurationState.CONFIGURED if states[0] else ConfigurationState.NOT_CONFIGURED).available(self.source),
+            FlowSpecRedirectFact.unavailable(FactProblemKind.MALFORMED, self.source)
+            if states[1] is None
+            else FlowSpecRedirectFact(ConfigurationState.CONFIGURED if states[1] else ConfigurationState.NOT_CONFIGURED).available(self.source),
+            TrafficPolicyRedirectFact.unavailable(FactProblemKind.MALFORMED, self.source)
+            if states[2] is None
+            else TrafficPolicyRedirectFact(ConfigurationState.CONFIGURED if states[2] else ConfigurationState.NOT_CONFIGURED).available(self.source),
+            DirectFlowRedirectFact.unavailable(FactProblemKind.MALFORMED, self.source)
+            if states[3] is None
+            else DirectFlowRedirectFact(ConfigurationState.CONFIGURED if states[3] else ConfigurationState.NOT_CONFIGURED).available(self.source),
+            SegmentSecurityRedirectFact.unavailable(FactProblemKind.MALFORMED, self.source)
+            if states[4] is None
+            else SegmentSecurityRedirectFact(ConfigurationState.CONFIGURED if states[4] else ConfigurationState.NOT_CONFIGURED).available(self.source),
         )
         platform_value = platform_identity(platform)
-        platform_fact: Fact[PlatformIdentity] = (
+        platform_fact: Fact[PlatformIdentityFact] = (
             PlatformIdentityFact.unavailable(FactProblemKind.MISSING, self.source)
             if platform_value is None
-            else PlatformIdentityFact.available(platform_value, self.source)
+            else PlatformIdentityFact.from_identity(platform_value).available(self.source)
         )
         mitigation_fact = (
             MtuDropMitigationFact.unavailable(FactProblemKind.UNSUPPORTED, self.source)
             if mitigation_unsupported
-            else MtuDropMitigationFact.available(
-                MitigationValue(MitigationState.EFFECTIVE if mitigation else MitigationState.INEFFECTIVE),
-                self.source,
-            )
+            else MtuDropMitigationFact(MitigationState.EFFECTIVE if mitigation else MitigationState.INEFFECTIVE).available(self.source)
         )
         return _assess_sa142(
             path_facts,

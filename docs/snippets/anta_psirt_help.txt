@@ -60,4 +60,4 @@ Options:
 Commands:
   csv         Generate a detailed security advisory CSV report.
   md-report   Generate a detailed security advisory Markdown report.
-  tpl-report  ANTA command to check network state with templated report.
+  tpl-report  Generate a detailed security advisory report from a template.

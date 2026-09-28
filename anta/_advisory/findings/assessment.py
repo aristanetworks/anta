@@ -16,13 +16,14 @@ if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
 
     from anta._advisory.eos_versions import VersionRule
-    from anta._eos.platform import PlatformFamily, PlatformIdentity
-    from anta._eos.version import EOSVersion
+    from anta._advisory.facts.eos import EosVersionFact
+    from anta._advisory.facts.platform import PlatformIdentityFact
+    from anta._eos.platform import PlatformFamily
 
 
 def assess_eos_scope(
     vulnerability_id: str,
-    version: Fact[EOSVersion],
+    version: Fact[EosVersionFact],
     affected_versions: Sequence[VersionRule],
 ) -> EosReleaseAssessment | ErrorResult | NotAffectedResult:
     """Return an affected EOS assessment or a terminal error or not-affected result."""
@@ -35,9 +36,9 @@ def assess_eos_scope(
 
 
 def assess_eos_version(
-    version: Fact[EOSVersion],
+    version: Fact[EosVersionFact],
     affected_versions: Sequence[VersionRule],
-) -> EosReleaseAssessment | UnavailableFact[EOSVersion]:
+) -> EosReleaseAssessment | UnavailableFact[EosVersionFact]:
     """Interpret an EOS version fact without making a terminal vulnerability decision."""
     if isinstance(version, UnavailableFact):
         return version
@@ -52,7 +53,7 @@ def assess_eos_version(
 
 def assess_platform_scope(
     vulnerability_id: str,
-    platform: Fact[PlatformIdentity],
+    platform: Fact[PlatformIdentityFact],
     families: Iterable[PlatformFamily],
     *,
     matched_relation: PlatformRelation = PlatformRelation.AFFECTED,

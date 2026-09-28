@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Literal, TypeAlias
 
 from anta._advisory.eos_versions import AffectedStatus
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import AvailableFact, FeatureName, FeatureState, FeatureValue, SubFeature
+from anta._advisory.facts.models import AvailableFact, FactProblemKind, FeatureState
 from anta._advisory.facts.network_services import VrrpAntiReplayFact, VrrpFact, VrrpV2IpAhFact
 from anta._advisory.findings.models import AffectedResult, ErrorResult, NotAffectedResult
 from anta._advisory.remediation import (
@@ -30,7 +30,7 @@ from anta._eos.version import EOSVersion
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_157 import ADVISORY, AFFECTED_VERSION_MATRIX, SA157, _assess_bypass, _assess_logging, _assess_replay
 from tests.units.anta_tests import build_eos_version, test
-from tests.units.anta_tests.advisories.fact_builders import assert_version_statuses, available_fact, eos_version_fact, unavailable_fact
+from tests.units.anta_tests.advisories.fact_builders import SOURCE, assert_version_statuses, eos_version_fact
 
 if TYPE_CHECKING:
     from tests.units.anta_tests import AntaUnitTestData, AtomicResult, UnitTestResult
@@ -67,26 +67,31 @@ VRRP_V3_IPV6 = """interface Ethernet1
 !"""
 
 
-def vrrp_fact(definition: type[VrrpFact | VrrpV2IpAhFact | VrrpAntiReplayFact], state: FeatureState) -> AvailableFact[FeatureValue]:
+def vrrp_fact(state: FeatureState) -> AvailableFact[VrrpFact]:
     """Build normalized VRRP state for direct assessment tests."""
-    if definition is VrrpFact:
-        feature = FeatureName.VRRP
-    elif definition is VrrpV2IpAhFact:
-        feature = SubFeature(FeatureName.VRRP, "version 2 IP-AH authentication")
-    else:
-        feature = SubFeature(FeatureName.VRRP, "authentication anti-replay")
-    return available_fact(definition, FeatureValue(feature, state))
+    return VrrpFact(state).available(SOURCE)
+
+
+def ip_ah_fact(state: FeatureState) -> AvailableFact[VrrpV2IpAhFact]:
+    """Build normalized VRRPv2 IP-AH state for direct assessment tests."""
+    return VrrpV2IpAhFact(state).available(SOURCE)
+
+
+def anti_replay_fact(state: FeatureState) -> AvailableFact[VrrpAntiReplayFact]:
+    """Build normalized VRRP anti-replay state for direct assessment tests."""
+    return VrrpAntiReplayFact(state).available(SOURCE)
 
 
 def test_sa157_simple_assessment_contracts() -> None:
     """Assess bypass and logging from their independent VRRP prerequisites."""
-    ip_ah_enabled = vrrp_fact(VrrpV2IpAhFact, FeatureState.ENABLED)
-    vrrp_enabled = vrrp_fact(VrrpFact, FeatureState.ENABLED)
-    assert isinstance(_assess_bypass(unavailable_fact(EosVersionFact), vrrp_fact(VrrpV2IpAhFact, FeatureState.DISABLED)), NotAffectedResult)
+    ip_ah_enabled = ip_ah_fact(FeatureState.ENABLED)
+    vrrp_enabled = vrrp_fact(FeatureState.ENABLED)
+    missing_version = EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
+    assert isinstance(_assess_bypass(missing_version, ip_ah_fact(FeatureState.DISABLED)), NotAffectedResult)
     assert isinstance(_assess_bypass(eos_version_fact("4.36.1F"), ip_ah_enabled), AffectedResult)
     assert isinstance(_assess_bypass(eos_version_fact("4.36.2F"), ip_ah_enabled), NotAffectedResult)
-    assert isinstance(_assess_bypass(unavailable_fact(EosVersionFact), ip_ah_enabled), ErrorResult)
-    assert isinstance(_assess_logging(unavailable_fact(EosVersionFact), vrrp_fact(VrrpFact, FeatureState.DISABLED)), NotAffectedResult)
+    assert isinstance(_assess_bypass(missing_version, ip_ah_enabled), ErrorResult)
+    assert isinstance(_assess_logging(missing_version, vrrp_fact(FeatureState.DISABLED)), NotAffectedResult)
     logging = _assess_logging(eos_version_fact("4.36.1F"), vrrp_enabled)
     assert isinstance(logging, AffectedResult)
     assert logging.remediation == LOGGING_REMEDIATION
@@ -94,16 +99,18 @@ def test_sa157_simple_assessment_contracts() -> None:
 
 def test_sa157_replay_assessment_contract() -> None:
     """Require both fixed software and anti-replay without demanding irrelevant IP-AH state."""
-    ip_ah_enabled = vrrp_fact(VrrpV2IpAhFact, FeatureState.ENABLED)
-    anti_replay_enabled = vrrp_fact(VrrpAntiReplayFact, FeatureState.ENABLED)
-    anti_replay_disabled = vrrp_fact(VrrpAntiReplayFact, FeatureState.DISABLED)
+    ip_ah_enabled = ip_ah_fact(FeatureState.ENABLED)
+    anti_replay_enabled = anti_replay_fact(FeatureState.ENABLED)
+    anti_replay_disabled = anti_replay_fact(FeatureState.DISABLED)
     assert isinstance(_assess_replay(eos_version_fact("4.36.1F"), ip_ah_enabled, anti_replay_enabled), AffectedResult)
-    assert isinstance(_assess_replay(eos_version_fact("4.36.2F"), unavailable_fact(VrrpV2IpAhFact), anti_replay_enabled), NotAffectedResult)
+    missing_ip_ah = VrrpV2IpAhFact.unavailable(FactProblemKind.MISSING, SOURCE)
+    assert isinstance(_assess_replay(eos_version_fact("4.36.2F"), missing_ip_ah, anti_replay_enabled), NotAffectedResult)
     affected = _assess_replay(eos_version_fact("4.36.2F"), ip_ah_enabled, anti_replay_disabled)
     assert isinstance(affected, AffectedResult)
     assert len(affected.conditions) == 2
-    assert isinstance(_assess_replay(eos_version_fact("4.36.2F"), unavailable_fact(VrrpV2IpAhFact), anti_replay_disabled), ErrorResult)
-    assert isinstance(_assess_replay(eos_version_fact("4.37.0F"), ip_ah_enabled, unavailable_fact(VrrpAntiReplayFact)), ErrorResult)
+    assert isinstance(_assess_replay(eos_version_fact("4.36.2F"), missing_ip_ah, anti_replay_disabled), ErrorResult)
+    missing_anti_replay = VrrpAntiReplayFact.unavailable(FactProblemKind.MISSING, SOURCE)
+    assert isinstance(_assess_replay(eos_version_fact("4.37.0F"), ip_ah_enabled, missing_anti_replay), ErrorResult)
     assert isinstance(_assess_replay(eos_version_fact("4.37.0F"), ip_ah_enabled, anti_replay_enabled), NotAffectedResult)
 
 

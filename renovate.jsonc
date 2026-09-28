@@ -1,7 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
 
-  "extends": ["config:recommended"],
+  "extends": ["config:best-practices"],
   "timezone": "UTC",
   "dependencyDashboard": true,
   "enabledManagers": ["pep621", "github-actions", "pre-commit"],
@@ -17,6 +17,8 @@
 
   // Global operational rules
   "minimumReleaseAge": "7 days",
+  // Let Renovate update its branches after autofix.ci commits formatting changes.
+  "gitIgnoredAuthors": ["114827586+autofix-ci[bot]@users.noreply.github.com"],
   "prConcurrentLimit": 5,
   "prHourlyLimit": 2,
 

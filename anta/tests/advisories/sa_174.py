@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import Any, ClassVar, cast
+from typing import ClassVar, cast
 
 from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
@@ -15,10 +15,12 @@ from anta._advisory.facts.management import GnsiAcctzFact, GnsiAuthzFact
 from anta._advisory.facts.models import (
     AvailableFact,
     Fact,
-    FactDefinition,
+    FactsBase,
+    FeatureFact,
     FeatureState,
-    FeatureValue,
     UnavailableFact,
+    fact_field,
+    facts_dataclass,
 )
 from anta._advisory.facts.p4_runtime import P4RuntimeAccountingFact, P4RuntimeFact, P4RuntimeMtlsFact
 from anta._advisory.findings.assessment import assess_eos_scope
@@ -76,19 +78,19 @@ ADVISORY = _AdvisoryMetadata(
 VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
-def _known_feature(fact: Fact[FeatureValue], state: FeatureState) -> bool:
+def _known_feature(fact: Fact[FeatureFact], state: FeatureState) -> bool:
     """Return whether a feature fact is available in the requested state."""
     return not isinstance(fact, UnavailableFact) and fact.value.state is state
 
 
 # pylint: disable-next=too-many-return-statements
 def _assess_sa174(  # noqa: PLR0911
-    version: Fact[EOSVersion],
-    p4_runtime: Fact[FeatureValue],
-    mtls: Fact[FeatureValue],
-    p4_accounting: Fact[FeatureValue],
-    gnsi_acctz: Fact[FeatureValue],
-    authz: Fact[FeatureValue],
+    version: Fact[EosVersionFact],
+    p4_runtime: Fact[P4RuntimeFact],
+    mtls: Fact[P4RuntimeMtlsFact],
+    p4_accounting: Fact[P4RuntimeAccountingFact],
+    gnsi_acctz: Fact[GnsiAcctzFact],
+    authz: Fact[GnsiAuthzFact],
 ) -> VulnerabilityResult:
     """Assess P4Runtime transport security, accounting, Authz state, and policy observability."""
     if not isinstance(p4_runtime, UnavailableFact) and p4_runtime.value.state is not FeatureState.ENABLED:
@@ -104,20 +106,20 @@ def _assess_sa174(  # noqa: PLR0911
     if mtls.value.state is not FeatureState.ENABLED:
         return AffectedResult(
             vulnerability_id=VULNERABILITY_ID,
-            conditions=(p4_runtime, AffectedFeatureState(mtls.definition, mtls.value, mtls.source)),
+            conditions=(p4_runtime, AffectedFeatureState(mtls.value, mtls.source)),
             context=(eos_release,),
             remediation=remediation,
         )
 
     accounting_facts = (p4_accounting, gnsi_acctz)
-    enabled_accounting = tuple(cast("AvailableFact[FeatureValue]", fact) for fact in accounting_facts if _known_feature(fact, FeatureState.ENABLED))
+    enabled_accounting = tuple(cast("AvailableFact[FeatureFact]", fact) for fact in accounting_facts if _known_feature(fact, FeatureState.ENABLED))
     unavailable_accounting = tuple(fact for fact in accounting_facts if isinstance(fact, UnavailableFact))
     if not enabled_accounting:
         if unavailable_accounting:
             return ErrorResult(vulnerability_id=VULNERABILITY_ID, problems=unavailable_accounting)
         return NotAffectedResult(
             vulnerability_id=VULNERABILITY_ID,
-            decisive=tuple(cast("AvailableFact[FeatureValue]", fact) for fact in accounting_facts),
+            decisive=tuple(cast("AvailableFact[FeatureFact]", fact) for fact in accounting_facts),
         )
     if isinstance(authz, UnavailableFact):
         return ErrorResult(vulnerability_id=VULNERABILITY_ID, problems=(authz,))
@@ -135,7 +137,7 @@ def _assess_sa174(  # noqa: PLR0911
         )
     return AffectedResult(
         vulnerability_id=VULNERABILITY_ID,
-        conditions=(p4_runtime, mtls, *enabled_accounting, AffectedFeatureState(authz.definition, authz.value, authz.source)),
+        conditions=(p4_runtime, mtls, *enabled_accounting, AffectedFeatureState(authz.value, authz.source)),
         context=(eos_release,),
         remediation=remediation,
     )
@@ -160,28 +162,25 @@ class SA174(OptionalCommandsMixin, _AntaAdvisoryTest):
     ```
     """
 
+    @facts_dataclass
+    class Facts(FactsBase):
+        """Collected facts required to assess the advisory."""
+
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
+        p4_runtime: Fact[P4RuntimeFact] = fact_field(P4RuntimeFact)
+        mtls: Fact[P4RuntimeMtlsFact] = fact_field(P4RuntimeMtlsFact)
+        p4_accounting: Fact[P4RuntimeAccountingFact] = fact_field(P4RuntimeAccountingFact)
+        gnsi_acctz: Fact[GnsiAcctzFact] = fact_field(GnsiAcctzFact)
+        authz: Fact[GnsiAuthzFact] = fact_field(GnsiAuthzFact)
+
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
-    required_facts: ClassVar[tuple[type[FactDefinition[Any]], ...]] = (
-        EosVersionFact,
-        P4RuntimeFact,
-        P4RuntimeMtlsFact,
-        P4RuntimeAccountingFact,
-        GnsiAcctzFact,
-        GnsiAuthzFact,
-    )
     description = "Verify whether the device is impacted by Security Advisory 0174."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
         """Derive facts, assess the vulnerability, and project it."""
-        finding = _assess_sa174(
-            self.fact(EosVersionFact),
-            self.fact(P4RuntimeFact),
-            self.fact(P4RuntimeMtlsFact),
-            self.fact(P4RuntimeAccountingFact),
-            self.fact(GnsiAcctzFact),
-            self.fact(GnsiAuthzFact),
-        )
+        facts = self.Facts.collect(self)
+        finding = _assess_sa174(facts.version, facts.p4_runtime, facts.mtls, facts.p4_accounting, facts.gnsi_acctz, facts.authz)
         atomic = self.result.add(f"Verify {VULNERABILITY_ID}.", vulnerability_ids=(VULNERABILITY_ID,))
         project_vulnerability_result(atomic, finding)
