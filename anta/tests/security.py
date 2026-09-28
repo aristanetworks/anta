@@ -8,7 +8,8 @@ from __future__ import annotations
 # Pyright does not understand AntaTest.Input typing
 # pyright: reportAttributeAccessIssue=false
 from datetime import datetime, timezone
-from typing import ClassVar
+from ipaddress import IPv4Address
+from typing import Any, ClassVar
 
 from anta.custom_types import PositiveInteger
 from anta.input_models.security import ACL, APISSLCertificate, IPSecPeer, IPSecPeers
@@ -742,6 +743,143 @@ class VerifySpecificIPSecConn(AntaTest):
                         result.is_failure(f"Connection down - {failure}")
                 else:
                     result.is_failure("Connection not found")
+
+
+def _get_ipsec_connections(command_output: Any) -> dict[str, dict[str, Any]]:  # noqa: ANN401
+    """Return the EOS IPsec connection map when it has the expected shape."""
+    if not isinstance(command_output, dict):
+        return {}
+
+    connections = command_output.get("connections")
+    if not isinstance(connections, dict):
+        return {}
+
+    return {str(name): connection for name, connection in connections.items() if isinstance(connection, dict)}
+
+
+def _get_ipsec_tunnel_states(connection: dict[str, Any]) -> dict[str, str]:
+    """Return a normalized EOS VTI state map, tolerating missing or malformed data."""
+    tunnel_dict = connection.get("tunnelDict")
+    if not isinstance(tunnel_dict, dict):
+        return {}
+
+    return {str(name): str(state) for name, state in tunnel_dict.items()}
+
+
+def _ipsec_connection_label(connection: dict[str, Any]) -> str:
+    """Return a stable label for an EOS IPsec connection."""
+    return f"Source: {connection.get('saddr', '?')} Destination: {connection.get('daddr', '?')} VRF: {connection.get('tunnelNs', '?')}"
+
+
+class VerifyIPSecTunnelHealth(AntaTest):
+    """Verifies that all configured route-based IPv4 IPsec tunnels are established.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if every configured VTI in `tunnelDict` is in the `Established` state.
+    * Failure: The test will fail if no IPv4 security connection is configured, if a connection has no usable
+      `tunnelDict`, or if a tunnel is not established.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.security:
+      - VerifyIPSecTunnelHealth:
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["security"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip security connection vrf all")]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyIPSecTunnelHealth."""
+        self.result.is_success()
+        connections = _get_ipsec_connections(self.instance_commands[0].json_output)
+        if not connections:
+            self.result.is_failure("No IPv4 security connection configured")
+            return
+
+        for connection in connections.values():
+            states = _get_ipsec_tunnel_states(connection)
+            label = _ipsec_connection_label(connection)
+            if not states:
+                self.result.is_failure(f"{label} - No usable tunnel state in tunnelDict")
+                continue
+
+            for tunnel, state in states.items():
+                if state != "Established":
+                    self.result.is_failure(f"{label} Tunnel: {tunnel} - Expected: Established Actual: {state}")
+
+
+class VerifySpecificIPSecTunnel(AntaTest):
+    """Verifies one expected route-based IPv4 IPsec connection and its named VTI.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the requested outer connection exists in the expected VRF and its named VTI
+      is `Established`.
+    * Failure: The test will fail if the outer connection is absent, if the requested tunnel is absent, or if its
+      state is not `Established`.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.security:
+      - VerifySpecificIPSecTunnel:
+          peer: 10.223.0.3
+          vrf: default
+          source_address: 10.223.0.0
+          destination_address: 10.223.0.3
+          tunnel: Tunnel223
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["security"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip security connection vrf all")]
+    _atomic_support: ClassVar[bool] = True
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifySpecificIPSecTunnel test."""
+
+        peer: IPv4Address
+        """The IPv4 address of the expected IPsec peer, used in diagnostics."""
+        vrf: str = "default"
+        """The VRF containing the IPsec connection. Defaults to `default`."""
+        source_address: IPv4Address
+        """The IPv4 address of the local outer IPsec endpoint."""
+        destination_address: IPv4Address
+        """The IPv4 address of the remote outer IPsec endpoint."""
+        tunnel: str
+        """The EOS VTI name to verify."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifySpecificIPSecTunnel."""
+        self.result.is_success()
+        expected = self.inputs
+        description = (
+            f"Peer: {expected.peer} VRF: {expected.vrf} Source: {expected.source_address} Destination: {expected.destination_address} Tunnel: {expected.tunnel}"
+        )
+        result = self.result.add(description=description, status=AntaTestStatus.SUCCESS)
+        connections = _get_ipsec_connections(self.instance_commands[0].json_output)
+        matches = [
+            connection
+            for connection in connections.values()
+            if str(connection.get("saddr")) == str(expected.source_address)
+            and str(connection.get("daddr")) == str(expected.destination_address)
+            and str(connection.get("tunnelNs", "default")) == expected.vrf
+        ]
+        if not matches:
+            result.is_failure("Connection not found")
+            return
+
+        states = _get_ipsec_tunnel_states(matches[0])
+        actual_state = states.get(expected.tunnel)
+        if actual_state is None:
+            result.is_failure("Tunnel not configured")
+        elif actual_state != "Established":
+            result.is_failure(f"Tunnel down - Expected: Established Actual: {actual_state}")
 
 
 class VerifySSHFIPSRestrictions(AntaTest):
