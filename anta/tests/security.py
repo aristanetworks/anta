@@ -17,6 +17,8 @@ from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.result_manager.models import AntaTestStatus
 from anta.tools import get_item, get_value
 
+IPSEC_CONNECTION_COMMAND = "show ip security connection vrf all"
+
 
 class VerifySSHStatus(AntaTest):
     """Verifies if the SSHD agent is disabled in the default VRF.
@@ -624,7 +626,7 @@ class VerifyIPSecConnHealth(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["security"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip security connection vrf all")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command=IPSEC_CONNECTION_COMMAND)]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -789,7 +791,7 @@ class VerifyIPSecTunnelHealth(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["security"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip security connection vrf all")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command=IPSEC_CONNECTION_COMMAND)]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -836,7 +838,7 @@ class VerifySpecificIPSecTunnel(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["security"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip security connection vrf all")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command=IPSEC_CONNECTION_COMMAND)]
     _atomic_support: ClassVar[bool] = True
 
     class Input(AntaTest.Input):
