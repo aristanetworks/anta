@@ -26,6 +26,8 @@ jobs:
         run: pip install . --group dev --group benchmark
       - name: Run benchmarks
         uses: CodSpeedHQ/action@373d6868929f444bc08d901fd0eb0ad52a8875ea # v5.2.1
+        env:
+          PYTHONHASHSEED: "0"
         with:
           mode: simulation,memory
           run: pytest --codspeed --no-cov --log-cli-level INFO tests/benchmark
