@@ -5523,11 +5523,11 @@ output. The test deliberately does not reconstruct effective interface type, pas
   <ul>
 <li>Success: EOS is outside scope, gNPSI is disabled, or the issue-specific authentication or trace prerequisite is absent.</li>
 <li>Failure: An affected EOS release has an enabled gNPSI transport and the issue-specific prerequisite.</li>
-<li>Mitigated: Credential tracing is enabled, but every enabled transport uses mutual TLS with only x509-spiffe authentication.</li>
+<li>Mitigated: Credential tracing is enabled, but every effective transport uses mutual TLS with only x509-spiffe authentication.</li>
 <li>Error: Required EOS, gNPSI transport, authentication, or trace state cannot be determined.</li>
 </ul>
 <p>CVE-2026-73456 evaluates TLS or mTLS authentication combinations. CVE-2026-73457 evaluates explicit EosRpcAuth tracing and the
-source-defined mutual-TLS/x509-spiffe mitigation across every enabled transport.</p>
+source-defined mutual-TLS/x509-spiffe mitigation across every effective transport.</p>
 </details>
 
 
