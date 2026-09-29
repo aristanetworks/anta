@@ -6,13 +6,13 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import Any, ClassVar, cast
+from typing import ClassVar, cast
 
 from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnsiAuthzFact, GnsiMultipleTransportsFact, GnsiTransportFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
+from anta._advisory.facts.models import AvailableFact, Fact, FactsBase, FeatureState, UnavailableFact, fact_field, facts_dataclass
 from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import (
     AffectedResult,
@@ -70,10 +70,10 @@ VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
 def _assess_sa169(
-    version: Fact[EOSVersion],
-    transport: Fact[FeatureValue],
-    multiple_transports: Fact[FeatureValue],
-    authz: Fact[FeatureValue],
+    version: Fact[EosVersionFact],
+    transport: Fact[GnsiTransportFact],
+    multiple_transports: Fact[GnsiMultipleTransportsFact],
+    authz: Fact[GnsiAuthzFact],
 ) -> VulnerabilityResult:
     """Assess EOS scope, current transport cardinality, and historical stale-policy risk."""
     for fact in (transport, authz):
@@ -85,9 +85,9 @@ def _assess_sa169(
     problems = tuple(fact for fact in (transport, multiple_transports, authz) if isinstance(fact, UnavailableFact))
     if problems:
         return ErrorResult(vulnerability_id=VULNERABILITY_ID, problems=problems)
-    available_transport = cast("AvailableFact[FeatureValue]", transport)
-    available_authz = cast("AvailableFact[FeatureValue]", authz)
-    available_multiple = cast("AvailableFact[FeatureValue]", multiple_transports)
+    available_transport = cast("AvailableFact[GnsiTransportFact]", transport)
+    available_authz = cast("AvailableFact[GnsiAuthzFact]", authz)
+    available_multiple = cast("AvailableFact[GnsiMultipleTransportsFact]", multiple_transports)
     remediation = software_version_plan(FIXED_RELEASES, current_version=eos_release.fact.value)
     if available_multiple.value.state is FeatureState.ENABLED:
         return AffectedResult(
@@ -123,24 +123,23 @@ class SA169(OptionalCommandsMixin, _AntaAdvisoryTest):
     ```
     """
 
+    @facts_dataclass
+    class Facts(FactsBase):
+        """Collected facts required to assess the advisory."""
+
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
+        transport: Fact[GnsiTransportFact] = fact_field(GnsiTransportFact)
+        multiple_transports: Fact[GnsiMultipleTransportsFact] = fact_field(GnsiMultipleTransportsFact)
+        authz: Fact[GnsiAuthzFact] = fact_field(GnsiAuthzFact)
+
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
-    required_facts: ClassVar[tuple[type[FactDefinition[Any]], ...]] = (
-        EosVersionFact,
-        GnsiTransportFact,
-        GnsiMultipleTransportsFact,
-        GnsiAuthzFact,
-    )
     description = "Verify whether the device is impacted by Security Advisory 0169."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
         """Derive facts, assess the vulnerability, and project it."""
-        finding = _assess_sa169(
-            self.fact(EosVersionFact),
-            self.fact(GnsiTransportFact),
-            self.fact(GnsiMultipleTransportsFact),
-            self.fact(GnsiAuthzFact),
-        )
+        facts = self.Facts.collect(self)
+        finding = _assess_sa169(facts.version, facts.transport, facts.multiple_transports, facts.authz)
         atomic = self.result.add(f"Verify {VULNERABILITY_ID}.", vulnerability_ids=(VULNERABILITY_ID,))
         project_vulnerability_result(atomic, finding)

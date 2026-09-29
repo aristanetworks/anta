@@ -5,33 +5,23 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, TypeVar
+from typing import TYPE_CHECKING
 
 from anta._advisory.eos_versions import AffectedStatus, VersionRule, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import AvailableFact, FactDefinition, FactProblemKind, FactSource, FactSourceKind, UnavailableFact
-from anta._eos.version import EOSVersion, parse_eos_version
+from anta._advisory.facts.models import AvailableFact, FactSource, FactSourceKind
+from anta._eos.version import parse_eos_version
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-T = TypeVar("T")
 SOURCE = FactSource("unit test", FactSourceKind.DEVICE_METADATA)
 
 
-def available_fact(definition: type[FactDefinition[T]], value: T) -> AvailableFact[T]:
-    """Build an available fact with a stable unit-test source."""
-    return definition.available(value, SOURCE)
-
-
-def unavailable_fact(definition: type[FactDefinition[T]], problem: FactProblemKind = FactProblemKind.MISSING) -> UnavailableFact[T]:
-    """Build an unavailable fact with a stable unit-test source."""
-    return definition.unavailable(problem, SOURCE)
-
-
-def eos_version_fact(version: str) -> AvailableFact[EOSVersion]:
+def eos_version_fact(version: str) -> AvailableFact[EosVersionFact]:
     """Build a normalized EOS version fact."""
-    return available_fact(EosVersionFact, parse_eos_version(version).unwrap())
+    parsed = parse_eos_version(version).unwrap()
+    return EosVersionFact.from_version(parsed).available(SOURCE)
 
 
 def assert_version_statuses(matrix: Sequence[VersionRule], cases: Sequence[tuple[str, AffectedStatus]]) -> None:

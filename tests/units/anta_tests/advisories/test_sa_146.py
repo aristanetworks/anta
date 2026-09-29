@@ -25,16 +25,12 @@ from anta._advisory.facts.management import (
 )
 from anta._advisory.facts.models import (
     AvailableFact,
-    ComponentSoftwareVersion,
     Fact,
     FactProblemKind,
     FactSource,
     FactSourceKind,
-    FeatureName,
     FeatureState,
-    FeatureValue,
     MitigationState,
-    MitigationValue,
     UnavailableFact,
 )
 from anta._advisory.facts.software import TerminAttrVersionFact
@@ -103,14 +99,14 @@ def _unsupported_command(template: AntaCommand) -> AntaCommand:
     return template.model_copy(update={"errors": [UNSUPPORTED_ERROR]})
 
 
-def _feature_bool(fact: Fact[FeatureValue]) -> bool | None:
+def _feature_bool(fact: Fact[GnmiTransportFact | GribiTransportFact | TerminAttrGrpcFact]) -> bool | None:
     """Project a feature fact to the legacy parser truth table."""
     if isinstance(fact, UnavailableFact):
         return None
     return fact.value.state is FeatureState.ENABLED
 
 
-def _mitigation_bool(fact: Fact[MitigationValue]) -> bool | None:
+def _mitigation_bool(fact: Fact[GnmiMtlsFact | GribiMtlsFact | TerminAttrMtlsFact]) -> bool | None:
     """Project a mitigation fact to the legacy parser truth table."""
     if isinstance(fact, UnavailableFact):
         return None
@@ -445,7 +441,7 @@ class TestSA146Evidence(unittest.TestCase):
         assert not _feature_bool(GribiTransportFact.parse((_command(GribiTransportFact.commands[0], gribi_output(enabled=False)),)))
         assert _feature_bool(GribiTransportFact.parse((_command(GribiTransportFact.commands[0], {"enabled": "true"}),))) is None
 
-        def terminattr_fact(daemon: dict[str, Any]) -> Fact[FeatureValue]:
+        def terminattr_fact(daemon: dict[str, Any]) -> Fact[TerminAttrGrpcFact]:
             return TerminAttrGrpcFact.parse(
                 (
                     _command(TerminAttrGrpcFact.commands[0], daemon),
@@ -587,56 +583,72 @@ class TestSA146Assessment(unittest.TestCase):
         }
         arguments.update(overrides)
 
-        def feature(definition: type[GnmiTransportFact | GribiTransportFact | TerminAttrGrpcFact], enabled: bool | None) -> Fact[FeatureValue]:
-            if enabled is None:
-                return definition.unavailable(FactProblemKind.MALFORMED, SOURCE)
-            name = FeatureName.GNMI if definition is GnmiTransportFact else FeatureName.GRIBI if definition is GribiTransportFact else FeatureName.TERMINATTR
-            return definition.available(
-                FeatureValue(name, FeatureState.ENABLED if enabled else FeatureState.DISABLED),
-                SOURCE,
-            )
-
-        def mitigation(definition: type[GnmiMtlsFact | GribiMtlsFact | TerminAttrMtlsFact], enabled: bool | None) -> Fact[MitigationValue]:
-            if enabled is None:
-                return definition.unavailable(FactProblemKind.MISSING, SOURCE)
-            return definition.available(
-                MitigationValue(MitigationState.EFFECTIVE if enabled else MitigationState.INEFFECTIVE),
-                SOURCE,
-            )
-
         if arguments["eos_affected"] is None:
-            eos_version: Fact[EOSVersion] = EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
+            eos_version: Fact[EosVersionFact] = EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
         else:
             parsed_eos_version = parse_eos_version("4.35.5M" if arguments["eos_affected"] else "4.35.6M").unwrap()
-            eos_version = EosVersionFact.available(parsed_eos_version, SOURCE)
+            eos_version = EosVersionFact.from_version(parsed_eos_version).available(SOURCE)
         terminattr_version = (
             TerminAttrVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
             if arguments["terminattr_affected"] is None
-            else TerminAttrVersionFact.available(
-                ComponentSoftwareVersion("TerminAttr", "v1.45.0" if arguments["terminattr_affected"] else "v1.45.1"),
-                SOURCE,
-            )
+            else TerminAttrVersionFact("v1.45.0" if arguments["terminattr_affected"] else "v1.45.1").available(SOURCE)
+        )
+        gnmi_enabled = arguments["gnmi_enabled"]
+        gnmi_transport = (
+            GnmiTransportFact.unavailable(FactProblemKind.MALFORMED, SOURCE)
+            if gnmi_enabled is None
+            else GnmiTransportFact(FeatureState.ENABLED if gnmi_enabled else FeatureState.DISABLED).available(SOURCE)
+        )
+        gnmi_mtls = arguments["gnmi_mtls"]
+        gnmi_mitigation = (
+            GnmiMtlsFact.unavailable(FactProblemKind.MISSING, SOURCE)
+            if gnmi_mtls is None
+            else GnmiMtlsFact(MitigationState.EFFECTIVE if gnmi_mtls else MitigationState.INEFFECTIVE).available(SOURCE)
+        )
+        gribi_enabled = arguments["gribi_enabled"]
+        gribi_transport = (
+            GribiTransportFact.unavailable(FactProblemKind.MALFORMED, SOURCE)
+            if gribi_enabled is None
+            else GribiTransportFact(FeatureState.ENABLED if gribi_enabled else FeatureState.DISABLED).available(SOURCE)
+        )
+        gribi_mtls = arguments["gribi_mtls"]
+        gribi_mitigation = (
+            GribiMtlsFact.unavailable(FactProblemKind.MISSING, SOURCE)
+            if gribi_mtls is None
+            else GribiMtlsFact(MitigationState.EFFECTIVE if gribi_mtls else MitigationState.INEFFECTIVE).available(SOURCE)
+        )
+        terminattr_enabled = arguments["terminattr_enabled"]
+        terminattr_transport = (
+            TerminAttrGrpcFact.unavailable(FactProblemKind.MALFORMED, SOURCE)
+            if terminattr_enabled is None
+            else TerminAttrGrpcFact(FeatureState.ENABLED if terminattr_enabled else FeatureState.DISABLED).available(SOURCE)
+        )
+        terminattr_mtls = arguments["terminattr_mtls"]
+        terminattr_mitigation = (
+            TerminAttrMtlsFact.unavailable(FactProblemKind.MISSING, SOURCE)
+            if terminattr_mtls is None
+            else TerminAttrMtlsFact(MitigationState.EFFECTIVE if terminattr_mtls else MitigationState.INEFFECTIVE).available(SOURCE)
         )
         return _assess_sa146(
             (
                 _GrpcPath(
                     assess_eos_version(eos_version, EOS_AFFECTED_VERSION_MATRIX),
-                    feature(GnmiTransportFact, arguments["gnmi_enabled"]),
-                    mitigation(GnmiMtlsFact, arguments["gnmi_mtls"]),
+                    gnmi_transport,
+                    gnmi_mitigation,
                     SoftwareTarget.EOS,
                     EXPECTED_EOS_FIXED_RELEASES,
                 ),
                 _GrpcPath(
                     assess_eos_version(eos_version, EOS_AFFECTED_VERSION_MATRIX),
-                    feature(GribiTransportFact, arguments["gribi_enabled"]),
-                    mitigation(GribiMtlsFact, arguments["gribi_mtls"]),
+                    gribi_transport,
+                    gribi_mitigation,
                     SoftwareTarget.EOS,
                     EXPECTED_EOS_FIXED_RELEASES,
                 ),
                 _GrpcPath(
                     _terminattr_version_assessment(terminattr_version),
-                    feature(TerminAttrGrpcFact, arguments["terminattr_enabled"]),
-                    mitigation(TerminAttrMtlsFact, arguments["terminattr_mtls"]),
+                    terminattr_transport,
+                    terminattr_mitigation,
                     SoftwareTarget.TERMINATTR,
                     EXPECTED_TERMINATTR_FIXED_RELEASES,
                 ),

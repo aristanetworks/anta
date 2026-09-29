@@ -152,6 +152,26 @@ def result_options(f: Callable[..., R]) -> Callable[..., R]:
     )(f)
 
 
+def template_report_options(f: Callable[..., R]) -> Callable[..., R]:
+    """Click common options for template report commands."""
+    f = click.option(
+        "--output",
+        "-o",
+        type=click.Path(file_okay=True, dir_okay=False, exists=False, writable=True, path_type=Path),
+        show_envvar=True,
+        required=False,
+        help="Path to save report as a file",
+    )(f)
+    return click.option(
+        "--template",
+        "-tpl",
+        type=click.Path(file_okay=True, dir_okay=False, exists=True, readable=True, path_type=Path),
+        show_envvar=True,
+        required=True,
+        help="Path to the template to use for the report",
+    )(f)
+
+
 def core_options(f: Callable[..., R]) -> Callable[..., R]:
     """Click common options when requiring an inventory to interact with devices."""
 

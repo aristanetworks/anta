@@ -583,6 +583,7 @@ def test_bfd_authentication_states(device: OfflineAntaDevice, commands: tuple[An
     fact = BfdAuthenticationFact.derive(device, commands)
 
     assert isinstance(fact, AvailableFact)
+    assert isinstance(fact.value, BfdAuthenticationFact)
     assert fact.value.state is state
 
 

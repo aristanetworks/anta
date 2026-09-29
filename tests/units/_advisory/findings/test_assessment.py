@@ -25,7 +25,7 @@ def _eos_version(value: str) -> EOSVersion:
 
 def test_assess_eos_scope_returns_affected_context() -> None:
     """Retain affected EOS context without producing a terminal result."""
-    version = EosVersionFact.available(_eos_version("4.35.5M"), SOURCE)
+    version = EosVersionFact.from_version(_eos_version("4.35.5M")).available(SOURCE)
 
     result = assess_eos_scope("CVE-test", version, RULES)
 
@@ -35,7 +35,7 @@ def test_assess_eos_scope_returns_affected_context() -> None:
 
 def test_assess_eos_scope_returns_not_affected() -> None:
     """Close the assessment when EOS is outside the affected matrix."""
-    version = EosVersionFact.available(_eos_version("4.35.6M"), SOURCE)
+    version = EosVersionFact.from_version(_eos_version("4.35.6M")).available(SOURCE)
 
     result = assess_eos_scope("CVE-test", version, RULES)
 
@@ -58,8 +58,8 @@ def test_assess_eos_scope_returns_input_errors() -> None:
 
 def test_assess_eos_version_retains_non_terminal_relations() -> None:
     """Interpret affected and outside-scope versions without ending the assessment."""
-    affected = EosVersionFact.available(_eos_version("4.35.5M"), SOURCE)
-    outside = EosVersionFact.available(_eos_version("4.35.6M"), SOURCE)
+    affected = EosVersionFact.from_version(_eos_version("4.35.5M")).available(SOURCE)
+    outside = EosVersionFact.from_version(_eos_version("4.35.6M")).available(SOURCE)
 
     affected_result = assess_eos_version(affected, RULES)
     outside_result = assess_eos_version(outside, RULES)
@@ -85,7 +85,7 @@ def test_assess_eos_version_retains_input_problems() -> None:
 
 def test_assess_platform_scope_returns_affected_context() -> None:
     """Retain an explicitly affected platform-family match as context."""
-    platform = PlatformIdentityFact.available(parse_eos_platform("DCS-7050CX3-32S").unwrap(), SOURCE)
+    platform = PlatformIdentityFact.from_identity(parse_eos_platform("DCS-7050CX3-32S").unwrap()).available(SOURCE)
 
     result = assess_platform_scope("CVE-test", platform, (PlatformFamily.SERIES_7050_X3,))
 
@@ -95,7 +95,7 @@ def test_assess_platform_scope_returns_affected_context() -> None:
 
 def test_assess_platform_scope_returns_not_affected() -> None:
     """Close the assessment only for a conclusive platform-family mismatch."""
-    platform = PlatformIdentityFact.available(parse_eos_platform("DCS-7050CX3-32S").unwrap(), SOURCE)
+    platform = PlatformIdentityFact.from_identity(parse_eos_platform("DCS-7050CX3-32S").unwrap()).available(SOURCE)
 
     result = assess_platform_scope("CVE-test", platform, (PlatformFamily.SERIES_7050_X4,))
 
@@ -104,7 +104,7 @@ def test_assess_platform_scope_returns_not_affected() -> None:
 
 def test_assess_platform_scope_supports_exclusion_lists() -> None:
     """Invert match semantics for explicitly unaffected platform families."""
-    platform = PlatformIdentityFact.available(parse_eos_platform("vEOS").unwrap(), SOURCE)
+    platform = PlatformIdentityFact.from_identity(parse_eos_platform("vEOS").unwrap()).available(SOURCE)
 
     result = assess_platform_scope(
         "CVE-test",
@@ -119,7 +119,7 @@ def test_assess_platform_scope_supports_exclusion_lists() -> None:
 def test_assess_platform_scope_returns_input_errors() -> None:
     """Reject missing and incomplete platform identity instead of proving a mismatch."""
     missing = PlatformIdentityFact.unavailable(FactProblemKind.MISSING, SOURCE)
-    unknown = PlatformIdentityFact.available(parse_eos_platform("DCS-UNRECOGNIZED").unwrap(), SOURCE)
+    unknown = PlatformIdentityFact.from_identity(parse_eos_platform("DCS-UNRECOGNIZED").unwrap()).available(SOURCE)
 
     missing_result = assess_platform_scope("CVE-test", missing, (PlatformFamily.SERIES_7050_X3,))
     unknown_result = assess_platform_scope("CVE-test", unknown, (PlatformFamily.SERIES_7050_X3,))

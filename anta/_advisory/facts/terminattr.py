@@ -7,7 +7,8 @@ from __future__ import annotations
 
 import shlex
 from collections.abc import Mapping, Sequence
-from typing import TYPE_CHECKING
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, ClassVar
 
 from anta._advisory.facts.models import (
     CommandsFactDefinition,
@@ -15,11 +16,12 @@ from anta._advisory.facts.models import (
     FactProblemKind,
     FactSource,
     FactSourceKind,
+    FeatureFact,
     FeatureName,
+    FeatureRef,
     FeatureState,
-    FeatureValue,
+    MitigationFact,
     MitigationState,
-    MitigationValue,
 )
 from anta._advisory.optional_commands import OptionalAntaCommand, is_unsupported_optional_command
 
@@ -57,21 +59,23 @@ def _terminattr_grpc_arguments(config_output: str) -> tuple[str, ...] | None:
     return None
 
 
-class TerminAttrGrpcFact(CommandsFactDefinition[FeatureValue]):
+@dataclass(frozen=True, slots=True)
+class TerminAttrGrpcFact(FeatureFact, CommandsFactDefinition["TerminAttrGrpcFact"]):
     """Effective TerminAttr gRPC server state."""
 
-    key = "feature.terminattr.grpc"
-    label = "TerminAttr gRPC server state"
-    commands = (TERMINATTR_DAEMON_COMMAND, TERMINATTR_CONFIG_COMMAND)
+    feature: ClassVar[FeatureRef] = FeatureName.TERMINATTR
+    key: ClassVar[str] = "feature.terminattr.grpc"
+    label: ClassVar[str] = "TerminAttr gRPC server state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (TERMINATTR_DAEMON_COMMAND, TERMINATTR_CONFIG_COMMAND)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[FeatureValue]:  # noqa: PLR0911
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[TerminAttrGrpcFact]:  # noqa: PLR0911
         daemon, config = commands
         source = FactSource("show daemon and show running-config section grpcaddr", FactSourceKind.COMMAND)
         if is_unsupported_optional_command(config):
             return cls.unavailable(FactProblemKind.UNSUPPORTED, source)
         if _terminattr_grpc_arguments(config.text_output) is None:
-            return cls.available(FeatureValue(FeatureName.TERMINATTR, FeatureState.DISABLED), source)
+            return cls(FeatureState.DISABLED).available(source)
         if is_unsupported_optional_command(daemon):
             return cls.unavailable(FactProblemKind.UNSUPPORTED, source)
         daemons = daemon.json_output.get("daemons")
@@ -79,21 +83,22 @@ class TerminAttrGrpcFact(CommandsFactDefinition[FeatureValue]):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         terminattr = daemons.get("TerminAttr")
         if terminattr is None:
-            return cls.available(FeatureValue(FeatureName.TERMINATTR, FeatureState.DISABLED), source)
+            return cls(FeatureState.DISABLED).available(source)
         if not isinstance(terminattr, Mapping) or not isinstance((enabled := terminattr.get("enabled")), bool):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
-        return cls.available(FeatureValue(FeatureName.TERMINATTR, FeatureState.ENABLED if enabled else FeatureState.DISABLED), source)
+        return cls(FeatureState.ENABLED if enabled else FeatureState.DISABLED).available(source)
 
 
-class TerminAttrMtlsFact(CommandsFactDefinition[MitigationValue]):
+@dataclass(frozen=True, slots=True)
+class TerminAttrMtlsFact(MitigationFact, CommandsFactDefinition["TerminAttrMtlsFact"]):
     """mTLS configuration on the TerminAttr gRPC server."""
 
-    key = "mitigation.terminattr.mtls"
-    label = "TerminAttr mTLS"
-    commands = (TERMINATTR_CONFIG_COMMAND,)
+    key: ClassVar[str] = "mitigation.terminattr.mtls"
+    label: ClassVar[str] = "TerminAttr mTLS"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (TERMINATTR_CONFIG_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[MitigationValue]:
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[TerminAttrMtlsFact]:
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
         if is_unsupported_optional_command(command):
@@ -101,4 +106,4 @@ class TerminAttrMtlsFact(CommandsFactDefinition[MitigationValue]):
         arguments = _terminattr_grpc_arguments(command.text_output)
         effective = arguments is not None and all(_has_argument(arguments, flag) for flag in ("certfile", "keyfile", "clientcafile"))
         state = MitigationState.EFFECTIVE if effective else MitigationState.INEFFECTIVE
-        return cls.available(MitigationValue(state), source)
+        return cls(state).available(source)

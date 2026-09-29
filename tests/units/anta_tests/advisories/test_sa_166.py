@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING
 from anta._advisory.eos_versions import AffectedStatus
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnmiTransportFact
-from anta._advisory.facts.models import AvailableFact, FeatureName, FeatureState, FeatureValue
+from anta._advisory.facts.models import AvailableFact, FactProblemKind, FeatureState
 from anta._advisory.findings.models import AffectedResult, ErrorResult, NotAffectedResult
 from anta._advisory.remediation import FixedRelease, software_version_plan
 from anta._eos.version import EOSVersion
@@ -20,7 +20,7 @@ from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_166 import ADVISORY, AFFECTED_VERSION_MATRIX, SA166, _assess_sa166
 from tests.units.anta_tests import build_eos_version, test
 from tests.units.anta_tests.advisories import build_expected_advisory_result
-from tests.units.anta_tests.advisories.fact_builders import assert_version_statuses, available_fact, eos_version_fact, unavailable_fact
+from tests.units.anta_tests.advisories.fact_builders import SOURCE, assert_version_statuses, eos_version_fact
 
 if TYPE_CHECKING:
     from tests.units.anta_tests import AntaUnitTestData
@@ -35,17 +35,18 @@ REMEDIATION = software_version_plan(FIXED_RELEASES, current_version=EOSVersion(4
 expected_result = partial(build_expected_advisory_result, ADVISORY.vulnerabilities[0].id)
 
 
-def gnmi_fact(state: FeatureState) -> AvailableFact[FeatureValue]:
+def gnmi_fact(state: FeatureState) -> AvailableFact[GnmiTransportFact]:
     """Build normalized gNMI transport state for direct assessment tests."""
-    return available_fact(GnmiTransportFact, FeatureValue(FeatureName.GNMI, state))
+    return GnmiTransportFact(state).available(SOURCE)
 
 
 def test_sa166_assessment_contract() -> None:
     """Return affected, safe, and error outcomes from typed gNMI state."""
-    assert isinstance(_assess_sa166(unavailable_fact(EosVersionFact), gnmi_fact(FeatureState.DISABLED)), NotAffectedResult)
+    missing_version = EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
+    assert isinstance(_assess_sa166(missing_version, gnmi_fact(FeatureState.DISABLED)), NotAffectedResult)
     assert isinstance(_assess_sa166(eos_version_fact("4.36.0.1F"), gnmi_fact(FeatureState.ENABLED)), AffectedResult)
     assert isinstance(_assess_sa166(eos_version_fact("4.34.7.1M"), gnmi_fact(FeatureState.ENABLED)), NotAffectedResult)
-    assert isinstance(_assess_sa166(unavailable_fact(EosVersionFact), gnmi_fact(FeatureState.ENABLED)), ErrorResult)
+    assert isinstance(_assess_sa166(missing_version, gnmi_fact(FeatureState.ENABLED)), ErrorResult)
 
 
 def test_sa166_version_boundaries() -> None:

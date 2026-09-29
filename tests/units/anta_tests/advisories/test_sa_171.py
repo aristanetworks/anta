@@ -12,13 +12,9 @@ from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.models import (
     AvailableFact,
     ConfigurationState,
-    ConfigurationValue,
-    FeatureName,
+    FactProblemKind,
     FeatureState,
-    FeatureValue,
     MitigationState,
-    MitigationValue,
-    SubFeature,
 )
 from anta._advisory.facts.routing import Ospfv2BroadcastAuthenticationFact, Ospfv2ProcessConfiguredFact, Ospfv2SegmentRoutingFact
 from anta._advisory.facts.software import SA171HotfixFact
@@ -36,7 +32,7 @@ from anta.tests.advisories.sa_171 import (
     _assess_broadcast_issue,
 )
 from tests.units.anta_tests import build_eos_version, test
-from tests.units.anta_tests.advisories.fact_builders import assert_version_statuses, available_fact, eos_version_fact, unavailable_fact
+from tests.units.anta_tests.advisories.fact_builders import SOURCE, assert_version_statuses, eos_version_fact
 
 if TYPE_CHECKING:
     from tests.units.anta_tests import AntaUnitTestData, AtomicResult, UnitTestResult
@@ -45,40 +41,29 @@ Status: TypeAlias = Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, Anta
 Issue: TypeAlias = tuple[Status, str, RemediationPlan | None]
 
 
-def ospfv2_fact(
-    definition: type[Ospfv2BroadcastAuthenticationFact | Ospfv2SegmentRoutingFact],
-    name: str,
-    state: FeatureState,
-) -> AvailableFact[FeatureValue]:
-    """Build one normalized OSPFv2 fact for direct assessment tests."""
-    return available_fact(definition, FeatureValue(SubFeature(FeatureName.OSPFV2, name), state))
+def broadcast_fact(state: FeatureState) -> AvailableFact[Ospfv2BroadcastAuthenticationFact]:
+    """Build normalized OSPFv2 broadcast-authentication state."""
+    return Ospfv2BroadcastAuthenticationFact(state).available(SOURCE)
 
 
-def hotfix_fact(state: MitigationState) -> AvailableFact[MitigationValue]:
+def hotfix_fact(state: MitigationState) -> AvailableFact[SA171HotfixFact]:
     """Build one normalized SA171 hotfix fact for direct assessment tests."""
-    return available_fact(SA171HotfixFact, MitigationValue(state))
+    return SA171HotfixFact(state).available(SOURCE)
 
 
-def ospfv2_configuration(state: ConfigurationState) -> AvailableFact[ConfigurationValue]:
+def ospfv2_configuration(state: ConfigurationState) -> AvailableFact[Ospfv2ProcessConfiguredFact]:
     """Build the OSPFv2 routing-process configuration fact."""
-    return available_fact(Ospfv2ProcessConfiguredFact, ConfigurationValue(SubFeature(FeatureName.OSPFV2, "routing process"), state))
+    return Ospfv2ProcessConfiguredFact(state).available(SOURCE)
 
 
 def test_sa171_assessment_contract() -> None:
     """Apply active exposure, configured-but-inactive fallback, and independent version boundaries."""
-    broadcast_enabled = ospfv2_fact(
-        Ospfv2BroadcastAuthenticationFact,
-        "broadcast cryptographic authentication",
-        FeatureState.ENABLED,
-    )
-    broadcast_disabled = ospfv2_fact(
-        Ospfv2BroadcastAuthenticationFact,
-        "broadcast cryptographic authentication",
-        FeatureState.DISABLED,
-    )
+    broadcast_enabled = broadcast_fact(FeatureState.ENABLED)
+    broadcast_disabled = broadcast_fact(FeatureState.DISABLED)
+    missing_version = EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
     assert isinstance(
         _assess_broadcast_issue(
-            unavailable_fact(EosVersionFact),
+            missing_version,
             broadcast_disabled,
             ospfv2_configuration(ConfigurationState.NOT_CONFIGURED),
             hotfix_fact(MitigationState.INEFFECTIVE),
@@ -106,7 +91,7 @@ def test_sa171_assessment_contract() -> None:
     assert isinstance(
         _assess_broadcast_issue(
             eos_version_fact("4.34.7M"),
-            unavailable_fact(Ospfv2BroadcastAuthenticationFact),
+            Ospfv2BroadcastAuthenticationFact.unavailable(FactProblemKind.MISSING, SOURCE),
             ospfv2_configuration(ConfigurationState.CONFIGURED),
             hotfix_fact(MitigationState.INEFFECTIVE),
         ),
@@ -134,14 +119,14 @@ def test_sa171_assessment_contract() -> None:
         _assess_broadcast_issue(
             eos_version_fact("4.34.7M"),
             broadcast_disabled,
-            unavailable_fact(Ospfv2ProcessConfiguredFact),
+            Ospfv2ProcessConfiguredFact.unavailable(FactProblemKind.MISSING, SOURCE),
             hotfix_fact(MitigationState.INEFFECTIVE),
         ),
         ErrorResult,
     )
     assert isinstance(
         _assess_broadcast_issue(
-            unavailable_fact(EosVersionFact),
+            missing_version,
             broadcast_disabled,
             ospfv2_configuration(ConfigurationState.NOT_CONFIGURED),
             hotfix_fact(MitigationState.INEFFECTIVE),
@@ -168,7 +153,7 @@ def test_sa171_assessment_contract() -> None:
             eos_version_fact("4.34.7M"),
             broadcast_disabled,
             ospfv2_configuration(ConfigurationState.CONFIGURED),
-            unavailable_fact(SA171HotfixFact),
+            SA171HotfixFact.unavailable(FactProblemKind.MISSING, SOURCE),
         ),
         ErrorResult,
     )
@@ -177,7 +162,7 @@ def test_sa171_assessment_contract() -> None:
             eos_version_fact("4.34.7M"),
             broadcast_enabled,
             ospfv2_configuration(ConfigurationState.CONFIGURED),
-            unavailable_fact(SA171HotfixFact),
+            SA171HotfixFact.unavailable(FactProblemKind.MISSING, SOURCE),
         ),
         ErrorResult,
     )

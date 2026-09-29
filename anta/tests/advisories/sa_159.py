@@ -6,11 +6,12 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import TYPE_CHECKING, ClassVar
 
 from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
+from anta._advisory.facts.models import FactsBase, fact_field, facts_dataclass
 from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import AffectedEosRelease, AffectedResult, EosReleaseAssessment, VulnerabilityResult
 from anta._advisory.findings.projection import project_vulnerability_result
@@ -20,7 +21,7 @@ from anta._eos.version import EOSVersion
 from anta.decorators import preview_test_class
 
 if TYPE_CHECKING:
-    from anta._advisory.facts.models import Fact, FactDefinition
+    from anta._advisory.facts.models import Fact
 
 # pylint: disable=duplicate-code  # Advisory version metadata stays local even when identical.
 AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
@@ -54,7 +55,7 @@ ADVISORY = _AdvisoryMetadata(
 VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
-def _assess_sa159(version: Fact[EOSVersion]) -> VulnerabilityResult:
+def _assess_sa159(version: Fact[EosVersionFact]) -> VulnerabilityResult:
     """Assess the version-only exposure because IGMP snooping requires no configuration."""
     eos_release = assess_eos_scope(VULNERABILITY_ID, version, AFFECTED_VERSION_MATRIX)
     if not isinstance(eos_release, EosReleaseAssessment):
@@ -84,14 +85,20 @@ class SA159(_AntaAdvisoryTest):
     ```
     """
 
+    @facts_dataclass
+    class Facts(FactsBase):
+        """Collected facts required to assess the advisory."""
+
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
+
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
-    required_facts: ClassVar[tuple[type[FactDefinition[Any]], ...]] = (EosVersionFact,)
     description = "Verify whether the device is impacted by Security Advisory 0159."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
         """Derive EOS state, assess the vulnerability, and project it."""
-        finding = _assess_sa159(self.fact(EosVersionFact))
+        facts = self.Facts.collect(self)
+        finding = _assess_sa159(facts.version)
         atomic = self.result.add(f"Verify {VULNERABILITY_ID}.", vulnerability_ids=(VULNERABILITY_ID,))
         project_vulnerability_result(atomic, finding)

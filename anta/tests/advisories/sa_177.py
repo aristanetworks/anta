@@ -7,12 +7,12 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import Any, ClassVar
+from typing import ClassVar
 
 from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import Fact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
+from anta._advisory.facts.models import Fact, FactsBase, FeatureState, UnavailableFact, fact_field, facts_dataclass
 from anta._advisory.facts.network_services import MlagConfiguredFact
 from anta._advisory.facts.platform import PlatformIdentityFact
 from anta._advisory.facts.routing import PimSparseModeFact
@@ -22,7 +22,7 @@ from anta._advisory.findings.projection import project_vulnerability_result
 from anta._advisory.models import _AdvisoryMetadata, _AdvisoryVulnerability, _AdvisoryVulnerabilitySeverity
 from anta._advisory.optional_commands import OptionalCommandsMixin
 from anta._advisory.remediation import FixedRelease, software_version_plan
-from anta._eos.platform import PlatformFamily, PlatformIdentity
+from anta._eos.platform import PlatformFamily
 from anta._eos.version import EOSVersion
 from anta.decorators import preview_test_class
 
@@ -65,6 +65,7 @@ AFFECTED_PLATFORM_FAMILIES = frozenset(
         PlatformFamily.SERIES_7300_X3,
         PlatformFamily.SERIES_7320_X,
         PlatformFamily.SERIES_7358_X4,
+        PlatformFamily.SERIES_7368_X4,
         PlatformFamily.SERIES_7388_X5,
         PlatformFamily.SERIES_7500_R,
         PlatformFamily.SERIES_7500_R2,
@@ -78,7 +79,7 @@ AFFECTED_PLATFORM_FAMILIES = frozenset(
 
 ADVISORY = _AdvisoryMetadata(
     sa_number="0177",
-    last_updated=date(2026, 9, 9),
+    last_updated=date(2026, 9, 17),
     title="Security Advisory 0177",
     vulnerabilities=(
         _AdvisoryVulnerability(
@@ -97,10 +98,10 @@ VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
 def _assess_sa177(  # noqa: PLR0911
-    version: Fact[EOSVersion],
-    platform: Fact[PlatformIdentity],
-    sparse_mode: Fact[FeatureValue],
-    mlag: Fact[FeatureValue],
+    version: Fact[EosVersionFact],
+    platform: Fact[PlatformIdentityFact],
+    sparse_mode: Fact[PimSparseModeFact],
+    mlag: Fact[MlagConfiguredFact],
 ) -> VulnerabilityResult:
     """Assess EOS, platform, PIM sparse-mode, and configured MLAG exposure."""
     for prerequisite in (sparse_mode, mlag):
@@ -158,24 +159,23 @@ class SA177(OptionalCommandsMixin, _AntaAdvisoryTest):
     ```
     """
 
+    @facts_dataclass
+    class Facts(FactsBase):
+        """Collected facts required to assess the advisory."""
+
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
+        platform: Fact[PlatformIdentityFact] = fact_field(PlatformIdentityFact)
+        sparse_mode: Fact[PimSparseModeFact] = fact_field(PimSparseModeFact)
+        mlag: Fact[MlagConfiguredFact] = fact_field(MlagConfiguredFact)
+
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
-    required_facts: ClassVar[tuple[type[FactDefinition[Any]], ...]] = (
-        EosVersionFact,
-        PlatformIdentityFact,
-        PimSparseModeFact,
-        MlagConfiguredFact,
-    )
     description = "Verify whether the device is impacted by Security Advisory 0177."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
         """Derive facts, assess the vulnerability, and project it."""
-        finding = _assess_sa177(
-            self.fact(EosVersionFact),
-            self.fact(PlatformIdentityFact),
-            self.fact(PimSparseModeFact),
-            self.fact(MlagConfiguredFact),
-        )
+        facts = self.Facts.collect(self)
+        finding = _assess_sa177(facts.version, facts.platform, facts.sparse_mode, facts.mlag)
         atomic = self.result.add(f"Verify {VULNERABILITY_ID}.", vulnerability_ids=(VULNERABILITY_ID,))
         project_vulnerability_result(atomic, finding)

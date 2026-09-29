@@ -6,19 +6,20 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import Any, ClassVar, cast
+from typing import ClassVar, cast
 
 from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnsiCertzFact, GnsiTransportFact
-from anta._advisory.facts.models import AvailableFact, Fact, FactDefinition, FeatureState, FeatureValue, UnavailableFact
+from anta._advisory.facts.models import AvailableFact, Fact, FactsBase, FeatureState, UnavailableFact, fact_field, facts_dataclass
 from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import (
     AffectedResult,
     EosReleaseAssessment,
     ErrorResult,
     InconclusiveResult,
+    NotAffectedResult,
     Unobservable,
     UnobservableKind,
     VulnerabilityResult,
@@ -46,6 +47,7 @@ FIXED_RELEASES = (
     FixedRelease(EOSVersion(4, 34, 7, suffix="M", hotfix=1)),
     FixedRelease(EOSVersion(4, 33, 9, suffix="M")),
 )
+MIN_BOOTZ_VERSION = EOSVersion(4, 33, 2, suffix="F")
 
 ADVISORY = _AdvisoryMetadata(
     sa_number="0162",
@@ -68,9 +70,9 @@ VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
 def _assess_sa162(
-    version: Fact[EOSVersion],
-    transport: Fact[FeatureValue],
-    certz: Fact[FeatureValue],
+    version: Fact[EosVersionFact],
+    transport: Fact[GnsiTransportFact],
+    certz: Fact[GnsiCertzFact],
 ) -> VulnerabilityResult:
     """Assess the Certz and historical Bootz exposure from normalized facts."""
     eos_release = assess_eos_scope(VULNERABILITY_ID, version, AFFECTED_VERSION_MATRIX)
@@ -78,9 +80,10 @@ def _assess_sa162(
         return eos_release
 
     version_context = eos_release
-    transport_disabled = not isinstance(transport, UnavailableFact) and transport.value.state is not FeatureState.ENABLED
-    certz_disabled = not isinstance(certz, UnavailableFact) and certz.value.state is not FeatureState.ENABLED
-    if transport_disabled or certz_disabled:
+    closed_path = tuple(fact for fact in (transport, certz) if not isinstance(fact, UnavailableFact) and fact.value.state is not FeatureState.ENABLED)
+    if closed_path:
+        if version_context.fact.value < MIN_BOOTZ_VERSION:
+            return NotAffectedResult(vulnerability_id=VULNERABILITY_ID, decisive=closed_path)
         return InconclusiveResult(
             vulnerability_id=VULNERABILITY_ID,
             indications=(version_context,),
@@ -97,8 +100,8 @@ def _assess_sa162(
     if problems:
         return ErrorResult(vulnerability_id=VULNERABILITY_ID, problems=problems)
 
-    available_transport = cast("AvailableFact[FeatureValue]", transport)
-    available_certz = cast("AvailableFact[FeatureValue]", certz)
+    available_transport = cast("AvailableFact[GnsiTransportFact]", transport)
+    available_certz = cast("AvailableFact[GnsiCertzFact]", certz)
     return AffectedResult(
         vulnerability_id=VULNERABILITY_ID,
         context=(version_context,),
@@ -113,9 +116,11 @@ class SA162(OptionalCommandsMixin, _AntaAdvisoryTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if the EOS version is outside the affected releases.
+    * Success: The test will pass if the EOS version is outside the affected releases, or if an affected
+      release older than 4.33.2F has the current Certz path disabled or unsupported.
     * Failure: The test will fail if an affected EOS version has an enabled gNSI transport and Certz service.
-    * Inconclusive: The test is inconclusive when the Certz path is closed but Bootz certificate use during initial provisioning is unknown.
+    * Inconclusive: The test is inconclusive when EOS 4.33.2F or later has the Certz path closed but Bootz
+      certificate use during initial provisioning is unknown.
     * Error: The test will error if EOS or current Certz-path state needed for the assessment cannot be determined.
 
     Examples
@@ -126,19 +131,23 @@ class SA162(OptionalCommandsMixin, _AntaAdvisoryTest):
     ```
     """
 
+    @facts_dataclass
+    class Facts(FactsBase):
+        """Collected facts required to assess the advisory."""
+
+        version: Fact[EosVersionFact] = fact_field(EosVersionFact)
+        transport: Fact[GnsiTransportFact] = fact_field(GnsiTransportFact)
+        certz: Fact[GnsiCertzFact] = fact_field(GnsiCertzFact)
+
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
-    required_facts: ClassVar[tuple[type[FactDefinition[Any]], ...]] = (EosVersionFact, GnsiTransportFact, GnsiCertzFact)
     description = "Verify whether the device is impacted by Security Advisory 0162."
     _atomic_support = True
 
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
         """Derive the declared facts, assess the vulnerability, and project it."""
-        finding = _assess_sa162(
-            self.fact(EosVersionFact),
-            self.fact(GnsiTransportFact),
-            self.fact(GnsiCertzFact),
-        )
+        facts = self.Facts.collect(self)
+        finding = _assess_sa162(facts.version, facts.transport, facts.certz)
         atomic_result = self.result.add(
             f"Verify {VULNERABILITY_ID}.",
             vulnerability_ids=(VULNERABILITY_ID,),
