@@ -115,7 +115,7 @@ def _deserialize_gnpsi_config(output: Mapping[str, object]) -> _GnpsiConfig | Fa
         parsed.append(
             _GnpsiTransport(
                 enabled=transport.get("enabled"),
-                running=transport.get("running"),
+                running=transport.get("running", True),
                 security_type=transport.get("securityType"),
                 authentication_methods=transport.get("authnUsernamePriority"),
                 config_errors=transport.get("configErrors"),
@@ -136,9 +136,9 @@ def _effective_gnpsi_transports(transports: tuple[_GnpsiTransport, ...]) -> tupl
 
     Configured enablement is not enough: EOS can report ``enabled: true`` while ``running`` is
     false and ``configErrors`` is populated. Explicit ``running: false`` makes the transport
-    ineffective without requiring ``configErrors``. A missing ``running`` field stays a candidate so
-    partial JSON cannot collapse into a false negative. A candidate with missing or invalid
-    ``configErrors`` is malformed.
+    ineffective without requiring ``configErrors``. An omitted ``running`` field defaults to true so
+    partial JSON cannot collapse into a false negative. Explicit null and any other non-boolean
+    ``running`` value are malformed, as are missing or invalid ``configErrors``.
     """
     if any(not isinstance(transport.enabled, bool) for transport in transports):
         return FactProblemKind.MALFORMED
@@ -146,7 +146,7 @@ def _effective_gnpsi_transports(transports: tuple[_GnpsiTransport, ...]) -> tupl
     for transport in transports:
         if transport.enabled is not True:
             continue
-        if transport.running is not None and not isinstance(transport.running, bool):
+        if not isinstance(transport.running, bool):
             return FactProblemKind.MALFORMED
         if transport.running is False:
             continue

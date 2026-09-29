@@ -405,6 +405,30 @@ GNPSI_NON_RUNNING_TLS_METADATA: dict[str, object] = {
         }
     },
 }
+GNPSI_RUNNING_EXPOSED_CONFIG_ERROR: dict[str, object] = {
+    "enabled": True,
+    "transports": {
+        "default": {
+            "enabled": True,
+            "running": True,
+            "securityType": "tls",
+            "authnUsernamePriority": ["metadata"],
+            "configErrors": {"noSslProfileFound": True},
+        }
+    },
+}
+GNPSI_RUNNING_MTLS_SPIFFE_CONFIG_ERROR: dict[str, object] = {
+    "enabled": True,
+    "transports": {
+        "default": {
+            "enabled": True,
+            "running": True,
+            "securityType": "mtls",
+            "authnUsernamePriority": ["x509-spiffe"],
+            "configErrors": {"invalidSslProfile": True},
+        }
+    },
+}
 
 
 def _assert_ineffective_gnpsi_facts(device: OfflineAntaDevice, output: dict[str, object]) -> None:
@@ -449,6 +473,12 @@ def test_gnpsi_exposure_ignores_non_running_sibling(device: OfflineAntaDevice) -
     assert exposure.value.state is FeatureState.ENABLED
 
 
+@pytest.mark.parametrize("output", [GNPSI_RUNNING_EXPOSED_CONFIG_ERROR, GNPSI_RUNNING_MTLS_SPIFFE_CONFIG_ERROR])
+def test_gnpsi_config_errors_make_running_transport_ineffective(device: OfflineAntaDevice, output: dict[str, object]) -> None:
+    """Ignore a running transport when EOS reports configuration errors."""
+    _assert_ineffective_gnpsi_facts(device, output)
+
+
 def test_gnpsi_mitigation_ignores_non_running_sibling(device: OfflineAntaDevice) -> None:
     """Keep an effective mTLS/SPIFFE transport when a sibling cannot accept requests."""
     output = {
@@ -469,6 +499,7 @@ def test_gnpsi_mitigation_ignores_non_running_sibling(device: OfflineAntaDevice)
     "output",
     [
         {"enabled": True, "transports": {"t2": {"enabled": True, "running": "yes"}}},
+        {"enabled": True, "transports": {"t2": {"enabled": True, "running": None, "configErrors": {}}}},
         {"enabled": True, "transports": {"t2": {"enabled": True, "configErrors": {"noSslProfileFound": "true"}}}},
         {"enabled": True, "transports": {"t2": {"enabled": True, "running": True}}},
     ],
