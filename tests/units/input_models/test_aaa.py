@@ -24,10 +24,10 @@ class TestAAAAccounting:
         ("acct_type", "method_configs"),
         [
             # commands type: privilege method-list names and console plane
-            pytest.param("commands", [{"name": "privilege0-15", "default_methods": ["tacacs+"]}], id="commands-name-privilege-string"),
+            pytest.param("commands", [{"name": "0-15", "default_methods": ["tacacs+"]}], id="commands-name-full-range"),
             pytest.param(
                 "commands",
-                [{"name": "privilege0-5", "default_methods": ["tacacs+"]}, {"name": "privilege6-15", "default_methods": ["logging"]}],
+                [{"name": "0-5", "default_methods": ["tacacs+"]}, {"name": "6-15", "default_methods": ["logging"]}],
                 id="commands-multiple-unique-privilege-ranges",
             ),
             pytest.param(
@@ -55,8 +55,8 @@ class TestAAAAccounting:
             pytest.param("commands", [{"name": "all", "default_methods": ["tacacs+"]}], "privilege0-15", id="all-expands-to-full-range"),
             pytest.param("commands", [{"name": 0, "default_methods": ["tacacs+"]}], "privilege0", id="int-zero-to-privilege0"),
             pytest.param("commands", [{"name": 15, "default_methods": ["tacacs+"]}], "privilege15", id="int-max-level"),
-            pytest.param("commands", [{"name": "privilege5-10", "default_methods": ["tacacs+"]}], "privilege5-10", id="partial-range-unchanged"),
-            pytest.param("commands", [{"name": "privilege5", "default_methods": ["tacacs+"]}], "privilege5", id="single-privilege-level"),
+            pytest.param("commands", [{"name": "2-6", "default_methods": ["tacacs+"]}], "privilege2-6", id="bare-range-normalizes"),
+            pytest.param("commands", [{"name": "5", "default_methods": ["tacacs+"]}], "privilege5", id="bare-single-level-normalizes"),
         ],
     )
     def test_valid_name_normalization(self, acct_type: AAAAccountingType, method_configs: list[AAAAccountingMethods], expected_normalized_name: str) -> None:
@@ -70,17 +70,18 @@ class TestAAAAccounting:
             # commands type: invalid names and duplicate detection
             pytest.param("commands", [{"name": 16, "default_methods": ["tacacs+"]}], id="commands-int-out-of-range"),
             pytest.param("commands", [{"name": -1, "default_methods": ["tacacs+"]}], id="commands-int-negative"),
-            pytest.param("commands", [{"name": "privilege5-3", "default_methods": ["tacacs+"]}], id="commands-range-start-exceeds-end"),
-            pytest.param("commands", [{"name": "privilege16", "default_methods": ["tacacs+"]}], id="commands-privilege-level-out-of-range"),
+            pytest.param("commands", [{"name": "5-3", "default_methods": ["tacacs+"]}], id="commands-range-start-exceeds-end"),
+            pytest.param("commands", [{"name": "16", "default_methods": ["tacacs+"]}], id="commands-level-out-of-range"),
             pytest.param("commands", [{"name": "not-a-privilege", "default_methods": ["tacacs+"]}], id="commands-invalid-name-format"),
+            pytest.param("commands", [{"name": "privilege5-10", "default_methods": ["tacacs+"]}], id="commands-prefixed-form-not-accepted"),
             pytest.param(
                 "commands",
-                [{"name": "all", "default_methods": ["tacacs+"]}, {"name": "privilege0-15", "default_methods": ["logging"]}],
+                [{"name": "all", "default_methods": ["tacacs+"]}, {"name": "0-15", "default_methods": ["logging"]}],
                 id="commands-duplicate-names-after-normalization",
             ),
             pytest.param(
                 "commands",
-                [{"name": 0, "default_methods": ["tacacs+"]}, {"name": "privilege0", "default_methods": ["logging"]}],
+                [{"name": 0, "default_methods": ["tacacs+"]}, {"name": "0", "default_methods": ["logging"]}],
                 id="commands-int-and-string-collide-after-normalization",
             ),
             pytest.param("commands", [], id="commands-empty-method-lists"),

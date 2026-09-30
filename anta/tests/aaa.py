@@ -423,10 +423,11 @@ class VerifyAcctMethods(AntaTest):
           accounting:
             - acct_type: commands
               method_configs:
-                - name: all
+                - name: 2-6
                   default_methods:
                     - tacacs+
                     - logging
+                - name: all
                   console_methods:
                     - tacacs+
                     - logging

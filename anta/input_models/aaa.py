@@ -20,36 +20,27 @@ if TYPE_CHECKING:
     else:
         from typing_extensions import Self
 
-PRIVILEGE_METHOD_LIST_PATTERN = re.compile(r"privilege(?P<start>1[0-5]|\d)(?:-(?P<end>1[0-5]|\d))?")
+PRIVILEGE_LEVEL_RANGE_PATTERN = re.compile(r"^(?P<start>\d|1[0-5])(?:-(?P<end>\d|1[0-5]))?$")
 MAX_PRIVILEGE_LEVEL = 15
 
 
-def _normalize_privilege_method_list_name(name: str | int) -> str:
-    """Normalize and validate an EOS privilege method-list name."""
-    # Handle integer input: convert to "privilegeN" EOS format
-    if isinstance(name, int):
-        if 0 <= name <= MAX_PRIVILEGE_LEVEL:
-            return f"privilege{name}"
-        msg = f"Invalid AAA privilege level: {name}. Expected an integer between 0 and 15"
-        raise ValueError(msg)
-
-    # Expand the "all" shorthand to the full EOS privilege range
+def _normalize_privilege_method_list_name(name: str) -> str:
+    """Return the canonical EOS JSON key for a commands accounting method-list name."""
     if name == "all":
         return "privilege0-15"
 
-    # Validate the string matches the expected "privilegeN" or "privilegeN-M" pattern
-    if (match := PRIVILEGE_METHOD_LIST_PATTERN.fullmatch(name)) is None:
-        msg = (
-            f"Invalid AAA privilege method-list name: {name}. Expected an integer between 0 and 15, 'all', "
-            "'privilegeN', or 'privilegeN-M', where levels are between 0 and 15"
-        )
+    match = PRIVILEGE_LEVEL_RANGE_PATTERN.fullmatch(name)
+    if not match:
+        msg = f"Invalid privilege method-list name: {name!r}. Expected 'all', 'N', or 'N-M' where N is 0-15"
         raise ValueError(msg)
 
     # Reject ranges where the start level exceeds the end level
-    if (end := match.group("end")) is not None and int(match.group("start")) > int(end):
-        msg = f"Invalid AAA privilege method-list range: {name}. The first privilege level must not exceed the last"
+    start, end = int(match.group("start")), match.group("end")
+    if end is not None and start > int(end):
+        msg = f"Invalid privilege range {name!r}: start level must not exceed end level"
         raise ValueError(msg)
-    return name
+
+    return f"privilege{name}"
 
 
 class AAAAccountingMethods(BaseModel):
@@ -87,7 +78,7 @@ class AAAAccounting(BaseModel):
         if self.acct_type == "commands":
             # Normalize each privilege method-list name to its canonical EOS form
             for entry in self.method_configs:
-                entry.name = _normalize_privilege_method_list_name(entry.name)
+                entry.name = _normalize_privilege_method_list_name(str(entry.name))
 
         # Ensure all names are unique (applies to all accounting types)
         method_names = [str(entry.name) for entry in self.method_configs]

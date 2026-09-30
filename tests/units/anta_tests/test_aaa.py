@@ -520,7 +520,7 @@ DATA: AntaUnitTestData = {
         ],
         "inputs": {
             "accounting": [
-                {"acct_type": "commands", "method_configs": [{"name": "privilege1-5", "default_methods": ["tacacs+", "logging"]}]},
+                {"acct_type": "commands", "method_configs": [{"name": "1-5", "default_methods": ["tacacs+", "logging"]}]},
             ]
         },
         "expected": {
@@ -766,8 +766,8 @@ DATA: AntaUnitTestData = {
                 {
                     "acct_type": "commands",
                     "method_configs": [
-                        {"name": "privilege0-5", "default_methods": ["tacacs+", "logging"]},
-                        {"name": "privilege6-15", "default_methods": ["tacacs+", "logging"]},
+                        {"name": "0-5", "default_methods": ["tacacs+", "logging"]},
+                        {"name": "6-15", "default_methods": ["tacacs+", "logging"]},
                     ],
                 }
             ]
