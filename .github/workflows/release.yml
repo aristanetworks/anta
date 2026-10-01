@@ -208,6 +208,9 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
 
+      - name: Install documentation dependencies
+        run: uv sync --locked --no-default-groups --group doc
+
       - name: 'Build Zensical content to site folder'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -216,9 +219,9 @@ jobs:
         run: |
           git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           if [[ "$PRERELEASE" == "true" ]]; then
-            uv run --locked --no-default-groups --group doc docs/scripts/deploy_doc_version.sh "$REF_NAME"
+            uv run --no-sync docs/scripts/deploy_doc_version.sh "$REF_NAME"
           else
-            uv run --locked --no-default-groups --group doc docs/scripts/deploy_doc_version.sh "$REF_NAME" --final
+            uv run --no-sync docs/scripts/deploy_doc_version.sh "$REF_NAME" --final
           fi
 
   docker:
