@@ -10,8 +10,12 @@ from __future__ import annotations
 from ipaddress import IPv4Address
 from typing import TYPE_CHECKING, ClassVar, Literal
 
+from pydantic import Field
+
 from anta.custom_types import AAAAuthMethod
+from anta.input_models.aaa import AAAAuthorization
 from anta.models import AntaCommand, AntaTest
+from anta.result_manager.models import AntaTestStatus
 from anta.tools import get_value
 
 if TYPE_CHECKING:
@@ -395,3 +399,64 @@ class VerifyAcctConsoleMethods(AntaTest):
             self.result.is_success()
         else:
             self.result.is_failure(f"AAA accounting console methods {', '.join(self.inputs.methods)} are not matching for {', '.join(not_matching)}")
+
+
+class VerifyAuthorizationMethodLists(AntaTest):
+    """Verifies AAA authorization methods for specific method lists.
+
+    Expected Results
+    ----------------
+    * Success: The test passes when every specified method list is configured with the expected methods, regardless of order.
+    * Failure: The test fails when any specified method list is missing or its configured methods do not match.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.aaa:
+      - VerifyAuthorizationMethodLists:
+          authorization:
+            - authz_type: commands
+              method_lists:
+                # Valid names are integers 0-15 or "all".
+                - name: all
+                  methods:
+                    - group tacacs+
+                    - local
+            - authz_type: exec
+              method_lists:
+                - name: exec
+                  methods:
+                    - group tacacs+
+                    - local
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["aaa"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show aaa methods authorization", revision=1)]
+    _atomic_support: ClassVar[bool] = True
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyAuthorizationMethodLists test."""
+
+        authorization: list[AAAAuthorization] = Field(min_length=1)
+        """Authorization types and their expected method lists."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyAuthorizationMethodLists."""
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output
+
+        for authorization in self.inputs.authorization:
+            authz_type = authorization.authz_type
+            configured_lists = command_output.get(f"{authz_type}AuthzMethods", {})
+            for expected_list in authorization.method_lists:
+                result = self.result.add(description=f"Authorization Type: {authz_type} Method: {expected_list.name}", status=AntaTestStatus.SUCCESS)
+                actual_methods = get_value(configured_lists, f"{expected_list.name}..methods", separator="..")
+
+                if not actual_methods:
+                    result.is_failure("Not configured")
+                    continue
+
+                if sorted(actual_methods) != sorted(expected_list.methods):
+                    result.is_failure(f"Methods mismatch - Expected: {', '.join(expected_list.methods)} Actual: {', '.join(actual_methods)}")
