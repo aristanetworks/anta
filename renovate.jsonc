@@ -28,7 +28,6 @@
 
   "lockFileMaintenance": {
     "enabled": true,
-    "schedule": ["before 5am on monday"],
     "rebaseWhen": "behind-base-branch"
   },
 
@@ -37,11 +36,6 @@
     // PEP621 (pyproject.toml) Rules
     // Inherits global: reviewers, commitMessagePrefix ("ci:"), labels ("dependencies")
     // -------------------------------------------------------------------------
-    {
-      "description": "Schedule for Python dependency updates.",
-      "matchManagers": ["pep621"],
-      "schedule": ["before 5am every weekday"]
-    },
     {
       "description": "Runtime dependencies lower bounds.",
       "matchManagers": ["pep621"],
@@ -78,8 +72,7 @@
       "description": "Pin GitHub Actions digests.",
       "matchManagers": ["github-actions"],
       "labels": ["CI"],
-      "pinDigests": true,
-      "schedule": ["before 5am on monday"]
+      "pinDigests": true
     },
     {
       "description": "Handling hook rev autoupdates.",
@@ -92,8 +85,7 @@
       "matchManagers": ["pre-commit"],
       "matchDepTypes": ["pre-commit-python"],
       "labels": ["CI"],
-      "rangeStrategy": "bump",
-      "schedule": ["before 5am on monday"]
+      "rangeStrategy": "bump"
     },
     {
       "description": "Group Ruff updates across Python and pre-commit",
