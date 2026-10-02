@@ -4,7 +4,21 @@
   "extends": ["config:best-practices"],
   "timezone": "UTC",
   "dependencyDashboard": true,
-  "enabledManagers": ["pep621", "github-actions", "pre-commit"],
+  "enabledManagers": ["pep621", "github-actions", "pre-commit", "custom.regex"],
+
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/(^|/)(Dockerfile|\\.github/workflows/[^/]+\\.ya?ml)$/"],
+      "matchStrings": [
+        "ARG UV_VERSION=(?<currentValue>\\d+\\.\\d+\\.\\d+)",
+        "version: \"(?<currentValue>\\d+\\.\\d+\\.\\d+)\" # renovate: uv"
+      ],
+      "depNameTemplate": "astral-sh/uv",
+      "datasourceTemplate": "github-releases",
+      "versioningTemplate": "semver-coerced"
+    }
+  ],
 
   "pre-commit": {
     "enabled": true
@@ -118,6 +132,14 @@
       "matchUpdateTypes": ["minor", "patch"],
       "groupName": "codespell",
       "groupSlug": "codespell"
+    },
+    {
+      "description": "Keep uv pins within the repository's supported range.",
+      "matchManagers": ["custom.regex"],
+      "matchPackageNames": ["astral-sh/uv"],
+      "allowedVersions": "<0.13",
+      "labels": ["CI"],
+      "schedule": ["before 5am on monday"]
     },
 
     // -------------------------------------------------------------------------

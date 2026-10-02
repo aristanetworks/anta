@@ -27,12 +27,26 @@ jobs:
               - 'tests/**'
               # detect dependency changes
               - 'pyproject.toml'
+              - 'tox.toml'
+              - 'uv.lock'
   test-python:
     name: Pytest across all supported python versions
     runs-on: ubuntu-latest
+    env:
+      COLUMNS: "165"
     strategy:
       matrix:
-        python: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+        include:
+          - python: "3.10"
+            tox_env: py310
+          - python: "3.11"
+            tox_env: py311
+          - python: "3.12"
+            tox_env: py312
+          - python: "3.13"
+            tox_env: py313
+          - python: "3.14"
+            tox_env: py314
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -41,10 +55,24 @@ jobs:
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: ${{ matrix.python }}
-      - name: Install dependencies
-        run: pip install tox tox-gh-actions
-      - name: "Run pytest via tox for ${{ matrix.python }}"
-        run: tox run
+      - name: Setup uv
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          version: "0.12.17" # renovate: uv
+      - name: Install tox with its uv plugin
+        run: uv sync --locked --only-group tox
+      - name: Erase previous coverage data
+        if: matrix.python == '3.11'
+        run: uv run --no-sync tox run -e clean
+      - name: "Run pytest with coverage for ${{ matrix.python }}"
+        if: matrix.python == '3.11'
+        run: uv run --no-sync tox run -e ${{ matrix.tox_env }}
+      - name: "Run pytest for ${{ matrix.python }}"
+        if: matrix.python != '3.11'
+        run: uv run --no-sync tox run -e ${{ matrix.tox_env }} -- --no-cov
+      - name: Generate coverage report
+        if: matrix.python == '3.11'
+        run: uv run --no-sync tox run -e report
       - name: Upload coverage from pytest
         # Coverage only runs as part of 3.11.
         if: |
@@ -59,6 +87,7 @@ jobs:
     needs: [file-changes]
     if: needs.file-changes.outputs.code == 'true'
     env:
+      COLUMNS: "165"
       # Required to prevent asyncssh to fail.
       USERNAME: WindowsUser
     steps:
@@ -69,10 +98,14 @@ jobs:
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: 3.12
-      - name: Install dependencies
-        run: pip install tox tox-gh-actions
-      - name: Run pytest via tox for 3.12 on Windows
-        run: tox run -- --ignore=tests/docs
+      - name: Setup uv
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          version: "0.12.17" # renovate: uv
+      - name: Install tox with its uv plugin
+        run: uv sync --locked --only-group tox
+      - name: Run pytest for 3.12 on Windows
+        run: uv run --no-sync tox run -e py312 -- --no-cov --ignore=tests/docs
   test-documentation:
     name: Build offline documentation for testing
     runs-on: ubuntu-latest
@@ -85,10 +118,12 @@ jobs:
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.11"
-      - name: Install dependencies
-        run: pip install -e ".[cli]" --group doc -e tools/zensical_extensions
+      - name: Setup uv
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          version: "0.12.17" # renovate: uv
       - name: "Build Zensical documentation offline"
-        run: zensical build --strict
+        run: uv run --locked --no-default-groups --group doc --extra cli zensical build --strict
   benchmarks:
     name: Benchmark ANTA for Python 3.12
     needs: [file-changes, test-python]
