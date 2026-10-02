@@ -67,7 +67,7 @@ repos:
           - --rcfile=pyproject.toml # Link to config file
         additional_dependencies:
           - anta[cli]
-          - types-PyYAML==6.0.12.20260518
+          - types-PyYAML==6.0.12.20260906
           - types-requests==2.33.0.20260518
           - types-pyOpenSSL==24.1.0.20240722
           - pylint_pydantic==0.4.1
@@ -100,7 +100,7 @@ repos:
           - respx==0.23.1
           - pytest-httpx>=0.36.2
           - pytest-codspeed>=5.0.3
-          - types-PyYAML==6.0.12.20260518
+          - types-PyYAML==6.0.12.20260906
           - types-requests==2.33.0.20260518
           - types-pyOpenSSL==24.1.0.20240722
           - zensical==0.0.62
