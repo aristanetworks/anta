@@ -54,15 +54,6 @@
       "matchDepTypes": ["dependency-groups"],
       "rangeStrategy": "bump"
     },
-    {
-      "description": "Group non-major Python tooling updates.",
-      "matchManagers": ["pep621"],
-      "matchDepTypes": ["dependency-groups"],
-      "matchUpdateTypes": ["minor", "patch"],
-      "groupName": "Python tooling dependencies",
-      "groupSlug": "python-tooling"
-    },
-
     // -------------------------------------------------------------------------
     // CI Tools (GitHub Actions & pre-commit)
     // Inherits global: reviewers, commitMessagePrefix ("ci:")
@@ -86,6 +77,16 @@
       "matchDepTypes": ["pre-commit-python"],
       "labels": ["CI"],
       "rangeStrategy": "bump"
+    },
+    // Share the group across managers so duplicated PyPI dependencies update together.
+    // Tool-specific groups below override this default for hook repository aliases.
+    {
+      "description": "Group non-major Python tooling updates across Python and pre-commit.",
+      "matchManagers": ["pep621", "pre-commit"],
+      "matchDepTypes": ["dependency-groups", "pre-commit-python"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "Python tooling dependencies",
+      "groupSlug": "python-tooling"
     },
     {
       "description": "Group Ruff updates across Python and pre-commit",
