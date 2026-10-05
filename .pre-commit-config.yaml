@@ -150,5 +150,5 @@ repos:
         additional_dependencies:
           - anta[cli]
           # Keep generated CLI snippets stable with Click's optional subcommand rendering.
-          - click~=8.4.2
+          - click~=8.5.0
           - pydantic-settings==2.15.0
