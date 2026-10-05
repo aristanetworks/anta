@@ -1,23 +1,22 @@
 ARG PYTHON_VER=3.10
 ARG IMG_OPTION=alpine
+ARG UV_VERSION=0.12.17
+
+FROM ghcr.io/astral-sh/uv:${UV_VERSION} AS UV
 
 ### BUILDER
 
 FROM python:${PYTHON_VER}-${IMG_OPTION} AS BUILDER
 
-RUN pip install --upgrade pip
+COPY --from=UV /uv /uvx /bin/
 
 WORKDIR /local
 COPY . /local
 
-RUN python -m venv /opt/venv
-
-
-ENV PATH="/opt/venv/bin:$PATH"
+ENV UV_PROJECT_ENVIRONMENT=/opt/venv
 
 RUN apk add --no-cache build-base # Add build-base package
-RUN pip --no-cache-dir install "." &&\
-    pip --no-cache-dir install ".[cli]"
+RUN uv sync --locked --no-dev --extra cli --no-editable
 
 # ----------------------------------- #
 

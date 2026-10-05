@@ -3,7 +3,7 @@
 # that can be found in the LICENSE file.
 """Shared realistic data for security advisory reporter tests.
 
-Regenerate the checked-in reports with ``uv run python -m tests.units._advisory.generate_report_fixtures``.
+Regenerate the checked-in reports with ``uv run --locked python -m tests.units._advisory.generate_report_fixtures``.
 """
 
 from __future__ import annotations

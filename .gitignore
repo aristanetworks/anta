@@ -13,8 +13,6 @@ examples/tests_*
 .personal/*
 *.env
 *.swp
-uv.lock
-
 # Distribution / packaging
 .Python
 build/
