@@ -51,6 +51,8 @@ IssueExpectation: TypeAlias = tuple[ProductionStatus, str, RemediationPlan | Non
 EXPECTED_FIXED_RELEASES = (
     FixedRelease(EOSVersion(4, 36, 2, suffix="F")),
     FixedRelease(EOSVersion(4, 35, 5, suffix="M")),
+    FixedRelease(EOSVersion(4, 34, 8, suffix="M")),
+    FixedRelease(EOSVersion(4, 33, 10, suffix="M")),
 )
 EXPECTED_CLEAN_LOGS = OperationalAction("Clean current and rotated agent logs if the affected trace levels were enabled.")
 EXPECTED_REMEDIATION = RemediationPlan(
@@ -205,8 +207,10 @@ class TestSA153VersionMatrix(unittest.TestCase):
             ("4.35.4M", AffectedStatus.AFFECTED),
             ("4.35.5M", AffectedStatus.NOT_AFFECTED),
             ("4.34.0F", AffectedStatus.AFFECTED),
-            ("4.34.99M", AffectedStatus.AFFECTED),
-            ("4.33.99M", AffectedStatus.AFFECTED),
+            ("4.34.7M", AffectedStatus.AFFECTED),
+            ("4.34.8M", AffectedStatus.NOT_AFFECTED),
+            ("4.33.9M", AffectedStatus.AFFECTED),
+            ("4.33.10M", AffectedStatus.NOT_AFFECTED),
             ("4.32.99M", AffectedStatus.AFFECTED),
             ("4.31.99M", AffectedStatus.AFFECTED),
             ("4.30.99M", AffectedStatus.NOT_AFFECTED),

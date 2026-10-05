@@ -10,8 +10,9 @@ import re
 import shlex
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, ClassVar, TypeVar
+from typing import ClassVar
 
+from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.models import (
     CommandsFactDefinition,
     ConfigurationFact,
@@ -19,7 +20,6 @@ from anta._advisory.facts.models import (
     CredentialSyntaxFact,
     CredentialSyntaxState,
     Fact,
-    FactDefinition,
     FactProblemKind,
     FactSource,
     FactSourceKind,
@@ -30,15 +30,10 @@ from anta._advisory.facts.models import (
     MitigationFact,
     MitigationState,
     SubFeature,
-    UnavailableFact,
 )
 from anta._advisory.optional_commands import OptionalAntaCommand, is_unsupported_optional_command
 from anta._eos.parsing import ParseFail, ParseFailureReason, ParseResult, ParseSuccessful
-from anta._eos.version import EOSVersion, parse_eos_version
 from anta.models import AntaCommand
-
-if TYPE_CHECKING:
-    from anta.device import AntaDevice
 
 RISKY_TRACE_SELECTORS = ("service/9", "interceptor/9", "transport_socketcli/9")
 GNMI_COMMAND = OptionalAntaCommand(command="show management api gnmi", revision=1)
@@ -48,8 +43,6 @@ GNSI_COMMAND = OptionalAntaCommand(command="show management api gnsi", revision=
 GNPSI_COMMAND = OptionalAntaCommand(command="show management api gnpsi", revision=1)
 GNPSI_TRACE_COMMAND = OptionalAntaCommand(command="show trace Gnpsi | grep Auth", ofmt="text", defer_errors=True)
 MIN_ENABLED_GNSI_TRANSPORTS = 2
-MIN_GNSI_ACCTZ_PATHZ_VERSION = EOSVersion(4, 33, 2)
-FeatureFactT = TypeVar("FeatureFactT", bound=FactDefinition[Any])
 PATHZ_POLICY_COMMAND = OptionalAntaCommand(
     command="bash timeout 10 sh -c 'if test -f /persist/sys/gnsi/pathz/policy.json; then cat /persist/sys/gnsi/pathz/policy.json; else echo null; fi'",
     ofmt="text",
@@ -77,8 +70,10 @@ class _GnpsiTransport:
     """Deserialized gNPSI transport fields without fact-specific interpretation."""
 
     enabled: object
+    running: object
     security_type: object
     authentication_methods: object
+    config_errors: object
 
 
 @dataclass(frozen=True, slots=True)
@@ -120,11 +115,48 @@ def _deserialize_gnpsi_config(output: Mapping[str, object]) -> _GnpsiConfig | Fa
         parsed.append(
             _GnpsiTransport(
                 enabled=transport.get("enabled"),
+                running=transport.get("running", True),
                 security_type=transport.get("securityType"),
                 authentication_methods=transport.get("authnUsernamePriority"),
+                config_errors=transport.get("configErrors"),
             )
         )
     return _GnpsiConfig(enabled=output["enabled"], transports=tuple(parsed))
+
+
+def _gnpsi_config_errors_present(value: object) -> bool | FactProblemKind:
+    """Return whether a candidate transport reports a truthy configuration error."""
+    if not isinstance(value, Mapping) or not all(isinstance(error, bool) for error in value.values()):
+        return FactProblemKind.MALFORMED
+    return any(value.values())
+
+
+def _effective_gnpsi_transports(transports: tuple[_GnpsiTransport, ...]) -> tuple[_GnpsiTransport, ...] | FactProblemKind:
+    """Return transports that can currently accept gNPSI requests.
+
+    Configured enablement is not enough: EOS can report ``enabled: true`` while ``running`` is
+    false and ``configErrors`` is populated. Explicit ``running: false`` makes the transport
+    ineffective without requiring ``configErrors``. An omitted ``running`` field defaults to true so
+    partial JSON cannot collapse into a false negative. Explicit null and any other non-boolean
+    ``running`` value are malformed, as are missing or invalid ``configErrors``.
+    """
+    if any(not isinstance(transport.enabled, bool) for transport in transports):
+        return FactProblemKind.MALFORMED
+    effective: list[_GnpsiTransport] = []
+    for transport in transports:
+        if transport.enabled is not True:
+            continue
+        if not isinstance(transport.running, bool):
+            return FactProblemKind.MALFORMED
+        if transport.running is False:
+            continue
+        config_errors = _gnpsi_config_errors_present(transport.config_errors)
+        if isinstance(config_errors, FactProblemKind):
+            return config_errors
+        if config_errors:
+            continue
+        effective.append(transport)
+    return tuple(effective)
 
 
 def _gnpsi_security_type(value: str) -> str:
@@ -133,7 +165,7 @@ def _gnpsi_security_type(value: str) -> str:
 
 
 def _gnpsi_authentication(transport: _GnpsiTransport) -> tuple[str, frozenset[str]] | FactProblemKind:
-    """Return validated security and authentication fields for one enabled transport."""
+    """Return validated security and authentication fields for one effective transport."""
     if transport.security_type is None or transport.authentication_methods is None:
         return FactProblemKind.MISSING
     if not isinstance(transport.security_type, str) or (
@@ -151,32 +183,6 @@ def _gnpsi_authentication(transport: _GnpsiTransport) -> tuple[str, frozenset[st
 def _feature_source(command: AntaCommand) -> FactSource:
     """Return the source for one command-derived fact."""
     return FactSource(command.command, FactSourceKind.COMMAND)
-
-
-def _version_aware_gnsi_service_absence(
-    device: AntaDevice,
-    commands: tuple[AntaCommand, ...],
-    fact: Fact[FeatureFactT],
-    field: str,
-    unsupported: FeatureFactT,
-) -> Fact[FeatureFactT]:
-    """Interpret a missing Acctz or Pathz field using the EOS schema boundary."""
-    if (
-        not isinstance(fact, UnavailableFact)
-        or fact.problem is not FactProblemKind.MISSING
-        or len(commands) != 1
-        or commands[0].errors
-        or field in commands[0].json_output
-    ):
-        return fact
-
-    device_version = device.version
-    version = device_version if isinstance(device_version, EOSVersion) else parse_eos_version(str(device_version)).unwrap_or_none()
-    if version is None:
-        return fact
-    if version < MIN_GNSI_ACCTZ_PATHZ_VERSION:
-        return unsupported.available(fact.source)
-    return fact
 
 
 _SNMPV3_CREDENTIAL_CLAUSES = frozenset({"auth", "priv"})
@@ -581,18 +587,16 @@ class GnsiAuthzFact(FeatureFact, CommandsFactDefinition["GnsiAuthzFact"]):
 
 @dataclass(frozen=True, slots=True)
 class GnsiAcctzFact(FeatureFact, CommandsFactDefinition["GnsiAcctzFact"]):
-    """Effective gNSI Acctz service state."""
+    """Effective gNSI Acctz service state, exposed by EOS starting in release 4.33.2."""
 
     feature: ClassVar[FeatureRef] = SubFeature(FeatureName.GNSI, "Acctz service")
     key: ClassVar[str] = "feature.gnsi.acctz"
     label: ClassVar[str] = "gNSI Acctz service state"
     commands: ClassVar[tuple[AntaCommand, ...]] = (GNSI_COMMAND,)
-
-    @classmethod
-    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[GnsiAcctzFact]:
-        """Interpret an absent Acctz field according to the EOS response schema."""
-        fact = super(GnsiAcctzFact, cls).derive(device, commands)
-        return _version_aware_gnsi_service_absence(device, commands, fact, "acctzEnabled", cls(FeatureState.UNSUPPORTED))
+    supported_versions: ClassVar[tuple[VersionRule, ...]] = (
+        VersionRule(major=4, minor=33, patch_gte=2),
+        VersionRule(major=4, minor_gt=33),
+    )
 
     @classmethod
     def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[GnsiAcctzFact]:
@@ -612,18 +616,16 @@ class GnsiAcctzFact(FeatureFact, CommandsFactDefinition["GnsiAcctzFact"]):
 
 @dataclass(frozen=True, slots=True)
 class GnsiPathzFact(FeatureFact, CommandsFactDefinition["GnsiPathzFact"]):
-    """Effective gNSI Pathz service state."""
+    """Effective gNSI Pathz service state, exposed by EOS starting in release 4.33.2."""
 
     feature: ClassVar[FeatureRef] = SubFeature(FeatureName.GNSI, "Pathz service")
     key: ClassVar[str] = "feature.gnsi.pathz"
     label: ClassVar[str] = "gNSI Pathz service state"
     commands: ClassVar[tuple[AntaCommand, ...]] = (GNSI_COMMAND,)
-
-    @classmethod
-    def derive(cls, device: AntaDevice, commands: tuple[AntaCommand, ...] = ()) -> Fact[GnsiPathzFact]:
-        """Interpret an absent Pathz field according to the EOS response schema."""
-        fact = super(GnsiPathzFact, cls).derive(device, commands)
-        return _version_aware_gnsi_service_absence(device, commands, fact, "pathzEnabled", cls(FeatureState.UNSUPPORTED))
+    supported_versions: ClassVar[tuple[VersionRule, ...]] = (
+        VersionRule(major=4, minor=33, patch_gte=2),
+        VersionRule(major=4, minor_gt=33),
+    )
 
     @classmethod
     def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[GnsiPathzFact]:
@@ -886,7 +888,7 @@ class GnpsiTransportFact(FeatureFact, CommandsFactDefinition["GnpsiTransportFact
 
     @classmethod
     def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[GnpsiTransportFact]:
-        """Normalize enabled transports and the explicit disabled state."""
+        """Normalize running transports and the explicit disabled state."""
         (command,) = commands
         source = _feature_source(command)
         if is_unsupported_optional_command(command):
@@ -896,7 +898,12 @@ class GnpsiTransportFact(FeatureFact, CommandsFactDefinition["GnpsiTransportFact
             return cls.unavailable(config, source)
         if not isinstance(config.enabled, bool):
             return cls.unavailable(FactProblemKind.MALFORMED, source)
-        state = FeatureState.ENABLED if config.enabled else FeatureState.DISABLED
+        if not config.enabled:
+            return cls(FeatureState.DISABLED).available(source)
+        effective = _effective_gnpsi_transports(config.transports)
+        if isinstance(effective, FactProblemKind):
+            return cls.unavailable(effective, source)
+        state = FeatureState.ENABLED if effective else FeatureState.DISABLED
         return cls(state).available(source)
 
 
@@ -924,13 +931,13 @@ class GnpsiAuthenticationExposureFact(FeatureFact, CommandsFactDefinition["Gnpsi
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         if not config.enabled:
             return cls(FeatureState.DISABLED).available(source)
-        if any(not isinstance(transport.enabled, bool) for transport in config.transports):
-            return cls.unavailable(FactProblemKind.MALFORMED, source)
-        enabled_transports = tuple(transport for transport in config.transports if transport.enabled is True)
-        if not enabled_transports:
+        effective_transports = _effective_gnpsi_transports(config.transports)
+        if isinstance(effective_transports, FactProblemKind):
+            return cls.unavailable(effective_transports, source)
+        if not effective_transports:
             return cls(FeatureState.DISABLED).available(source)
         problem: FactProblemKind | None = None
-        for transport in enabled_transports:
+        for transport in effective_transports:
             authentication = _gnpsi_authentication(transport)
             if isinstance(authentication, FactProblemKind):
                 problem = authentication if problem is None or authentication is FactProblemKind.MALFORMED else problem
@@ -947,7 +954,7 @@ class GnpsiAuthenticationExposureFact(FeatureFact, CommandsFactDefinition["Gnpsi
 
 @dataclass(frozen=True, slots=True)
 class GnpsiMutualTlsSpiffeMitigationFact(MitigationFact, CommandsFactDefinition["GnpsiMutualTlsSpiffeMitigationFact"]):
-    """Mutual TLS with exclusively x509-spiffe authentication on every enabled gNPSI transport."""
+    """Mutual TLS with exclusively x509-spiffe authentication on every effective gNPSI transport."""
 
     key: ClassVar[str] = "mitigation.gnpsi.mutual_tls_spiffe"
     label: ClassVar[str] = "gNPSI mutual TLS with only x509-spiffe authentication"
@@ -956,7 +963,7 @@ class GnpsiMutualTlsSpiffeMitigationFact(MitigationFact, CommandsFactDefinition[
     @classmethod
     # pylint: disable-next=too-many-return-statements
     def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[GnpsiMutualTlsSpiffeMitigationFact]:  # noqa: C901, PLR0911
-        """Verify the exact authentication control across every enabled transport."""
+        """Verify the exact authentication control across every effective transport."""
         (command,) = commands
         source = _feature_source(command)
         if is_unsupported_optional_command(command):
@@ -968,13 +975,13 @@ class GnpsiMutualTlsSpiffeMitigationFact(MitigationFact, CommandsFactDefinition[
             return cls.unavailable(FactProblemKind.MALFORMED, source)
         if not config.enabled:
             return cls(MitigationState.INEFFECTIVE).available(source)
-        if any(not isinstance(transport.enabled, bool) for transport in config.transports):
-            return cls.unavailable(FactProblemKind.MALFORMED, source)
-        enabled_transports = tuple(transport for transport in config.transports if transport.enabled is True)
-        if not enabled_transports:
+        effective_transports = _effective_gnpsi_transports(config.transports)
+        if isinstance(effective_transports, FactProblemKind):
+            return cls.unavailable(effective_transports, source)
+        if not effective_transports:
             return cls(MitigationState.INEFFECTIVE).available(source)
         problem: FactProblemKind | None = None
-        for transport in enabled_transports:
+        for transport in effective_transports:
             authentication = _gnpsi_authentication(transport)
             if isinstance(authentication, FactProblemKind):
                 problem = authentication if problem is None or authentication is FactProblemKind.MALFORMED else problem

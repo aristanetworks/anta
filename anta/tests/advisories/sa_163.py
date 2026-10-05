@@ -36,7 +36,7 @@ AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
     VersionRule(major=4, minor=35, patch_lte=5),
     VersionRule(major=4, minor=34, patch_lte=7),
     VersionRule(major=4, minor=33, patch_lte=8),
-    VersionRule(major=4, minor=32, patch_lte=11),
+    VersionRule(major=4, minor=32),
     VersionRule(major=4, minor=31),
     VersionRule(major=4, minor=30),
     VersionRule(major=4, minor=29),
@@ -52,7 +52,7 @@ FIXED_RELEASES = (
 # the complete EOS platform scope and the advisory owner explicitly rejected a CVX exclusion.
 ADVISORY = _AdvisoryMetadata(
     sa_number="0163",
-    last_updated=date(2026, 9, 9),
+    last_updated=date(2026, 9, 22),
     title="Security Advisory 0163",
     vulnerabilities=(
         _AdvisoryVulnerability(

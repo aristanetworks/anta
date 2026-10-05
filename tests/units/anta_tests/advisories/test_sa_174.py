@@ -96,10 +96,20 @@ _DATA: AntaUnitTestData = {
         "eos_data": eos_data({"enabled": False}, {}, {}),
         "expected": expected(AntaTestStatus.SUCCESS, "The device is not affected because the P4Runtime feature is disabled", None),
     },
+    (SA174, "not-affected-disabled-omitted-transport"): {
+        "version": build_eos_version("4.35.5M"),
+        "eos_data": eos_data({"devices": {}, "enabled": False, "numClients": 0}, {}, {}),
+        "expected": expected(AntaTestStatus.SUCCESS, "The device is not affected because the P4Runtime feature is disabled", None),
+    },
     (SA174, "not-affected-no-accounting"): {
         "version": build_eos_version("4.35.5M"),
         "eos_data": eos_data(p4(), TRUSTED_PROFILE, {"acctzEnabled": False, "authzEnabled": False}),
         "expected": expected(AntaTestStatus.SUCCESS, "the P4Runtime accounting is disabled and the gNSI Acctz service is disabled", None),
+    },
+    (SA174, "not-affected-unsupported-acctz"): {
+        "version": build_eos_version("4.31.10M"),
+        "eos_data": eos_data(p4(), TRUSTED_PROFILE, {}),
+        "expected": expected(AntaTestStatus.SUCCESS, "the P4Runtime accounting is disabled and the gNSI Acctz service is not supported", None),
     },
     (SA174, "not-affected-fixed-version"): {
         "version": build_eos_version("4.35.6M"),

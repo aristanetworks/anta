@@ -29,20 +29,22 @@ from anta.decorators import preview_test_class
 AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
     VersionRule(major=4, minor=36, patch_lte=1),
     VersionRule(major=4, minor=35, patch_lte=4),
-    VersionRule(major=4, minor=34),
-    VersionRule(major=4, minor=33),
+    VersionRule(major=4, minor=34, patch_lte=7),
+    VersionRule(major=4, minor=33, patch_lte=9),
     VersionRule(major=4, minor=32),
     VersionRule(major=4, minor=31),
 )
 FIXED_RELEASES = (
     FixedRelease(EOSVersion(4, 36, 2, suffix="F")),
     FixedRelease(EOSVersion(4, 35, 5, suffix="M")),
+    FixedRelease(EOSVersion(4, 34, 8, suffix="M")),
+    FixedRelease(EOSVersion(4, 33, 10, suffix="M")),
 )
 CLEAN_LOGS = OperationalAction("Clean current and rotated agent logs if the affected trace levels were enabled.")
 
 ADVISORY = _AdvisoryMetadata(
     sa_number="0153",
-    last_updated=date(2026, 9, 9),
+    last_updated=date(2026, 9, 22),
     title="Security Advisory 0153",
     vulnerabilities=(
         _AdvisoryVulnerability(
