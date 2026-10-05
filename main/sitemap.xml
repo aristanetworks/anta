@@ -4,55 +4,64 @@
         <loc>https://anta.arista.com/stable/</loc>
       </url>
       <url>
-        <loc>https://anta.arista.com/stable/getting-started/</loc>
+        <loc>https://anta.arista.com/stable/advanced_usages/as-python-lib/</loc>
       </url>
       <url>
-        <loc>https://anta.arista.com/stable/requirements-and-installation/</loc>
+        <loc>https://anta.arista.com/stable/advanced_usages/caching/</loc>
       </url>
       <url>
-        <loc>https://anta.arista.com/stable/usage-inventory-catalog/</loc>
+        <loc>https://anta.arista.com/stable/advanced_usages/custom-tests/</loc>
       </url>
       <url>
-        <loc>https://anta.arista.com/stable/cli/overview/</loc>
+        <loc>https://anta.arista.com/stable/advanced_usages/env-vars/</loc>
       </url>
       <url>
-        <loc>https://anta.arista.com/stable/cli/nrfu/</loc>
+        <loc>https://anta.arista.com/stable/api/catalog/</loc>
       </url>
       <url>
-        <loc>https://anta.arista.com/stable/cli/exec/</loc>
+        <loc>https://anta.arista.com/stable/api/class-diagram/</loc>
       </url>
       <url>
-        <loc>https://anta.arista.com/stable/cli/inv-from-cvp/</loc>
+        <loc>https://anta.arista.com/stable/api/commands/</loc>
       </url>
       <url>
-        <loc>https://anta.arista.com/stable/cli/inv-from-ansible/</loc>
+        <loc>https://anta.arista.com/stable/api/device/</loc>
       </url>
       <url>
-        <loc>https://anta.arista.com/stable/cli/get-inventory-information/</loc>
+        <loc>https://anta.arista.com/stable/api/inventory/</loc>
       </url>
       <url>
-        <loc>https://anta.arista.com/stable/cli/get-tests/</loc>
+        <loc>https://anta.arista.com/stable/api/reporter/csv/</loc>
       </url>
       <url>
-        <loc>https://anta.arista.com/stable/cli/check/</loc>
+        <loc>https://anta.arista.com/stable/api/reporter/jinja/</loc>
       </url>
       <url>
-        <loc>https://anta.arista.com/stable/cli/debug/</loc>
+        <loc>https://anta.arista.com/stable/api/reporter/markdown/</loc>
       </url>
       <url>
-        <loc>https://anta.arista.com/stable/cli/tag-management/</loc>
+        <loc>https://anta.arista.com/stable/api/reporter/table/</loc>
       </url>
       <url>
-        <loc>https://anta.arista.com/stable/reports/</loc>
+        <loc>https://anta.arista.com/stable/api/result/</loc>
       </url>
       <url>
-        <loc>https://anta.arista.com/stable/reports/anta/</loc>
+        <loc>https://anta.arista.com/stable/api/runner/</loc>
+      </url>
+      <url>
+        <loc>https://anta.arista.com/stable/api/settings/</loc>
+      </url>
+      <url>
+        <loc>https://anta.arista.com/stable/api/tests-documentation/</loc>
       </url>
       <url>
         <loc>https://anta.arista.com/stable/api/tests/</loc>
       </url>
       <url>
         <loc>https://anta.arista.com/stable/api/tests/aaa/</loc>
+      </url>
+      <url>
+        <loc>https://anta.arista.com/stable/api/tests/anta_test/</loc>
       </url>
       <url>
         <loc>https://anta.arista.com/stable/api/tests/avt/</loc>
@@ -100,25 +109,25 @@
         <loc>https://anta.arista.com/stable/api/tests/multicast/</loc>
       </url>
       <url>
+        <loc>https://anta.arista.com/stable/api/tests/path_selection/</loc>
+      </url>
+      <url>
         <loc>https://anta.arista.com/stable/api/tests/profiles/</loc>
       </url>
       <url>
         <loc>https://anta.arista.com/stable/api/tests/ptp/</loc>
       </url>
       <url>
-        <loc>https://anta.arista.com/stable/api/tests/path_selection/</loc>
+        <loc>https://anta.arista.com/stable/api/tests/routing.bgp/</loc>
       </url>
       <url>
         <loc>https://anta.arista.com/stable/api/tests/routing.generic/</loc>
       </url>
       <url>
-        <loc>https://anta.arista.com/stable/api/tests/routing.bgp/</loc>
+        <loc>https://anta.arista.com/stable/api/tests/routing.isis/</loc>
       </url>
       <url>
         <loc>https://anta.arista.com/stable/api/tests/routing.ospf/</loc>
-      </url>
-      <url>
-        <loc>https://anta.arista.com/stable/api/tests/routing.isis/</loc>
       </url>
       <url>
         <loc>https://anta.arista.com/stable/api/tests/security/</loc>
@@ -130,25 +139,79 @@
         <loc>https://anta.arista.com/stable/api/tests/snmp/</loc>
       </url>
       <url>
+        <loc>https://anta.arista.com/stable/api/tests/software/</loc>
+      </url>
+      <url>
         <loc>https://anta.arista.com/stable/api/tests/stp/</loc>
       </url>
       <url>
         <loc>https://anta.arista.com/stable/api/tests/stun/</loc>
       </url>
       <url>
-        <loc>https://anta.arista.com/stable/api/tests/software/</loc>
-      </url>
-      <url>
         <loc>https://anta.arista.com/stable/api/tests/system/</loc>
       </url>
       <url>
-        <loc>https://anta.arista.com/stable/api/tests/vxlan/</loc>
+        <loc>https://anta.arista.com/stable/api/tests/types/</loc>
       </url>
       <url>
         <loc>https://anta.arista.com/stable/api/tests/vlan/</loc>
       </url>
       <url>
-        <loc>https://anta.arista.com/stable/security-advisory/usage/</loc>
+        <loc>https://anta.arista.com/stable/api/tests/vxlan/</loc>
+      </url>
+      <url>
+        <loc>https://anta.arista.com/stable/cli/check/</loc>
+      </url>
+      <url>
+        <loc>https://anta.arista.com/stable/cli/debug/</loc>
+      </url>
+      <url>
+        <loc>https://anta.arista.com/stable/cli/exec/</loc>
+      </url>
+      <url>
+        <loc>https://anta.arista.com/stable/cli/get-inventory-information/</loc>
+      </url>
+      <url>
+        <loc>https://anta.arista.com/stable/cli/get-tests/</loc>
+      </url>
+      <url>
+        <loc>https://anta.arista.com/stable/cli/inv-from-ansible/</loc>
+      </url>
+      <url>
+        <loc>https://anta.arista.com/stable/cli/inv-from-cvp/</loc>
+      </url>
+      <url>
+        <loc>https://anta.arista.com/stable/cli/nrfu/</loc>
+      </url>
+      <url>
+        <loc>https://anta.arista.com/stable/cli/overview/</loc>
+      </url>
+      <url>
+        <loc>https://anta.arista.com/stable/cli/tag-management/</loc>
+      </url>
+      <url>
+        <loc>https://anta.arista.com/stable/contribution/</loc>
+      </url>
+      <url>
+        <loc>https://anta.arista.com/stable/faq/</loc>
+      </url>
+      <url>
+        <loc>https://anta.arista.com/stable/getting-started/</loc>
+      </url>
+      <url>
+        <loc>https://anta.arista.com/stable/reports/</loc>
+      </url>
+      <url>
+        <loc>https://anta.arista.com/stable/reports/anta/</loc>
+      </url>
+      <url>
+        <loc>https://anta.arista.com/stable/requirements-and-installation/</loc>
+      </url>
+      <url>
+        <loc>https://anta.arista.com/stable/security-advisory/decisions/0001%20-%20Advisory%20assessment%20states/</loc>
+      </url>
+      <url>
+        <loc>https://anta.arista.com/stable/security-advisory/lab/</loc>
       </url>
       <url>
         <loc>https://anta.arista.com/stable/security-advisory/reports/</loc>
@@ -160,72 +223,12 @@
         <loc>https://anta.arista.com/stable/security-advisory/tests/</loc>
       </url>
       <url>
-        <loc>https://anta.arista.com/stable/security-advisory/lab/</loc>
-      </url>
-      <url>
-        <loc>https://anta.arista.com/stable/advanced_usages/caching/</loc>
-      </url>
-      <url>
-        <loc>https://anta.arista.com/stable/advanced_usages/custom-tests/</loc>
-      </url>
-      <url>
-        <loc>https://anta.arista.com/stable/advanced_usages/as-python-lib/</loc>
-      </url>
-      <url>
-        <loc>https://anta.arista.com/stable/advanced_usages/env-vars/</loc>
-      </url>
-      <url>
-        <loc>https://anta.arista.com/stable/api/class-diagram/</loc>
-      </url>
-      <url>
-        <loc>https://anta.arista.com/stable/api/device/</loc>
-      </url>
-      <url>
-        <loc>https://anta.arista.com/stable/api/inventory/</loc>
-      </url>
-      <url>
-        <loc>https://anta.arista.com/stable/api/catalog/</loc>
-      </url>
-      <url>
-        <loc>https://anta.arista.com/stable/api/commands/</loc>
-      </url>
-      <url>
-        <loc>https://anta.arista.com/stable/api/tests/anta_test/</loc>
-      </url>
-      <url>
-        <loc>https://anta.arista.com/stable/api/tests/types/</loc>
-      </url>
-      <url>
-        <loc>https://anta.arista.com/stable/api/tests-documentation/</loc>
-      </url>
-      <url>
-        <loc>https://anta.arista.com/stable/api/result/</loc>
-      </url>
-      <url>
-        <loc>https://anta.arista.com/stable/api/reporter/table/</loc>
-      </url>
-      <url>
-        <loc>https://anta.arista.com/stable/api/reporter/markdown/</loc>
-      </url>
-      <url>
-        <loc>https://anta.arista.com/stable/api/reporter/csv/</loc>
-      </url>
-      <url>
-        <loc>https://anta.arista.com/stable/api/reporter/jinja/</loc>
-      </url>
-      <url>
-        <loc>https://anta.arista.com/stable/api/runner/</loc>
-      </url>
-      <url>
-        <loc>https://anta.arista.com/stable/api/settings/</loc>
+        <loc>https://anta.arista.com/stable/security-advisory/usage/</loc>
       </url>
       <url>
         <loc>https://anta.arista.com/stable/troubleshooting/</loc>
       </url>
       <url>
-        <loc>https://anta.arista.com/stable/contribution/</loc>
-      </url>
-      <url>
-        <loc>https://anta.arista.com/stable/faq/</loc>
+        <loc>https://anta.arista.com/stable/usage-inventory-catalog/</loc>
       </url>
 </urlset>
