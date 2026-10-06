@@ -1,6 +1,0 @@
-{# Show references from documentation without expanding Python relationships. #}
-{% if backlinks.get("referenced-by") %}
-  {% with backlinks = {"referenced-by": backlinks["referenced-by"]} %}
-    {% include "_base/backlinks.html.jinja" %}
-  {% endwith %}
-{% endif %}

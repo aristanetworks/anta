@@ -420,9 +420,9 @@ Create an [AntaInventory][anta.inventory.AntaInventory] and add an
 [AsyncEOSDevice][anta.device.AsyncEOSDevice].
 ```
 
-`autorefs` resolves these identifiers to their documented locations. It also records references for the API's backlinks, helping readers find guides that explain an object. A name inside a code block or a manually written page-and-anchor link does not establish an object backlink. Keep ordinary Markdown links for guides and other authored pages.
+`autorefs` resolves these identifiers to their documented locations without hard-coding the API page path or heading anchor. Keep ordinary Markdown links for guides and other authored pages.
 
-After adding or changing an object reference, run `zensical build --strict` and check the link and the API's backlink destination in the rendered site.
+After adding or changing an object reference, run `zensical build --strict` and check that the link opens the intended object in the rendered site.
 
 ### Generated CLI snippets
 
