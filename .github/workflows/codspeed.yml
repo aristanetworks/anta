@@ -6,13 +6,15 @@ on:
 
 permissions:
   contents: read
-  id-token: write
 
 jobs:
-  benchmarks:
-    name: Benchmark ANTA for Python 3.12
+  simulation:
+    name: Benchmark ANTA simulation for Python 3.12
     # TODO: Revisit ubuntu-26.04-arm when a CodSpeed upgrade supports automatic simulation setup.
     runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -30,5 +32,31 @@ jobs:
         env:
           PYTHONHASHSEED: "0"
         with:
-          mode: simulation,memory
+          mode: simulation
           run: pytest --codspeed --no-cov --log-cli-level INFO tests/benchmark
+
+  memory:
+    name: Benchmark ANTA memory for Python 3.12
+    runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Setup Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Pin pip
+        run: pip install "pip>=25.1"
+      - name: Install dependencies
+        run: pip install . --group dev --group benchmark
+      - name: Run benchmarks
+        uses: CodSpeedHQ/action@373d6868929f444bc08d901fd0eb0ad52a8875ea # v5.2.1
+        env:
+          PYTHONHASHSEED: "0"
+        with:
+          mode: memory
+          run: pytest --codspeed --no-cov --log-cli-level INFO tests/benchmark/test_anta.py
