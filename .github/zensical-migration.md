@@ -10,7 +10,7 @@
 **Implementation branch:** `docs/zensical-improvements`
 **Last reviewed:** October 5, 2026
 
-The MkDocs Material migration is merged. This plan records the documentation setup that exists on `upstream/main`, reviews Zensical releases from `0.0.60` through the latest release, and prioritizes improvements. This branch enables API backlinks and documents link-preservation rules. Other proposals remain a backlog.
+The MkDocs Material migration is merged. This plan records the documentation setup that exists on `upstream/main`, reviews Zensical releases from `0.0.60` through the latest release, and prioritizes improvements. This branch improves guide-to-API links and documents link-preservation rules. Other proposals remain a backlog.
 
 ## Current State
 
@@ -46,7 +46,7 @@ docs/scripts/deploy_doc_version.sh "$REF_NAME" --final
 
 The deployment commands publish to `origin/gh-pages`. They describe CI behavior, not local validation commands. Prereleases use the deployment script without `--final`.
 
-The upstream baseline enables native search, page search tags in front matter, instant navigation, linked content tabs, code copying, `mkdocstrings`, GLightbox, and custom Mermaid zoom. This branch additionally enables API backlinks and converts Device/Inventory references in the Python-library guide to object references. `navigation.instant.preview`, API auto-navigation, redirects, blogs, RSS, social cards, and Markdown exports are not configured. Contributor guidance now describes when to add redirects; no placeholder redirect map is enabled.
+The upstream baseline enables native search, page search tags in front matter, instant navigation, linked content tabs, code copying, `mkdocstrings`, GLightbox, and custom Mermaid zoom. This branch converts Device/Inventory references in the Python-library guide to object references. API backlinks were evaluated and remain disabled: repeated guide links cluttered the API pages without providing enough useful context. `navigation.instant.preview`, API auto-navigation, redirects, blogs, RSS, social cards, and Markdown exports are not configured. Contributor guidance now describes when to add redirects; no placeholder redirect map is enabled.
 
 ## Releases Since 0.0.60
 
@@ -57,7 +57,7 @@ The upstream baseline enables native search, page search tags in front matter, i
 | [0.0.62](https://github.com/zensical/zensical/releases/tag/v0.0.62) — Sep 13 | Obsidian callouts; plugin configuration compatibility; watched-config fix; UI 0.0.30 reveals anchors inside collapsed details, tabs, and annotations. | Already included. Deep links into API source/details and tabbed examples deserve regression checks. A new callout convention is unnecessary. |
 | [0.0.63](https://github.com/zensical/zensical/releases/tag/v0.0.63) — Sep 19 | Snippet dependents rebuild when sources change; hidden files/directories are excluded; preview root redirects and 404 handling; UI 0.0.31 fixes index-only submenus. | Already included. Particularly useful for `docs/README.md` including root `README.md`, CLI snippets, examples, and the class diagram. Validate preview updates without restarting the server. |
 | [0.0.64](https://github.com/zensical/zensical/releases/tag/v0.0.64) — Sep 22 | Native Material-compatible blog; UI 0.0.32 blog templates. | Available but disabled. Consider only with an owner for tutorials/release articles. |
-| [0.0.65](https://github.com/zensical/zensical/releases/tag/v0.0.65) — Sep 24 | API backlinks; RSS 2.0/JSON Feed 1.1; `mkdocstrings.enable_inventory`, autorefs settings, and Mike `version_selector` support. | Backlinks are enabled on this branch; RSS remains disabled. Backlinks improve API-to-guide discovery; keep version selection and object inventories working. |
+| [0.0.65](https://github.com/zensical/zensical/releases/tag/v0.0.65) — Sep 24 | API backlinks; RSS 2.0/JSON Feed 1.1; `mkdocstrings.enable_inventory`, autorefs settings, and Mike `version_selector` support. | Available. Backlinks were evaluated and declined because of API-page clutter; RSS remains disabled. Keep version selection and object inventories working. |
 | [0.0.66](https://github.com/zensical/zensical/releases/tag/v0.0.66) — Sep 28 | `mkdocs-autoapi`/`mkdocs-api-autonav` replacements; all published pages in sitemap; raw HTML `srcset` URL fixes; TOML InlineHilite formatters; UI 0.0.33. | Current pin. UI styles API backlinks, restores GLightbox styles after instant navigation, respects Mermaid label colors, and fixes `/` search. No feature flag is needed for those fixes. |
 | [0.0.67](https://github.com/zensical/zensical/releases/tag/v0.0.67) — Sep 30 | Native `social`, `llmstxt`, `exclude`, and `github-admonitions`; custom blog view template fix; UI 0.0.34 adds Copy as Markdown. | Upgrade required. Markdown export/copy and branded link previews are useful candidates; exclusions could reduce published source assets. |
 | [0.0.68](https://github.com/zensical/zensical/releases/tag/v0.0.68) — Oct 5 | Native audio/video replacements; closer macros compatibility; UI 0.0.35 uses instant navigation for search results and fixes skip links/ARIA naming. **Requires Python >=3.11.** | Upgrade required. Search and accessibility fixes are useful even without new media. The Python requirement needs explicit documentation-tooling handling while ANTA still supports Python 3.10. |
@@ -236,18 +236,11 @@ The active CI documentation gate is `zensical build --strict` on Python `3.11`; 
 
 ## Prioritized Improvements
 
-### P1: Link API objects back to practical usage (available in 0.0.66)
+### Guide-to-API object links (implemented)
 
-This branch enables mkdocstrings backlinks so readers can find guides that use documented objects, starting with Device/Inventory references in `docs/advanced_usages/as-python-lib.md`. The feature arrived in `0.0.65`, with theme styling added in `0.0.66`. Zensical `0.0.66` enables backlink recording from the Python handler's global options, so a per-directive-only setting is insufficient. Configure:
+Device/Inventory references in `docs/advanced_usages/as-python-lib.md` use autorefs identifiers to link to generated API objects. This keeps links tied to object identities rather than hard-coded page paths and heading anchors. Contributor guidance documents the authoring syntax and link validation.
 
-```toml
-[project.plugins.mkdocstrings.handlers.python.options]
-backlinks = "tree"
-```
-
-`docs/templates/python/material/backlinks.html.jinja` limits presentation to the `referenced-by` category and reuses the upstream rendering template. Python relationships such as "Used by", "Returned by", and subclass references remain hidden, keeping the feature focused on authored documentation. The global setting still enables the collector required by Zensical `0.0.66`.
-
-Use actual autorefs links from `advanced_usages/as-python-lib.md`, `advanced_usages/custom-tests.md`, or inventory guides to the documented objects. Plain code mentions do not establish usage backlinks. Verify useful guide/section labels, correct version-prefixed destinations, and fresh/cached builds after a referring heading changes. Check ANTA's custom templates before extending this to test classes; avoid backlink lists dominated by signature cross-references.
+API backlinks arrived in `0.0.65`, with theme styling added in `0.0.66`. The preview showed repeated "Referenced by" blocks on long API pages, and the maintainer chose to remove them. The global backlinks option and the custom rendering template are removed. Keep useful forward links from guides to API objects; enabling backlinks is not a planned follow-up.
 
 ### P1: Preserve existing page and heading links (available in 0.0.66)
 
@@ -305,7 +298,7 @@ Enable the native `social` plugin in a small trial with branded cards for gettin
 
 Trial either `[project.plugins.mkdocs-autoapi]` or `[project.plugins.api-autonav]` on a small public package in a separate output section. These are the user-facing configuration keys; Zensical's internal normalized names differ. Exclude private modules explicitly and compare the discovered public modules with existing reference coverage. Do not enable both generators together or generate duplicate pages for objects already documented.
 
-ANTA's test pages combine tests and input models, compatibility notes, per-page filters, and custom templates. Preserve these pages and their current URLs. Adopt generation only where it demonstrably removes boilerplate without changing the intended public surface, navigation order, or backlink destinations. For now, a coverage audit using generated candidates is more valuable than replacing the whole hand-maintained API navigation.
+ANTA's test pages combine tests and input models, compatibility notes, per-page filters, and custom templates. Preserve these pages and their current URLs. Adopt generation only where it demonstrably removes boilerplate without changing the intended public surface, navigation order, or object-link destinations. For now, a coverage audit using generated candidates is more valuable than replacing the whole hand-maintained API navigation.
 
 ### P2: Improve contributor feedback and search discovery (mostly available now)
 
@@ -346,7 +339,7 @@ Items 13–16 remain conditional: blog/RSS needs a publication owner; table read
 ### Validation requirements
 
 - Run changed-file pre-commit checks first, then `pre-commit run --all-files` for final validation.
-- Build affected documentation with the pinned version using `--clean --strict`; repeat without cleaning when evaluating cached backlinks, inventories, or generated pages.
+- Build affected documentation with the pinned version using `--clean --strict`; repeat without cleaning when evaluating cached references, inventories, or generated pages.
 - Validate the interaction affected by a change in both palettes, including instant navigation and a version-prefixed site. A plan-only edit does not require rebuilding the site.
 - For deployment changes, include the existing `tests/docs/test_manage_doc_versions.py` coverage and the disposable-origin wrapper check above.
 - Retain the Git footer extension until native support matches the required semantics. Track [backlog#18](https://github.com/zensical/backlog/issues/18) at each upgrade.

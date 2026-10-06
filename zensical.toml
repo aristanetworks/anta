@@ -187,7 +187,6 @@ inventories = [
 ]
 
 [project.plugins.mkdocstrings.handlers.python.options]
-backlinks = "tree"
 docstring_style = "numpy"
 docstring_options = { ignore_init_summary = true }
 docstring_section_style = "table"
