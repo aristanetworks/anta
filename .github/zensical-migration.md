@@ -10,7 +10,7 @@
 **Implementation branch:** `docs/zensical-improvements`
 **Last reviewed:** October 5, 2026
 
-The MkDocs Material migration is merged. This plan records the documentation setup that exists on `upstream/main`, reviews Zensical releases from `0.0.60` through the latest release, and prioritizes improvements. This branch improves guide-to-API links and documents link-preservation rules. Other proposals remain a backlog.
+The MkDocs Material migration is merged. This plan records the documentation setup that exists on `upstream/main`, reviews Zensical releases from `0.0.60` through the latest release, and prioritizes improvements. This branch improves guide-to-API links, documents link-preservation rules, and fixes slow-drag handling in the custom lightbox helper. Other proposals remain a backlog.
 
 ## Current State
 
@@ -155,7 +155,15 @@ The same rules preserve click-to-zoom with a consistent two-times viewport size 
 
 GLightbox only attaches its zoom handler when an image's natural width exceeds its rendered width. That test skips viewBox-only SVGs and raster images enlarged by the initial fit. `glightbox-zoom.js` observes newly opened slides and adds equivalent click-to-zoom and drag-to-pan handling only when GLightbox did not attach its native `zoomable` class. Images accepted by GLightbox continue to use its native handler.
 
-Zensical `0.0.66` bundles UI `0.0.33`, which fixes lost GLightbox styles after instant navigation. ANTA also has a defensive lightbox layout/style block in `extra.zensical.css`, beyond its aspect-ratio and zoom rules. Re-test that defensive block independently and remove only rules proven redundant. The upstream style fix does not establish that ANTA's tall-image fit or SVG zoom fallback is obsolete.
+Zensical `0.0.66` bundles UI `0.0.33`, which includes [fix `49cc6dab`](https://github.com/zensical/ui/commit/49cc6dab5657558b0b9a5218767e3c003430fdc7) for [issue #243](https://github.com/zensical/ui/issues/243): preserve GLightbox stylesheet loading across instant-navigation mounts. The issue is not a pull request. The installed bundle is `assets/javascripts/bundle.b7d3f789.min.js`.
+
+A native-only preview produced images the maintainer found too small and lacked the custom zoom behavior. Retain ANTA's image fitting, zoom helper, and defensive overlay layout. The upstream stylesheet fix does not replace those user-facing features; reducing the defensive layout block remains optional future work requiring browser evidence.
+
+This branch fixes a separate drag defect in the custom helper. Previously, repeated movements smaller than three pixels were never recognized as a drag, even when their total movement was substantial; the trailing click could then zoom the image out. The handler now measures movement from the gesture's origin, suppresses its trailing click until the next pointer gesture, and disables browser-native image dragging and touch scrolling on helper-managed images. Images marked `zoomable` by GLightbox still use its native handler.
+
+A temporary Node event harness reproduced the slow-drag defect in the original helper and passed against the revised helper, including repeated gestures, cancellation, and pointer filtering. This verifies handler logic, not perceived drag smoothness; browser comparison remains necessary.
+
+The native UI still loads GLightbox JavaScript and CSS from `https://unpkg.com/glightbox@3/`. In [the UI v0.0.33 loader](https://github.com/zensical/ui/blob/v0.0.33/src/assets/javascripts/components/content/glightbox/index.ts), a stylesheet-loading error prevents lightbox initialization. Local defensive CSS can style an existing lightbox, but does not provide complete offline operation or replace asset loading.
 
 ### CSS Overrides
 
@@ -258,7 +266,7 @@ The contributor guide now documents page moves, heading renames, and section mov
 
 Start with `docs/stylesheets/extra.zensical.css`, `glightbox-zoom.js`, and `mermaid-zoom.js`. Compare full-page loads and instant navigation between CLI screenshot pages and `api/class-diagram.md`, in both palettes and on mobile. Check uncropped tall SVG/PNG images, zoom/pan/close, Mermaid label colors and links, and the `/` search shortcut. Remove the defensive GLightbox styling only after the native styles load reliably; retain the independent fit/zoom behavior unless it also proves redundant. Keep custom Mermaid zoom: respecting label colors is not a native fullscreen/zoom replacement.
 
-The separate `fix/docs-glightbox-styles` investigation confirms that [UI fix `49cc6dab`](https://github.com/zensical/ui/commit/49cc6dab5657558b0b9a5218767e3c003430fdc7) for [issue #243](https://github.com/zensical/ui/issues/243) is included in the current `0.0.66` bundle. It preserves stylesheet loading across instant-navigation mounts. No runtime CSS or JavaScript is removed without a browser comparison. The native loader still depends on CDN assets; local defensive CSS alone does not provide offline operation.
+The GLightbox findings are consolidated in this plan, and the drag-helper fix is implemented on this branch. The existing overlay layout, image fitting, and zoom behavior are retained. Evaluate layout CSS reduction separately only if a browser comparison demonstrates reliable native behavior.
 
 ### P1: Make the post-0.0.66 upgrade reproducible
 
@@ -319,7 +327,7 @@ ANTA's test pages combine tests and input models, compatibility notes, per-page 
 
 ### Actionable backlog from discussion items 4–17
 
-The numbers below match the maintainer discussion. These tasks are recorded for later implementation, rather than enabled by this branch. Item 3 (GLightbox) is investigated separately on `fix/docs-glightbox-styles`.
+The numbers below match the maintainer discussion. These tasks are recorded for later implementation, rather than enabled by this branch. Item 3 (GLightbox) is consolidated here: retain the existing layout and fit/zoom behavior, and fix drag handling in the custom helper.
 
 | Item | Action | Completion criteria |
 | --- | --- | --- |
