@@ -391,6 +391,39 @@ Use `zensical build --clean` when you want to remove the previous generated outp
 zensical build --clean
 ```
 
+### Preserve page and heading links
+
+When moving a documentation page or renaming a heading, preserve its published URL with Zensical's native redirects. Existing bookmarks and links from issues, external guides, and release notes may still use the old location. Update links in the repository to the new destination as well.
+
+Add redirects to `zensical.toml` using paths relative to `docs/`, including the `.md` extension. Do not put deployment prefixes such as `/main/` or `/stable/` in these source paths.
+
+```toml
+[project.plugins.redirects.redirect_maps]
+# Move a whole page.
+"old-guide.md" = "guides/new-guide.md"
+# Rename a heading on an existing page.
+"guide.md#old-heading" = "guide.md#new-heading"
+# Move a section when splitting a page.
+"guide.md#moved-section" = "guides/new-guide.md#moved-section"
+```
+
+These paths are examples; add mappings only for actual moves and existing targets. Check the rendered heading IDs rather than assuming how Zensical will derive them. Keep redirects pointing to the final destination when reorganizing content again, and avoid cycles.
+
+Run `zensical build --clean --strict`, then use the local preview to open each old page URL and fragment directly. Confirm that the correct section is displayed, including targets inside collapsed details or content tabs. For a versioned deployment, also check a local Mike preview so the redirect stays within the selected version. Existing historical release builds acquire new redirects only if they are rebuilt.
+
+### Link to Python API objects
+
+Use object references when linking prose to generated Python API documentation:
+
+```markdown
+Create an [AntaInventory][anta.inventory.AntaInventory] and add an
+[AsyncEOSDevice][anta.device.AsyncEOSDevice].
+```
+
+`autorefs` resolves these identifiers to their documented locations without hard-coding the API page path or heading anchor. Keep ordinary Markdown links for guides and other authored pages.
+
+After adding or changing an object reference, run `zensical build --strict` and check that the link opens the intended object in the rendered site.
+
 ### Generated CLI snippets
 
 The CLI help blocks published in the documentation are generated from the current Click output. After changing CLI commands, options, or help text, refresh the snippets and verify that the generated files are committed:
