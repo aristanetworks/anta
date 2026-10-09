@@ -28,7 +28,7 @@ jobs:
       - name: Install dependencies
         run: pip install . --group dev --group benchmark
       - name: Run benchmarks
-        uses: CodSpeedHQ/action@373d6868929f444bc08d901fd0eb0ad52a8875ea # v5.2.1
+        uses: CodSpeedHQ/action@c4fd08a3a159bd0cc208da1e0edf32b8c47d75e5 # v5.4.0
         with:
           mode: simulation
           run: pytest --codspeed --no-cov --log-cli-level INFO tests/benchmark
@@ -52,7 +52,7 @@ jobs:
       - name: Install dependencies
         run: pip install . --group dev --group benchmark
       - name: Run benchmarks
-        uses: CodSpeedHQ/action@373d6868929f444bc08d901fd0eb0ad52a8875ea # v5.2.1
+        uses: CodSpeedHQ/action@c4fd08a3a159bd0cc208da1e0edf32b8c47d75e5 # v5.4.0
         env:
           PYTHONHASHSEED: "0"
         with:
