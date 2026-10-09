@@ -258,6 +258,7 @@ def update_ipv4_route_type(value: str) -> str:
 
 # AntaTest.Input types
 AAAAuthMethod = Annotated[str, AfterValidator(aaa_group_prefix)]
+AAAAccountingType = Literal["commands", "dot1x", "exec", "system"]
 VlanId = Annotated[int, Field(ge=0, le=4094)]
 MlagPriority = Annotated[int, Field(ge=1, le=32767)]
 Vni = Annotated[int, Field(ge=1, le=16777215)]
