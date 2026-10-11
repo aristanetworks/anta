@@ -444,11 +444,17 @@ def _print_commands(tests: list[type[AntaTest]]) -> None:
         console.print(f"{module}:")
         for test in module_tests:
             console.print(f"  - {test.name}:")
+            seen_commands: set[str] = set()
             for command in test.commands:
                 if isinstance(command, AntaCommand):
-                    console.print(f"    - {command.command}")
+                    text = command.command
+                    uid = command.uid
                 else:  # isinstance(command, AntaTemplate):
-                    console.print(f"    - {command.template}")
+                    text = command.template
+                    uid = AntaCommand(command=text, version=command.version, revision=command.revision, ofmt=command.ofmt).uid
+                if uid not in seen_commands:
+                    console.print(f"    - {text}")
+                    seen_commands.add(uid)
 
 
 def _get_unique_commands(tests: list[type[AntaTest]]) -> set[str]:

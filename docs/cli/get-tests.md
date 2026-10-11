@@ -81,6 +81,12 @@ anta get tests --count
 `anta get tests`, this command includes security advisory tests so operators can
 identify every EOS command ANTA may execute.
 
+Within each test, repeated commands are displayed once in their original order.
+Commands with different eAPI versions, revisions, or output formats remain
+separate entries, even when their text matches. Each test retains its own command
+list in the output. The `--unique` flag still lists unique command text across all
+selected tests.
+
 ### Command overview
 
 ```bash
