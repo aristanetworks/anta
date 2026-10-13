@@ -154,11 +154,11 @@ class SA158(OptionalCommandsMixin, _AntaAdvisoryTest):
     ----------------
     * Success: EOS is outside scope, gNPSI is disabled, or the issue-specific authentication or trace prerequisite is absent.
     * Failure: An affected EOS release has an enabled gNPSI transport and the issue-specific prerequisite.
-    * Mitigated: Credential tracing is enabled, but every enabled transport uses mutual TLS with only x509-spiffe authentication.
+    * Mitigated: Credential tracing is enabled, but every effective transport uses mutual TLS with only x509-spiffe authentication.
     * Error: Required EOS, gNPSI transport, authentication, or trace state cannot be determined.
 
     CVE-2026-73456 evaluates TLS or mTLS authentication combinations. CVE-2026-73457 evaluates explicit EosRpcAuth tracing and the
-    source-defined mutual-TLS/x509-spiffe mitigation across every enabled transport.
+    source-defined mutual-TLS/x509-spiffe mitigation across every effective transport.
 
     Examples
     --------
