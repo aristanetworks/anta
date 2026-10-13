@@ -126,9 +126,12 @@ class VerifyOSPFNeighborCount(AntaTest):
 class VerifyOSPFMaxLSA(AntaTest):
     """Verifies all OSPF instances did not cross the maximum LSA threshold.
 
+    Instances with `maxLsa` set to `0` have the LSA limit and its protection disabled and are ignored by this check.
+    All other instances across all VRFs are still evaluated.
+
     Expected Results
     ----------------
-    * Success: The test will pass if all OSPF instances did not cross the maximum LSA Threshold.
+    * Success: The test will pass if all OSPF instances have their LSA limit disabled or did not cross the maximum LSA threshold.
     * Failure: The test will fail if some OSPF instances crossed the maximum LSA Threshold.
     * Skipped: The test will be skipped if no OSPF instance is found.
 
@@ -157,6 +160,8 @@ class VerifyOSPFMaxLSA(AntaTest):
         for vrf_data in command_output.values():
             for instance, instance_data in vrf_data.get("instList", {}).items():
                 max_lsa = instance_data["maxLsaInformation"]["maxLsa"]
+                if max_lsa == 0:
+                    continue
                 max_lsa_threshold = instance_data["maxLsaInformation"]["maxLsaThreshold"]
                 num_lsa = get_value(instance_data, "lsaInformation.numLsa")
                 if num_lsa is None:
