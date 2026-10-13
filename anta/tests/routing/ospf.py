@@ -126,8 +126,9 @@ class VerifyOSPFNeighborCount(AntaTest):
 class VerifyOSPFMaxLSA(AntaTest):
     """Verifies all OSPF instances did not cross the maximum LSA threshold.
 
-    Instances with `maxLsa` set to `0` have the LSA limit and its protection disabled and are ignored by this check.
-    All other instances across all VRFs are still evaluated.
+    !!! note
+        Instances with `maxLsa` set to `0` have the LSA limit and its protection disabled and are ignored by this check.
+        All other instances across all VRFs are still evaluated.
 
     Expected Results
     ----------------
