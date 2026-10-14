@@ -13,6 +13,7 @@ env_list = [
   "py312",
   "py313",
   "py314",
+  "py315",
   "report"
 ]
 # https://github.com/ymyzk/tox-gh-actions/issues/198
@@ -25,6 +26,7 @@ python = """
   3.12: py312
   3.13: py313
   3.14: py314
+  3.15: py315
 """
 
 [env_run_base]
