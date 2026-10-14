@@ -45,7 +45,7 @@ repos:
           - "<!--|  ~|  -->"
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: a56c0b927e6465d37cae3e97d35d4d18ab2b96cd  # frozen: v0.16.9
+    rev: f12be1ebaa5351c1fc76472de98db2c3446c8253  # frozen: v0.16.10
     hooks:
       - id: ruff
         name: Run Ruff linter
@@ -68,14 +68,14 @@ repos:
         additional_dependencies:
           - anta[cli]
           - types-PyYAML==6.0.12.20260906
-          - types-requests==2.33.0.20260906
+          - types-requests==2.33.0.20261006
           - types-pyOpenSSL==24.1.0.20240722
           - pylint_pydantic==0.4.1
           - pytest==9.1.1
           - pytest-codspeed!=4.1.0
           - respx==0.23.1
-          - pydantic-settings==2.14.2
-          - zensical==0.0.62
+          - pydantic-settings==2.15.0
+          - zensical==0.0.68
 
   - repo: https://github.com/codespell-project/codespell
     rev: 57b21406f092110c18776e39b0bda50d37c945c8  # frozen: v2.4.3
@@ -101,9 +101,9 @@ repos:
           - pytest-httpx>=0.36.2
           - pytest-codspeed>=5.0.3
           - types-PyYAML==6.0.12.20260906
-          - types-requests==2.33.0.20260906
+          - types-requests==2.33.0.20261006
           - types-pyOpenSSL==24.1.0.20240722
-          - zensical==0.0.62
+          - zensical==0.0.68
         files: ^(anta|tests|asynceapi|tools/zensical_extensions)/
 
   - repo: https://github.com/DavidAnson/markdownlint-cli2
@@ -137,7 +137,7 @@ repos:
         language: python
         additional_dependencies:
           - anta[cli]
-          - pydantic-settings==2.14.2
+          - pydantic-settings==2.15.0
       - id: doc-snippets
         name: Generate doc snippets
         entry: >-
@@ -150,5 +150,5 @@ repos:
         additional_dependencies:
           - anta[cli]
           # Keep generated CLI snippets stable with Click's optional subcommand rendering.
-          - click~=8.4.2
-          - pydantic-settings==2.14.2
+          - click~=8.5.0
+          - pydantic-settings==2.15.0
