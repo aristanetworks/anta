@@ -290,6 +290,79 @@ DATA: AntaUnitTestData = {
         ],
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
+    (VerifyOSPFMaxLSA, "success-disabled-limit"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "instList": {
+                            "64580": {
+                                "maxLsaInformation": {"maxLsa": 0, "maxLsaThreshold": 75},
+                                "lsaInformation": {"numLsa": 16},
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyOSPFMaxLSA, "success-disabled-and-enabled-limits"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "instList": {
+                            "64580": {
+                                "maxLsaInformation": {"maxLsa": 0, "maxLsaThreshold": 75},
+                                "lsaInformation": {"numLsa": 16},
+                            },
+                            "1": {
+                                "maxLsaInformation": {"maxLsa": 1000, "maxLsaThreshold": 75},
+                                "lsaInformation": {"numLsa": 16},
+                            },
+                        }
+                    }
+                }
+            }
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyOSPFMaxLSA, "failure-disabled-and-enabled-limits"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "instList": {
+                            "64580": {
+                                "maxLsaInformation": {"maxLsa": 0, "maxLsaThreshold": 75},
+                                "lsaInformation": {"numLsa": 16},
+                            },
+                            "1": {
+                                "maxLsaInformation": {"maxLsa": 1000, "maxLsaThreshold": 75},
+                                "lsaInformation": {"numLsa": 1500},
+                            },
+                        }
+                    },
+                    "TEST": {
+                        "instList": {
+                            "10": {
+                                "maxLsaInformation": {"maxLsa": 1000, "maxLsaThreshold": 75},
+                                "lsaInformation": {"numLsa": 1500},
+                            }
+                        }
+                    },
+                }
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Instance: 1 - Crossed the maximum LSA threshold - Expected: < 750 Actual: 1500",
+                "Instance: 10 - Crossed the maximum LSA threshold - Expected: < 750 Actual: 1500",
+            ],
+        },
+    },
     (VerifyOSPFMaxLSA, "failure"): {
         "eos_data": [
             {
