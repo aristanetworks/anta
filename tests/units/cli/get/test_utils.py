@@ -272,7 +272,7 @@ def test_extract_examples() -> None:
 
 @pytest.mark.parametrize("command_type", [AntaCommand, AntaTemplate])
 def test_print_commands_deduplicates_per_test(monkeypatch: pytest.MonkeyPatch, command_type: type[AntaCommand | AntaTemplate]) -> None:
-    """Preserve order and execution identity without changing commands or unique output."""
+    """Deduplicate text in order without changing commands or unique output."""
 
     def make_command(
         text: str, version: Literal[1, "latest"] = "latest", revision: int | None = None, ofmt: Literal["json", "text"] = "json"
@@ -290,6 +290,8 @@ def test_print_commands_deduplicates_per_test(monkeypatch: pytest.MonkeyPatch, c
         make_command("show version", revision=2),
         make_command("show version", ofmt="text"),
         make_command("show hostname"),
+        AntaTemplate("show version", revision=1, ofmt="text"),
+        AntaCommand(command="show hostname", version=1),
     ]
     other_commands = [make_command("show version"), make_command("show version")]
     monkeypatch.setattr(MissingExampleTest, "commands", commands)
@@ -302,9 +304,6 @@ def test_print_commands_deduplicates_per_test(monkeypatch: pytest.MonkeyPatch, c
         "  - MissingExampleTest:",
         "    - show version",
         "    - show hostname",
-        "    - show version",
-        "    - show version",
-        "    - show version",
         "  - EmptyExampleTest:",
         "    - show version",
     ]
