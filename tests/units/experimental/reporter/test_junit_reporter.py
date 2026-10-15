@@ -1,7 +1,7 @@
 # Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""Test anta.reporter.junit_reporter.py."""
+"""Test anta.experimental.reporter.junit_reporter.py."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ from unittest.mock import patch
 
 import pytest
 
-from anta.reporter.junit_reporter import JUnitReporter
+from anta.experimental.reporter.junit_reporter import JUnitReporter
 from anta.result_manager import ResultManager
 from anta.result_manager.models import AntaTestStatus, TestResult
 
