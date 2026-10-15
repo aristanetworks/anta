@@ -4,220 +4,94 @@
   ~ that can be found in the LICENSE file.
   -->
 
-# Zensical Migration Notes
+# Zensical Documentation Plan
 
-**Branch:** `docs/zensical-toml`
-**Last reviewed:** September 15, 2026
+**Baseline:** `upstream/main` at `11d925e4`, Zensical `0.0.68`
+**PR:** [#1809](https://github.com/aristanetworks/anta/pull/1809), `docs/zensical-improvements`
+**Updated:** October 15, 2026
 
-This note documents the decisions, temporary workarounds, and validation steps for migrating ANTA documentation from MkDocs Material to Zensical.
+The MkDocs Material migration is complete. PR #1809 is rebased onto `main` and retains ANTA's lightbox layout and zoom behavior, fixes cumulative slow-drag detection, and documents redirects and API object links. This plan separates settled decisions from optional follow-ups. Feature experiments remain evidence for later work, not enabled configuration.
 
-## Current State
+## Current baseline
 
-ANTA builds documentation with `zensical 0.0.62` and uses its native `zensical.toml` configuration format.
+- `pyproject.toml` and both Pylint/Pyright pre-commit environments pin `zensical==0.0.68`.
+- Zensical uses `zensical.toml`, native search, instant navigation, linked content tabs, code copying, `mkdocstrings`, GLightbox, and custom Mermaid zoom.
+- Documentation tooling requires Python >=3.11, independently of ANTA's library support. The `doc` dependency group declares that minimum for uv resolution; the contributor guide documents it. Docs CI uses Python 3.11 and deployment selects Python 3.x.
+- The local extension is installed with `-e tools/zensical_extensions`. MkDocs and autorefs remain dependencies of `mkdocstrings`; site commands use Zensical.
+- Versioned deployment uses the compatible Mike fork at `2d4ad799442f4592db8ad53b179bfb33db8c69ac` and ANTA's deployment/normalization scripts.
 
-The migration targets `0.0.62` rather than stopping at `0.0.58`. Version `0.0.58` introduced Zensical's Rust plugin and scheduler architecture; releases through `0.0.62` add the follow-up fixes for navigation-title precedence, custom theme directories, plugin compatibility, watched configuration files, anchor navigation, and Mike settings. Using the latest verified release avoids known defects in areas ANTA relies on directly: ordered navigation, `docs/overrides`, watched sources, and versioned builds.
+[Zensical 0.0.68](https://github.com/zensical/zensical/releases/tag/v0.0.68) includes native audio/video support, closer macros compatibility, and UI 0.0.35 search-result instant navigation and accessibility fixes. It requires Python >=3.11. Features inherited from earlier releases include redirects, snippet-dependent rebuilds, blog/RSS, API generators, social cards, Markdown exports, and asset exclusions. Availability does not imply adoption.
 
-The documentation dependency group installs:
+## Decisions
 
-- `zensical==0.0.62`
-- the Zensical-compatible `mike` fork pinned to commit `2d4ad799442f4592db8ad53b179bfb33db8c69ac`
-- `anta-zensical-extensions`, a local documentation-only package under `tools/zensical_extensions/`
-- `mkdocs` and `mkdocs-autorefs`, which remain runtime requirements of `mkdocstrings`
+1. **Keep API backlinks disabled.** The preview's repeated “Referenced by” blocks cluttered long API pages. Keep forward guide-to-object links through autorefs instead. The Python-library guide now uses object references for Device, Inventory, Command, Test, and TestStatus links.
+2. **Preserve published links when content moves.** Follow `docs/contribution.md` for docs-relative page/fragment redirects and update repository links. Add mappings only for actual moves. Check old URLs within the selected documentation version; historical builds acquire new mappings only when rebuilt.
+3. **Retain the lightbox layout, image fitting, and two-times zoom.** The native-only experiment made images too small and lost useful zoom. Keep the custom fallback for images without GLightbox's `zoomable` class and the cumulative slow-drag fix. Browser QA remains open; a Node handler harness does not establish smoothness or touch quality.
+4. **Retain custom Mermaid zoom.** Upstream label-color fixes do not replace ANTA's fullscreen/zoom interaction. Preserve diagram links and palette behavior. Initialize zoom controls when Zensical inserts the asynchronously rendered diagram, including after instant navigation; do not attach them to the temporary source element.
+5. **Keep Markdown export and Copy as Markdown disabled pending link fixes.** Earlier experiments lost API autorefs links and produced links to unselected Markdown files. A passing strict build does not establish usable exports. Do not replace authored autorefs with hard-coded paths to conceal exporter defects.
+6. **Keep curated API navigation and standard admonitions.** API generation is a coverage-audit candidate, not a replacement for curated test/input pages. Consider GitHub alerts (`gh-admonitions`) or Obsidian callouts (`callouts`) only for a concrete shared-source need.
+7. **Retain the Git date extension and Mike deployment helpers.** Replacements must preserve rename-aware dates, ignored metadata/license-only edits, version order, stable aliases, same-base prerelease cleanup, and historical final builds. Recheck [Git metadata backlog #18](https://github.com/zensical/backlog/issues/18) at upgrades.
+8. **Keep feature adoption separate from version updates.** This PR uses 0.0.68 supplied by `main`. Social cards, exports, API generators, instant previews, exclusions, blog/RSS, table reader, and media remain optional. Update all three version pins together in any future upgrade and qualify documentation tooling separately from library Python support.
 
-`mkdocs-material` and `mkdocs-material-extensions` are no longer installed directly. Zensical provides the site theme and emoji helpers, while the remaining MkDocs packages are retained only because `mkdocstrings` imports them.
+## Actions to consider
 
-CI and release workflows install the docs dependencies with:
+The original discussion item numbers are retained for traceability. Only the browser acceptance check is outstanding for this PR; other actions are follow-up candidates.
 
-```bash
-pip install --group doc -e tools/zensical_extensions
-```
+| Item | Priority and action | Evidence required before completion or adoption |
+| --- | --- | --- |
+| 3 — Lightbox QA | **Before merge:** test the retained lightbox and drag fix on CLI screenshot pages and `api/class-diagram.md`. | Check SVG/raster images and both native `zoomable` and fallback `anta-zoomable` paths: uncropped fit, click zoom, slow/fast and repeated pans, release without zoom-out, deliberate subsequent click, cancellation, close/reopen, and slide changes. Test both palettes, instant navigation, a version prefix, and touch. Check Mermaid zoom/links too. Change behavior only for a reproduced defect. |
+| 4 — Upgrade qualification | **Next audit:** qualify the inherited 0.0.68 UI and tooling changes; consider a later version only for a demonstrated benefit. | Check search-result navigation, `/` search, keyboard skip links/labels, Git dates, object inventory, and local versioned output. Keep hook interpreters compatible with documentation dependencies. Preserve independent library/test support. Do not assume newer releases fix export links. |
+| 8 — Snippet rebuilds | **Audit:** edit representative included sources during `zensical serve`. | Root README, one CLI snippet, an included example, and `api/class-diagram.mmd` update their dependent pages without a restart or edits to the including page. Restore trial edits; add watch paths only for observed gaps. |
+| 9 — Search | **Audit:** try “BGP peer health”, “inventory from Ansible”, and “JSON report”. | Record result quality and destinations; improve accurate headings, descriptions, or tags only where results are weak. |
+| 11 — Sitemap/canonicals | **Audit:** inspect generated sitemap entries and canonicals for pages present only on `main`. | Every indexed page is intentional; canonical destinations exist or an explicit policy handles missing stable counterparts. Preserve historical releases. |
+| 17 — Existing helpers | **At upgrades:** recheck native Git metadata and versioning support. | Match existing date/version contracts before replacing helpers. Deployment changes require `tests/docs/test_manage_doc_versions.py` and a disposable-origin wrapper check, including repeated deploys. |
+| 5 — Markdown exports | **Blocked pilot:** reproduce the earlier export link gaps on 0.0.68 before adoption. | Preserve API object links and all local Markdown destinations. Omit source listings narrowly while retaining examples, signatures, tables, catalog YAML, and Expected Results. Decide image policy; test actual clipboard content, instant navigation, and Mike version prefixes. Enable `llmstxt` and `content.action.copy` together only after these checks. |
+| 6 — Social cards | **Pilot:** trial native `social` on Getting Started, inventory/catalog, and advisory usage. | Inspect branded images and metadata, main/release asset URLs, fonts, fresh/cached builds, and build cost. Adopt only if shared-link previews improve. |
+| 7 — API generation | **Pilot:** use one of `mkdocs-autoapi` or `api-autonav` to audit a small public package. | Identify coverage gaps; exclude private modules and duplicate objects. Preserve curated test/input content, URLs, navigation order, and object destinations. |
+| 10 — Instant previews | **Pilot:** trial `navigation.instant.preview` on representative guide/API links. | Useful context without clutter; working keyboard/touch access, both palettes, and no conflict with GLightbox/Mermaid overlays. |
+| 12 — Asset exclusions | **Pilot:** inventory output and trial narrow `exclude` patterns for build-only scripts/templates. | Compare clean/cached output. Preserve source reads, intended pages, raw snippet TXT, downloads, images, theme assets, and site scripts. Avoid broad wildcards. |
+| 13 — Blog/RSS | **Conditional:** revisit when an owner commits to maintained articles. | Define feed dates, versioned URLs, and duplicate-entry policy. The Git footer display string is not feed timestamp metadata. |
+| 14 — Table reader | **Conditional:** revisit for an authoritative structured reference dataset. | Remove duplicate maintenance while preserving readable tables and links. Moving manual rows into another file alone is insufficient. |
+| 15 — Alternative callouts | **Conditional:** revisit for Markdown shared with GitHub or Obsidian. | Demonstrate correct rendering in both destinations and document when each syntax is appropriate. |
+| 16 — Audio/video | **Conditional:** use the available native support for a specific learning need. | Provide accessible text/captions, working versioned playback/assets, and acceptable page/build cost. Terminal screenshots alone do not establish a need for video. |
 
-After that install step, documentation commands do not need `PYTHONPATH`:
+## Earlier experiments to preserve
 
-```bash
-zensical build --clean
-zensical build --strict
-mike deploy --push main
-mike deploy --update-alias --push "$REF_NAME" stable
-```
+These measurements came from temporary **Zensical 0.0.67** configurations recorded on October 9. They are not 0.0.68 acceptance results, and their trial changes are not enabled in production.
 
-## Native Configuration
+| Experiment | Result and implication |
+| --- | --- |
+| Selected Markdown exports | Six exports linked to five distinct unselected Markdown files whose HTML pages existed. Example: exporting Getting Started without Installation produced a missing `requirements-and-installation/index.md` target. |
+| All-page exports | 77 exports (598,303 bytes) had no missing local Markdown targets in that build, but API autorefs links still became plain text. Compare Device/Inventory links in HTML against exported Markdown when retesting. |
+| Custom source-wrapper cleanup | Adding `mkdocstrings-source` only to the two custom source wrappers in `docs/templates/python/material/class.html.jinja` removed 33 BGP implementation-source headings and reduced the export from 159,076 to 48,351 bytes. All 24 Examples and 24 Expected Results sections remained, as did HTML source details. This is a candidate change after export link blockers are resolved. |
+| Image cleanup | Default cleanup removed images. `autoclean = false` preserved five image references but added 139 heading permalink markers. Image policy needs a deliberate choice. |
+| Export version prefixes | Explicit main/release `site_url` trials produced matching export URLs. Actual Mike integration and browser clipboard behavior were not verified. |
+| Narrow asset exclusions | A strict-build pilot excluded `scripts/**` and `templates/**` copies while retaining API template rendering and `snippets/api_tests_overview.txt`. Public asset contracts still need an audit before adoption. |
+| Fallback drag handler | A temporary Node harness reproduced the original slow-drag zoom-out defect and passed the revised handler, including repeated gestures, cancellation, and pointer filtering. Browser interaction remains to be checked. |
 
-`zensical.toml` is the sole documentation configuration. Keeping one configuration avoids drift between native Zensical settings and the legacy MkDocs YAML compatibility layer.
+GLightbox's native loader fetches JavaScript and CSS from `https://unpkg.com/glightbox@3/`. Defensive local CSS can style an existing overlay; it does not provide complete offline operation or initialize the library after an asset-loading failure. Any CSS reduction needs browser evidence that image fitting and zoom remain usable.
 
-The theme is named `zensical`, which selects the same built-in theme that the former `material` compatibility alias selected without requiring the Material package. Markdown callables that YAML represented with `!!python/name` tags are import strings in TOML, as supported by Zensical. The deeply nested navigation remains an ordered array of single-key tables so labels, paths, and menu order stay unchanged.
+## Validation and local preview
 
-Markdown extension names containing dots are quoted literal TOML keys. This preserves the extension order from `mkdocs.yml`; leaving them unquoted would make TOML interpret each dot as a nested table, which Zensical can flatten but only after reordering extension groups. Extension order can affect Python-Markdown processing, so the literal representation is the safer behavior-preserving choice.
+### Recorded results
 
-Search uses Zensical's enabled-by-default native implementation. Its language is derived from `project.theme.language`, as recommended by Zensical, so the configuration does not carry the unsupported MkDocs `plugins.search.lang` option.
+- The maintainer [reported successful local browser testing](https://github.com/aristanetworks/anta/pull/1809#discussion_r4276426545), and CodeRabbit resolved the manual-validation thread. That report does not enumerate browsers, touch devices, palettes, or version prefixes; do not infer complete coverage of those scenarios.
+- A subsequent maintainer check found the class-diagram Zoom button missing after instant navigation but present after refresh. The helper now observes insertion of the rendered diagram instead of relying only on its initial timed checks.
+- A temporary DOM/MutationObserver regression harness reproduced missing controls with the old helper when rendering completed after the initial 100 ms. The revised helper passed delayed rendering, temporary source replacement, repeated navigation/initialization, and unrelated DOM updates without duplicate controls or listeners. This is automated DOM coverage, not browser acceptance of the fix.
+- A clean strict build passed with Zensical 0.0.68, and changed-file and all-files pre-commit checks passed. The rendered API link audit found no missing authored API pages or fragments. Version-selector links into `stable/` need a multi-version preview, which the standalone build does not provide.
 
-Legacy theme settings that Zensical does not implement (`highlightjs`, `hljs_languages`, `include_search_page`, and `search_index_only`) were removed instead of carrying ignored configuration forward. Code highlighting remains configured through Python-Markdown and Pygments.
+### Reproduce locally
 
-## Versioned Documentation
-
-Zensical does not have native versioning yet. It currently documents versioning through a Zensical-compatible `mike` fork.
-
-ANTA keeps the existing versioning model:
-
-- `project.extra.version.provider = "mike"`
-- `main` for the main-branch documentation
-- `stable` as the release alias
-- existing deployed versions left untouched
-
-Do not switch back to plain PyPI `mike==2.2.0`: it builds with `mkdocs build --clean`, not `zensical build`.
-
-The `mike` fork is pinned to an immutable commit SHA in `pyproject.toml` so documentation builds do not drift when the fork's default branch changes.
-
-The supported Mike settings remain explicit in `zensical.toml`:
-
-```toml
-[project.plugins.mike]
-alias_type = "symlink"
-deploy_prefix = ""
-canonical_version = "stable"
-```
-
-`canonical_version` keeps every deployed version's page URL canonicalized to the equivalent page in the `stable` alias. This prevents search engines from treating version-prefixed URLs as independent copies while preserving a useful page-level destination instead of canonicalizing unrelated pages to the site homepage. `redirect_template` is omitted because TOML has no null value; the Mike fork and Zensical supply the same null default.
-
-## Temporary Workarounds
-
-### Last Update Footer
-
-Zensical 0.0.62 does not run the MkDocs hook used by `mkdocs-git-revision-date-localized-plugin`, so ANTA cannot keep that plugin for the page "Last update" footer.
-
-ANTA uses `_extensions.zensical_git_dates` from the local `anta-zensical-extensions` package instead. Contributors and CI install it explicitly with `-e tools/zensical_extensions` alongside the root `doc` dependency group, which keeps zensical pinned in one place. The extension reads the current page path from Zensical's rendering context and sets `page.meta.git_revision_date_localized`, which lets the upstream Zensical/Material `partials/source-file.html` render the normal footer.
-
-This workaround is tied to zensical/backlog#18, which remains open as of Zensical 0.0.62. Re-test it when upgrading Zensical and remove the local extension once native support exists.
-
-The extension is outside `docs/` because Zensical copies non-page support files from `docs/` into the generated site. It lives under `tools/` instead of `.github/` so it is clearly local tooling and can be covered by the normal Python lint/type hooks.
-
-### Custom Code Hook Shape
-
-This helper is a Python-Markdown extension, not a MkDocs plugin.
-
-Zensical 0.0.62 accepts native plugin configuration for its supported replacements, but it does not load arbitrary MkDocs plugin classes or call MkDocs lifecycle hooks. The `macros` shim can load custom Python modules, but it registers variables, macros, and filters for page rendering; it is not a global per-page metadata hook for this footer use case.
-
-### Admonitions
-
-ANTA documentation uses standard Python-Markdown admonition syntax such as `!!! note`, `!!! info`, `!!! warning`, and `!!! tip`.
-
-Zensical does not load the old `gh-admonitions` MkDocs plugin. ANTA also avoids GitHub-style alert syntax in `docs/` because the documentation site is the rendering target, and the standard `admonition` extension supports richer types and custom titles without another dependency.
-
-### Obsidian Callouts
-
-Zensical 0.0.62 can enable Obsidian-style callouts through its `callouts` compatibility entry, which turns on `pymdownx.quotes` callout handling. ANTA has no Obsidian callout syntax, and its documentation already uses standard admonitions consistently. Enabling callouts would add a second authoring convention without adding a needed capability, so it remains disabled.
-
-### Data-backed Tables
-
-Zensical supports the `table-reader` compatibility entry for rendering structured table files. ANTA currently has no table-reader expressions or documentation-owned CSV, TSV, JSON, or YAML table sources. Most tables are small and prose-heavy; the longer security advisory support matrix is maintained directly in Markdown and has no separate structured source of truth. Moving the same manually maintained rows into another file would add indirection rather than prevent drift.
-
-Reconsider table reader if ANTA later generates the advisory support matrix or another large reference table as a structured artifact. At that point, rendering the generated artifact would remove duplication instead of merely relocating it.
-
-### GLightbox
-
-ANTA uses Zensical's native `zensical.extensions.glightbox` Markdown extension instead of the external `mkdocs-glightbox` plugin.
-
-The old MkDocs plugin accepted additional options such as `slide_effect`, `background`, `shadow`, `touchNavigation`, `loop`, and `effect`. Zensical's native extension does not implement all of those options, so ANTA uses its defaults:
-
-```toml
-[project.markdown_extensions]
-"zensical.extensions.glightbox" = {}
-```
-
-The former width setting is intentionally not carried forward. Zensical turns configured dimensions into fixed GLightbox media-box dimensions, and GLightbox v3 applies `object-fit: cover`; together those settings crop tall terminal captures. Targeted rules in `extra.zensical.css` instead give the initial image a transparent `90vw` by `90vh` viewport and use `object-fit: contain`, preserving the image aspect ratio, using the available browser area, and keeping every edge visible.
-
-The same rules preserve click-to-zoom with a consistent two-times viewport size for every image format. Using intrinsic dimensions is unreliable here: generated terminal SVGs only define a `viewBox`, while some raster screenshots are smaller than their fitted lightbox rendering.
-
-GLightbox only attaches its zoom handler when an image's natural width exceeds its rendered width. That test skips viewBox-only SVGs and raster images enlarged by the initial fit. `glightbox-zoom.js` observes newly opened slides and adds equivalent click-to-zoom and drag-to-pan handling only when GLightbox did not attach its native `zoomable` class. Images accepted by GLightbox continue to use its native handler.
-
-Re-test GLightbox behavior after Zensical upgrades before reintroducing any removed `mkdocs-glightbox` behavior.
-
-### CSS Overrides
-
-`docs/stylesheets/extra.zensical.css` contains targeted `!important` overrides for Zensical header, search, and badge table styling. Re-test these visually when upgrading Zensical because upstream selector changes can silently change or bypass the custom styling.
-
-### Snippets
-
-`docs/snippets/api_tests_overview.md` was renamed to `docs/snippets/api_tests_overview.txt`.
-
-Reason: Zensical renders Markdown files under `docs/` as pages even when the file is intended only for snippet inclusion. Keeping the snippet in `docs/snippets/` preserves the expected source organization, while the `.txt` suffix prevents it from becoming a rendered documentation page.
-
-## Deliberately Out Of Scope
-
-Historical deployed versions should not be rebuilt just to match the new Zensical UI. After this migration, it is acceptable for `/main/` to use the Zensical UI while older release folders keep the static MkDocs Material output they were originally deployed with.
-
-## Validation
-
-Local validation for the current version:
+Run from the repository root using Python >=3.11 and the pinned dependency group:
 
 ```bash
-uv run --group doc zensical --version
-uv run --group doc --with-editable tools/zensical_extensions zensical build --clean
-uv run --group doc --with-editable tools/zensical_extensions zensical build --strict
-uv run --group doc --with-editable tools/zensical_extensions mike deploy --ignore-remote-status --branch zensical-preview main
-uv run --group doc --with-editable tools/zensical_extensions mike set-default --branch zensical-preview main
+uv run --group doc --with-editable tools/zensical_extensions zensical --version
+uv run --group doc --with-editable tools/zensical_extensions zensical build --clean --strict
+uv run --group doc --with-editable tools/zensical_extensions zensical serve --dev-addr=127.0.0.1:8000
 ```
 
-Expected result:
-
-- `zensical --version` reports `0.0.62`
-- clean build reports no issues
-- strict build reports no issues
-- no-push `mike deploy` builds successfully
-- `mike set-default` lets `mike serve --branch zensical-preview` load `/` without a 404; `/main/` should also remain directly accessible
-
-### Local multi-version preview
-
-Use a throwaway local deploy branch to test the version selector, `stable` alias, and default redirect without touching `gh-pages`.
-
-The following commands build three local versions:
-
-- `main`
-- `v0.0.0-zensical`
-- `v0.0.1-zensical`, aliased as `stable`
-
-```bash
-uv run --group doc --with-editable tools/zensical_extensions mike deploy --ignore-remote-status --branch zensical-preview main
-uv run --group doc --with-editable tools/zensical_extensions mike deploy --ignore-remote-status --branch zensical-preview v0.0.0-zensical
-uv run --group doc --with-editable tools/zensical_extensions mike deploy --update-alias --ignore-remote-status --branch zensical-preview v0.0.1-zensical stable
-uv run --group doc --with-editable tools/zensical_extensions mike set-default --branch zensical-preview stable
-uv run --group doc --with-editable tools/zensical_extensions mike serve --branch zensical-preview --dev-addr 127.0.0.1:8001
-```
-
-Expected result:
-
-- `http://127.0.0.1:8001/` redirects to `/stable/`
-- `/stable/` serves the `v0.0.1-zensical` content
-- `/v0.0.0-zensical/`, `/v0.0.1-zensical/`, and `/main/` are directly accessible
-- the version selector lists all three versions and shows `stable` as an alias for `v0.0.1-zensical`
-
-To inspect the generated metadata without starting the server:
-
-```bash
-git show zensical-preview:versions.json
-git show zensical-preview:index.html
-```
-
-Preview checks used during the original migration review:
-
-- `/main/` is generated by `zensical-0.0.62`
-- the page footer shows "Last update"
-- `/main/snippets/api_tests_overview/` returns 404
-- `/main/snippets/api_tests_overview.txt` is available as a raw snippet asset
-
-Deploy validation used during review:
-
-- `mike deploy --push --remote origin --branch zensical-deploy-test main`
-- `mike deploy --update-alias --push --remote origin --branch zensical-deploy-test v0.0.0-zensical-test stable`
-
-The pushed `versions.json` contained `main`, `v0.0.0-zensical-test`, and the `stable` alias pointing to the fake release version.
-
-The active CI documentation gate is `zensical build --strict`.
-
-## Follow-ups
-
-- Re-test zensical/backlog#18 on each Zensical upgrade and remove `anta-zensical-extensions` when native Git revision metadata is available.
-- Re-test GLightbox behavior on each Zensical upgrade if upstream adds support for more of the former `mkdocs-glightbox` option surface.
-- Tune search tags after review if Zensical search filters are too broad or too narrow.
-- Revisit instant previews from `doc-zensical-enable-instant-preview` after the Zensical migration merges.
-- Before changing `main-doc.yml` or `release.yml`, test the full `mike deploy` flow against a throwaway deploy branch instead of the real `gh-pages` branch.
+- Verify the executable reports 0.0.68. Check rendered guide-to-API destinations, the Git date footer, `objects.inv`, and absence of backlink blocks.
+- Run changed-file pre-commit checks first and all-files checks for final validation. Review any hygiene changes before accepting them.
+- Record browser results against item 3 rather than treating a build or event harness as browser acceptance.
+- For URL/version changes, use a disposable local Mike main/release preview. Check direct entry and instant navigation, including targets inside details or tabs.
+- Run deployment wrapper experiments only in a disposable repository with a local bare origin. The real wrapper publishes to `origin/gh-pages`; it is not a local preview command.
