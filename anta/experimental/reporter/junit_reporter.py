@@ -1,11 +1,10 @@
 # Copyright (c) 2025-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""JUnit Report management for ANTA."""
+"""Experimental JUnit report management for ANTA."""
 
 from __future__ import annotations
 
-# pylint: disable = too-few-public-methods
 import datetime
 import hashlib
 import json
@@ -18,6 +17,8 @@ from typing import TYPE_CHECKING
 from anta.logger import anta_log_exception
 from anta.result_manager.models import AntaTestStatus, TestResult
 
+# pylint: disable = too-few-public-methods
+
 if TYPE_CHECKING:
     from pathlib import Path
 
@@ -27,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass
-class TestSuite:
+class _TestSuite:
     """Dataclass to track TestSuite information."""
 
     element: ET.Element
@@ -43,7 +44,9 @@ class TestSuite:
 
 
 class JUnitReporter:
-    """A reporter that generates JUnit XML output.
+    """An experimental reporter that generates JUnit XML output.
+
+    This reporter's API, behavior and output may change between releases.
 
     Note
     ----
@@ -78,7 +81,7 @@ class JUnitReporter:
         return hashlib.blake2s(identity_json.encode("utf-8"), digest_size=8).hexdigest()
 
     @classmethod
-    def _add_test_to_testsuite(cls, result: TestResult, testsuite: TestSuite, duplicate_names: set[str]) -> None:
+    def _add_test_to_testsuite(cls, result: TestResult, testsuite: _TestSuite, duplicate_names: set[str]) -> None:
         """Build testcase for a given TestResult and add it to the testsuite root element.
 
         Not handling the UNSET teststatus because this is not present in JUnit specification
@@ -150,7 +153,7 @@ class JUnitReporter:
         catalog_path:
             The path to the catalog where the test was defined.
         """
-        testsuite = TestSuite(
+        testsuite = _TestSuite(
             element=ET.SubElement(testsuites, "testsuite"),
             name=f"ANTA Tests on {device_name}",
             hostname=device_name,
