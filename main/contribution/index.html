@@ -3149,6 +3149,34 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#preserve-page-and-heading-links" class="md-nav__link">
+      <span class="md-ellipsis">
+        Preserve page and heading links
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#link-to-python-api-objects" class="md-nav__link">
+      <span class="md-ellipsis">
+        Link to Python API objects
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#generated-cli-snippets" class="md-nav__link">
       <span class="md-ellipsis">
         Generated CLI snippets
@@ -3414,6 +3442,34 @@
     <a href="#testing-documentation" class="md-nav__link">
       <span class="md-ellipsis">
         Testing documentation
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#preserve-page-and-heading-links" class="md-nav__link">
+      <span class="md-ellipsis">
+        Preserve page and heading links
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#link-to-python-api-objects" class="md-nav__link">
+      <span class="md-ellipsis">
+        Link to Python API objects
       </span>
     </a>
 
@@ -3805,7 +3861,8 @@ Generate<span class="w"> </span>doc<span class="w"> </span>snippets.............
 <p><a href="https://zensical.org/"><code>Zensical</code></a> is used to preview and build the documentation. A PR should always update the documentation to avoid documentation debt.</p>
 <p>Documentation source lives under <code>docs/</code> and is built from the repository root. Do not commit rendered <code>site/</code> output.</p>
 <h4 id="install-documentation-requirements">Install documentation requirements<a class="headerlink" href="#install-documentation-requirements" title="Permanent link">&para;</a></h4>
-<p>Run pip to install the documentation requirements from the root of the repo:</p>
+<p>Documentation tooling requires Python 3.11 or newer. ANTA&rsquo;s library Python requirements are defined separately in <code>pyproject.toml</code>.</p>
+<p>Run pip with a compatible Python interpreter to install the documentation requirements from the root of the repo:</p>
 <div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="w"> </span>--group<span class="w"> </span>doc<span class="w"> </span>-e<span class="w"> </span>tools/zensical_extensions
 </code></pre></div>
 <h4 id="testing-documentation">Testing documentation<a class="headerlink" href="#testing-documentation" title="Permanent link">&para;</a></h4>
@@ -3821,6 +3878,26 @@ Generate<span class="w"> </span>doc<span class="w"> </span>snippets.............
 <p>Use <code>zensical build --clean</code> when you want to remove the previous generated output before building locally:</p>
 <div class="highlight"><pre><span></span><code>zensical<span class="w"> </span>build<span class="w"> </span>--clean
 </code></pre></div>
+<h4 id="preserve-page-and-heading-links">Preserve page and heading links<a class="headerlink" href="#preserve-page-and-heading-links" title="Permanent link">&para;</a></h4>
+<p>When moving a documentation page or renaming a heading, preserve its published URL with Zensical&rsquo;s native redirects. Existing bookmarks and links from issues, external guides, and release notes may still use the old location. Update links in the repository to the new destination as well.</p>
+<p>Add redirects to <code>zensical.toml</code> using paths relative to <code>docs/</code>, including the <code>.md</code> extension. Do not put deployment prefixes such as <code>/main/</code> or <code>/stable/</code> in these source paths.</p>
+<div class="highlight"><pre><span></span><code><span class="k">[project.plugins.redirects.redirect_maps]</span>
+<span class="c1"># Move a whole page.</span>
+<span class="s2">"old-guide.md"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"guides/new-guide.md"</span>
+<span class="c1"># Rename a heading on an existing page.</span>
+<span class="s2">"guide.md#old-heading"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"guide.md#new-heading"</span>
+<span class="c1"># Move a section when splitting a page.</span>
+<span class="s2">"guide.md#moved-section"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"guides/new-guide.md#moved-section"</span>
+</code></pre></div>
+<p>These paths are examples; add mappings only for actual moves and existing targets. Check the rendered heading IDs rather than assuming how Zensical will derive them. Keep redirects pointing to the final destination when reorganizing content again, and avoid cycles.</p>
+<p>Run <code>zensical build --clean --strict</code>, then use the local preview to open each old page URL and fragment directly. Confirm that the correct section is displayed, including targets inside collapsed details or content tabs. For a versioned deployment, also check a local Mike preview so the redirect stays within the selected version. Existing historical release builds acquire new redirects only if they are rebuilt.</p>
+<h4 id="link-to-python-api-objects">Link to Python API objects<a class="headerlink" href="#link-to-python-api-objects" title="Permanent link">&para;</a></h4>
+<p>Use object references when linking prose to generated Python API documentation:</p>
+<div class="highlight"><pre><span></span><code>Create an [<span class="nt">AntaInventory</span>][<span class="nl">anta.inventory.AntaInventory</span>] and add an
+[<span class="nt">AsyncEOSDevice</span>][<span class="nl">anta.device.AsyncEOSDevice</span>].
+</code></pre></div>
+<p><code>autorefs</code> resolves these identifiers to their documented locations without hard-coding the API page path or heading anchor. Keep ordinary Markdown links for guides and other authored pages.</p>
+<p>After adding or changing an object reference, run <code>zensical build --strict</code> and check that the link opens the intended object in the rendered site.</p>
 <h4 id="generated-cli-snippets">Generated CLI snippets<a class="headerlink" href="#generated-cli-snippets" title="Permanent link">&para;</a></h4>
 <p>The CLI help blocks published in the documentation are generated from the current Click output. After changing CLI commands, options, or help text, refresh the snippets and verify that the generated files are committed:</p>
 <div class="highlight"><pre><span></span><code>uv<span class="w"> </span>run<span class="w"> </span>--extra<span class="w"> </span>cli<span class="w"> </span>python<span class="w"> </span>docs/scripts/generate_doc_snippets.py
@@ -3885,7 +3962,7 @@ git<span class="w"> </span>diff<span class="w"> </span>--exit-code<span class="w
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    October 14, 2026
+    October 15, 2026
   </span>
 
     
