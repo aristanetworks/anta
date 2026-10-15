@@ -26,8 +26,8 @@ ANTA is a Python library that can be used in user applications. This section des
 A device is represented in ANTA as an instance of a subclass of the [AntaDevice][anta.device.AntaDevice] abstract class.
 There are a few abstract methods that need to be implemented by child classes:
 
-- The [collect()][anta.device.AntaDevice.collect] coroutine is in charge of collecting outputs of [AntaCommand](../api/commands.md#anta.models.AntaCommand) instances.
-- The [refresh()][anta.device.AntaDevice.refresh] coroutine is in charge of updating attributes of the [AntaDevice][anta.device.AntaDevice] instance. These attributes are used by [AntaInventory][anta.inventory.AntaInventory] to filter out unreachable devices or by [AntaTest](../api/tests/anta_test.md#anta.models.AntaTest) to skip devices based on their hardware models.
+- The [collect()][anta.device.AntaDevice.collect] coroutine is in charge of collecting outputs of [AntaCommand][anta.models.AntaCommand] instances.
+- The [refresh()][anta.device.AntaDevice.refresh] coroutine is in charge of updating attributes of the [AntaDevice][anta.device.AntaDevice] instance. These attributes are used by [AntaInventory][anta.inventory.AntaInventory] to filter out unreachable devices or by [AntaTest][anta.models.AntaTest] to skip devices based on their hardware models.
 
 The optional `version` attribute accepts any software version object implementing the `DeviceVersion` protocol. Implementations provide normalized text and JSON-compatible dictionary representations through `str(version)` and `version.to_dict()` respectively.
 
@@ -40,7 +40,7 @@ The [copy()][anta.device.AntaDevice.copy] coroutine is used to copy files to and
 The [AsyncEOSDevice][anta.device.AsyncEOSDevice] class is an implementation of [AntaDevice][anta.device.AntaDevice] for Arista EOS.
 It uses `asynceapi` for eAPI and the [AsyncSSH](https://github.com/ronf/asyncssh) library for SCP. `asynceapi` is ANTA's fork and packaged client derived from [aio-eapi](https://github.com/jeremyschulman/aio-eapi).
 
-- The [\_collect()][anta.device.AsyncEOSDevice._collect] coroutine collects [AntaCommand](../api/commands.md#anta.models.AntaCommand) outputs using eAPI.
+- The [\_collect()][anta.device.AsyncEOSDevice._collect] coroutine collects [AntaCommand][anta.models.AntaCommand] outputs using eAPI.
 - The [refresh()][anta.device.AsyncEOSDevice.refresh] coroutine tries to open a TCP connection on the eAPI port and update the `is_online` attribute accordingly. If the TCP connection succeeds, it sends a `show version` command to gather the hardware model and EOS version of the device and updates the `established`, `hw_model`, `platform`, and `version` attributes. A missing or invalid `modelName` leaves the device unestablished, preserving the existing refresh contract. For systems identified as modular chassis, refresh also collects `show module` once and augments `platform` with normalized module identities. Fixed and unrecognized system types do not receive this additional command. If module evidence is unavailable, the device remains established with an empty module list.
 - The [copy()][anta.device.AsyncEOSDevice.copy] coroutine copies files to and from the device using the SCP protocol.
 
@@ -63,7 +63,7 @@ The [AntaInventory][anta.inventory.AntaInventory] class is a subclass of the sta
 
 ## Consuming test result statuses
 
-[`AntaTestStatus`](../api/result.md#anta.result_manager.models.AntaTestStatus) can gain new members in a minor ANTA release. This is an additive API change, but consumers that exhaustively match known status values must still account for values introduced by newer ANTA versions.
+[`AntaTestStatus`][anta.result_manager.models.AntaTestStatus] can gain new members in a minor ANTA release. This is an additive API change, but consumers that exhaustively match known status values must still account for values introduced by newer ANTA versions.
 When consuming serialized results, use a fallback handler instead of assuming that every status is already known. The fallback can log, preserve, or reject the unknown value according to the application's compatibility policy.
 
 ## Examples

@@ -360,7 +360,9 @@ Documentation source lives under `docs/` and is built from the repository root. 
 
 ### Install documentation requirements
 
-Run pip to install the documentation requirements from the root of the repo:
+Documentation tooling requires Python 3.11 or newer. ANTA's library Python requirements are defined separately in `pyproject.toml`.
+
+Run pip with a compatible Python interpreter to install the documentation requirements from the root of the repo:
 
 ```bash
 pip install -e . --group doc -e tools/zensical_extensions

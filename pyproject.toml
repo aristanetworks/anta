@@ -105,6 +105,9 @@ doc = [
   "mkdocstrings[python]~=1.0.6",
   "mkdocstrings-python~=2.0.9",
 ]
+[tool.uv.dependency-groups]
+doc = { requires-python = ">=3.11" }
+
 [project.urls]
 Homepage = "https://anta.arista.com"
 "Bug Tracker" = "https://github.com/aristanetworks/anta/issues"
