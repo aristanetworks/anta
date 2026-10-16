@@ -9,6 +9,7 @@ import datetime
 import hashlib
 import json
 import logging
+import re
 import xml.etree.ElementTree as ET
 from collections import Counter
 from dataclasses import dataclass
@@ -25,6 +26,14 @@ if TYPE_CHECKING:
     from anta.result_manager import ResultManager
 
 logger = logging.getLogger(__name__)
+
+# XML 1.0 permits tab, LF, CR and these Unicode ranges (W3C XML, production 2).
+_INVALID_XML_CHARACTERS = re.compile(r"[^\x09\x0a\x0d\x20-\ud7ff\ue000-\ufffd\U00010000-\U0010ffff]")
+
+
+def _escape_xml_characters(value: str) -> str:
+    """Render XML-invalid characters as visible escapes while preserving valid text."""
+    return _INVALID_XML_CHARACTERS.sub(lambda match: match.group().encode("unicode_escape").decode("ascii"), value)
 
 
 @dataclass
@@ -225,6 +234,11 @@ class JUnitReporter:
         # Write the XML to the file
         try:
             tree = ET.ElementTree(testsuites)
+            # Sanitize every serialized value, including device names and catalog paths.
+            for element in testsuites.iter():
+                element.attrib.update({name: _escape_xml_characters(value) for name, value in element.attrib.items()})
+                if element.text is not None:
+                    element.text = _escape_xml_characters(element.text)
             ET.indent(tree, space="  ", level=0)
             tree.write(output_path, encoding="utf-8", xml_declaration=True)
 

@@ -102,6 +102,58 @@ def test_junit_reporter_generate_without_description(tmp_path: Path) -> None:
     assert description.text is None
 
 
+@pytest.mark.parametrize(
+    ("status", "outcome_tag"),
+    [
+        (AntaTestStatus.SUCCESS, None),
+        (AntaTestStatus.FAILURE, "failure"),
+        (AntaTestStatus.ERROR, "error"),
+        (AntaTestStatus.SKIPPED, "skipped"),
+    ],
+)
+def test_junit_reporter_escapes_invalid_xml_characters(tmp_path: Path, status: AntaTestStatus, outcome_tag: str | None) -> None:
+    """Round-trip all result-derived XML values without losing diagnostic characters."""
+    invalid = "\x00\x08\x0b\x0c\x0e\x1f\ud800\udfff\ufffe\uffff"
+    escaped = r"\x00\x08\x0b\x0c\x0e\x1f\ud800\udfff\ufffe\uffff"
+    valid = ' & < > " é 😀\t\n\ud7ff\ue000\ufffd\U00010000\U0010ffff'
+    result = TestResult(
+        name=f"leaf{invalid}{valid}",
+        test=f"VerifyUptime{invalid}{valid}",
+        categories=["system"],
+        description=f"Description{invalid}{valid}",
+        result=status,
+        messages=[f"Diagnostic{invalid}{valid}", "Second message"],
+    )
+    result_manager = ResultManager()
+    result_manager.add(result)
+    junit_filename = tmp_path / "test.xml"
+
+    JUnitReporter.generate(results=result_manager, output_path=junit_filename, catalog_path=tmp_path / f"catalog{invalid}.yaml")
+
+    root = ET.parse(junit_filename).getroot()  # noqa: S314
+    testsuite = root.find("testsuite")
+    assert testsuite is not None
+    assert testsuite.get("hostname") == f"leaf{escaped}{valid}"
+    assert testsuite.get("name") == f"ANTA Tests on leaf{escaped}{valid}"
+    assert testsuite.get("filename") == str(tmp_path / f"catalog{escaped}.yaml")
+    testcase = testsuite.find("testcase")
+    assert testcase is not None
+    assert testcase.get("classname") == f"leaf{escaped}{valid}"
+    assert testcase.get("name") == f"VerifyUptime{escaped}{valid} - Description{escaped}{valid}"
+    description = testcase.find("./properties/property[@name='description']")
+    assert description is not None
+    assert description.text == f"Description{escaped}{valid}"
+    if outcome_tag is not None:
+        outcome = testcase.find(outcome_tag)
+        assert outcome is not None
+        assert outcome.text == f"Diagnostic{escaped}{valid}\nSecond message"
+    else:
+        assert all(testcase.find(tag) is None for tag in ("failure", "error", "skipped"))
+    assert result.name == f"leaf{invalid}{valid}"
+    assert result.description == f"Description{invalid}{valid}"
+    assert result.messages == [f"Diagnostic{invalid}{valid}", "Second message"]
+
+
 def test_junit_reporter_generate_deduplicates_duplicate_testcase_names(tmp_path: Path) -> None:
     """Test that JUnit testcase names remain unique for duplicate ANTA test names."""
     junit_filename = tmp_path / "test.xml"
