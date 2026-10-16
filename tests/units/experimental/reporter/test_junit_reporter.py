@@ -61,6 +61,47 @@ def test_junit_reporter_generate_failure(
     assert "Error while writing the JUNIT file '" in caplog.text
 
 
+@pytest.mark.parametrize("include_catalog", [False, True])
+def test_junit_reporter_generate_catalog_path(tmp_path: Path, result_manager: ResultManager, include_catalog: bool) -> None:
+    """Include the catalog filename on every device suite only when provided."""
+    junit_filename = tmp_path / "test.xml"
+    catalog_path = tmp_path / "catalog.yml" if include_catalog else None
+
+    JUnitReporter.generate(results=result_manager, output_path=junit_filename, catalog_path=catalog_path)
+
+    testsuites = ET.parse(junit_filename).findall("testsuite")  # noqa: S314
+    assert testsuites
+    expected_filename = str(catalog_path) if include_catalog else None
+    assert all(testsuite.get("filename") == expected_filename for testsuite in testsuites)
+
+
+def test_junit_reporter_generate_without_description(tmp_path: Path) -> None:
+    """Keep the test name intact when its description is empty."""
+    junit_filename = tmp_path / "test.xml"
+    result_manager = ResultManager()
+    result_manager.add(
+        TestResult(
+            name="leaf1",
+            test="VerifyUptime",
+            categories=["system"],
+            description="",
+            result=AntaTestStatus.SUCCESS,
+        )
+    )
+
+    JUnitReporter.generate(results=result_manager, output_path=junit_filename)
+
+    root = ET.parse(junit_filename).getroot()  # noqa: S314
+    assert root.get("tests") == "1"
+    testcase = root.find("./testsuite/testcase")
+    assert testcase is not None
+    assert testcase.get("classname") == "leaf1"
+    assert testcase.get("name") == "VerifyUptime"
+    description = testcase.find("./properties/property[@name='description']")
+    assert description is not None
+    assert description.text is None
+
+
 def test_junit_reporter_generate_deduplicates_duplicate_testcase_names(tmp_path: Path) -> None:
     """Test that JUnit testcase names remain unique for duplicate ANTA test names."""
     junit_filename = tmp_path / "test.xml"
