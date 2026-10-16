@@ -14,6 +14,9 @@ tags:
   ~ that can be found in the LICENSE file.
   -->
 
+<!-- markdownlint-disable MD052 -->
+<!-- Python object references below are resolved by mkdocs-autorefs. -->
+
 ANTA provides a set of commands for performing NRFU tests on devices. These commands are under the `anta nrfu` namespace and offer multiple output format options:
 
 - [Text report](#performing-nrfu-with-text-rendering)
@@ -202,7 +205,7 @@ The template `./custom_template.j2` is a simple Jinja2 template:
 {% endfor %}
 ```
 
-The Jinja2 template has access to all `TestResult` elements and their values, as described in this [documentation](../api/result.md#anta.result_manager.models.TestResult).
+The Jinja2 template has access to all `TestResult` elements and their values, as described in this [documentation][anta.result_manager.models.TestResult].
 
 You can also save the report result to a file using the `--output` option:
 

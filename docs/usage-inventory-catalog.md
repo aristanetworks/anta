@@ -14,6 +14,9 @@ tags:
   ~ that can be found in the LICENSE file.
   -->
 
+<!-- markdownlint-disable MD052 -->
+<!-- Python object references below are resolved by mkdocs-autorefs. -->
+
 The ANTA framework needs 2 important inputs from the user to run:
 
 1. A **device inventory**
@@ -23,7 +26,7 @@ Both inputs can be defined in a file or programmatically.
 
 ## Device Inventory
 
-A device inventory is an instance of the [AntaInventory](./api/inventory.md#anta.inventory.AntaInventory) class.
+A device inventory is an instance of the [AntaInventory][anta.inventory.AntaInventory] class.
 
 ### Device Inventory File
 
@@ -114,7 +117,7 @@ With session authentication, login occurs before the endpoint check. The timeout
 
 ## Test Catalog
 
-A test catalog is an instance of the [AntaCatalog](./api/catalog.md#anta.catalog.AntaCatalog) class.
+A test catalog is an instance of the [AntaCatalog][anta.catalog.AntaCatalog] class.
 
 ### Test Catalog File
 

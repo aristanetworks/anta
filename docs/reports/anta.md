@@ -13,6 +13,9 @@ tags:
   ~ that can be found in the LICENSE file.
   -->
 
+<!-- markdownlint-disable MD052 -->
+<!-- Python object references below are resolved by mkdocs-autorefs. -->
+
 Regular ANTA reports present the test results produced by an NRFU run. Generate them with `anta nrfu`, or use the reporter classes directly when integrating ANTA into a Python application.
 
 ## Choose a report format
@@ -31,9 +34,9 @@ The NRFU documentation contains the command options and rendered examples for ea
 
 Python applications can render an ANTA `ResultManager` with the regular reporter implementations:
 
-- [CSV reporter](../api/reporter/csv.md)
-- [Markdown reporter](../api/reporter/markdown.md)
-- [Jinja reporter](../api/reporter/jinja.md)
+- [CSV reporter][anta.reporter.csv_reporter.ReportCsv]
+- [Markdown reporter][anta.reporter.md_reporter.MDReportGenerator]
+- [Jinja reporter][anta.reporter.jinja_reporter.ReportJinja]
 
 These API references document the reporter classes and their supported methods. JSON serialization and text rendering are exposed by the CLI rather than as equivalent public reporter classes.
 
