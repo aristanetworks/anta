@@ -40,6 +40,14 @@ The [copy()][anta.device.AntaDevice.copy] coroutine is used to copy files to and
 The [AsyncEOSDevice][anta.device.AsyncEOSDevice] class is an implementation of [AntaDevice][anta.device.AntaDevice] for Arista EOS.
 It uses `asynceapi` for eAPI and the [AsyncSSH](https://github.com/ronf/asyncssh) library for SCP. `asynceapi` is ANTA's fork and packaged client derived from [aio-eapi](https://github.com/jeremyschulman/aio-eapi).
 
+Omitting `timeout` when constructing an `AsyncEOSDevice` or calling
+`AntaInventory.parse()` uses a timeout of `30.0` seconds for eAPI command
+requests, matching the CLI default. Pass a number to choose a different timeout,
+or explicitly pass `timeout=None` to disable it. HTTPX applies this value to its
+connect, read, write, and pool timeout phases; it is not a deadline for the whole
+ANTA run. Endpoint checks and session login retain their fixed five-second
+timeouts.
+
 - The [\_collect()][anta.device.AsyncEOSDevice._collect] coroutine collects [AntaCommand][anta.models.AntaCommand] outputs using eAPI.
 - The [refresh()][anta.device.AsyncEOSDevice.refresh] coroutine tries to open a TCP connection on the eAPI port and update the `is_online` attribute accordingly. If the TCP connection succeeds, it sends a `show version` command to gather the hardware model and EOS version of the device and updates the `established`, `hw_model`, `platform`, and `version` attributes. A missing or invalid `modelName` leaves the device unestablished, preserving the existing refresh contract. For systems identified as modular chassis, refresh also collects `show module` once and augments `platform` with normalized module identities. Fixed and unrecognized system types do not receive this additional command. If module evidence is unavailable, the device remains established with an empty module list.
 - The [copy()][anta.device.AsyncEOSDevice.copy] coroutine copies files to and from the device using the SCP protocol.

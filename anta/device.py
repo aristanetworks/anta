@@ -527,7 +527,7 @@ class AsyncEOSDevice(AntaDevice):
         port: int | None = None,
         ssh_port: int = 22,
         tags: set[str] | None = None,
-        timeout: float | None = None,
+        timeout: float | None = 30.0,
         proto: Literal["http", "https"] = "https",
         *,
         enable: bool = False,
@@ -557,7 +557,7 @@ class AsyncEOSDevice(AntaDevice):
         tags
             Tags for this device.
         timeout
-            Global timeout value in seconds for outgoing eAPI calls. None means no timeout.
+            Global timeout value in seconds for outgoing eAPI calls. Defaults to 30.0. None means no timeout.
         proto
             eAPI protocol. Value can be 'http' or 'https'.
         enable
