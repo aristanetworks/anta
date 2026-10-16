@@ -6,7 +6,8 @@
 
 # Zensical Documentation Plan
 
-**Baseline:** `upstream/main` at `855d66c1` (merged #1809), Zensical `0.0.68`
+**Source baseline:** `upstream/main` at `855d66c1` (merged #1809)
+**Documentation tooling:** Zensical `0.0.69` in [#1828](https://github.com/aristanetworks/anta/pull/1828)
 **Migration PR:** [#1809](https://github.com/aristanetworks/anta/pull/1809) (merged); follow-up outcomes are tracked below.
 **Updated:** October 16, 2026
 
@@ -14,13 +15,15 @@ The MkDocs Material migration is complete. Merged PR #1809 retains ANTA's lightb
 
 ## Current baseline
 
-- `pyproject.toml` and both Pylint/Pyright pre-commit environments pin `zensical==0.0.68`.
+- `pyproject.toml` and both Pylint/Pyright pre-commit environments pin `zensical==0.0.69`.
 - Zensical uses `zensical.toml`, native search, instant navigation, linked content tabs, code copying, `mkdocstrings`, GLightbox, and custom Mermaid zoom.
 - Documentation tooling requires Python >=3.11, independently of ANTA's library support. The `doc` dependency group declares that minimum for uv resolution; the contributor guide documents it. Docs CI uses Python 3.11 and deployment selects Python 3.x.
 - The local extension is installed with `-e tools/zensical_extensions`. MkDocs and autorefs remain dependencies of `mkdocstrings`; site commands use Zensical.
 - Versioned deployment uses the compatible Mike fork at `2d4ad799442f4592db8ad53b179bfb33db8c69ac` and ANTA's deployment/normalization scripts.
 
 [Zensical 0.0.68](https://github.com/zensical/zensical/releases/tag/v0.0.68) includes native audio/video support, closer macros compatibility, and UI 0.0.35 search-result instant navigation and accessibility fixes. It requires Python >=3.11. Features inherited from earlier releases include redirects, snippet-dependent rebuilds, blog/RSS, API generators, social cards, Markdown exports, and asset exclusions. Availability does not imply adoption.
+
+[Zensical 0.0.69](https://github.com/zensical/zensical/releases/tag/v0.0.69) adds `nav-weight` and `markdownextradata` compatibility, improves symlink watching, fixes Unicode minification crashes, and preserves emojis in Markdown exports. UI 0.0.36 includes navigation spacing and instant-navigation fixes. This upgrade aligns the three pins without enabling additional features; the Markdown export blockers (D05) and browser qualification work (F02/F05) remain separate.
 
 ## Decision register
 
@@ -39,7 +42,7 @@ The entries below record migration decisions and follow-up outcomes as of Octobe
 | D07 | **Retained:** standard Python-Markdown admonitions. GitHub alerts (`gh-admonitions`) and Obsidian callouts (`callouts`) remain deferred. | No identified shared-source need justifies another authoring convention. | Actual Markdown needs to render in GitHub or Obsidian as well as the site. Compare both renderers and document the resulting convention. |
 | D08 | **Retained:** local Git date extension. | The footer must follow renames and ignore metadata/license-only edits. Its display string is not RSS timestamp metadata. Native support is tracked in [backlog #18](https://github.com/zensical/backlog/issues/18). | Native support can satisfy those date semantics. Check at Zensical upgrades and compare representative pages before replacing the extension. |
 | D09 | **Retained:** compatible Mike fork and deployment/normalization helpers. | They preserve version order, stable aliases, same-base prerelease cleanup, and historical final builds. A strict site build does not test deployment behavior. | Native/upstream alternatives satisfy these contracts in a disposable-origin integration test, including identical redeploys. Never use the production publishing wrapper for a preview. |
-| D10 | **Adopted:** documentation tooling and library Python support are independent; dependency updates do not enable features automatically. | Zensical 0.0.68 requires Python >=3.11. The root doc group and both hook environments share its pin. | Every documentation-tooling upgrade: align all three pins and check group/interpreter constraints, builds, inventories, and browser behavior without silently changing library support. |
+| D10 | **Adopted:** documentation tooling and library Python support are independent; dependency updates do not enable features automatically. | Zensical 0.0.69 requires Python >=3.11. The root doc group and both hook environments share its pin. | Every documentation-tooling upgrade: align all three pins and check group/interpreter constraints, builds, inventories, and browser behavior without silently changing library support. |
 | D11 | **Deferred:** social cards. | Native support is available, but branding, fonts/assets, caching, versioned URLs, and build cost need evaluation. | A small branded preview demonstrates useful shared-link presentation at acceptable cost. |
 | D12 | **Deferred:** instant link previews. | They may help long API pages but can add clutter and interfere with overlays. | A representative guide/API pilot improves navigation and works with keyboard, touch, palettes, and overlays. |
 | D13 | **Deferred:** build-only asset exclusions. | A temporary narrow pilot worked, but exclusions can filter source documents and effective resources, including theme assets. | An output inventory identifies unnecessary public copies and a narrow comparison proves source reads, raw snippets, downloads, images, templates, and site assets survive. |
@@ -60,7 +63,8 @@ Every follow-up PR updates this file alongside its implementation or investigati
 
 | Recorded | Decisions | Outcome and evidence |
 | --- | --- | --- |
-| 2026-10-16 | D01/D06 — F01 | Replaced 47 authored API object links with autorefs, retaining two overview-page links. A clean strict Zensical 0.0.68 build passed; rendered link destinations were checked for existing pages/fragments. Backlinks remain deferred and API generation remains a separate audit. |
+| 2026-10-16 | D10 — Zensical 0.0.69 ([#1828](https://github.com/aristanetworks/anta/pull/1828)) | Rebased onto current `upstream/main` (`855d66c1`; already up to date) and aligned the root doc group and both hook pins at 0.0.69. The executable and package metadata confirm 0.0.69 / Python >=3.11. A clean strict build and rendered object-link/inventory audits passed; no backlink blocks were generated. This does not establish browser, touch, export, or deployment acceptance; D05 and F02/F03/F05 remain open. |
+| 2026-10-16 | D01/D06 — F01 ([#1828](https://github.com/aristanetworks/anta/pull/1828)) | Replaced 47 authored API object links with autorefs, retaining two overview-page links. A clean strict Zensical 0.0.68 build, rendered page/fragment destination audit, and changed-file/final all-files pre-commit checks passed. Backlinks remain deferred and API generation remains a separate audit. |
 | 2026-10-15 | D01–D16 | Consolidated the choices and earlier experiments from PR #1809 into this register. In particular, backlinks remain deferred because of preview clutter; this is a current choice that can be revisited, not a permanent rejection. |
 
 ## Follow-up PR plan
@@ -69,7 +73,7 @@ The table tracks proposed scopes and completed outcomes; it is not a commitment 
 
 | ID / proposed PR | Status and dependencies | Scope | Completion criteria / decision updates |
 | --- | --- | --- | --- |
-| F01 — Finish API object references | **Implemented; PR pending.** Based on merged #1809. | Converted 46 of the 48 hard-coded API links across `custom-tests.md`, `caching.md`, `usage-inventory-catalog.md`, `reports/anta.md`, and `cli/nrfu.md`, plus one object link in the shared test-overview snippet (47 total). The inventory and test overview links remain normal page links. Reporter implementation links now target their public classes; the custom-types link targets its module. | Clean strict build passed on Zensical 0.0.68. Rendered object destinations resolve to existing pages/fragments, including the dedicated full `AntaTest` API page rather than partial inline documentation. D01/D06 are retained: backlinks remain deferred and curated API pages remain in place. This improves link consistency and resilience; it does not qualify browser interactions or versioned deployment. |
+| F01 — Finish API object references | **Implemented in [#1828](https://github.com/aristanetworks/anta/pull/1828) (open).** Based on merged #1809. | Converted 46 of the 48 hard-coded API links across `custom-tests.md`, `caching.md`, `usage-inventory-catalog.md`, `reports/anta.md`, and `cli/nrfu.md`, plus one object link in the shared test-overview snippet (47 total). The inventory and test overview links remain normal page links. Reporter implementation links now target their public classes; the custom-types link targets its module. | Clean strict builds passed on Zensical 0.0.68 and 0.0.69; the latter audit verified all 48 rendered occurrences of the 47 source links and all 18 object IDs in `objects.inv`. Rendered object destinations resolve to existing pages/fragments, including the dedicated full `AntaTest` API page rather than partial inline documentation. D01/D06 are retained: backlinks remain deferred and curated API pages remain in place. This improves link consistency and resilience; it does not qualify browser interactions or versioned deployment. |
 | F02 — Browser regression coverage for diagrams and images | **Proposed; high priority.** After #1809; independent of F01. | Add a small repeatable browser suite for class-diagram instant navigation and lightbox gestures, using a documented browser-test command and fixtures. Preserve a short manual touch checklist for device behavior automation cannot establish. | Reproduce the former missing Zoom button and slow-drag zoom-out defects against the prior helpers; pass with fixes. Cover delayed rendering, navigation away/back, zoom/pan/close, keyboard/focus, SVG/raster paths, and both palettes. Record browser/version and actual touch/emulation coverage. Update D03/D04 and distinguish automated evidence from perceived smoothness. |
 | F03 — Versioned URLs, sitemap, and canonicals | **Proposed; high priority.** After #1809; independent of F01/F02. | Build a disposable local Mike main/release preview and audit version selection, direct fragments, instant navigation, sitemap membership, and main-only canonical destinations. | Identify intended published pages; verify selected-version URLs, stable destinations, footer, inventory, and deep links into details/tabs. Define any missing-counterpart policy explicitly. Update D02/D08/D09; if changing deployment, run `tests/docs/test_manage_doc_versions.py` and a disposable-origin wrapper check. |
 | F04 — Live snippet rebuild qualification | **Proposed audit.** After #1809. | During `zensical serve`, change root README, a CLI snippet, an included example, and the Mermaid source. Add watch paths only for reproduced gaps. | Each dependent page updates without restarting or touching the including page; restore trial edits and record results. Fix only observed watcher failures and update the baseline evidence for D10. |
@@ -106,6 +110,8 @@ GLightbox's native loader fetches JavaScript and CSS from `https://unpkg.com/gli
 
 ### Recorded results
 
+- F01 in [#1828](https://github.com/aristanetworks/anta/pull/1828): Zensical 0.0.69 clean strict build passed. All 47 source references (48 rendered occurrences because the snippet appears twice) resolve to existing HTML pages/fragments; all 18 unique object IDs appear in the 891-entry Sphinx v2 inventory. The complete `AntaTest.render` signature remains linked, full model links reach the dedicated API page, and no backlink blocks were generated.
+
 - The maintainer [reported successful local browser testing](https://github.com/aristanetworks/anta/pull/1809#discussion_r4276426545), and CodeRabbit resolved the manual-validation thread. That report does not enumerate browsers, touch devices, palettes, or version prefixes; do not infer complete coverage of those scenarios.
 - A subsequent maintainer check found the class-diagram Zoom button missing after instant navigation but present after refresh. The helper now observes insertion of the rendered diagram instead of relying only on its initial timed checks.
 - A temporary DOM/MutationObserver regression harness reproduced missing controls with the old helper when rendering completed after the initial 100 ms. The revised helper passed delayed rendering, temporary source replacement, repeated navigation/initialization, and unrelated DOM updates without duplicate controls or listeners. This is automated DOM coverage, not browser acceptance of the fix.
@@ -121,7 +127,7 @@ uv run --group doc --with-editable tools/zensical_extensions zensical build --cl
 uv run --group doc --with-editable tools/zensical_extensions zensical serve --dev-addr=127.0.0.1:8000
 ```
 
-- Verify the executable reports 0.0.68. Check rendered guide-to-API destinations, the Git date footer, `objects.inv`, and absence of backlink blocks.
+- Verify the executable reports 0.0.69. Check rendered guide-to-API destinations, the Git date footer, `objects.inv`, and absence of backlink blocks.
 - Run changed-file pre-commit checks first and all-files checks for final validation. Review any hygiene changes before accepting them.
 - Record browser results against D03/D04 and follow-up F02 rather than treating a build or event harness as browser acceptance.
 - For URL/version changes, use a disposable local Mike main/release preview. Check direct entry and instant navigation, including targets inside details or tabs.
