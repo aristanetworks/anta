@@ -30,7 +30,6 @@ jobs:
     env:
       PYTHONHASHSEED: "0"
       PYTHONDONTWRITEBYTECODE: "1"
-      EVIDENCE_DIR: ${{ runner.temp }}/memory-repeatability
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -42,6 +41,8 @@ jobs:
           python-version: "3.12.15"
       - name: Install one environment for every repetition
         run: |
+          EVIDENCE_DIR="$RUNNER_TEMP/memory-repeatability"
+          echo "EVIDENCE_DIR=$EVIDENCE_DIR" >> "$GITHUB_ENV"
           mkdir -p "$EVIDENCE_DIR"
           python -m pip install "pip>=25.1"
           python -m pip install . --group dev --group benchmark --report "$EVIDENCE_DIR/install.json"
