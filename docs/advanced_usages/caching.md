@@ -13,9 +13,6 @@ tags:
   ~ that can be found in the LICENSE file.
   -->
 
-<!-- markdownlint-disable MD052 -->
-<!-- Python object references below are resolved by mkdocs-autorefs. -->
-
 ANTA is a streamlined Python framework designed for efficient interaction with network devices. This section outlines how ANTA incorporates caching mechanisms to collect command outputs from network devices.
 
 ## Configuration

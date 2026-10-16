@@ -14,9 +14,6 @@ tags:
   ~ that can be found in the LICENSE file.
   -->
 
-<!-- markdownlint-disable MD052 -->
-<!-- Python object references below are resolved by mkdocs-autorefs. -->
-
 !!! info
     This documentation applies for both creating tests in ANTA or creating your own test package.
 

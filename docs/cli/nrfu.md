@@ -14,9 +14,6 @@ tags:
   ~ that can be found in the LICENSE file.
   -->
 
-<!-- markdownlint-disable MD052 -->
-<!-- Python object references below are resolved by mkdocs-autorefs. -->
-
 ANTA provides a set of commands for performing NRFU tests on devices. These commands are under the `anta nrfu` namespace and offer multiple output format options:
 
 - [Text report](#performing-nrfu-with-text-rendering)

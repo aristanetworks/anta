@@ -14,9 +14,6 @@ tags:
   ~ that can be found in the LICENSE file.
   -->
 
-<!-- markdownlint-disable MD052 -->
-<!-- Python object references below are resolved by mkdocs-autorefs. -->
-
 The ANTA framework needs 2 important inputs from the user to run:
 
 1. A **device inventory**

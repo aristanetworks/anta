@@ -13,9 +13,6 @@ tags:
   ~ that can be found in the LICENSE file.
   -->
 
-<!-- markdownlint-disable MD052 -->
-<!-- Python object references below are resolved by mkdocs-autorefs. -->
-
 Regular ANTA reports present the test results produced by an NRFU run. Generate them with `anta nrfu`, or use the reporter classes directly when integrating ANTA into a Python application.
 
 ## Choose a report format
