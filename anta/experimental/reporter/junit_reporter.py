@@ -95,7 +95,7 @@ class JUnitReporter:
 
         Not handling the UNSET teststatus because this is not present in JUnit specification
 
-        TODO: Add duration, file and line.
+        TODO: Add file and line.
         For file and line we could consider augmenting TestResult to keep track of the class used for the test,
         instead of just the string of the name.
 
@@ -118,7 +118,10 @@ class JUnitReporter:
         description.set("name", "description")
         description.text = result.description
 
-        # TestResult is missing start and end times so for now duration is 0.0 for all tests...
+        # Per-test duration is intentionally not measured: command caching and reuse
+        # prevent meaningful attribution of collection time to individual tests, and
+        # timing the test function alone provides little useful information.
+        # Keep 0.0 as a JUnit compatibility placeholder, not a measured duration.
         duration = 0.0
         testcase.set("time", f"{duration:.3f}")
         testsuite.suite_time += duration

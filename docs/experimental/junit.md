@@ -72,7 +72,7 @@ Characters that XML 1.0 cannot represent are written as visible escape sequences
 - The duplicate-name hash uses result metadata rather than the original test inputs. Identical metadata can produce identical names, and changes to the surrounding results can change testcase names between runs.
 - An `UNSET` result is currently emitted without a failure, error or skipped element and excluded from the root test total. Consumers can display it as passing, and suite and root totals can disagree.
 - The CLI's `--hide` option removes matching results from the XML artifact.
-- Per-test timing is unavailable and reported as zero. Suite timestamps reflect report generation time.
+- Per-test durations are intentionally not measured: command caching and reuse prevent meaningful attribution of command collection time to individual tests, while timing the test function alone provides little useful information. Testcase, suite and report durations are reported as zero for JUnit compatibility; these are placeholders, not measured durations. Suite timestamps reflect report generation time.
 
 These limitations remain under review while the feature is experimental.
 
