@@ -109,6 +109,8 @@ def main() -> int:  # pylint: disable=too-many-locals
             selection = TARGET if variant == "isolated" else BENCHMARK
             pytest_command = shlex.join(
                 [
+                    sys.executable,
+                    "-m",
                     "pytest",
                     "--codspeed",
                     "--no-cov",
