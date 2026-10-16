@@ -23,8 +23,10 @@ from anta.tests.security import (
     VerifyBannerMotd,
     VerifyHardwareEntropy,
     VerifyIPSecConnHealth,
+    VerifyIPSecTunnelHealth,
     VerifyIPv4ACL,
     VerifySpecificIPSecConn,
+    VerifySpecificIPSecTunnel,
     VerifySSHFIPSRestrictions,
     VerifySSHIPv4Acl,
     VerifySSHIPv6Acl,
@@ -1208,6 +1210,227 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
+    (VerifyIPSecTunnelHealth, "success"): {
+        "eos_data": [
+            {
+                "connections": {
+                    "default-10.223.0.0-10.223.0.3": {
+                        "saddr": "10.223.0.0",
+                        "daddr": "10.223.0.3",
+                        "tunnelNs": "default",
+                        "tunnelDict": {"Tunnel223": "Established"},
+                    },
+                    "default-10.223.0.3-10.223.0.0": {
+                        "saddr": "10.223.0.3",
+                        "daddr": "10.223.0.0",
+                        "tunnelNs": "default",
+                        "tunnelDict": {"Tunnel223": "Established"},
+                    },
+                }
+            }
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyIPSecTunnelHealth, "failure-no-connection"): {
+        "eos_data": [{}],
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["No IPv4 security connection configured"]},
+    },
+    (VerifyIPSecTunnelHealth, "failure-missing-tunnel-dict"): {
+        "eos_data": [
+            {
+                "connections": {
+                    "default-10.223.0.0-10.223.0.3": {
+                        "saddr": "10.223.0.0",
+                        "daddr": "10.223.0.3",
+                        "tunnelNs": "default",
+                    }
+                }
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Source: 10.223.0.0 Destination: 10.223.0.3 VRF: default - No usable tunnel state in tunnelDict"],
+        },
+    },
+    (VerifyIPSecTunnelHealth, "failure-empty-tunnel-dict"): {
+        "eos_data": [{"connections": {"connection": {"tunnelDict": {}}}}],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Source: ? Destination: ? VRF: ? - No usable tunnel state in tunnelDict"],
+        },
+    },
+    (VerifyIPSecTunnelHealth, "failure-not-established"): {
+        "eos_data": [
+            {
+                "connections": {
+                    "default-10.223.0.0-10.223.0.3": {
+                        "saddr": "10.223.0.0",
+                        "daddr": "10.223.0.3",
+                        "tunnelNs": "default",
+                        "tunnelDict": {"Tunnel223": "Idle", "Tunnel224": "Established"},
+                    },
+                    "default-10.223.0.3-10.223.0.0": {
+                        "saddr": "10.223.0.3",
+                        "daddr": "10.223.0.0",
+                        "tunnelNs": "default",
+                        "tunnelDict": {"Tunnel223": "Down"},
+                    },
+                }
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Source: 10.223.0.0 Destination: 10.223.0.3 VRF: default Tunnel: Tunnel223 - Expected: Established Actual: Idle",
+                "Source: 10.223.0.3 Destination: 10.223.0.0 VRF: default Tunnel: Tunnel223 - Expected: Established Actual: Down",
+            ],
+        },
+    },
+    (VerifySpecificIPSecTunnel, "success"): {
+        "eos_data": [
+            {
+                "connections": {
+                    "default-10.223.0.3-10.223.0.0": {
+                        "saddr": "10.223.0.3",
+                        "daddr": "10.223.0.0",
+                        "tunnelNs": "default",
+                        "tunnelDict": {"Tunnel223": "Established"},
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "peer": "10.223.0.0",
+            "source_address": "10.223.0.3",
+            "destination_address": "10.223.0.0",
+            "tunnel": "Tunnel223",
+        },
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Peer: 10.223.0.0 VRF: default Source: 10.223.0.3 Destination: 10.223.0.0 Tunnel: Tunnel223",
+                    "result": AntaTestStatus.SUCCESS,
+                }
+            ],
+        },
+    },
+    (VerifySpecificIPSecTunnel, "failure-connection-not-found"): {
+        "eos_data": [{"connections": {}}],
+        "inputs": {
+            "peer": "10.223.0.0",
+            "source_address": "10.223.0.3",
+            "destination_address": "10.223.0.0",
+            "tunnel": "Tunnel223",
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Peer: 10.223.0.0 VRF: default Source: 10.223.0.3 Destination: 10.223.0.0 Tunnel: Tunnel223 - Connection not found"],
+            "atomic_results": [
+                {
+                    "description": "Peer: 10.223.0.0 VRF: default Source: 10.223.0.3 Destination: 10.223.0.0 Tunnel: Tunnel223",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Connection not found"],
+                }
+            ],
+        },
+    },
+    (VerifySpecificIPSecTunnel, "failure-tunnel-not-found"): {
+        "eos_data": [
+            {
+                "connections": {
+                    "default-10.223.0.3-10.223.0.0": {
+                        "saddr": "10.223.0.3",
+                        "daddr": "10.223.0.0",
+                        "tunnelNs": "default",
+                        "tunnelDict": {"Tunnel224": "Established"},
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "peer": "10.223.0.0",
+            "source_address": "10.223.0.3",
+            "destination_address": "10.223.0.0",
+            "tunnel": "Tunnel223",
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Peer: 10.223.0.0 VRF: default Source: 10.223.0.3 Destination: 10.223.0.0 Tunnel: Tunnel223 - Tunnel not configured"],
+            "atomic_results": [
+                {
+                    "description": "Peer: 10.223.0.0 VRF: default Source: 10.223.0.3 Destination: 10.223.0.0 Tunnel: Tunnel223",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Tunnel not configured"],
+                }
+            ],
+        },
+    },
+    (VerifySpecificIPSecTunnel, "failure-not-established"): {
+        "eos_data": [
+            {
+                "connections": {
+                    "default-10.223.0.3-10.223.0.0": {
+                        "saddr": "10.223.0.3",
+                        "daddr": "10.223.0.0",
+                        "tunnelNs": "default",
+                        "tunnelDict": {"Tunnel223": "Idle"},
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "peer": "10.223.0.0",
+            "source_address": "10.223.0.3",
+            "destination_address": "10.223.0.0",
+            "tunnel": "Tunnel223",
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Peer: 10.223.0.0 VRF: default Source: 10.223.0.3 Destination: 10.223.0.0 Tunnel: Tunnel223 - Tunnel down - Expected: Established Actual: Idle"
+            ],
+            "atomic_results": [
+                {
+                    "description": "Peer: 10.223.0.0 VRF: default Source: 10.223.0.3 Destination: 10.223.0.0 Tunnel: Tunnel223",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Tunnel down - Expected: Established Actual: Idle"],
+                }
+            ],
+        },
+    },
+    (VerifySpecificIPSecTunnel, "failure-vrf-or-address-mismatch"): {
+        "eos_data": [
+            {
+                "connections": {
+                    "guest-10.223.0.3-10.223.0.0": {
+                        "saddr": "10.223.0.3",
+                        "daddr": "10.223.0.0",
+                        "tunnelNs": "Guest",
+                        "tunnelDict": {"Tunnel223": "Established"},
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "peer": "10.223.0.0",
+            "vrf": "default",
+            "source_address": "10.223.0.3",
+            "destination_address": "10.223.0.0",
+            "tunnel": "Tunnel223",
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Peer: 10.223.0.0 VRF: default Source: 10.223.0.3 Destination: 10.223.0.0 Tunnel: Tunnel223 - Connection not found"],
+            "atomic_results": [
+                {
+                    "description": "Peer: 10.223.0.0 VRF: default Source: 10.223.0.3 Destination: 10.223.0.0 Tunnel: Tunnel223",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Connection not found"],
+                }
+            ],
+        },
+    },
     (VerifySSHFIPSRestrictions, "success"): {
         "eos_data": ["SSHD status for Default VRF is enabled\nSSH connection limit is 50\nSSH per host connection limit is 20\nFIPS status: enabled\n\n"],
         "expected": {"result": AntaTestStatus.SUCCESS},
@@ -1303,3 +1526,54 @@ class TestAPISSLCertificate:
     def test_valid(self, model_params: dict[str, Any]) -> None:
         """Test valid inputs for anta.tests.security.VerifyAPISSLCertificate.Input.APISSLCertificate."""
         VerifyAPISSLCertificate.Input.APISSLCertificate.model_validate(model_params)
+
+
+class TestVerifySpecificIPSecTunnel:
+    """Test input validation for ``VerifySpecificIPSecTunnel``."""
+
+    @pytest.mark.parametrize(
+        "model_params",
+        [
+            pytest.param(
+                {
+                    "peer": "2001:db8::1",
+                    "source_address": "10.223.0.3",
+                    "destination_address": "10.223.0.0",
+                    "tunnel": "Tunnel223",
+                },
+                id="ipv6-peer",
+            ),
+            pytest.param(
+                {
+                    "peer": "10.223.0.0",
+                    "source_address": "2001:db8::1",
+                    "destination_address": "10.223.0.0",
+                    "tunnel": "Tunnel223",
+                },
+                id="ipv6-source-address",
+            ),
+            pytest.param(
+                {
+                    "peer": "10.223.0.0",
+                    "source_address": "10.223.0.3",
+                    "destination_address": "10.223.0.0",
+                },
+                id="missing-tunnel",
+            ),
+        ],
+    )
+    def test_invalid(self, model_params: dict[str, Any]) -> None:
+        """Reject non-IPv4 addresses and missing mandatory tunnel names."""
+        with pytest.raises(ValidationError):
+            VerifySpecificIPSecTunnel.Input.model_validate(model_params)
+
+    def test_valid(self) -> None:
+        """Accept a complete IPv4 tunnel input."""
+        VerifySpecificIPSecTunnel.Input.model_validate(
+            {
+                "peer": "10.223.0.0",
+                "source_address": "10.223.0.3",
+                "destination_address": "10.223.0.0",
+                "tunnel": "Tunnel223",
+            }
+        )
