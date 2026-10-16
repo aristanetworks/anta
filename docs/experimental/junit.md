@@ -63,12 +63,15 @@ JUnitReporter.generate(results=results, output_path=Path("reports/anta-junit.xml
 
 Python imports and direct reporter calls do not print the CLI warning.
 
+## XML text handling
+
+Characters that XML 1.0 cannot represent are written as visible escape sequences, such as `\x00` for a null character and `\ud800` for an unpaired surrogate. This applies to result text, device and testcase names, descriptions, and catalog filenames. Valid Unicode characters are preserved, and XML markup characters are escaped by the XML serializer. The original results are unchanged.
+
 ## Current limitations
 
 - The duplicate-name hash uses result metadata rather than the original test inputs. Identical metadata can produce identical names, and changes to the surrounding results can change testcase names between runs.
 - An `UNSET` result is currently emitted without a failure, error or skipped element and excluded from the root test total. Consumers can display it as passing, and suite and root totals can disagree.
 - The CLI's `--hide` option removes matching results from the XML artifact.
-- XML-invalid control characters in result strings can produce an unreadable artifact.
 - Per-test timing is unavailable and reported as zero. Suite timestamps reflect report generation time.
 
 These limitations remain under review while the feature is experimental.
