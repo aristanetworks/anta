@@ -45,6 +45,10 @@ nav = [
     { Overview = "reports/index.md" },
     { "ANTA Test Reports" = "reports/anta.md" },
   ] },
+  { Experimental = [
+    { Overview = "experimental/index.md" },
+    { "JUnit Reporting" = "experimental/junit.md" },
+  ] },
   { "Tests Documentation" = [
     { Overview = "api/tests.md" },
     { AAA = "api/tests/aaa.md" },

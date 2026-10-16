@@ -22,8 +22,12 @@ ANTA provides a set of commands for performing NRFU tests on devices. These comm
 - [Custom template report](#performing-nrfu-with-custom-reports)
 - [CSV report](#performing-nrfu-and-saving-results-in-a-csv-file)
 - [Markdown report](#performing-nrfu-and-saving-results-in-a-markdown-file)
+- [JUnit report (experimental)](../experimental/junit.md)
 
 See [ANTA Test Reports](../reports/anta.md) for help choosing a format and for the corresponding Python reporter APIs.
+
+!!! warning "Experimental JUnit reporting"
+    `anta nrfu junit` is experimental and prints a warning when executed. Read the [JUnit reporting documentation and known limitations](../experimental/junit.md) before evaluating its XML output in CI.
 
 ## NRFU Command overview
 
