@@ -6,15 +6,16 @@
 
 # Zensical Documentation Plan
 
-**Baseline:** `upstream/main` at `11d925e4`, Zensical `0.0.68`
-**PR:** [#1809](https://github.com/aristanetworks/anta/pull/1809), `docs/zensical-improvements`
-**Updated:** October 15, 2026
+**Source baseline:** `upstream/main` at `855d66c1` (merged #1809)
+**Documentation tooling:** Zensical `0.0.69` in [#1828](https://github.com/aristanetworks/anta/pull/1828)
+**Migration PR:** [#1809](https://github.com/aristanetworks/anta/pull/1809) (merged); follow-up outcomes are tracked below.
+**Updated:** October 16, 2026
 
-The MkDocs Material migration is complete. PR #1809 is rebased onto `main` and retains ANTA's lightbox layout and zoom behavior, fixes cumulative slow-drag detection, and documents redirects and API object links. This plan separates settled decisions from optional follow-ups. Feature experiments remain evidence for later work, not enabled configuration.
+The MkDocs Material migration is complete. Merged PR #1809 retains ANTA's lightbox layout and zoom behavior, fixes cumulative slow-drag detection, and documents redirects and API object links. This plan records current decisions, why they were made, when to revisit them, and proposed follow-up PRs. Feature experiments remain evidence for later work, not enabled configuration.
 
 ## Current baseline
 
-- `pyproject.toml` and both Pylint/Pyright pre-commit environments pin `zensical==0.0.68`.
+- `pyproject.toml` and both Pylint/Pyright pre-commit environments pin `zensical==0.0.69`.
 - Zensical uses `zensical.toml`, native search, instant navigation, linked content tabs, code copying, `mkdocstrings`, GLightbox, and custom Mermaid zoom.
 - Documentation tooling requires Python >=3.11, independently of ANTA's library support. The `doc` dependency group declares that minimum for uv resolution; the contributor guide documents it. Docs CI uses Python 3.11 and deployment selects Python 3.x.
 - The local extension is installed with `-e tools/zensical_extensions`. MkDocs and autorefs remain dependencies of `mkdocstrings`; site commands use Zensical.
@@ -22,38 +23,72 @@ The MkDocs Material migration is complete. PR #1809 is rebased onto `main` and r
 
 [Zensical 0.0.68](https://github.com/zensical/zensical/releases/tag/v0.0.68) includes native audio/video support, closer macros compatibility, and UI 0.0.35 search-result instant navigation and accessibility fixes. It requires Python >=3.11. Features inherited from earlier releases include redirects, snippet-dependent rebuilds, blog/RSS, API generators, social cards, Markdown exports, and asset exclusions. Availability does not imply adoption.
 
-## Decisions
+[Zensical 0.0.69](https://github.com/zensical/zensical/releases/tag/v0.0.69) adds `nav-weight` and `markdownextradata` compatibility, improves symlink watching, fixes Unicode minification crashes, and preserves emojis in Markdown exports. UI 0.0.36 includes navigation spacing and instant-navigation fixes. This upgrade aligns the three pins without enabling additional features; the Markdown export blockers (D05) and browser qualification work (F02/F05) remain separate.
 
-1. **Keep API backlinks disabled.** The preview's repeated “Referenced by” blocks cluttered long API pages. Keep forward guide-to-object links through autorefs instead. The Python-library guide now uses object references for Device, Inventory, Command, Test, and TestStatus links.
-2. **Preserve published links when content moves.** Follow `docs/contribution.md` for docs-relative page/fragment redirects and update repository links. Add mappings only for actual moves. Check old URLs within the selected documentation version; historical builds acquire new mappings only when rebuilt.
-3. **Retain the lightbox layout, image fitting, and two-times zoom.** The native-only experiment made images too small and lost useful zoom. Keep the custom fallback for images without GLightbox's `zoomable` class and the cumulative slow-drag fix. Browser QA remains open; a Node handler harness does not establish smoothness or touch quality.
-4. **Retain custom Mermaid zoom.** Upstream label-color fixes do not replace ANTA's fullscreen/zoom interaction. Preserve diagram links and palette behavior. Initialize zoom controls when Zensical inserts the asynchronously rendered diagram, including after instant navigation; do not attach them to the temporary source element.
-5. **Keep Markdown export and Copy as Markdown disabled pending link fixes.** Earlier experiments lost API autorefs links and produced links to unselected Markdown files. A passing strict build does not establish usable exports. Do not replace authored autorefs with hard-coded paths to conceal exporter defects.
-6. **Keep curated API navigation and standard admonitions.** API generation is a coverage-audit candidate, not a replacement for curated test/input pages. Consider GitHub alerts (`gh-admonitions`) or Obsidian callouts (`callouts`) only for a concrete shared-source need.
-7. **Retain the Git date extension and Mike deployment helpers.** Replacements must preserve rename-aware dates, ignored metadata/license-only edits, version order, stable aliases, same-base prerelease cleanup, and historical final builds. Recheck [Git metadata backlog #18](https://github.com/zensical/backlog/issues/18) at upgrades.
-8. **Keep feature adoption separate from version updates.** This PR uses 0.0.68 supplied by `main`. Social cards, exports, API generators, instant previews, exclusions, blog/RSS, table reader, and media remain optional. Update all three version pins together in any future upgrade and qualify documentation tooling separately from library Python support.
+## Decision register
 
-## Actions to consider
+This register is the durable record of migration choices, including features deliberately left disabled. **Adopted** means an agreed convention is in effect; **retained** means the current implementation remains the default; **deferred** means no adoption is planned until the revisit condition is met; **blocked** means a demonstrated problem prevents adoption. None of these statuses means a feature is rejected forever.
 
-The original discussion item numbers are retained for traceability. Only the browser acceptance check is outstanding for this PR; other actions are follow-up candidates.
+The entries below record migration decisions and follow-up outcomes as of October 16, 2026. Their IDs remain stable across follow-up PRs. Each entry records the reason and the evidence needed to reconsider it, so a dependency update alone does not silently reverse a choice.
 
-| Item | Priority and action | Evidence required before completion or adoption |
+| ID | Decision and status | Reason / evidence | Revisit when |
+| --- | --- | --- | --- |
+| D01 | **Deferred:** API backlinks remain disabled for now. Keep forward links through autorefs; F01 extends this convention to the remaining authored object links. | PR #1809 preview showed repeated “Referenced by” blocks cluttering long API pages; maintainer feedback favored removing them. | Upstream offers selective/collapsed backlinks, or readers identify a concrete reverse-navigation need. Compare a small preview against the current API pages and obtain maintainer feedback before enabling them. |
+| D02 | **Adopted:** preserve published page and heading URLs with native redirects when content moves. | Contributor guidance in PR #1809 protects external links/bookmarks without placeholder redirect maps. Historical builds change only when rebuilt. | A real page/heading move requires a mapping, or versioned preview exposes incorrect fragment handling. Verify direct entry and instant navigation within the selected version. |
+| D03 | **Retained:** custom lightbox layout, aspect-preserving fit, and two-times zoom. | The native-only experiment made images too small and lost useful zoom. Native GLightbox and the ANTA fallback cover different images. Slow-drag logic was fixed in PR #1809; full browser coverage is not claimed. | Native behavior demonstrably covers tall SVG/raster fitting, zoom, pan, touch, palettes, and navigation. Reduce CSS/helper code only after a side-by-side browser comparison. |
+| D04 | **Retained:** custom Mermaid fullscreen/zoom and asynchronous initialization. | Upstream label-color fixes do not replace these interactions. The reported missing Zoom button after instant navigation required observing the rendered element instead of the temporary source block. | A native replacement covers fullscreen, scale controls, panning, links, keyboard/focus, palettes, and instant navigation, with regression evidence. |
+| D05 | **Blocked:** rendered Markdown exports and Copy as Markdown remain disabled. | The 0.0.67 experiments lost API autorefs links and created missing Markdown destinations; cleanup also affected images. Measurements and reproduction details are preserved below. | A runtime retest on the target version preserves object links and complete destinations. Decide image/source-listing policy and verify clipboard contents under real Mike prefixes before adoption. Do not hard-code authored API links to conceal exporter defects. |
+| D06 | **Retained:** curated API pages/navigation; F01 changes object references while preserving overview-page links. | ANTA's test/input pages include pairing, examples, filters, compatibility notes, and custom templates. Wholesale generation could lose content or duplicate objects. | A small coverage audit with one generator finds missing public objects or demonstrably removes boilerplate while preserving URLs, navigation, object targets, and curated content. |
+| D07 | **Retained:** standard Python-Markdown admonitions. GitHub alerts (`gh-admonitions`) and Obsidian callouts (`callouts`) remain deferred. | No identified shared-source need justifies another authoring convention. | Actual Markdown needs to render in GitHub or Obsidian as well as the site. Compare both renderers and document the resulting convention. |
+| D08 | **Retained:** local Git date extension. | The footer must follow renames and ignore metadata/license-only edits. Its display string is not RSS timestamp metadata. Native support is tracked in [backlog #18](https://github.com/zensical/backlog/issues/18). | Native support can satisfy those date semantics. Check at Zensical upgrades and compare representative pages before replacing the extension. |
+| D09 | **Retained:** compatible Mike fork and deployment/normalization helpers. | They preserve version order, stable aliases, same-base prerelease cleanup, and historical final builds. A strict site build does not test deployment behavior. | Native/upstream alternatives satisfy these contracts in a disposable-origin integration test, including identical redeploys. Never use the production publishing wrapper for a preview. |
+| D10 | **Adopted:** documentation tooling and library Python support are independent; dependency updates do not enable features automatically. | Zensical 0.0.69 requires Python >=3.11. The root doc group and both hook environments share its pin. | Every documentation-tooling upgrade: align all three pins and check group/interpreter constraints, builds, inventories, and browser behavior without silently changing library support. |
+| D11 | **Deferred:** social cards. | Native support is available, but branding, fonts/assets, caching, versioned URLs, and build cost need evaluation. | A small branded preview demonstrates useful shared-link presentation at acceptable cost. |
+| D12 | **Deferred:** instant link previews. | They may help long API pages but can add clutter and interfere with overlays. | A representative guide/API pilot improves navigation and works with keyboard, touch, palettes, and overlays. |
+| D13 | **Deferred:** build-only asset exclusions. | A temporary narrow pilot worked, but exclusions can filter source documents and effective resources, including theme assets. | An output inventory identifies unnecessary public copies and a narrow comparison proves source reads, raw snippets, downloads, images, templates, and site assets survive. |
+| D14 | **Deferred:** blog and RSS. | There is no publication owner or agreed feed date/version policy. | A named owner commits to maintained articles and defines dates, versioned URLs, and duplicate-entry policy. |
+| D15 | **Deferred:** table reader. | Moving manually maintained rows into another file alone does not remove drift. | An authoritative structured dataset can generate a reference table with preserved links and a single maintenance source. |
+| D16 | **Deferred:** audio/video. | Available support alone does not establish a learning need; media adds accessibility and asset costs. | A concrete explanation benefits from media with accessible text/captions, versioned playback, and acceptable page/build cost. |
+
+### Updating a decision
+
+Every follow-up PR updates this file alongside its implementation or investigation:
+
+1. Reference the affected decision IDs and follow-up ID in the PR description.
+2. Record the tested Zensical version, evidence, limitations, and outcome here; a successful build is not browser or deployment acceptance.
+3. For a changed decision, retain its ID and earlier reason in a dated entry in the history below, then update the current status/revisit condition. A closed pilot can leave a feature deferred or blocked.
+4. Replace the proposed follow-up's status with its actual PR link and outcome. Do not delete completed or declined proposals; keep enough history to explain why.
+
+### Decision history
+
+| Recorded | Decisions | Outcome and evidence |
 | --- | --- | --- |
-| 3 — Lightbox QA | **Before merge:** test the retained lightbox and drag fix on CLI screenshot pages and `api/class-diagram.md`. | Check SVG/raster images and both native `zoomable` and fallback `anta-zoomable` paths: uncropped fit, click zoom, slow/fast and repeated pans, release without zoom-out, deliberate subsequent click, cancellation, close/reopen, and slide changes. Test both palettes, instant navigation, a version prefix, and touch. Check Mermaid zoom/links too. Change behavior only for a reproduced defect. |
-| 4 — Upgrade qualification | **Next audit:** qualify the inherited 0.0.68 UI and tooling changes; consider a later version only for a demonstrated benefit. | Check search-result navigation, `/` search, keyboard skip links/labels, Git dates, object inventory, and local versioned output. Keep hook interpreters compatible with documentation dependencies. Preserve independent library/test support. Do not assume newer releases fix export links. |
-| 8 — Snippet rebuilds | **Audit:** edit representative included sources during `zensical serve`. | Root README, one CLI snippet, an included example, and `api/class-diagram.mmd` update their dependent pages without a restart or edits to the including page. Restore trial edits; add watch paths only for observed gaps. |
-| 9 — Search | **Audit:** try “BGP peer health”, “inventory from Ansible”, and “JSON report”. | Record result quality and destinations; improve accurate headings, descriptions, or tags only where results are weak. |
-| 11 — Sitemap/canonicals | **Audit:** inspect generated sitemap entries and canonicals for pages present only on `main`. | Every indexed page is intentional; canonical destinations exist or an explicit policy handles missing stable counterparts. Preserve historical releases. |
-| 17 — Existing helpers | **At upgrades:** recheck native Git metadata and versioning support. | Match existing date/version contracts before replacing helpers. Deployment changes require `tests/docs/test_manage_doc_versions.py` and a disposable-origin wrapper check, including repeated deploys. |
-| 5 — Markdown exports | **Blocked pilot:** reproduce the earlier export link gaps on 0.0.68 before adoption. | Preserve API object links and all local Markdown destinations. Omit source listings narrowly while retaining examples, signatures, tables, catalog YAML, and Expected Results. Decide image policy; test actual clipboard content, instant navigation, and Mike version prefixes. Enable `llmstxt` and `content.action.copy` together only after these checks. |
-| 6 — Social cards | **Pilot:** trial native `social` on Getting Started, inventory/catalog, and advisory usage. | Inspect branded images and metadata, main/release asset URLs, fonts, fresh/cached builds, and build cost. Adopt only if shared-link previews improve. |
-| 7 — API generation | **Pilot:** use one of `mkdocs-autoapi` or `api-autonav` to audit a small public package. | Identify coverage gaps; exclude private modules and duplicate objects. Preserve curated test/input content, URLs, navigation order, and object destinations. |
-| 10 — Instant previews | **Pilot:** trial `navigation.instant.preview` on representative guide/API links. | Useful context without clutter; working keyboard/touch access, both palettes, and no conflict with GLightbox/Mermaid overlays. |
-| 12 — Asset exclusions | **Pilot:** inventory output and trial narrow `exclude` patterns for build-only scripts/templates. | Compare clean/cached output. Preserve source reads, intended pages, raw snippet TXT, downloads, images, theme assets, and site scripts. Avoid broad wildcards. |
-| 13 — Blog/RSS | **Conditional:** revisit when an owner commits to maintained articles. | Define feed dates, versioned URLs, and duplicate-entry policy. The Git footer display string is not feed timestamp metadata. |
-| 14 — Table reader | **Conditional:** revisit for an authoritative structured reference dataset. | Remove duplicate maintenance while preserving readable tables and links. Moving manual rows into another file alone is insufficient. |
-| 15 — Alternative callouts | **Conditional:** revisit for Markdown shared with GitHub or Obsidian. | Demonstrate correct rendering in both destinations and document when each syntax is appropriate. |
-| 16 — Audio/video | **Conditional:** use the available native support for a specific learning need. | Provide accessible text/captions, working versioned playback/assets, and acceptable page/build cost. Terminal screenshots alone do not establish a need for video. |
+| 2026-10-16 | D10 — F04 ([#1828](https://github.com/aristanetworks/anta/pull/1828)) | Live trials showed root README and external example edits did not rebuild their dependent pages within 20 seconds. Explicit watch paths for `README.md` and `examples` fix both. Five edit/restore probes passed on Zensical 0.0.69 using served HTML; external changes take about 10 seconds and in-docs changes about 0.5 seconds. No trial content remains. |
+| 2026-10-16 | D10 — Zensical 0.0.69 ([#1828](https://github.com/aristanetworks/anta/pull/1828)) | Rebased onto current `upstream/main` (`855d66c1`; already up to date) and aligned the root doc group and both hook pins at 0.0.69. The executable and package metadata confirm 0.0.69 / Python >=3.11. A clean strict build and rendered object-link/inventory audits passed; no backlink blocks were generated. This does not establish browser, touch, export, or deployment acceptance; D05 and F02/F05 remain open. |
+| 2026-10-16 | D01/D06 — F01 ([#1828](https://github.com/aristanetworks/anta/pull/1828)) | Replaced 47 authored API object links with autorefs, retaining two overview-page links. A clean strict Zensical 0.0.68 build, rendered page/fragment destination audit, and changed-file/final all-files pre-commit checks passed. Backlinks remain deferred and API generation remains a separate audit. |
+| 2026-10-15 | D01–D16 | Consolidated the choices and earlier experiments from PR #1809 into this register. In particular, backlinks remain deferred because of preview clutter; this is a current choice that can be revisited, not a permanent rejection. |
+
+## Follow-up PR plan
+
+The table tracks proposed scopes and completed outcomes; it is not a commitment to enable every feature. Finish PR #1809's remaining browser confirmation before treating its interaction fixes as fully qualified. PR #1809 has merged; remaining audits and pilots can proceed according to their stated dependencies, without stacking unrelated changes into the same PR.
+
+| ID / proposed PR | Status and dependencies | Scope | Completion criteria / decision updates |
+| --- | --- | --- | --- |
+| F01 — Finish API object references | **Implemented in [#1828](https://github.com/aristanetworks/anta/pull/1828) (open).** Based on merged #1809. | Converted 46 of the 48 hard-coded API links across `custom-tests.md`, `caching.md`, `usage-inventory-catalog.md`, `reports/anta.md`, and `cli/nrfu.md`, plus one object link in the shared test-overview snippet (47 total). The inventory and test overview links remain normal page links. Reporter implementation links now target their public classes; the custom-types link targets its module. Known autorefs labels are registered centrally under MD052 instead of disabling the rule per file; strict builds validate their targets. | Clean strict builds passed on Zensical 0.0.68 and 0.0.69; the latter audit verified all 48 rendered occurrences of the 47 source links and all 18 object IDs in `objects.inv`. Rendered object destinations resolve to existing pages/fragments, including the dedicated full `AntaTest` API page rather than partial inline documentation. D01/D06 are retained: backlinks remain deferred and curated API pages remain in place. This improves link consistency and resilience; it does not qualify browser interactions or versioned deployment. |
+| F02 — Browser regression coverage for diagrams and images | **Proposed; high priority.** After #1809; independent of F01. | Add a small repeatable browser suite for class-diagram instant navigation and lightbox gestures, using a documented browser-test command and fixtures. Preserve a short manual touch checklist for device behavior automation cannot establish. | Reproduce the former missing Zoom button and slow-drag zoom-out defects against the prior helpers; pass with fixes. Cover delayed rendering, navigation away/back, zoom/pan/close, keyboard/focus, SVG/raster paths, and both palettes. Record browser/version and actual touch/emulation coverage. Update D03/D04 and distinguish automated evidence from perceived smoothness. |
+| F04 — Live snippet rebuild qualification | **Implemented in [#1828](https://github.com/aristanetworks/anta/pull/1828) (open).** | Reproduced missing rebuilds for root `README.md` and `examples/anta_runner.py`; added `README.md` and `examples` to `project.watch`. Existing in-docs snippet and Mermaid watching needed no changes. | All five source trials pass on Zensical 0.0.69: served HTML reflects edits and restores without restarting or touching the including page. External sources rebuilt in about 10 seconds; in-docs sources in about 0.5 seconds. Every trial source was restored byte-for-byte. Updates D10; HTTP output checks do not establish browser interaction coverage. |
+| F05 — Search and accessibility qualification | **Proposed audit.** After #1809. | Check BGP peer health, inventory from Ansible, and JSON report queries; qualify inherited search-result instant navigation, `/` search, skip links, and overlay labels. | Record query/destination and keyboard results. Improve accurate headings, descriptions, tags, or demonstrated UI defects only. Update D10 with browser evidence rather than enabling another search feature. |
+| F06 — Markdown export blocker investigation | **Blocked adoption; investigation can run independently.** After #1809. | Retest lost autorefs, unselected Markdown targets, cleanup/images, and source-wrapper behavior on the target pin. Prepare minimal upstream reproductions where defects remain. | Record reproductions and tested version under D05. If still broken, close the investigation with adoption blocked. If fixed, propose a separate enablement PR with destination/content audits and real versioned clipboard checks; do not mix exporter workarounds into F01. |
+| F07 — Narrow asset exclusions | **Optional pilot.** Establish public asset contracts as part of the pilot. | Inventory output and trial exclusions for unnecessary script/template source copies. | Compare clean/cached output; preserve custom rendering, source reads, intended pages, raw snippet TXT, downloads, images, and site/theme assets under version prefixes. Update D13 whether adopted or declined. |
+| F08 — API coverage audit with one generator | **Optional audit.** Prefer after F01 establishes consistent object links. | Trial either `mkdocs-autoapi` or `api-autonav` for a small public package in isolated output. | Identify missing public coverage without exposing private objects or duplicating destinations. Preserve curated test/input content, URLs, and navigation. Update D06; wholesale generation is not the default outcome. |
+| F09 — Social-card pilot | **Optional pilot.** Independent; use a disposable versioned preview. | Trial native `social` on Getting Started, inventory/catalog, and advisory usage. | Inspect actual branded images and metadata, main/release URLs, fonts, fresh/cached builds, and cost. Record adoption or deferral under D11. |
+| F10 — Instant-preview pilot | **Optional pilot.** Prefer after F02 provides overlay regression coverage. | Trial `navigation.instant.preview` on representative guide/API links. | Assess useful context, clutter, keyboard/touch behavior, palettes, and overlay conflicts. Update D12 whether kept or declined. |
+
+### Conditional follow-ups
+
+- **Backlinks (D01):** open a focused pilot only when its revisit condition is met. Do not bundle them into F01, F08, or a dependency upgrade.
+- **Git dates / deployment (D08/D09):** recheck native support during upgrades; open a replacement PR only after contract parity is demonstrated.
+- **Shared callouts, blog/RSS, table reader, and media (D07/D14–D16):** keep these in the register until their authoring, ownership, dataset, or learning-use condition exists. An available plugin is not sufficient justification for an implementation PR.
 
 ## Earlier experiments to preserve
 
@@ -75,6 +110,18 @@ GLightbox's native loader fetches JavaScript and CSS from `https://unpkg.com/gli
 
 ### Recorded results
 
+- F04 in [#1828](https://github.com/aristanetworks/anta/pull/1828): ran `zensical serve --dev-addr=127.0.0.1:8128` on 0.0.69 and inserted unique temporary markers into the sources below. Polled served HTML for marker appearance and disappearance after restoring each original file; did not restart or touch including pages between edits. The root README and external Python example failed before the explicit watch paths were added. The final run allowed up to 90 seconds per rebuild, and all five trials passed. Explicit external watch paths trigger broader rebuilds than in-docs snippet dependencies; the first shorter run saw transient HTTP 404 responses during rebuilding. These timings describe this local run, not a performance guarantee.
+
+  | Included source | Dependent page(s) checked | Edit / restore observed |
+  | --- | --- | --- |
+  | Root `README.md` | Home | 9.94 s / 9.65 s |
+  | `docs/snippets/anta_nrfu_help.txt` | NRFU and Getting Started | 0.51 s / 0.51 s |
+  | `docs/snippets/getting-started/inventory.yml` | Getting Started | 0.51 s / 0.51 s |
+  | `docs/api/class-diagram.mmd` | Class Diagram, both hidden source and Mermaid block | 0.51 s / 0.51 s |
+  | `examples/anta_runner.py` | Getting Started | 9.43 s / 9.41 s |
+
+- F01 in [#1828](https://github.com/aristanetworks/anta/pull/1828): Zensical 0.0.69 clean strict build passed. All 47 source references (48 rendered occurrences because the snippet appears twice) resolve to existing HTML pages/fragments; all 18 unique object IDs appear in the 891-entry Sphinx v2 inventory. The complete `AntaTest.render` signature remains linked, full model links reach the dedicated API page, and no backlink blocks were generated.
+
 - The maintainer [reported successful local browser testing](https://github.com/aristanetworks/anta/pull/1809#discussion_r4276426545), and CodeRabbit resolved the manual-validation thread. That report does not enumerate browsers, touch devices, palettes, or version prefixes; do not infer complete coverage of those scenarios.
 - A subsequent maintainer check found the class-diagram Zoom button missing after instant navigation but present after refresh. The helper now observes insertion of the rendered diagram instead of relying only on its initial timed checks.
 - A temporary DOM/MutationObserver regression harness reproduced missing controls with the old helper when rendering completed after the initial 100 ms. The revised helper passed delayed rendering, temporary source replacement, repeated navigation/initialization, and unrelated DOM updates without duplicate controls or listeners. This is automated DOM coverage, not browser acceptance of the fix.
@@ -90,8 +137,8 @@ uv run --group doc --with-editable tools/zensical_extensions zensical build --cl
 uv run --group doc --with-editable tools/zensical_extensions zensical serve --dev-addr=127.0.0.1:8000
 ```
 
-- Verify the executable reports 0.0.68. Check rendered guide-to-API destinations, the Git date footer, `objects.inv`, and absence of backlink blocks.
+- Verify the executable reports 0.0.69. Check rendered guide-to-API destinations, the Git date footer, `objects.inv`, and absence of backlink blocks.
 - Run changed-file pre-commit checks first and all-files checks for final validation. Review any hygiene changes before accepting them.
-- Record browser results against item 3 rather than treating a build or event harness as browser acceptance.
+- Record browser results against D03/D04 and follow-up F02 rather than treating a build or event harness as browser acceptance.
 - For URL/version changes, use a disposable local Mike main/release preview. Check direct entry and instant navigation, including targets inside details or tabs.
 - Run deployment wrapper experiments only in a disposable repository with a local bare origin. The real wrapper publishes to `origin/gh-pages`; it is not a local preview command.

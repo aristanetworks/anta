@@ -21,7 +21,8 @@ extra_javascript = [
   "stylesheets/mermaid-zoom.js",
   "stylesheets/glightbox-zoom.js",
 ]
-watch = ["anta", "tools/zensical_extensions"]
+# Included snippets outside docs_dir need explicit watch paths.
+watch = ["README.md", "anta", "examples", "tools/zensical_extensions"]
 
 # Navigation
 nav = [

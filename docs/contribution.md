@@ -425,7 +425,7 @@ Create an [AntaInventory][anta.inventory.AntaInventory] and add an
 
 `autorefs` resolves these identifiers to their documented locations without hard-coding the API page path or heading anchor. Keep ordinary Markdown links for guides and other authored pages.
 
-After adding or changing an object reference, run `zensical build --strict` and check that the link opens the intended object in the rendered site.
+Register new object identifiers under `MD052.ignored_labels` in `.github/.markdownlint-cli2.yaml` (lowercase with underscores removed, as reported by MD052). This central list allows autorefs syntax while keeping MD052 enabled for ordinary reference links; it does not validate Python objects. After adding or changing an object reference, run `zensical build --strict` and check that the link opens the intended object in the rendered site.
 
 ### Generated CLI snippets
 
