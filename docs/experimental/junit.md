@@ -67,10 +67,13 @@ Python imports and direct reporter calls do not print the CLI warning.
 
 Characters that XML 1.0 cannot represent are written as visible escape sequences, such as `\x00` for a null character and `\ud800` for an unpaired surrogate. This applies to result text, device and testcase names, descriptions, and catalog filenames. Valid Unicode characters are preserved, and XML markup characters are escaped by the XML serializer. The original results are unchanged.
 
+## Unfinished results
+
+JUnit has no separate `UNSET` outcome. The reporter emits an ANTA `UNSET` result as an `<error type="UnsetResult">` with the message "ANTA result is UNSET: no final status was recorded", preserving any result messages as error details. It counts toward both the test and error totals at suite and report level. This avoids presenting an unfinished result as passing or implying that it was deliberately skipped. The original ANTA status and the usual CLI exit-code behavior are unchanged.
+
 ## Current limitations
 
 - The duplicate-name hash uses result metadata rather than the original test inputs. Identical metadata can produce identical names, and changes to the surrounding results can change testcase names between runs.
-- An `UNSET` result is currently emitted without a failure, error or skipped element and excluded from the root test total. Consumers can display it as passing, and suite and root totals can disagree.
 - The CLI's `--hide` option removes matching results from the XML artifact.
 - Per-test durations are intentionally not measured: command caching and reuse prevent meaningful attribution of command collection time to individual tests, while timing the test function alone provides little useful information. Testcase, suite and report durations are reported as zero for JUnit compatibility; these are placeholders, not measured durations. Suite timestamps reflect report generation time.
 
