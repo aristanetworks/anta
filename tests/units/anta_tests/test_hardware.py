@@ -10,6 +10,9 @@ from __future__ import annotations
 import sys
 from typing import TYPE_CHECKING, Any
 
+import pytest
+from pydantic import ValidationError
+
 from anta.models import AntaTest
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.hardware import (
@@ -31,7 +34,7 @@ from anta.tests.hardware import (
 from tests.units.anta_tests import test
 
 if TYPE_CHECKING:
-    from tests.units.anta_tests import AntaUnitTestData
+    from tests.units.anta_tests import AntaUnitTest, AntaUnitTestData, UnitTestResult
 
 DATA: AntaUnitTestData = {
     (VerifyTransceiversManufacturers, "success"): {
@@ -4694,3 +4697,149 @@ DATA: AntaUnitTestData = {
         },
     },
 }
+
+
+# Relevant fields copied unchanged from Carl's issue #1493 comment:
+# https://github.com/aristanetworks/anta/issues/1493#issuecomment-6298735455
+# A/B-only: second output, slots 11/12. Single-input: fourth output, slots 2/1.
+_POWER_FEED_A = {"modelName": "PWR-D1-3041-AC-BLUE", "state": "ok", "inputVoltage": 244.25, "inputBVoltage": 0.0}
+_POWER_FEED_B = {"modelName": "PWR-D1-3041-AC-BLUE", "state": "ok", "inputVoltage": 0.0, "inputBVoltage": 244.25}
+_POWER_SINGLE = {"modelName": "PWR-1511-AC-RED", "state": "ok", "inputVoltage": 246.0}
+_POWER_LOSS = {"modelName": "PWR-1511-AC-RED", "state": "powerLoss", "inputVoltage": 0.0}
+
+
+def _power_voltage_case(supply: dict[str, Any], feeds: str | None, minimum: int | None, messages: list[str], *, min_count: bool) -> AntaUnitTest:
+    """Exercise the same supply in both the atomic and minimum-count paths."""
+    inputs: dict[str, Any] = {"states": ["ok"]}
+    if feeds is not None:
+        inputs["input_voltage_feeds"] = feeds
+    if minimum is not None:
+        inputs["min_input_voltage"] = minimum
+    status = AntaTestStatus.FAILURE if messages else AntaTestStatus.SUCCESS
+    expected: UnitTestResult = {"result": status}
+    if min_count:
+        inputs["min_count"] = 1
+        if messages:
+            criteria = "state ok"
+            if minimum is not None:
+                criteria += f" and input voltage >={minimum}V"
+            expected["messages"] = [f"Expected >=1 power supplies with {criteria}, but found 0"] + [f"Power Slot: 1 - {message}" for message in messages]
+    else:
+        expected["atomic_results"] = [{"description": "Power Slot: 1", "result": status, "messages": messages}]
+        if messages:
+            expected["messages"] = [f"Power Slot: 1 - {message}" for message in messages]
+    return {"eos_data": [{"powerSupplies": {"1": supply.copy()}}], "inputs": inputs, "expected": expected}
+
+
+# These cases use the sample voltage/state fields without changing their values.
+_POWER_VOLTAGE_CASES: list[tuple[str, dict[str, Any], str | None, int | None, list[str]]] = [
+    ("default-a-powered", _POWER_FEED_A, None, 240, []),
+    ("default-b-powered", _POWER_FEED_B, None, 240, ["Input voltage mismatch - Expected: >= 240 Actual: 0.0"]),
+    ("default-single-input", _POWER_SINGLE, None, 240, []),
+    ("a-powered", _POWER_FEED_A, "A", 240, []),
+    ("a-low", _POWER_FEED_B, "A", 240, ["Input voltage mismatch - Expected: >= 240 Actual: 0.0"]),
+    ("b-powered", _POWER_FEED_B, "B", 240, []),
+    ("b-low", _POWER_FEED_A, "B", 240, ["Input B voltage mismatch - Expected: >= 240 Actual: 0.0"]),
+    ("b-missing", _POWER_SINGLE, "B", 240, ["Input B voltage not found"]),
+    ("any-a-powered", _POWER_FEED_A, "any", 240, []),
+    ("any-b-powered", _POWER_FEED_B, "any", 240, []),
+    ("any-single-input", _POWER_SINGLE, "any", 240, []),
+    ("both-a-only", _POWER_FEED_A, "both", 240, ["Input voltage mismatch - Expected: both feeds >= 240 Actual: A: 244.25, B: 0.0"]),
+    ("both-b-only", _POWER_FEED_B, "both", 240, ["Input voltage mismatch - Expected: both feeds >= 240 Actual: A: 0.0, B: 244.25"]),
+    ("both-missing", _POWER_SINGLE, "both", 240, ["Input B voltage not found"]),
+]
+
+for _feeds in ("A", "B", "any", "both"):
+    # Synthetic boundary cases: both feeds at exactly the threshold, or just below.
+    _POWER_VOLTAGE_CASES.extend(
+        [
+            (f"{_feeds}-equal-synthetic", {**_POWER_FEED_A, "inputVoltage": 240.0, "inputBVoltage": 240.0}, _feeds, 240, []),
+            (
+                f"{_feeds}-below-synthetic",
+                {**_POWER_FEED_A, "inputVoltage": 239.75, "inputBVoltage": 239.75},
+                _feeds,
+                240,
+                [f"Input{' B' if _feeds == 'B' else ''} voltage mismatch - Expected: >= 240 Actual: 239.75"]
+                if _feeds in ("A", "B")
+                else [f"Input voltage mismatch - Expected: {_feeds} feeds >= 240 Actual: A: 239.75, B: 239.75"],
+            ),
+            # No threshold must not require a B key or voltage validation.
+            (f"{_feeds}-no-threshold-single", _POWER_SINGLE, _feeds, None, []),
+            (f"{_feeds}-no-threshold-state-failure", _POWER_LOSS, _feeds, None, ["Invalid power supplies state - Expected: ok Actual: powerLoss"]),
+            # Synthetic low-voltage supply, still in the accepted state, with no threshold.
+            (f"{_feeds}-no-threshold-low-synthetic", {**_POWER_FEED_A, "inputVoltage": 0.0}, _feeds, None, []),
+        ]
+    )
+
+_POWER_VOLTAGE_CASES.extend(
+    [
+        # Synthetic single-input supply with insufficient A voltage.
+        (
+            "any-low-missing-b-synthetic",
+            {**_POWER_SINGLE, "inputVoltage": 0.0},
+            "any",
+            240,
+            ["Input voltage mismatch - Expected: any feeds >= 240 Actual: A: 0.0, B: missing"],
+        ),
+        ("both-low-missing-b-synthetic", {**_POWER_SINGLE, "inputVoltage": 0.0}, "both", 240, ["Input B voltage not found"]),
+        # Synthetic powered voltages must not hide a state failure.
+        (
+            "both-state-failure-synthetic",
+            {**_POWER_FEED_A, "state": "powerLoss", "inputBVoltage": 244.25},
+            "both",
+            240,
+            ["Invalid power supplies state - Expected: ok Actual: powerLoss"],
+        ),
+    ]
+)
+
+for _case_name, _supply, _mode, _minimum, _messages in _POWER_VOLTAGE_CASES:
+    for _min_count in (False, True):
+        DATA[(VerifyEnvironmentPower, f"voltage-feeds-{_case_name}-{'min-count' if _min_count else 'atomic'}")] = _power_voltage_case(
+            _supply, _mode, _minimum, _messages, min_count=_min_count
+        )
+
+
+# Mixed-feed fixtures retain the original slot numbers from Carl's second output.
+for _mixed_mode, _required_count, _mixed_messages in [
+    ("any", 2, []),
+    ("A", 1, []),
+    ("B", 1, []),
+    (
+        "A",
+        2,
+        [
+            "Expected >=2 power supplies with state ok and input voltage >=240V, but found 1",
+            "Power Slot: 12 - Input voltage mismatch - Expected: >= 240 Actual: 0.0",
+        ],
+    ),
+    (
+        "B",
+        2,
+        [
+            "Expected >=2 power supplies with state ok and input voltage >=240V, but found 1",
+            "Power Slot: 11 - Input B voltage mismatch - Expected: >= 240 Actual: 0.0",
+        ],
+    ),
+    (
+        "both",
+        1,
+        [
+            "Expected >=1 power supplies with state ok and input voltage >=240V, but found 0",
+            "Power Slot: 11 - Input voltage mismatch - Expected: both feeds >= 240 Actual: A: 244.25, B: 0.0",
+            "Power Slot: 12 - Input voltage mismatch - Expected: both feeds >= 240 Actual: A: 0.0, B: 244.25",
+        ],
+    ),
+]:
+    DATA[(VerifyEnvironmentPower, f"voltage-feeds-mixed-{_mixed_mode}-count-{_required_count}")] = {
+        "eos_data": [{"powerSupplies": {"11": _POWER_FEED_A.copy(), "12": _POWER_FEED_B.copy()}}],
+        "inputs": {"states": ["ok"], "min_input_voltage": 240, "input_voltage_feeds": _mixed_mode, "min_count": _required_count},
+        "expected": {"result": AntaTestStatus.FAILURE if _mixed_messages else AntaTestStatus.SUCCESS, "messages": _mixed_messages},
+    }
+
+
+@pytest.mark.parametrize("mode", ["C", "a", "ANY", "", None])
+def test_environment_power_invalid_voltage_feeds(mode: str | None) -> None:
+    """Reject unsupported feed choices rather than silently selecting a feed."""
+    with pytest.raises(ValidationError, match="input_voltage_feeds"):
+        VerifyEnvironmentPower.Input.model_validate({"states": ["ok"], "input_voltage_feeds": mode})
