@@ -93,7 +93,7 @@ class JUnitReporter:
     def _add_test_to_testsuite(cls, result: TestResult, testsuite: _TestSuite, duplicate_names: set[str]) -> None:
         """Build testcase for a given TestResult and add it to the testsuite root element.
 
-        Not handling the UNSET teststatus because this is not present in JUnit specification
+        Represent UNSET as an error because no final ANTA status was recorded.
 
         TODO: Add file and line.
         For file and line we could consider augmenting TestResult to keep track of the class used for the test,
@@ -141,6 +141,13 @@ class JUnitReporter:
             error.text = "\n".join(result.messages)
             testsuite.suite_errors += 1
 
+        elif result.result == AntaTestStatus.UNSET:
+            error = ET.SubElement(testcase, "error")
+            error.set("message", "ANTA result is UNSET: no final status was recorded")
+            error.set("type", "UnsetResult")
+            error.text = "\n".join(result.messages)
+            testsuite.suite_errors += 1
+
         elif result.result == AntaTestStatus.SKIPPED:
             skipped = ET.SubElement(testcase, "skipped")
             skipped.set("message", "Test Skipped")
@@ -148,7 +155,6 @@ class JUnitReporter:
             testsuite.suite_skipped += 1
 
         # AntaTestStatus.SUCCESS requires no extra element
-        # AntaTestStatus.UNSET is not considered by JUnit so skipping silently for now
 
     @classmethod
     def _build_testsuite(cls, device_name: str, results: list[TestResult], testsuites: ET.Element, catalog_path: Path | None = None) -> None:
@@ -223,9 +229,9 @@ class JUnitReporter:
             cls._build_testsuite(device_name, device_results, testsuites, catalog_path)
 
         # Set attributes for the root testsuites element
-        testsuites.set("tests", str(results.get_total_results({AntaTestStatus.SUCCESS, AntaTestStatus.SKIPPED, AntaTestStatus.FAILURE, AntaTestStatus.ERROR})))
+        testsuites.set("tests", str(results.get_total_results(set(AntaTestStatus))))
         testsuites.set("failures", str(results.get_total_results({AntaTestStatus.FAILURE})))
-        testsuites.set("errors", str(results.get_total_results({AntaTestStatus.ERROR})))
+        testsuites.set("errors", str(results.get_total_results({AntaTestStatus.ERROR, AntaTestStatus.UNSET})))
         testsuites.set("skipped", str(results.get_total_results({AntaTestStatus.SKIPPED})))
 
         total_time = 0.0

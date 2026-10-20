@@ -29,9 +29,9 @@ def test_junit_reporter_generate(tmp_path: Path, result_manager: ResultManager) 
 
     root = ET.parse(junit_filename).getroot()  # noqa: S314
     assert root.tag == "testsuites"
-    assert root.get("tests") == str(result_manager.get_total_results({AntaTestStatus.SUCCESS, AntaTestStatus.SKIPPED, AntaTestStatus.FAILURE, AntaTestStatus.ERROR}))
+    assert root.get("tests") == str(result_manager.get_total_results(set(AntaTestStatus)))
     assert root.get("failures") == str(result_manager.get_total_results({AntaTestStatus.FAILURE}))
-    assert root.get("errors") == str(result_manager.get_total_results({AntaTestStatus.ERROR}))
+    assert root.get("errors") == str(result_manager.get_total_results({AntaTestStatus.ERROR, AntaTestStatus.UNSET}))
     assert root.get("skipped") == str(result_manager.get_total_results({AntaTestStatus.SKIPPED}))
 
     testsuites = root.findall("testsuite")
@@ -108,6 +108,7 @@ def test_junit_reporter_generate_without_description(tmp_path: Path) -> None:
         (AntaTestStatus.SUCCESS, None),
         (AntaTestStatus.FAILURE, "failure"),
         (AntaTestStatus.ERROR, "error"),
+        (AntaTestStatus.UNSET, "error"),
         (AntaTestStatus.SKIPPED, "skipped"),
     ],
 )
@@ -152,6 +153,53 @@ def test_junit_reporter_escapes_invalid_xml_characters(tmp_path: Path, status: A
     assert result.name == f"leaf{invalid}{valid}"
     assert result.description == f"Description{invalid}{valid}"
     assert result.messages == [f"Diagnostic{invalid}{valid}", "Second message"]
+
+
+@pytest.mark.parametrize("include_finished_results", [False, True])
+def test_junit_reporter_unset_results(tmp_path: Path, include_finished_results: bool) -> None:
+    """Keep unfinished cases visible as errors with consistent totals and unchanged source results."""
+    manager = ResultManager()
+    for device in ("leaf1", "leaf2"):
+        statuses = list(AntaTestStatus) if include_finished_results else [AntaTestStatus.UNSET]
+        for status in statuses:
+            manager.add(
+                TestResult(
+                    name=device,
+                    test=f"VerifyStatus_{status}",
+                    categories=["system"],
+                    description="Checks the result status.",
+                    result=status,
+                    messages=["First diagnostic", "Second diagnostic"],
+                )
+            )
+    original_results = [result.model_dump() for result in manager.results]
+    output_path = tmp_path / "unset.xml"
+
+    JUnitReporter.generate(results=manager, output_path=output_path)
+
+    root = ET.parse(output_path).getroot()  # noqa: S314
+    suites = root.findall("testsuite")
+    assert len(suites) == 2
+    for element in [root, *suites]:
+        cases = element.findall(".//testcase")
+        assert int(element.get("tests", "0")) == len(cases)
+        for attribute, tag in (("errors", "error"), ("failures", "failure"), ("skipped", "skipped")):
+            assert int(element.get(attribute, "0")) == sum(case.find(tag) is not None for case in cases)
+    for attribute in ("tests", "errors", "failures", "skipped"):
+        assert int(root.get(attribute, "0")) == sum(int(suite.get(attribute, "0")) for suite in suites)
+    assert root.get("tests") == ("10" if include_finished_results else "2")
+    assert root.get("errors") == ("4" if include_finished_results else "2")
+    for suite in suites:
+        unfinished = suite.find("testcase[@name='VerifyStatus_unset - Checks the result status.']")
+        assert unfinished is not None
+        error = unfinished.find("error")
+        assert error is not None
+        assert error.get("type") == "UnsetResult"
+        assert error.get("message") == "ANTA result is UNSET: no final status was recorded"
+        assert error.text == "First diagnostic\nSecond diagnostic"
+        assert unfinished.find("skipped") is None
+        assert unfinished.find("failure") is None
+    assert [result.model_dump() for result in manager.results] == original_results
 
 
 def test_junit_reporter_generate_deduplicates_duplicate_testcase_names(tmp_path: Path) -> None:
