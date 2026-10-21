@@ -32,7 +32,7 @@ python = """
 [env_run_base]
 description = "Run pytest with {basepython}"
 extras = ["cli"]
-dependency_groups = ["dev", "benchmark"]
+dependency_groups = ["test"]
 # posargs allows to run only a specific test using tox -e <env> -- path/to/my/test::test
 commands = [["pytest", { replace = "posargs", extend = true }]]
 # To test on non-POSIX system
@@ -43,7 +43,7 @@ set_env = { COLUMNS = "165"}
 
 [env.lint]
 description = "Check the code style"
-dependency_groups = ["dev", "benchmark"]
+dependency_groups = ["lint", "test", "benchmark"]
 commands =[
   ["ruff", "check", "."],
   ["ruff", "format", ".", "--check"],
@@ -54,7 +54,7 @@ commands =[
 
 [env.type]
 description = "Check typing"
-dependency_groups = ["dev", "benchmark"]
+dependency_groups = ["lint", "test", "benchmark"]
 commands =[
   ["pyright", "anta"],
   ["pyright", "tests"],
@@ -63,6 +63,8 @@ commands =[
 
 [env.clean]
 skip_install=true
+dependency_groups = []
+deps = ["coverage[toml]"]
 description = "Clean existing coverage"
 commands =[
   ["coverage", "erase"],
@@ -71,6 +73,7 @@ commands =[
 [env.report]
 description = "Generate coverage report"
 skip_install=true
+dependency_groups = []
 deps = ["coverage[toml]"]
 commands = [
   ["coverage", "--version"],

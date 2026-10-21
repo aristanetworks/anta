@@ -112,7 +112,13 @@ Add the unit test to the appropriate submodule test file under `tests/units/anta
 
 ### How to run unit tests
 
-To run the unit test suite from an activated development environment:
+To create an environment for running tests without installing development tools:
+
+```bash
+pip install -e ".[cli]" --group test
+```
+
+To run the unit test suite from that environment or an activated development environment:
 
 ```bash
 pytest tests/units
@@ -128,8 +134,12 @@ pytest tests/units/anta_tests/test_system.py::test
 If you use [`uv`](https://docs.astral.sh/uv/) for your local workflow, it can create or update the environment before running pytest:
 
 ```bash
-uv run --group dev --extra cli pytest tests/units
+uv run --no-default-groups --group test --extra cli pytest tests/units
 ```
+
+`--no-default-groups` excludes uv's default `dev` group, so only the test dependencies and CLI extra are installed.
+
+The `test` group contains the dependencies needed to run pytest. The `benchmark` group adds the benchmark plugins, and the `tox` group contains tox and its GitHub Actions integration. The `dev` group includes the test, lint, and tox groups plus the release versioning tool.
 
 Use tox when you want to run the unit tests in the same isolated environments used by CI:
 

@@ -48,7 +48,9 @@ jobs:
           python-version: ${{ matrix.python }}
           allow-prereleases: ${{ matrix.python == '3.15' }}
       - name: Install dependencies
-        run: pip install tox tox-gh-actions
+        run: |
+          pip install "pip>=25.1"
+          pip install --group tox
       - name: "Run pytest via tox for ${{ matrix.python }}"
         run: tox run
       - name: Upload coverage from pytest
@@ -76,7 +78,9 @@ jobs:
         with:
           python-version: 3.12
       - name: Install dependencies
-        run: pip install tox tox-gh-actions
+        run: |
+          pip install "pip>=25.1"
+          pip install --group tox
       - name: Run pytest via tox for 3.12 on Windows
         run: tox run -- --ignore=tests/docs
   test-documentation:
