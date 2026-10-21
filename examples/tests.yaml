@@ -420,7 +420,7 @@ anta.tests.hardware:
       states:
         - ok
       min_input_voltage: 50 # Optional
-      input_voltage_feeds: A # Optional; A, B, any, or both
+      input_voltage_feeds: A # Optional; requires min_input_voltage
       min_count: 1 # Optional
   - VerifyEnvironmentSystemCooling:
       # Verifies the device's system cooling status.

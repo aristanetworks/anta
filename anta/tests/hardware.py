@@ -10,7 +10,7 @@ from __future__ import annotations
 from collections import defaultdict
 from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
-from pydantic import Field
+from pydantic import Field, model_validator
 
 from anta.custom_types import ModuleStatus, Percent, PositiveInteger, PowerSupplyFanStatus, PowerSupplyStatus
 from anta.decorators import skip_on_platforms
@@ -19,7 +19,13 @@ from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.result_manager.models import AntaTestStatus
 
 if TYPE_CHECKING:
+    import sys
     from collections.abc import Callable
+
+    if sys.version_info >= (3, 11):
+        from typing import Self
+    else:
+        from typing_extensions import Self
 
     from anta.result_manager.models import AtomicTestResult
 
@@ -289,16 +295,10 @@ class VerifyEnvironmentCooling(AntaTest):
 class VerifyEnvironmentPower(AntaTest):
     """Verifies the power supplies state and input voltage.
 
-    When `min_input_voltage` is configured, `input_voltage_feeds` selects which feeds
-    must meet it: `A` (the default), `B`, `any` (at least one), or `both`.
-    The threshold is inclusive. Single-input supplies can satisfy `A` or `any`;
-    a missing `inputBVoltage` fails `B` and `both`. Without a voltage threshold,
-    only the existing power-state and supply-count requirements are checked.
-
     Expected Results
     ----------------
-    * Success: All power supplies (or at least `min_count`) are in an accepted state and meet the `min_input_voltage` requirement.
-    * Failure: Any power supply (or fewer than `min_count`) is not in an accepted state or does not meet the `min_input_voltage` requirement.
+    * Success: All power supplies (or at least `min_count`) are in an accepted state and meet the minimum voltage requirement on the selected input feeds.
+    * Failure: Any power supply (or fewer than `min_count`) is not in an accepted state or does not meet the minimum voltage requirement on the selected input feeds.
 
     Examples
     --------
@@ -308,7 +308,7 @@ class VerifyEnvironmentPower(AntaTest):
           states:
             - ok
           min_input_voltage: 50 # Optional
-          input_voltage_feeds: A # Optional; A, B, any, or both
+          input_voltage_feeds: A # Optional; requires min_input_voltage
           min_count: 1 # Optional
     ```
     """
@@ -325,9 +325,23 @@ class VerifyEnvironmentPower(AntaTest):
         min_input_voltage: PositiveInteger | None = None
         """Optional minimum input voltage (Volts) to verify."""
         input_voltage_feeds: Literal["A", "B", "any", "both"] = "A"
-        """Which input voltage feeds must meet `min_input_voltage`."""
+        """Input voltage feeds that must meet the inclusive `min_input_voltage` threshold.
+
+        Select `A` (the default), `B`, `any` (at least one feed), or `both`.
+        Single-input supplies can satisfy `A` or `any`; a missing `inputBVoltage` fails `B` and `both`.
+        Explicitly providing this selector, including `A`, requires a non-None `min_input_voltage`.
+        If both the selector and threshold are omitted, only power-state and supply-count requirements are checked.
+        """
         min_count: PositiveInteger | None = None
         """Optional minimum number of power supplies required to match the accepted states and voltage. If not provided, all power supplies must match."""
+
+        @model_validator(mode="after")
+        def validate_inputs(self) -> Self:
+            """Require a voltage threshold when the feed selector is explicitly provided."""
+            if "input_voltage_feeds" in self.model_fields_set and self.min_input_voltage is None:
+                msg = "'min_input_voltage' must be provided when 'input_voltage_feeds' is provided"
+                raise ValueError(msg)
+            return self
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
@@ -353,20 +367,20 @@ class VerifyEnvironmentPower(AntaTest):
         if minimum is None:
             return None
 
+        input_a = power_supply["inputVoltage"]
+        input_b = power_supply.get("inputBVoltage")
         feeds = self.inputs.input_voltage_feeds
         if feeds == "A":
-            input_a = power_supply["inputVoltage"]
             return f"Input voltage mismatch - Expected: >= {minimum} Actual: {input_a}" if input_a < minimum else None
-
-        input_b = power_supply.get("inputBVoltage")
-        if input_b is None and feeds in ("B", "both"):
-            return "Input B voltage not found"
         if feeds == "B":
+            if input_b is None:
+                return "Input B voltage not found"
             return f"Input B voltage mismatch - Expected: >= {minimum} Actual: {input_b}" if input_b < minimum else None
-
-        input_a = power_supply["inputVoltage"]
-        meets_minimum = (input_a >= minimum, input_b is not None and input_b >= minimum)
-        voltage_valid = any(meets_minimum) if feeds == "any" else all(meets_minimum)
+        voltage_valid = False
+        if feeds == "any":
+            voltage_valid = input_a >= minimum or (input_b is not None and input_b >= minimum)
+        elif feeds == "both":
+            voltage_valid = input_a >= minimum and input_b is not None and input_b >= minimum
         if voltage_valid:
             return None
         return f"Input voltage mismatch - Expected: {feeds} feeds >= {minimum} Actual: A: {input_a}, B: {input_b if input_b is not None else 'missing'}"
@@ -400,7 +414,11 @@ class VerifyEnvironmentPower(AntaTest):
         # Failure messages
         criteria = f"state {'/'.join(self.inputs.states)}"
         if self.inputs.min_input_voltage:
-            criteria += f" and input voltage >={self.inputs.min_input_voltage}V"
+            feed_requirement = ""
+            if self.inputs.input_voltage_feeds != "A":
+                feeds = self.inputs.input_voltage_feeds
+                feed_requirement = f" ({feeds})" if feeds == "B" else f" ({feeds} feeds)"
+            criteria += f" and input voltage{feed_requirement} >={self.inputs.min_input_voltage}V"
         self.result.is_failure(f"Expected >={self.inputs.min_count} power supplies with {criteria}, but found {passing_count}")
 
         # Detail messages
