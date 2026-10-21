@@ -139,7 +139,7 @@ uv run --no-default-groups --group test --extra cli pytest tests/units
 
 `--no-default-groups` excludes uv's default `dev` group, so only the test dependencies and CLI extra are installed.
 
-The `test` group contains the dependencies needed to run pytest. The `benchmark` group adds the benchmark plugins, and the `tox` group contains tox and its GitHub Actions integration. The `dev` group includes the test, lint, and tox groups plus the release versioning tool.
+The `test` group contains the dependencies needed to run pytest. The `benchmark` group adds the benchmark plugins. The `dev` group includes the test and lint groups plus tox and the release versioning tool.
 
 Use tox when you want to run the unit tests in the same isolated environments used by CI:
 

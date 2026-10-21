@@ -64,8 +64,10 @@ cli = [
 dev = [
   {include-group = "test"},
   {include-group = "lint"},
-  {include-group = "tox"},
   "bumpver>=2026.1132",
+  # tox 4.65.1 and later require Python 3.11.
+  "tox>=4.65.0,<4.65.1; python_version < '3.11'",
+  "tox>=4.65.5,<5.0.0; python_version >= '3.11'",
 ]
 test = [
   "pytest-asyncio>=1.4.0",
@@ -73,12 +75,6 @@ test = [
   "pytest-httpx>=0.36.2",
   "pytest>=9.1.1",
   "respx>=0.23.1",
-]
-tox = [
-  # tox 4.65.1 and later require Python 3.11.
-  "tox>=4.65.0,<4.65.1; python_version < '3.11'",
-  "tox>=4.65.5,<5.0.0; python_version >= '3.11'",
-  "tox-gh-actions",
 ]
 benchmark = [
   "pytest-codspeed>=5.0.3",
