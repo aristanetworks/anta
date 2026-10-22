@@ -3306,11 +3306,11 @@
 
 <p>ANTA is a streamlined Python framework designed for efficient interaction with network devices. This section outlines how ANTA incorporates caching mechanisms to collect command outputs from network devices.</p>
 <h3 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h3>
-<p>The <code>_init_cache()</code> method of the <a href="../../api/device/#anta.device.AntaDevice">AntaDevice</a> abstract class initializes the cache. Child classes can override this method to tweak the cache configuration:</p>
+<p>The <code>_init_cache()</code> method of the <a class="autorefs autorefs-internal" title="            AntaDevice" href="../../api/device/#anta.device.AntaDevice">AntaDevice</a> abstract class initializes the cache. Child classes can override this method to tweak the cache configuration:</p>
 <h3 id="cache-key-design">Cache key design<a class="headerlink" href="#cache-key-design" title="Permanent link">&para;</a></h3>
 <p>The cache is initialized per <code>AntaDevice</code> and uses the following cache key design:</p>
 <p><code>&lt;device_name&gt;:&lt;uid&gt;</code></p>
-<p>The <code>uid</code> is an attribute of <a href="../../api/commands/#anta.models.AntaCommand">AntaCommand</a>, which is a unique identifier generated from the command, version, revision and output format.</p>
+<p>The <code>uid</code> is an attribute of <a class="autorefs autorefs-internal" title="            AntaCommand" href="../../api/commands/#anta.models.AntaCommand">AntaCommand</a>, which is a unique identifier generated from the command, version, revision and output format.</p>
 <p>Each UID has its own asyncio lock. This design allows coroutines that need to access the cache for different UIDs to do so concurrently. The locks are managed by the <code>AntaCache.locks</code> dictionary.</p>
 <h3 id="mechanisms">Mechanisms<a class="headerlink" href="#mechanisms" title="Permanent link">&para;</a></h3>
 <p>By default, once the cache is initialized, it is used in the <code>collect()</code> method of <code>AntaDevice</code>. The <code>collect()</code> method prioritizes retrieving the output of the command from the cache. If the output is not in the cache, the private <code>_collect()</code> method will retrieve and then store it for future access.</p>
@@ -3347,7 +3347,7 @@
 </code></pre></div>
 <p>This approach effectively disables caching for <strong>ALL</strong> commands sent to devices targeted by the <code>disable_cache</code> key.</p>
 <ol>
-<li>For tests developers, caching can be disabled for a specific <a href="../../api/commands/#anta.models.AntaCommand"><code>AntaCommand</code></a> or <a href="../../api/commands/#anta.models.AntaTemplate"><code>AntaTemplate</code></a> by setting the <code>use_cache</code> attribute to <code>False</code>. That means the command output will always be collected on the device and therefore, never use caching.</li>
+<li>For tests developers, caching can be disabled for a specific <a class="autorefs autorefs-internal" title="            AntaCommand" href="../../api/commands/#anta.models.AntaCommand"><code>AntaCommand</code></a> or <a class="autorefs autorefs-internal" title="            AntaTemplate" href="../../api/commands/#anta.models.AntaTemplate"><code>AntaTemplate</code></a> by setting the <code>use_cache</code> attribute to <code>False</code>. That means the command output will always be collected on the device and therefore, never use caching.</li>
 </ol>
 <p>By default, caching is enabled with <code>disable_cache=False</code> at the device level and <code>use_cache=True</code> at the command or template level.</p>
 <p>Run-wide and inventory cache settings are combined. The <code>--disable-cache</code> flag or <code>ANTA_DISABLE_CACHE</code> environment variable is a global control that disables caching for every device in the run. Inventory <code>disable_cache: true</code> is scoped to the matching host, network, or range only:</p>
@@ -3406,7 +3406,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    July 31, 2026
+    October 22, 2026
   </span>
 
     
