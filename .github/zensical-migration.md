@@ -6,10 +6,10 @@
 
 # Zensical Documentation Plan
 
-**Source baseline:** `upstream/main` at `3673bd78` (includes merged #1809 and Zensical 0.0.69)
+**Source baseline:** `main` at `97338a6d`, merged into #1828 on October 21, 2026 (includes merged #1809 and Zensical 0.0.69)
 **Documentation tooling:** Zensical `0.0.69` (already on `main`)
 **Migration PR:** [#1809](https://github.com/aristanetworks/anta/pull/1809) (merged); follow-up outcomes are tracked below.
-**Updated:** October 20, 2026
+**Updated:** October 22, 2026
 
 The MkDocs Material migration is complete. Merged PR #1809 retains ANTA's lightbox layout and zoom behavior, fixes cumulative slow-drag detection, and documents redirects and API object links. This plan records current decisions, why they were made, when to revisit them, and completed work. Feature experiments remain evidence for later work, not enabled configuration.
 
@@ -29,7 +29,7 @@ The MkDocs Material migration is complete. Merged PR #1809 retains ANTA's lightb
 
 This register is the durable record of migration choices, including features deliberately left disabled. **Adopted** means an agreed convention is in effect; **retained** means the current implementation remains the default; **deferred** means no adoption is planned until the revisit condition is met; **blocked** means a demonstrated problem prevents adoption. None of these statuses means a feature is rejected forever.
 
-The entries below record the current choices and when to reconsider them, as of October 20, 2026. Keep numbering consecutive when entries are added or removed. Deferred features stay here until there is a concrete need or relevant upstream improvement; they do not each need a planned PR.
+The entries below record the current choices and when to reconsider them, as of October 22, 2026. Keep numbering consecutive when entries are added or removed. Deferred features stay here until there is a concrete need or relevant upstream improvement; they do not each need a planned PR.
 
 | ID | Decision and status | Reason / evidence | Revisit when |
 | --- | --- | --- | --- |
@@ -58,14 +58,16 @@ When implementation or investigation changes a choice, update its reason and rev
 
 | Recorded | Decisions | Outcome and evidence |
 | --- | --- | --- |
+| 2026-10-22 | Current baseline | Refreshed this guide after the October 21 merge of `main` (`97338a6d`) into #1828. Zensical remains at 0.0.69; the recorded decisions are unchanged. Earlier experiment dates and tested versions remain historical evidence. |
+| 2026-10-21 | Backlog cleanup ([#1828](https://github.com/aristanetworks/anta/pull/1828)) | Removed completed and duplicate follow-up proposals. The 16 decisions retain their rationale and revisit conditions; no follow-up PRs are scheduled. |
 | 2026-10-16 | D10 — Live rebuilds ([#1828](https://github.com/aristanetworks/anta/pull/1828)) | Live trials showed root README and external example edits did not rebuild their dependent pages within 20 seconds. Explicit watch paths for `README.md` and `examples` fix both. Five edit/restore probes passed on Zensical 0.0.69 using served HTML; external changes take about 10 seconds and in-docs changes about 0.5 seconds. No trial content remains. |
-| 2026-10-16 | D10 — Zensical 0.0.69 ([#1828](https://github.com/aristanetworks/anta/pull/1828)) | Rebased onto current `upstream/main` (`855d66c1`; already up to date) and aligned the root doc group and both hook pins at 0.0.69. The executable and package metadata confirm 0.0.69 / Python >=3.11. A clean strict build and rendered object-link/inventory audits passed; no backlink blocks were generated. This does not establish browser, touch, export, or deployment acceptance. Markdown exports remain blocked under D05; browser checks belong with changes to the relevant UI or documentation tooling. |
-| 2026-10-16 | D01/D06 — API references ([#1828](https://github.com/aristanetworks/anta/pull/1828)) | Replaced 47 authored API object links with autorefs, retaining two overview-page links. A clean strict Zensical 0.0.68 build, rendered page/fragment destination audit, and changed-file/final all-files pre-commit checks passed. Backlinks remain deferred and API generation remains a separate audit. |
+| 2026-10-16 | D10 — Zensical 0.0.69 ([#1828](https://github.com/aristanetworks/anta/pull/1828)) | At that time, the branch was based on `upstream/main` at `855d66c1` and aligned the root doc group and both hook pins at 0.0.69. The executable and package metadata confirm 0.0.69 / Python >=3.11. A clean strict build and rendered object-link/inventory audits passed; no backlink blocks were generated. This does not establish browser, touch, export, or deployment acceptance. Markdown exports remain blocked under D05; browser checks belong with changes to the relevant UI or documentation tooling. |
+| 2026-10-16 | D01/D06 — API references ([#1828](https://github.com/aristanetworks/anta/pull/1828)) | Replaced 47 authored API object links with autorefs, retaining two overview-page links. A clean strict Zensical 0.0.68 build, rendered page/fragment destination audit, and changed-file/final all-files pre-commit checks passed. Backlinks remain deferred and curated API pages are retained under D01/D06. |
 | 2026-10-15 | D01–D16 | Consolidated the choices and earlier experiments from PR #1809 into this register. In particular, backlinks remain deferred because of preview clutter; this is a current choice that can be revisited, not a permanent rejection. |
 
 ## Completed work awaiting merge
 
-Both items are implemented and validated in [#1828](https://github.com/aristanetworks/anta/pull/1828). The detailed evidence remains below.
+As of October 22, 2026, both items are implemented and validated in open PR [#1828](https://github.com/aristanetworks/anta/pull/1828), awaiting merge. The detailed evidence remains below.
 
 | Work | Outcome |
 | --- | --- |
@@ -86,7 +88,7 @@ Add a numbered follow-up only when there is a concrete problem or an agreed feat
 
 ## Earlier experiments to preserve
 
-These measurements came from temporary **Zensical 0.0.67** configurations recorded on October 9. They are not 0.0.68 acceptance results, and their trial changes are not enabled in production.
+These measurements came from temporary **Zensical 0.0.67** configurations recorded on October 9. They do not qualify the current 0.0.69 baseline, and their trial changes are not enabled in production.
 
 | Experiment | Result and implication |
 | --- | --- |
