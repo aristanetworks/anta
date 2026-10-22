@@ -65,16 +65,16 @@ dev = [
   {include-group = "test"},
   {include-group = "lint"},
   "bumpver>=2026.1132",
+  # tox 4.65.1 and later require Python 3.11.
+  "tox>=4.65.0,<4.65.1; python_version < '3.11'",
+  "tox>=4.65.5,<5.0.0; python_version >= '3.11'",
 ]
 test = [
   "pytest-asyncio>=1.4.0",
   "pytest-cov>=7.1.0",
-  "pytest-html>=4.2.0",
   "pytest-httpx>=0.36.2",
-  "pytest-metadata>=3.1.1",
   "pytest>=9.1.1",
   "respx>=0.23.1",
-  "tox>=4.64.10,<5.0.0",
 ]
 benchmark = [
   "pytest-codspeed>=5.0.3",
@@ -82,7 +82,9 @@ benchmark = [
 ]
 lint = [
   "codespell>=2.4.3,<2.5.0",
-  "pre-commit>=4.6.2",
+  # pre-commit 4.7.0 and later require Python 3.11.
+  "pre-commit>=4.6.2,<4.7.0; python_version < '3.11'",
+  "pre-commit>=4.7.0; python_version >= '3.11'",
   "pylint-pydantic>=0.4.1",
   "pylint>=4.1.3",
   "pyright",
@@ -159,7 +161,6 @@ reportMissingImports = "error"
 # When run from anta directory this will read cov-config from pyproject.toml
 addopts = "-ra -q -vv --cov --cov-report term:skip-covered --color yes"
 log_level = "WARNING"
-render_collapsed = true
 testpaths = ["tests"]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
