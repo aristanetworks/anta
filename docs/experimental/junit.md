@@ -36,6 +36,8 @@ Provide authentication through the usual [NRFU options or environment variables]
 
 Common NRFU device, test and tag filters also apply to this command. `--dry-run` prints the experimental warning and performs the normal NRFU dry run without writing a report.
 
+The shared NRFU `--hide` option is ignored for JUnit reporting, and a warning is printed when it is supplied. The XML includes all results from the selected run so that failures and errors cannot be hidden from report consumers. Other report formats retain their usual `--hide` behavior.
+
 ## Python usage
 
 Pass a populated `ResultManager` to `JUnitReporter.generate()`:
@@ -74,7 +76,6 @@ JUnit has no separate `UNSET` outcome. The reporter emits an ANTA `UNSET` result
 ## Current limitations
 
 - The duplicate-name hash uses result metadata rather than the original test inputs. Identical metadata can produce identical names, and changes to the surrounding results can change testcase names between runs.
-- The CLI's `--hide` option removes matching results from the XML artifact.
 - Per-test durations are intentionally not measured: command caching and reuse prevent meaningful attribution of command collection time to individual tests, while timing the test function alone provides little useful information. Testcase, suite and report durations are reported as zero for JUnit compatibility; these are placeholders, not measured durations. Suite timestamps reflect report generation time.
 
 These limitations remain under review while the feature is experimental.
