@@ -1,7 +1,7 @@
 name: "Pull Request Triage"
 
-on: # zizmor: ignore[dangerous-triggers] Uses pull_request_target only for trusted metadata checks and PR assignment, not to check out or execute PR code.
-  pull_request_target:
+on:
+  pull_request_target: # zizmor: ignore[dangerous-triggers] Uses pull_request_target only for trusted metadata checks and PR assignment, not to check out or execute PR code.
     types:
       - opened
       - edited
