@@ -3578,6 +3578,10 @@
 <p>Contribution model is based on a fork-model. Don&rsquo;t push to aristanetworks/anta directly. Always do a branch in your forked repository and create a PR.</p>
 <p>To help development, open your PR as soon as possible even in draft mode. It helps others know what you are working on and avoid duplicate PRs.</p>
 <h3 id="create-a-development-environment">Create a development environment<a class="headerlink" href="#create-a-development-environment" title="Permanent link">&para;</a></h3>
+<div class="admonition tip">
+<p class="admonition-title">pip dependency groups</p>
+<p>The <code>--group</code> option used in this guide requires pip 25.1 or newer.</p>
+</div>
 <p>Run the following commands to create an ANTA development environment:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># Clone repository</span>
 $<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/aristanetworks/anta.git
@@ -3656,7 +3660,10 @@ type:<span class="w"> </span>commands<span class="o">[</span><span class="m">2</
 <p>To keep high-quality code, every implemented <code>AntaTest</code> must have a corresponding pytest unit test.</p>
 <p>Add the unit test to the appropriate submodule test file under <code>tests/units/anta_tests/test_&lt;submodule-name&gt;.py</code>, following the repository convention of adding cases to the module&rsquo;s <code>DATA</code> constant and importing the generic <code>test</code> function.</p>
 <h4 id="how-to-run-unit-tests">How to run unit tests<a class="headerlink" href="#how-to-run-unit-tests" title="Permanent link">&para;</a></h4>
-<p>To run the unit test suite from an activated development environment:</p>
+<p>To create an environment for running tests without installing development tools:</p>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">".[cli]"</span><span class="w"> </span>--group<span class="w"> </span><span class="nb">test</span>
+</code></pre></div>
+<p>To run the unit test suite from that environment or an activated development environment:</p>
 <div class="highlight"><pre><span></span><code>pytest<span class="w"> </span>tests/units
 </code></pre></div>
 <p>To run a specific unit test module or test node:</p>
@@ -3664,8 +3671,10 @@ type:<span class="w"> </span>commands<span class="o">[</span><span class="m">2</
 pytest<span class="w"> </span>tests/units/anta_tests/test_system.py::test
 </code></pre></div>
 <p>If you use <a href="https://docs.astral.sh/uv/"><code>uv</code></a> for your local workflow, it can create or update the environment before running pytest:</p>
-<div class="highlight"><pre><span></span><code>uv<span class="w"> </span>run<span class="w"> </span>--group<span class="w"> </span>dev<span class="w"> </span>--extra<span class="w"> </span>cli<span class="w"> </span>pytest<span class="w"> </span>tests/units
+<div class="highlight"><pre><span></span><code>uv<span class="w"> </span>run<span class="w"> </span>--no-default-groups<span class="w"> </span>--group<span class="w"> </span><span class="nb">test</span><span class="w"> </span>--extra<span class="w"> </span>cli<span class="w"> </span>pytest<span class="w"> </span>tests/units
 </code></pre></div>
+<p><code>--no-default-groups</code> excludes uv&rsquo;s default <code>dev</code> group from dependency selection. By default, <code>uv run</code> retains extra packages already installed in the environment.</p>
+<p>The <code>test</code> group contains the dependencies needed to run pytest. The <code>benchmark</code> group adds the benchmark plugins. The <code>dev</code> group includes the test and lint groups plus tox and the release versioning tool.</p>
 <p>Use tox when you want to run the unit tests in the same isolated environments used by CI:</p>
 <div class="highlight"><pre><span></span><code>tox<span class="w"> </span>-e<span class="w"> </span>py311<span class="w"> </span>--<span class="w"> </span>tests/units
 tox<span class="w"> </span>-e<span class="w"> </span>py310,py311,py312,py313,py314,py315<span class="w"> </span>--<span class="w"> </span>tests/units
