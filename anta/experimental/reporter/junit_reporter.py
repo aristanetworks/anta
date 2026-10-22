@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-import datetime
+import datetime as dt
 import hashlib
 import json
 import logging
@@ -175,7 +175,7 @@ class JUnitReporter:
             element=ET.SubElement(testsuites, "testsuite"),
             name=f"ANTA Tests on {device_name}",
             hostname=device_name,
-            timestamp=datetime.datetime.now(tz=datetime.timezone.utc).isoformat(),
+            timestamp=dt.datetime.now(tz=dt.timezone.utc).isoformat(),
             filename=str(catalog_path) if catalog_path else None,
             suite_tests=len(results),
         )
@@ -200,6 +200,20 @@ class JUnitReporter:
         if testsuite.filename is not None:
             testsuite.element.set("filename", testsuite.filename)
 
+    @staticmethod
+    def _validate_testcase_identities(testsuites: ET.Element) -> None:
+        """Reject repeated classname/name pairs after XML character escaping."""
+        identities: set[tuple[str, str]] = set()
+        for testcase in testsuites.findall("./testsuite/testcase"):
+            identity = (testcase.attrib["classname"], testcase.attrib["name"])
+            if identity in identities:
+                message = (
+                    f"Duplicate JUnit testcase identity for device {identity[0]!r}: {identity[1]!r}. "
+                    "Give repeated invocations distinct result_overwrite.description values."
+                )
+                raise ValueError(message)
+            identities.add(identity)
+
     @classmethod
     def generate(cls, results: ResultManager, output_path: Path, catalog_path: Path | None = None) -> None:
         """Generate the JUnit XML report and saves it to the output path.
@@ -212,6 +226,11 @@ class JUnitReporter:
             The Path where the report should be saved.
         catalog_path:
             The catalog where the test was defined.
+
+        Raises
+        ------
+        ValueError
+            If multiple testcases have the same serialized classname and name.
         """
         # Group results by device (each device becomes a test suite)
         results_by_device: dict[str, list[TestResult]] = {}
@@ -237,9 +256,6 @@ class JUnitReporter:
         total_time = 0.0
         testsuites.set("time", f"{total_time:.3f}")  # Total time for all suites
 
-        # Ensure the output directory exists
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-
         # Write the XML to the file
         try:
             tree = ET.ElementTree(testsuites)
@@ -248,7 +264,10 @@ class JUnitReporter:
                 element.attrib.update({name: _escape_xml_characters(value) for name, value in element.attrib.items()})
                 if element.text is not None:
                     element.text = _escape_xml_characters(element.text)
+            # Check the serialized identities, including collisions introduced by visible escapes.
+            cls._validate_testcase_identities(testsuites)
             ET.indent(tree, space="  ", level=0)
+            output_path.parent.mkdir(parents=True, exist_ok=True)
             tree.write(output_path, encoding="utf-8", xml_declaration=True)
 
             logger.info("JUnit report generated successfully at: %s", output_path)

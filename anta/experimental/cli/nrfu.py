@@ -58,3 +58,7 @@ def save_to_junit(ctx: click.Context, junit_file: pathlib.Path) -> None:
     except OSError:
         console.print(f"Failed to save JUnit report to {junit_file} ❌", style="cyan")
         ctx.exit(ExitCode.USAGE_ERROR)
+    except ValueError as exc:
+        console.print(f"Failed to save JUnit report to {junit_file} ❌", style="cyan")
+        console.print(str(exc), markup=False, style="red")
+        ctx.exit(ExitCode.USAGE_ERROR)

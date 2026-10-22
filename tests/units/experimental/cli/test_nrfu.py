@@ -82,6 +82,26 @@ def test_anta_nrfu_junit_help(click_runner: CliRunner) -> None:
     assert "WARNING:" not in result.output
 
 
+def test_anta_nrfu_junit_duplicate_identities(click_runner: CliRunner, tmp_path: Path) -> None:
+    """Surface duplicate identities as an export error instead of publishing an ambiguous report."""
+    manager = ResultManager()
+    for status in (AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE):
+        manager.add(TestResult(name="leaf1", test="VerifyStatus", categories=["system"], description="Checks status", result=status))
+
+    def populate_results(ctx: click.Context) -> None:
+        ctx.obj["result_manager"] = manager
+
+    junit_output = tmp_path / "junit.xml"
+    with patch("anta.cli.nrfu.utils.run_tests", side_effect=populate_results):
+        result = click_runner.invoke(anta, ["nrfu", "junit", "--junit-output", str(junit_output)])
+
+    assert result.exit_code == ExitCode.USAGE_ERROR
+    assert "Duplicate JUnit testcase identity" in result.output
+    assert "result_overwrite.description" in result.output
+    assert "JUnit report saved to" not in result.output
+    assert not junit_output.exists()
+
+
 def test_anta_nrfu_junit_dry_run(click_runner: CliRunner, tmp_path: Path) -> None:
     """Warn about experimental reporting even when execution stops after a dry run."""
     junit_output = tmp_path / "junit.xml"
