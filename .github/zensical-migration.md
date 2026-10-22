@@ -6,7 +6,7 @@
 
 # Zensical Documentation Plan
 
-**Source baseline:** `main` at `97338a6d`, merged into #1828 on October 21, 2026 (includes merged #1809 and Zensical 0.0.69)
+**Source baseline:** `upstream/main` at `9bbe81b8` (includes merged #1809 and #1828; Zensical remains at 0.0.69)
 **Documentation tooling:** Zensical `0.0.69` (already on `main`)
 **Migration PR:** [#1809](https://github.com/aristanetworks/anta/pull/1809) (merged); follow-up outcomes are tracked below.
 **Updated:** October 22, 2026
@@ -45,7 +45,7 @@ The entries below record the current choices and when to reconsider them, as of 
 | D10 | **Adopted:** documentation tooling and library Python support are independent; dependency updates do not enable features automatically. | Zensical 0.0.69 requires Python >=3.11. The root doc group and both hook environments share its pin. | Every documentation-tooling upgrade: align all three pins and check group/interpreter constraints, builds, inventories, and browser behavior without silently changing library support. |
 | D11 | **Deferred:** social cards. | Native support is available, but branding, fonts/assets, caching, versioned URLs, and build cost need evaluation. | A small branded preview demonstrates useful shared-link presentation at acceptable cost. |
 | D12 | **Deferred:** instant link previews. | They may help long API pages but can add clutter and interfere with overlays. | A representative guide/API pilot improves navigation and works with keyboard, touch, palettes, and overlays. |
-| D13 | **Deferred:** build-only asset exclusions. | A temporary narrow pilot worked, but exclusions can filter source documents and effective resources, including theme assets. | An output inventory identifies unnecessary public copies and a narrow comparison proves source reads, raw snippets, downloads, images, templates, and site assets survive. |
+| D13 | **Adopted:** exclude `scripts/**` and `templates/**` from the published site. | These directories contain build/deployment helpers and API rendering templates, with no authored download links. The output comparison and scope are recorded below. | A new download or browser resource needs a file in either directory, or a broader exclusion is proposed. Preserve source reads and compare retained pages, raw snippets, downloads, images, and theme assets before expanding the patterns. |
 | D14 | **Deferred:** blog and RSS. | There is no publication owner or agreed feed date/version policy. | A named owner commits to maintained articles and defines dates, versioned URLs, and duplicate-entry policy. |
 | D15 | **Deferred:** table reader. | Moving manually maintained rows into another file alone does not remove drift. | An authoritative structured dataset can generate a reference table with preserved links and a single maintenance source. |
 | D16 | **Deferred:** audio/video. | Available support alone does not establish a learning need; media adds accessibility and asset costs. | A concrete explanation benefits from media with accessible text/captions, versioned playback, and acceptable page/build cost. |
@@ -58,6 +58,7 @@ When implementation or investigation changes a choice, update its reason and rev
 
 | Recorded | Decisions | Outcome and evidence |
 | --- | --- | --- |
+| 2026-10-22 | D13 — Build-only asset exclusions ([#1840](https://github.com/aristanetworks/anta/pull/1840)) | The previous pilot remained deferred because exclusions could remove source or theme resources. An output inventory identified 5 build/deployment scripts and 7 API templates (43,413 bytes) with no authored download links. Cached and clean output comparisons remove exactly those copies and leave every retained file unchanged. Exclusions are adopted only for these two directories. |
 | 2026-10-22 | Current baseline | Refreshed this guide after the October 21 merge of `main` (`97338a6d`) into #1828. Zensical remains at 0.0.69; the recorded decisions are unchanged. Earlier experiment dates and tested versions remain historical evidence. |
 | 2026-10-21 | Backlog cleanup ([#1828](https://github.com/aristanetworks/anta/pull/1828)) | Removed completed and duplicate follow-up proposals. The 16 decisions retain their rationale and revisit conditions; no follow-up PRs are scheduled. |
 | 2026-10-16 | D10 — Live rebuilds ([#1828](https://github.com/aristanetworks/anta/pull/1828)) | Live trials showed root README and external example edits did not rebuild their dependent pages within 20 seconds. Explicit watch paths for `README.md` and `examples` fix both. Five edit/restore probes passed on Zensical 0.0.69 using served HTML; external changes take about 10 seconds and in-docs changes about 0.5 seconds. No trial content remains. |
@@ -65,9 +66,9 @@ When implementation or investigation changes a choice, update its reason and rev
 | 2026-10-16 | D01/D06 — API references ([#1828](https://github.com/aristanetworks/anta/pull/1828)) | Replaced 47 authored API object links with autorefs, retaining two overview-page links. A clean strict Zensical 0.0.68 build, rendered page/fragment destination audit, and changed-file/final all-files pre-commit checks passed. Backlinks remain deferred and curated API pages are retained under D01/D06. |
 | 2026-10-15 | D01–D16 | Consolidated the choices and earlier experiments from PR #1809 into this register. In particular, backlinks remain deferred because of preview clutter; this is a current choice that can be revisited, not a permanent rejection. |
 
-## Completed work awaiting merge
+## Completed work
 
-As of October 22, 2026, both items are implemented and validated in open PR [#1828](https://github.com/aristanetworks/anta/pull/1828), awaiting merge. The detailed evidence remains below.
+API object references and live snippet rebuilds merged in [#1828](https://github.com/aristanetworks/anta/pull/1828) on October 22, 2026. The detailed evidence remains below.
 
 | Work | Outcome |
 | --- | --- |
@@ -82,7 +83,7 @@ No follow-up PRs are currently scheduled. The remaining ideas are covered by the
 - Preserve working redirects, Git dates, and Mike deployment helpers. Recheck upstream/native support during upgrades; qualify replacements only when proposed (D02/D08/D09).
 - Check search and accessibility when changing the relevant UI or upgrading documentation tooling; open focused fixes for observed problems (D10).
 - Keep Markdown exports blocked until there is demand and evidence addressing the known defects (D05). The 0.0.69 emoji fix does not establish that API links or missing export destinations are fixed.
-- Keep curated API pages and leave social cards, previews, and asset exclusions disabled until their recorded revisit conditions are met (D06/D11/D12/D13). The other optional features remain under D07/D14–D16.
+- Keep curated API pages and leave social cards and previews disabled until their recorded revisit conditions are met (D06/D11/D12). Asset exclusions remain limited to the two build-only directories under D13. The other optional features remain under D07/D14–D16.
 
 Add a numbered follow-up only when there is a concrete problem or an agreed feature to implement. Number any future list consecutively from F01; do not reserve gaps for removed proposals.
 
@@ -105,6 +106,8 @@ GLightbox's native loader fetches JavaScript and CSS from `https://unpkg.com/gli
 ## Validation and local preview
 
 ### Recorded results
+
+- D13 in [#1840](https://github.com/aristanetworks/anta/pull/1840) on Zensical 0.0.69: compared a baseline clean strict build with cached and clean strict builds after enabling `scripts/**` and `templates/**` exclusions. Output decreased from 216 to 204 files, removing exactly 12 raw source copies (43,413 bytes). Every retained file is byte-for-byte identical, including all 80 HTML files, 35 raw snippets, 68 images, 8 theme assets, and `objects.inv`. No retained HTML `href` or `src` points to a removed path. Fixtures, overrides, source files, and repository commands remain available. External Python/mkdocstrings inventories could not be fetched in this environment; this comparison verifies output preservation, not upstream inventory availability.
 
 - Live rebuilds in [#1828](https://github.com/aristanetworks/anta/pull/1828): ran `zensical serve --dev-addr=127.0.0.1:8128` on 0.0.69 and inserted unique temporary markers into the sources below. Polled served HTML for marker appearance and disappearance after restoring each original file; did not restart or touch including pages between edits. The root README and external Python example failed before the explicit watch paths were added. The final run allowed up to 90 seconds per rebuild, and all five trials passed. Explicit external watch paths trigger broader rebuilds than in-docs snippet dependencies; the first shorter run saw transient HTTP 404 responses during rebuilding. These timings describe this local run, not a performance guarantee.
 
