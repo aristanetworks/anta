@@ -29,7 +29,10 @@ from anta.experimental.reporter.junit_reporter import JUnitReporter
     help="Path to save report as a JUnit file",
 )
 def junit(ctx: click.Context, junit_output: pathlib.Path) -> None:
-    """[Experimental] Check network state with a JUnit report."""
+    """[Experimental] Check network state with a JUnit report.
+
+    Includes all results regardless of the NRFU --hide option.
+    """
     # Defer stable CLI imports until command registration has completed.
     from anta.cli.nrfu.utils import run_tests  # noqa: PLC0415
     from anta.cli.utils import exit_with_code  # noqa: PLC0415
@@ -46,8 +49,11 @@ def save_to_junit(ctx: click.Context, junit_file: pathlib.Path) -> None:
     from anta.cli.nrfu.utils import _get_result_manager  # noqa: PLC0415
     from anta.cli.utils import ExitCode  # noqa: PLC0415
 
+    if ctx.obj.get("hide"):
+        console.print("WARNING: --hide is ignored for JUnit reporting; all results are included.", style="yellow")
+
     try:
-        JUnitReporter.generate(results=_get_result_manager(ctx), output_path=junit_file)
+        JUnitReporter.generate(results=_get_result_manager(ctx, apply_hide_filter=False), output_path=junit_file)
         console.print(f"JUnit report saved to {junit_file} ✅", style="cyan")
     except OSError:
         console.print(f"Failed to save JUnit report to {junit_file} ❌", style="cyan")
