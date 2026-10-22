@@ -74,8 +74,8 @@ repos:
           - pytest==9.1.1
           - pytest-codspeed!=4.1.0
           - respx==0.23.1
-          - pydantic-settings==2.15.0
-          - zensical==0.0.69
+          - pydantic-settings==2.16.0
+          - zensical==0.0.70
 
   - repo: https://github.com/codespell-project/codespell
     rev: 57b21406f092110c18776e39b0bda50d37c945c8  # frozen: v2.4.3
@@ -103,7 +103,7 @@ repos:
           - types-PyYAML==6.0.12.20260906
           - types-requests==2.33.0.20261006
           - types-pyOpenSSL==24.1.0.20240722
-          - zensical==0.0.69
+          - zensical==0.0.70
         files: ^(anta|tests|asynceapi|tools/zensical_extensions)/
 
   - repo: https://github.com/DavidAnson/markdownlint-cli2
@@ -137,7 +137,7 @@ repos:
         language: python
         additional_dependencies:
           - anta[cli]
-          - pydantic-settings==2.15.0
+          - pydantic-settings==2.16.0
       - id: doc-snippets
         name: Generate doc snippets
         entry: >-
@@ -151,4 +151,4 @@ repos:
           - anta[cli]
           # Keep generated CLI snippets stable with Click's optional subcommand rendering.
           - click~=8.5.0
-          - pydantic-settings==2.15.0
+          - pydantic-settings==2.16.0
