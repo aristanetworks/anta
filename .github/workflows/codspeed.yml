@@ -26,7 +26,7 @@ jobs:
       - name: Pin pip
         run: pip install "pip>=25.1"
       - name: Install dependencies
-        run: pip install . --group dev --group benchmark
+        run: pip install ".[cli]" --group test --group benchmark
       - name: Run benchmarks
         uses: CodSpeedHQ/action@821a40cd6c80e3cfe387caf55668287addd808da # v5.5.0
         with:
@@ -50,7 +50,7 @@ jobs:
       - name: Pin pip
         run: pip install "pip>=25.1"
       - name: Install dependencies
-        run: pip install . --group dev --group benchmark
+        run: pip install ".[cli]" --group test --group benchmark
       - name: Run benchmarks
         uses: CodSpeedHQ/action@821a40cd6c80e3cfe387caf55668287addd808da # v5.5.0
         env:
