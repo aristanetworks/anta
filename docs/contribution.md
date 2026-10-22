@@ -18,6 +18,9 @@ To help development, open your PR as soon as possible even in draft mode. It hel
 
 ## Create a development environment
 
+!!! tip "pip dependency groups"
+    The `--group` option used in this guide requires pip 25.1 or newer.
+
 Run the following commands to create an ANTA development environment:
 
 ```bash
@@ -137,7 +140,7 @@ If you use [`uv`](https://docs.astral.sh/uv/) for your local workflow, it can cr
 uv run --no-default-groups --group test --extra cli pytest tests/units
 ```
 
-`--no-default-groups` excludes uv's default `dev` group, so only the test dependencies and CLI extra are installed.
+`--no-default-groups` excludes uv's default `dev` group from dependency selection. By default, `uv run` retains extra packages already installed in the environment.
 
 The `test` group contains the dependencies needed to run pytest. The `benchmark` group adds the benchmark plugins. The `dev` group includes the test and lint groups plus tox and the release versioning tool.
 
