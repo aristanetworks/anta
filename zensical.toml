@@ -176,10 +176,10 @@ link = "https://pypi.org/project/anta/"
 provider = "mike"
 default = ["stable"]
 
-# Build-only sources: retain them in the repository for tooling and rendering,
-# but do not publish raw copies. Keep snippets, downloads, and browser assets.
+# Build/deployment scripts run from the repository; do not publish raw copies.
+# Keep snippets, downloads, and browser assets in the site output.
 [project.plugins.exclude]
-glob = ["scripts/**", "templates/**"]
+glob = ["scripts/**"]
 
 [project.plugins.mkdocstrings]
 default_handler = "python"
