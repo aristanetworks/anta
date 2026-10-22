@@ -17,8 +17,8 @@ tags:
 
 The experimental JUnit reporter writes NRFU results to an XML file, grouping testcases by device. The CLI command and the Python reporter follow the [experimental compatibility policy](index.md).
 
-!!! warning "Report correctness is still under development"
-    Repeated invocations of a test can receive identical JUnit testcase identities, even when their inputs and outcomes differ. CI consumers such as GitLab can silently ignore duplicate entries. Testcase identities are also not guaranteed to remain stable across runs. Compare the artifact with ANTA's JSON results when evaluating this feature; do not use it as the sole source of truth for CI test results.
+!!! warning "Testcase identity is still experimental"
+    If repeated invocations produce identical JUnit testcase identities, export fails rather than writing a report that consumers could silently collapse. Give repeated invocations distinct `result_overwrite.description` values to distinguish them. Testcase identities are not guaranteed to remain stable across runs; stable invocation identity is deferred to a follow-up change. Compare the artifact with ANTA's JSON results when evaluating this feature.
 
 ## CLI usage
 
@@ -75,7 +75,7 @@ JUnit has no separate `UNSET` outcome. The reporter emits an ANTA `UNSET` result
 
 ## Current limitations
 
-- The duplicate-name hash uses result metadata rather than the original test inputs. Identical metadata can produce identical names, and changes to the surrounding results can change testcase names between runs.
+- The duplicate-name hash uses result metadata rather than the original test inputs. Identical metadata can produce identical names, and changes to the surrounding results can change testcase names between runs. The reporter checks the final XML classname/name pairs and raises `ValueError` on duplicates before writing the file. The CLI prints the reason and exits with a usage error; any existing output file is left unchanged.
 - Per-test durations are intentionally not measured: command caching and reuse prevent meaningful attribution of command collection time to individual tests, while timing the test function alone provides little useful information. Testcase, suite and report durations are reported as zero for JUnit compatibility; these are placeholders, not measured durations. Suite timestamps reflect report generation time.
 
 These limitations remain under review while the feature is experimental.

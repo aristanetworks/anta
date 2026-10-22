@@ -234,3 +234,40 @@ def test_junit_reporter_generate_deduplicates_duplicate_testcase_names(tmp_path:
     testcase_names = [testcase.get("name") for testcase in testcases]
     assert len(testcase_names) == len(set(testcase_names))
     assert all(re.fullmatch(r"VerifyReachability - Verifies reachability to BGP neighbors\. \[[0-9a-f]{16}\]", name or "") for name in testcase_names)
+
+
+@pytest.mark.parametrize("existing_report", [False, True])
+@pytest.mark.parametrize("collision", ["metadata", "escaped_name", "escaped_device"])
+def test_junit_reporter_rejects_duplicate_identities(tmp_path: Path, existing_report: bool, collision: str) -> None:
+    """Reject ambiguous identities, including escaped collisions, without replacing an existing report."""
+    manager = ResultManager()
+    for index, status in enumerate((AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE)):
+        device = ("leaf\x00", r"leaf\x00")[index] if collision == "escaped_device" else "leaf1"
+        test = ("Verify\x00", r"Verify\x00")[index] if collision == "escaped_name" else "VerifyStatus"
+        manager.add(TestResult(name=device, test=test, categories=["system"], description="Checks status", result=status))
+    output_path = tmp_path / "junit.xml"
+    if existing_report:
+        output_path.write_text("Previous report", encoding="utf-8")
+
+    with pytest.raises(ValueError, match=r"Duplicate JUnit testcase identity.*result_overwrite.description"):
+        JUnitReporter.generate(manager, output_path)
+
+    if existing_report:
+        assert output_path.read_text(encoding="utf-8") == "Previous report"
+    else:
+        assert not output_path.exists()
+
+
+def test_junit_reporter_allows_same_test_on_different_devices(tmp_path: Path) -> None:
+    """A shared testcase name is unambiguous when the device classname differs."""
+    manager = ResultManager()
+    for device in ("leaf1", "leaf2"):
+        manager.add(TestResult(name=device, test="VerifyStatus", categories=["system"], description="Checks status", result=AntaTestStatus.SUCCESS))
+
+    output_path = tmp_path / "junit.xml"
+    JUnitReporter.generate(manager, output_path)
+
+    cases = ET.parse(output_path).findall("./testsuite/testcase")  # noqa: S314
+    assert len(cases) == 2
+    assert {case.get("classname") for case in cases} == {"leaf1", "leaf2"}
+    assert {case.get("name") for case in cases} == {"VerifyStatus - Checks status"}
