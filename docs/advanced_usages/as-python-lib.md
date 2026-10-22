@@ -13,9 +13,6 @@ tags:
   ~ that can be found in the LICENSE file.
   -->
 
-<!-- markdownlint-disable MD052 -->
-<!-- Python object references below are resolved by mkdocs-autorefs. -->
-
 ANTA is a Python library that can be used in user applications. This section describes how you can leverage ANTA Python modules to help you create your own NRFU solution.
 
 !!! tip
