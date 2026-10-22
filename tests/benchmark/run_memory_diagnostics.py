@@ -17,8 +17,11 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from tests.benchmark.memory_profile import summarize_profile
+
 BENCHMARK = "tests/benchmark/test_anta.py"
 TARGET = f"{BENCHMARK}::test_anta[2-devices]"
+VARIANTS = ("isolated", "isolated-reset", "suite", "suite-reset")
 
 
 def command_output(*command: str) -> str:
@@ -46,7 +49,7 @@ def validate_session(directory: Path, variant: str) -> dict[str, Any]:
     evidence = json.loads((directory / "metadata/session.json").read_text(encoding="utf-8"))
     expected = (
         [TARGET]
-        if variant == "isolated"
+        if variant.removesuffix("-reset") == "isolated"
         else [f"{BENCHMARK}::{test}[{count}]" for test in ("test_anta_dry_run", "test_anta") for count in ("1-device", "2-devices", "5-devices")]
     )
     if evidence["collected_order"] != expected or evidence["runner_mode"] != "memory" or evidence["exitstatus"] != 0:
@@ -59,6 +62,15 @@ def validate_session(directory: Path, variant: str) -> dict[str, Any]:
     if not list((directory / "profile").rglob("*ExecutionTimestamps*")) or not list((directory / "profile").rglob("*Memtrack*")):
         msg = "Native timestamp or allocation artifacts are missing"
         raise ValueError(msg)
+    reset = variant.endswith("-reset")
+    resets = evidence["task_registry_resets"]
+    expected_resets = [nodeid for nodeid in expected for _ in range(2)] if reset else []
+    if evidence["task_registry_reset"] != reset or [entry["nodeid"] for entry in resets] != expected_resets:
+        msg = "Registry reset did not run exactly before warm-up and measurement, or baseline was altered"
+        raise ValueError(msg)
+    if reset and any(entry["table_bytes_after"] != resets[0]["table_bytes_after"] or entry["tasks_after"] != 0 for entry in resets):
+        msg = "Registry reset evidence is inconsistent"
+        raise ValueError(msg)
     return {
         "catalog_sha256": evidence["catalog_sha256"],
         "raw_catalog_sha256": evidence["raw_catalog_sha256"],
@@ -67,11 +79,13 @@ def validate_session(directory: Path, variant: str) -> dict[str, Any]:
         "result_count": case["count"],
         "statuses": case["statuses"],
         "order_sha256": case["order_sha256"],
+        "task_registry_resets": resets,
+        "allocation_profile": summarize_profile(directory, TARGET),
     }
 
 
 def main() -> int:  # pylint: disable=too-many-locals
-    """Run every pair against one checkout and environment; keep failures for investigation."""
+    """Compare unchanged and registry-reset isolated/suite processes in one environment."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--repetitions", type=int, default=10, choices=range(1, 21))
     parser.add_argument("--output", type=Path, required=True)
@@ -102,11 +116,12 @@ def main() -> int:  # pylint: disable=too-many-locals
     (output / "environment.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     runs = []
     for repetition in range(1, args.repetitions + 1):
-        # Every member starts its own runner, tracker and pytest process. Alternate host-level order.
-        for variant in ("isolated", "suite") if repetition % 2 else ("suite", "isolated"):
+        # Rotate host-level order; each member starts its own runner, tracker and pytest.
+        offset = (repetition - 1) % len(VARIANTS)
+        for variant in VARIANTS[offset:] + VARIANTS[:offset]:
             directory = output / f"{repetition:02d}-{variant}"
             directory.mkdir()
-            selection = TARGET if variant == "isolated" else BENCHMARK
+            selection = TARGET if variant.removesuffix("-reset") == "isolated" else BENCHMARK
             pytest_command = shlex.join(
                 [
                     sys.executable,
@@ -118,6 +133,7 @@ def main() -> int:  # pylint: disable=too-many-locals
                     "INFO",
                     "-p",
                     "tests.benchmark.memory_diagnostics",
+                    *(["--anta-reset-task-registry"] if variant.endswith("-reset") else []),
                     f"--junitxml={directory}/junit.xml",
                     selection,
                 ]
@@ -154,10 +170,14 @@ def main() -> int:  # pylint: disable=too-many-locals
     summary = (
         f"Native memory repeatability: {'evidence complete' if valid else 'FAILED — inspect runs.json and run.log'}\n\n"
         f"Commit: {manifest['commit']}\n\n"
-        f"Collected {len(runs)} processes ({args.repetitions} isolated/suite pairs). Environment unchanged: {unchanged}.\n\n"
+        f"Attempted {len(runs)} processes ({args.repetitions} baseline/reset isolated/suite groups). Environment unchanged: {unchanged}.\n\n"
         "Raw native profiles are in each process's profile/ directory. No CodSpeed upload was performed. "
         "This summary validates evidence completeness; it does not declare memory stable or calculate a CodSpeed dashboard metric.\n"
     )
+    summary += "\nPeak live requested bytes from allocations originating in the two-device sample (independent reconstruction, not RSS):\n\n"
+    for variant in VARIANTS:
+        peaks = [run["allocation_profile"]["peak_sample_allocations_bytes"] for run in runs if run["variant"] == variant and "allocation_profile" in run]
+        summary += f"- {variant}: {peaks}\n"
     (output / "summary.md").write_text(summary, encoding="utf-8")
     if path := os.environ.get("GITHUB_STEP_SUMMARY"):
         with Path(path).open("a", encoding="utf-8") as step_summary:

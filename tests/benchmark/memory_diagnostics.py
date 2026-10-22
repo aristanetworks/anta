@@ -14,6 +14,55 @@ if TYPE_CHECKING:
 
 # Retain references to existing session fixtures; do not build another catalog before measurement.
 _FIXTURES: dict[str, Any] = {}
+_REGISTRY_RESETS: list[dict[str, Any]] = []
+
+
+def pytest_addoption(parser: pytest.Parser) -> None:
+    """Keep the interpreter-state experiment opt-in and separate from ordinary benchmarks."""
+    parser.addoption("--anta-reset-task-registry", action="store_true", help="Reset the quiescent asyncio WeakSet task registry before each invocation")
+
+
+def reset_task_registry(nodeid: str) -> None:
+    """Clear the existing WeakSet only at a single-threaded, quiescent setup boundary."""
+    import _asyncio  # noqa: PLC0415
+    import asyncio  # noqa: PLC0415
+    import sys  # noqa: PLC0415
+    import threading  # noqa: PLC0415
+    from weakref import WeakSet  # noqa: PLC0415
+
+    if threading.current_thread() is not threading.main_thread() or threading.active_count() != 1:
+        msg = "Refusing task-registry reset with another Python thread"
+        raise RuntimeError(msg)
+    try:
+        asyncio.get_running_loop()
+    except RuntimeError:
+        pass
+    else:
+        msg = "Refusing task-registry reset inside a running event loop"
+        raise RuntimeError(msg)
+    # Different interpreter versions expose the C-held WeakSet under different names.
+    registry_name = "_scheduled_tasks" if hasattr(_asyncio, "_scheduled_tasks") else "_all_tasks"
+    registry = getattr(_asyncio, registry_name, None)
+    backing_set = getattr(registry, "data", None)
+    if not isinstance(registry, WeakSet) or not isinstance(backing_set, set):
+        msg = "This interpreter does not expose an asyncio WeakSet task registry that can be reset"
+        raise TypeError(msg)
+    tasks = list(registry)
+    if any(not task.done() for task in tasks):
+        msg = "Refusing task-registry reset while unfinished tasks remain"
+        raise RuntimeError(msg)
+    before = sys.getsizeof(backing_set)
+    registry.clear()
+    _REGISTRY_RESETS.append(
+        {
+            "nodeid": nodeid,
+            "registry": registry_name,
+            "tasks_before": len(tasks),
+            "tasks_after": len(registry),
+            "table_bytes_before": before,
+            "table_bytes_after": sys.getsizeof(backing_set),
+        }
+    )
 
 
 @pytest.hookimpl(wrapper=True)
@@ -49,6 +98,8 @@ def pytest_sessionfinish(  # noqa: C901  # pylint: disable=too-many-locals
         "runner_mode": os.environ.get("CODSPEED_RUNNER_MODE"),
         "collected_order": [item.nodeid for item in session.items],
         "cases": {},
+        "task_registry_reset": session.config.getoption("anta_reset_task_registry"),
+        "task_registry_resets": _REGISTRY_RESETS,
     }
 
     def encode(value: Any) -> bytes:  # noqa: ANN401 - JSON data has heterogeneous recursive values.

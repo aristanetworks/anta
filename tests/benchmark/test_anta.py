@@ -23,10 +23,19 @@ from .utils import AntaMockEnvironment, build_inventory, collect, collect_comman
 logger = logging.getLogger(__name__)
 
 
+def prepare_invocation(request: pytest.FixtureRequest) -> None:
+    """Apply the optional interpreter-state diagnostic outside warm-up and measurement."""
+    if request.config.getoption("anta_reset_task_registry", default=False):
+        from .memory_diagnostics import reset_task_registry  # noqa: PLC0415
+
+        reset_task_registry(request.node.nodeid)
+
+
 def test_anta_dry_run(
     benchmark: BenchmarkFixture,
     anta_mock_env: AntaMockEnvironment,
     inventory: AntaInventory,
+    request: pytest.FixtureRequest,
 ) -> None:
     """Benchmark ANTA in Dry-Run Mode."""
     # Disable logging during ANTA execution to avoid having these function time in benchmarks
@@ -35,6 +44,7 @@ def test_anta_dry_run(
     # TODO: Use AntaRunner directly in ANTA v2.0.0
     def setup() -> tuple[tuple[ResultManager, AntaInventory, AntaCatalog], dict[str, object]]:
         """Create state that is not shared between CodSpeed's warm-up and measured invocations."""
+        prepare_invocation(request)
         return (ResultManager(), build_inventory(len(inventory)), anta_mock_env.catalog), {}
 
     def run(results: ResultManager, benchmark_inventory: AntaInventory, catalog: AntaCatalog) -> ResultManager:
@@ -74,6 +84,7 @@ def test_anta(
     # TODO: Use AntaRunner directly in ANTA v2.0.0
     def setup() -> tuple[tuple[ResultManager, AntaInventory, AntaCatalog], dict[str, object]]:
         """Create state that is not shared between CodSpeed's warm-up and measured invocations."""
+        prepare_invocation(request)
         return (ResultManager(), build_inventory(len(inventory)), anta_mock_env.catalog), {}
 
     def run(results: ResultManager, benchmark_inventory: AntaInventory, catalog: AntaCatalog) -> ResultManager:
