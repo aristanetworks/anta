@@ -66,8 +66,8 @@ dev = [
   {include-group = "lint"},
   "bumpver>=2026.1132",
   # tox 4.65.1 and later require Python 3.11.
-  "tox>=4.65.5,<4.65.6; python_version < '3.11'",
-  "tox>=4.65.5,<5.0.0; python_version >= '3.11'",
+  "tox>=4.66.0,<4.66.1; python_version < '3.11'",
+  "tox>=4.66.0,<5.0.0; python_version >= '3.11'",
 ]
 test = [
   "pytest-asyncio>=1.4.0",
