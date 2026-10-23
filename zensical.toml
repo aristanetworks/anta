@@ -176,6 +176,11 @@ link = "https://pypi.org/project/anta/"
 provider = "mike"
 default = ["stable"]
 
+# Build/deployment scripts run from the repository; do not publish raw copies.
+# Keep snippets, downloads, and browser assets in the site output.
+[project.plugins.exclude]
+glob = ["scripts/**"]
+
 [project.plugins.mkdocstrings]
 default_handler = "python"
 custom_templates = "docs/templates"
