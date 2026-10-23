@@ -340,6 +340,8 @@ anta.tests.cvx:
       # Verify if all MCS server mounts are in a MountComplete state.
       connections_count: 100
 anta.tests.evpn:
+  - VerifyEVPNSanity:
+      # Verifies there are no EVPN sanity-check inconsistencies.
   - VerifyEVPNType5Routes:
       # Verifies EVPN Type-5 routes for given IP prefixes and VNIs.
       prefixes:
