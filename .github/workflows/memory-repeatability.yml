@@ -1,0 +1,91 @@
+---
+name: Diagnose memory repeatability
+on:
+  workflow_dispatch:
+    inputs:
+      repetitions:
+        description: Number of baseline/reset isolated/suite groups (1-20)
+        type: number
+        default: 10
+        required: true
+  # Exercise the diagnostic before merging it; ordinary ANTA changes do not trigger it.
+  pull_request:
+    paths:
+      - .github/workflows/memory-repeatability.yml
+      - tests/benchmark/memory_diagnostics.py
+      - tests/benchmark/run_memory_diagnostics.py
+      - tests/benchmark/memory_profile.py
+      - tests/benchmark/test_anta.py
+
+concurrency:
+  group: memory-repeatability-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  repeatability:
+    name: Native memory repeatability on ARM
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 180
+    env:
+      PYTHONHASHSEED: "0"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Benchmark the exact PR head, rather than a changing synthetic merge commit.
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12.15"
+      - name: Install one environment for every repetition
+        run: |
+          EVIDENCE_DIR="$RUNNER_TEMP/memory-repeatability"
+          echo "EVIDENCE_DIR=$EVIDENCE_DIR" >> "$GITHUB_ENV"
+          mkdir -p "$EVIDENCE_DIR"
+          python -m pip install "pip>=25.1"
+          python -m pip install . --group dev --group benchmark --report "$EVIDENCE_DIR/install.json"
+          python -m pip install msgpack==1.2.3 zstandard==0.25.0 --report "$EVIDENCE_DIR/analysis-install.json"
+          python -m pip freeze --all > "$EVIDENCE_DIR/packages.txt"
+          # Normal bytecode is precompiled; pytest's rewritten caches cannot be written by the first repetition.
+          python -m compileall -q anta asynceapi tests
+      - name: Install pinned native instrumentation
+        env:
+          CODSPEED_RUNNER_INSTALL_DIR: ${{ runner.temp }}/codspeed
+        run: |
+          curl --fail --silent --show-error --location https://codspeed.io/v5.4.0/install.sh -o "$EVIDENCE_DIR/install-codspeed.sh"
+          # Published in CodSpeedHQ/action c4fd08a3a159bd0cc208da1e0edf32b8c47d75e5.
+          echo "66ddfbb9508258884c71a289c2716fdc2e7a71c6a21867a69e7b79938e1a4e04  $EVIDENCE_DIR/install-codspeed.sh" | sha256sum --check
+          bash "$EVIDENCE_DIR/install-codspeed.sh" --quiet
+          "$CODSPEED_RUNNER_INSTALL_DIR/bin/codspeed" setup --mode memory
+      - name: Compare baseline and registry reset for isolated case and suite
+        env:
+          REPETITIONS: ${{ inputs.repetitions || 10 }}
+        run: python -m tests.benchmark.run_memory_diagnostics --repetitions "$REPETITIONS" --output "$EVIDENCE_DIR"
+      - name: Upload small numerical summary
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: memory-summary-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/memory-repeatability/environment.json
+            ${{ runner.temp }}/memory-repeatability/runs.json
+            ${{ runner.temp }}/memory-repeatability/summary.md
+          retention-days: 30
+      - name: Package evidence, including partial failures
+        if: always()
+        run: |
+          if [ -d "$EVIDENCE_DIR" ]; then
+            tar -czf "$RUNNER_TEMP/memory-repeatability.tar.gz" -C "$RUNNER_TEMP" memory-repeatability
+          fi
+      - name: Upload native profiles and manifests
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: memory-repeatability-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/memory-repeatability.tar.gz
+          compression-level: 0
+          retention-days: 30
