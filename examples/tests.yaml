@@ -1318,6 +1318,8 @@ anta.tests.security:
       # Verifies hardware entropy generation is enabled on device.
   - VerifyIPSecConnHealth:
       # Verifies all IPv4 security connections.
+  - VerifyIPSecTunnelHealth:
+      # Verifies that all configured route-based IPv4 IPsec tunnels are established.
   - VerifyIPv4ACL:
       # Verifies the configuration of IPv4 ACLs.
       ipv4_access_lists:
@@ -1358,6 +1360,13 @@ anta.tests.security:
               destination_address: 100.64.2.2
             - source_address: 172.18.3.2
               destination_address: 172.18.2.2
+  - VerifySpecificIPSecTunnel:
+      # Verifies one expected route-based IPv4 IPsec connection and its named VTI.
+      peer: 10.223.0.3
+      vrf: default
+      source_address: 10.223.0.0
+      destination_address: 10.223.0.3
+      tunnel: Tunnel223
   - VerifyTelnetStatus:
       # Verifies if Telnet is disabled in the default VRF.
 anta.tests.services:
