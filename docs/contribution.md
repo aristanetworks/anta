@@ -18,6 +18,9 @@ To help development, open your PR as soon as possible even in draft mode. It hel
 
 ## Create a development environment
 
+!!! tip "pip dependency groups"
+    The `--group` option used in this guide requires pip 25.1 or newer.
+
 Run the following commands to create an ANTA development environment:
 
 ```bash
@@ -112,7 +115,13 @@ Add the unit test to the appropriate submodule test file under `tests/units/anta
 
 ### How to run unit tests
 
-To run the unit test suite from an activated development environment:
+To create an environment for running tests without installing development tools:
+
+```bash
+pip install -e ".[cli]" --group test
+```
+
+To run the unit test suite from that environment or an activated development environment:
 
 ```bash
 pytest tests/units
@@ -128,8 +137,12 @@ pytest tests/units/anta_tests/test_system.py::test
 If you use [`uv`](https://docs.astral.sh/uv/) for your local workflow, it can create or update the environment before running pytest:
 
 ```bash
-uv run --group dev --extra cli pytest tests/units
+uv run --no-default-groups --group test --extra cli pytest tests/units
 ```
+
+`--no-default-groups` excludes uv's default `dev` group from dependency selection. By default, `uv run` retains extra packages already installed in the environment.
+
+The `test` group contains the dependencies needed to run pytest. The `benchmark` group adds the benchmark plugins. The `dev` group includes the test and lint groups plus tox and the release versioning tool.
 
 Use tox when you want to run the unit tests in the same isolated environments used by CI:
 
@@ -425,7 +438,7 @@ Create an [AntaInventory][anta.inventory.AntaInventory] and add an
 
 `autorefs` resolves these identifiers to their documented locations without hard-coding the API page path or heading anchor. Keep ordinary Markdown links for guides and other authored pages.
 
-After adding or changing an object reference, run `zensical build --strict` and check that the link opens the intended object in the rendered site.
+Register new object identifiers under `MD052.ignored_labels` in `.github/.markdownlint-cli2.yaml` (lowercase with underscores removed, as reported by MD052). This central list allows autorefs syntax while keeping MD052 enabled for ordinary reference links; it does not validate Python objects. After adding or changing an object reference, run `zensical build --strict` and check that the link opens the intended object in the rendered site.
 
 ### Generated CLI snippets
 
