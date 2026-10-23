@@ -49,6 +49,9 @@ jobs:
           allow-prereleases: ${{ matrix.python == '3.15' }}
       - name: Install dependencies
         run: pip install tox tox-gh-actions
+      - name: Check Python 3.10 development dependencies
+        if: matrix.python == '3.10'
+        run: python -m pip install --dry-run --ignore-installed --group dev
       - name: "Run pytest via tox for ${{ matrix.python }}"
         run: tox run
       - name: Upload coverage from pytest
