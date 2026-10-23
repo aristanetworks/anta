@@ -14,6 +14,8 @@ tags:
   ~ that can be found in the LICENSE file.
   -->
 
+## Tests
+
 ::: anta.tests.aaa
 
     options:
@@ -22,6 +24,25 @@ tags:
       filters:
         - "!test"
         - "!render"
+      heading_level: 3
+      merge_init_into_class: false
+      show_bases: false
+      show_labels: true
+      show_root_heading: false
+      show_root_toc_entry: false
+      show_symbol_type_heading: false
+      show_symbol_type_toc: false
+
+## Input models
+
+::: anta.input_models.aaa
+
+    options:
+      extra:
+          anta_hide_test_module_description: true
+      filters:
+        - "!^_"
+      heading_level: 3
       merge_init_into_class: false
       show_bases: false
       show_labels: true
