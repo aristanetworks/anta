@@ -21,7 +21,8 @@ from tests.benchmark.memory_profile import summarize_profile
 
 BENCHMARK = "tests/benchmark/test_anta.py"
 TARGET = f"{BENCHMARK}::test_anta[2-devices]"
-VARIANTS = ("isolated", "isolated-reset", "suite", "suite-reset")
+VARIANTS = ("isolated", "suite")
+RESET_VARIANTS = ("isolated", "isolated-reset", "suite", "suite-reset")
 
 
 def command_output(*command: str) -> str:
@@ -71,6 +72,7 @@ def validate_session(directory: Path, variant: str) -> dict[str, Any]:
     if reset and any(entry["table_bytes_after"] != resets[0]["table_bytes_after"] or entry["tasks_after"] != 0 for entry in resets):
         msg = "Registry reset evidence is inconsistent"
         raise ValueError(msg)
+    profile = summarize_profile(directory, TARGET, additional_targets=expected)
     return {
         "catalog_sha256": evidence["catalog_sha256"],
         "raw_catalog_sha256": evidence["raw_catalog_sha256"],
@@ -80,16 +82,36 @@ def validate_session(directory: Path, variant: str) -> dict[str, Any]:
         "statuses": case["statuses"],
         "order_sha256": case["order_sha256"],
         "task_registry_resets": resets,
-        "allocation_profile": summarize_profile(directory, TARGET),
+        "allocation_profiles": profile.pop("cases"),
+        "allocation_profile": profile,
     }
 
 
+def case_summary(runs: list[dict[str, Any]], variants: tuple[str, ...]) -> str:
+    """Show repeated peaks for every suite sample, including dry-run and one/five devices."""
+    summary = "\nAll suite cases, peak requested bytes from allocations originating in each sample:\n\n"
+    cases = sorted({nodeid for run in runs for nodeid in run.get("allocation_profiles", {})})
+    for nodeid in cases:
+        for variant in variants:
+            if not variant.startswith("suite"):
+                continue
+            peaks = [
+                run["allocation_profiles"][nodeid]["peak_sample_allocations_bytes"]
+                for run in runs
+                if run["variant"] == variant and nodeid in run.get("allocation_profiles", {})
+            ]
+            summary += f"- {variant} {nodeid}: {peaks}\n"
+    return summary
+
+
 def main() -> int:  # pylint: disable=too-many-locals
-    """Compare unchanged and registry-reset isolated/suite processes in one environment."""
+    """Repeat isolated/suite processes, optionally comparing a supported registry reset."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--repetitions", type=int, default=10, choices=range(1, 21))
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--include-registry-reset", action="store_true", help="Include reset variants only on interpreters exposing the compatible WeakSet")
     args = parser.parse_args()
+    variants = RESET_VARIANTS if args.include_registry_reset else VARIANTS
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=True)
     before = native_binaries()
@@ -97,6 +119,7 @@ def main() -> int:  # pylint: disable=too-many-locals
         "commit": command_output("git", "rev-parse", "HEAD").strip(),
         "git_status": command_output("git", "status", "--porcelain"),
         "python": sys.version,
+        "python_implementation": platform.python_implementation(),
         "platform": platform.platform(),
         "page_size": os.sysconf("SC_PAGE_SIZE"),
         "hash_seed": os.environ.get("PYTHONHASHSEED"),
@@ -109,6 +132,7 @@ def main() -> int:  # pylint: disable=too-many-locals
         "libc": command_output("ldd", "--version"),
         "python_libraries": command_output("ldd", sys.executable),
         "repetitions": args.repetitions,
+        "variants": variants,
         "target": TARGET,
         "memory_track_physical": True,
         "memory_capture_stack": True,
@@ -117,8 +141,8 @@ def main() -> int:  # pylint: disable=too-many-locals
     runs = []
     for repetition in range(1, args.repetitions + 1):
         # Rotate host-level order; each member starts its own runner, tracker and pytest.
-        offset = (repetition - 1) % len(VARIANTS)
-        for variant in VARIANTS[offset:] + VARIANTS[:offset]:
+        offset = (repetition - 1) % len(variants)
+        for variant in variants[offset:] + variants[:offset]:
             directory = output / f"{repetition:02d}-{variant}"
             directory.mkdir()
             selection = TARGET if variant.removesuffix("-reset") == "isolated" else BENCHMARK
@@ -170,14 +194,16 @@ def main() -> int:  # pylint: disable=too-many-locals
     summary = (
         f"Native memory repeatability: {'evidence complete' if valid else 'FAILED — inspect runs.json and run.log'}\n\n"
         f"Commit: {manifest['commit']}\n\n"
-        f"Attempted {len(runs)} processes ({args.repetitions} baseline/reset isolated/suite groups). Environment unchanged: {unchanged}.\n\n"
+        f"Python: {manifest['python']}\n\n"
+        f"Attempted {len(runs)} processes ({args.repetitions} repetitions of {', '.join(variants)}). Environment unchanged: {unchanged}.\n\n"
         "Raw native profiles are in each process's profile/ directory. No CodSpeed upload was performed. "
         "This summary validates evidence completeness; it does not declare memory stable or calculate a CodSpeed dashboard metric.\n"
     )
     summary += "\nPeak live requested bytes from allocations originating in the two-device sample (independent reconstruction, not RSS):\n\n"
-    for variant in VARIANTS:
+    for variant in variants:
         peaks = [run["allocation_profile"]["peak_sample_allocations_bytes"] for run in runs if run["variant"] == variant and "allocation_profile" in run]
         summary += f"- {variant}: {peaks}\n"
+    summary += case_summary(runs, variants)
     (output / "summary.md").write_text(summary, encoding="utf-8")
     if path := os.environ.get("GITHUB_STEP_SUMMARY"):
         with Path(path).open("a", encoding="utf-8") as step_summary:

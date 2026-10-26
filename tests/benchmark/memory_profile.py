@@ -32,7 +32,7 @@ def sample_window(timestamps: dict[str, Any], target: str) -> tuple[int, int]:
     return windows[matches[0]]
 
 
-def summarize_profile(directory: Path, target: str) -> dict[str, Any]:  # noqa: C901  # pylint: disable=too-many-locals,too-many-branches
+def summarize_profile(directory: Path, target: str, *, additional_targets: list[str] | None = None) -> dict[str, Any]:  # noqa: C901  # pylint: disable=too-many-locals
     """Count live requested bytes originating inside one native measurement window.
 
     This is an independent allocation-cohort metric, not RSS or a CodSpeed dashboard export.
@@ -45,25 +45,44 @@ def summarize_profile(directory: Path, target: str) -> dict[str, Any]:  # noqa: 
 
     results = directory / "profile/results"
     with (results / "ExecutionTimestamps.msgpack").open("rb") as stream:
-        start, end = sample_window(msgpack.unpack(stream, raw=False), target)
+        timestamps = msgpack.unpack(stream, raw=False)
+    target_uris: dict[str, None] = {target: None}
+    if additional_targets is not None:
+        for uri in additional_targets:
+            target_uris.setdefault(uri, None)
+    windows: dict[str, tuple[int, int]] = {uri: sample_window(timestamps, uri) for uri in target_uris}
     profiles = list(results.glob("*MemtrackArtifact.msgpack"))
     if len(profiles) != 1:
         msg = "Expected exactly one native allocation artifact"
         raise ValueError(msg)
     count = 0
-    events = []
+    events: dict[str, list[dict[str, Any]]] = {uri: [] for uri in windows}
     with profiles[0].open("rb") as compressed, zstandard.ZstdDecompressor().stream_reader(compressed) as stream:
         for event in msgpack.Unpacker(stream, raw=False):
             count += 1
-            if start <= event["timestamp"] <= end and event["type"] in {"Malloc", "Calloc", "AlignedAlloc", "Realloc", "Free"}:
-                if event["type"] == "Realloc" and (not event["addr"] or "old_addr" not in event):
-                    msg = "Unsupported failed realloc or missing source pointer"
-                    raise ValueError(msg)
-                events.append(event)
+            if event["type"] not in {"Malloc", "Calloc", "AlignedAlloc", "Realloc", "Free"}:
+                continue
+            for uri, (start, end) in windows.items():
+                if start <= event["timestamp"] <= end:
+                    if event["type"] == "Realloc" and (not event["addr"] or "old_addr" not in event):
+                        msg = "Unsupported failed realloc or missing source pointer"
+                        raise ValueError(msg)
+                    # Retain allocation fields, not the much larger captured stack bytes.
+                    events[uri].append({key: event[key] for key in ("timestamp", "type", "pid", "addr", "old_addr", "size") if key in event})
+                    break
     logged = re.search(r"Wrote (\d+) memtrack events to disk", (directory / "run.log").read_text(encoding="utf-8"))
     if logged is None or count != int(logged[1]):
         msg = "Decoded native event count does not match the tracker log"
         raise ValueError(msg)
+    profiles_by_case = {uri: {**allocation_metrics(sample), "decoded_events": count} for uri, sample in events.items()}
+    profile = profiles_by_case[target].copy()
+    if additional_targets is not None:
+        profile["cases"] = profiles_by_case
+    return profile
+
+
+def allocation_metrics(events: list[dict[str, Any]]) -> dict[str, Any]:
+    """Reconstruct live requested bytes independently within one sample."""
     live: dict[tuple[int, int], int] = {}
     current = peak = cumulative = 0
     large: Counter[int] = Counter()
@@ -88,5 +107,4 @@ def summarize_profile(directory: Path, target: str) -> dict[str, Any]:  # noqa: 
         "peak_sample_allocations_bytes": peak,
         "cumulative_sample_allocations_bytes": cumulative,
         "large_allocations": dict(large),
-        "decoded_events": count,
     }
