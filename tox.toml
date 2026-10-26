@@ -3,7 +3,7 @@
 # Not in pyproject.toml because: 
 # https://github.com/mbarkhau/bumpver/issues/247
 ################################
-requires = ["tox>=4.21", "tox-gh-actions"]
+requires = ["tox>=4.21"]
 env_list = [
   "clean",
   "lint",
@@ -16,18 +16,6 @@ env_list = [
   "py315",
   "report"
 ]
-# https://github.com/ymyzk/tox-gh-actions/issues/198
-# Consider moving to tox-gh instead of tox-gh-actions
-
-[gh-actions]
-python = """
-  3.10: py310
-  3.11: clean, py311, report
-  3.12: py312
-  3.13: py313
-  3.14: py314
-  3.15: py315
-"""
 
 [env_run_base]
 description = "Run pytest with {basepython}"
