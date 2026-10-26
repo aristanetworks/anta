@@ -113,22 +113,22 @@
       "groupSlug": "codespell"
     },
 
-    // These upper bounds preserve Python 3.10 support. Keep them aligned with
+    // These legacy requirements preserve Python 3.10 support. Keep them aligned with
     // pyproject.toml until Python 3.10 is dropped; newer Python entries still update.
     {
-      "description": "Freeze the Python 3.10 tox compatibility range.",
+      "description": "Freeze the Python 3.10 tox version.",
       "matchManagers": ["pep621"],
       "matchDepTypes": ["dependency-groups"],
       "matchPackageNames": ["tox"],
-      "matchCurrentValue": "/<4\\.65\\.1$/",
+      "matchCurrentValue": "==4.65.0",
       "enabled": false
     },
     {
-      "description": "Freeze the Python 3.10 pre-commit compatibility range.",
+      "description": "Freeze the Python 3.10 pre-commit version.",
       "matchManagers": ["pep621"],
       "matchDepTypes": ["dependency-groups"],
       "matchPackageNames": ["pre-commit"],
-      "matchCurrentValue": "/<4\\.7\\.0$/",
+      "matchCurrentValue": "==4.6.2",
       "enabled": false
     },
 
