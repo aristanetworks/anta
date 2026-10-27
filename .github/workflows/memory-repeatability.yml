@@ -51,7 +51,7 @@ jobs:
           echo "EVIDENCE_DIR=$EVIDENCE_DIR" >> "$GITHUB_ENV"
           mkdir -p "$EVIDENCE_DIR"
           python -m pip install "pip>=25.1"
-          python -m pip install . --group dev --group benchmark --report "$EVIDENCE_DIR/install.json"
+          python -m pip install ".[cli]" --group test --group benchmark --report "$EVIDENCE_DIR/install.json"
           python -m pip install msgpack==1.2.3 zstandard==0.25.0 --report "$EVIDENCE_DIR/analysis-install.json"
           python -m pip freeze --all > "$EVIDENCE_DIR/packages.txt"
           # Normal bytecode is precompiled; pytest's rewritten caches cannot be written by the first repetition.
@@ -60,9 +60,9 @@ jobs:
         env:
           CODSPEED_RUNNER_INSTALL_DIR: ${{ runner.temp }}/codspeed
         run: |
-          curl --fail --silent --show-error --location https://codspeed.io/v5.4.0/install.sh -o "$EVIDENCE_DIR/install-codspeed.sh"
-          # Published in CodSpeedHQ/action c4fd08a3a159bd0cc208da1e0edf32b8c47d75e5.
-          echo "66ddfbb9508258884c71a289c2716fdc2e7a71c6a21867a69e7b79938e1a4e04  $EVIDENCE_DIR/install-codspeed.sh" | sha256sum --check
+          curl --fail --silent --show-error --location https://codspeed.io/v5.5.0/install.sh -o "$EVIDENCE_DIR/install-codspeed.sh"
+          # Published in CodSpeedHQ/action 821a40cd6c80e3cfe387caf55668287addd808da.
+          echo "0620a07da7edbfff349b09671e4167d77a9ba2601f0cbfbce76a8364593249a0  $EVIDENCE_DIR/install-codspeed.sh" | sha256sum --check
           bash "$EVIDENCE_DIR/install-codspeed.sh" --quiet
           "$CODSPEED_RUNNER_INSTALL_DIR/bin/codspeed" setup --mode memory
       - name: Repeat isolated case and suite without registry reset

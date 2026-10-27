@@ -46,15 +46,16 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
-          python-version: "3.14"
+          python-version: "3.14.9"
       - name: Pin pip
         run: pip install "pip>=25.1"
       - name: Install dependencies
-        run: pip install . --group dev --group benchmark
+        run: pip install ".[cli]" --group test --group benchmark
       - name: Run benchmarks
-        uses: CodSpeedHQ/action@c4fd08a3a159bd0cc208da1e0edf32b8c47d75e5 # v5.4.0
+        uses: CodSpeedHQ/action@821a40cd6c80e3cfe387caf55668287addd808da # v5.5.0
         env:
           PYTHONHASHSEED: "0"
         with:
           mode: memory
+          runner-version: "5.5.0"
           run: pytest --codspeed --no-cov --log-cli-level INFO tests/benchmark/test_anta.py

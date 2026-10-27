@@ -14,7 +14,7 @@ The **Diagnose memory repeatability** workflow runs automatically when a PR chan
 
 After merging, use **Actions → Diagnose memory repeatability → Run workflow**, select an unchanged branch or tag, and leave `repetitions` at 10 for the first experiment. All repetitions in a job use the same checkout and installed environment. A separate dispatch can resolve different dependencies or use a newer runner image: compare the environment manifests before combining results.
 
-The workflow runs independent `ubuntu-24.04-arm` jobs for CPython 3.12.15 and 3.14.9, with native CodSpeed runner 5.4.0 and its pinned memtrack instrument, physical memory tracking and allocation stacks enabled. The installer checksum comes from the same pinned CodSpeed action as the normal memory workflow. No upload token, OIDC permission, or CodSpeed upload is used by the diagnostic.
+The workflow runs independent `ubuntu-24.04-arm` jobs for CPython 3.12.15 and 3.14.9, with native CodSpeed runner 5.5.0 and its pinned memtrack instrument, physical memory tracking and allocation stacks enabled. The installer checksum comes from the same pinned CodSpeed action as the normal memory workflow. The normal memory job explicitly pins Python 3.14.9 and runner 5.5.0 to match the qualified environment; simulation stays on Python 3.12. Both the diagnostic and normal memory job install the CLI extra and test/benchmark dependency groups. No upload token, OIDC permission, or CodSpeed upload is used by the diagnostic.
 
 Each repetition launches two independent native runner/tracker/pytest processes, with no registry reset:
 
