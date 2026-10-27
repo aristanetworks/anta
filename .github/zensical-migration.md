@@ -6,8 +6,8 @@
 
 # Zensical Documentation Plan
 
-**Source baseline:** `main` at `97338a6d`, merged into #1828 on October 21, 2026 (includes merged #1809 and Zensical 0.0.69)
-**Documentation tooling:** Zensical `0.0.69` (already on `main`)
+**Source baseline:** `upstream/main` at `61bdfe17` (includes merged #1809, #1828, and the Zensical 0.0.70 upgrade in #1831)
+**Documentation tooling:** Zensical `0.0.70` (already on `main`)
 **Migration PR:** [#1809](https://github.com/aristanetworks/anta/pull/1809) (merged); follow-up outcomes are tracked below.
 **Updated:** October 22, 2026
 
@@ -15,7 +15,7 @@ The MkDocs Material migration is complete. Merged PR #1809 retains ANTA's lightb
 
 ## Current baseline
 
-- `pyproject.toml` and both Pylint/Pyright pre-commit environments pin `zensical==0.0.69`.
+- `pyproject.toml` and both Pylint/Pyright pre-commit environments pin `zensical==0.0.70`.
 - Zensical uses `zensical.toml`, native search, instant navigation, linked content tabs, code copying, `mkdocstrings`, GLightbox, and custom Mermaid zoom.
 - Documentation tooling requires Python >=3.11, independently of ANTA's library support. The `doc` dependency group declares that minimum for uv resolution; the contributor guide documents it. Docs CI uses Python 3.11 and deployment selects Python 3.x.
 - The local extension is installed with `-e tools/zensical_extensions`. MkDocs and autorefs remain dependencies of `mkdocstrings`; site commands use Zensical.
@@ -23,7 +23,9 @@ The MkDocs Material migration is complete. Merged PR #1809 retains ANTA's lightb
 
 [Zensical 0.0.68](https://github.com/zensical/zensical/releases/tag/v0.0.68) includes native audio/video support, closer macros compatibility, and UI 0.0.35 search-result instant navigation and accessibility fixes. It requires Python >=3.11. Features inherited from earlier releases include redirects, snippet-dependent rebuilds, blog/RSS, API generators, social cards, Markdown exports, and asset exclusions. Availability does not imply adoption.
 
-[Zensical 0.0.69](https://github.com/zensical/zensical/releases/tag/v0.0.69) adds `nav-weight` and `markdownextradata` compatibility, improves symlink watching, fixes Unicode minification crashes, and preserves emojis in Markdown exports. UI 0.0.36 includes navigation spacing and instant-navigation fixes. All three pins already use this version on `main`. Markdown exports remain blocked (D05); check browser behavior when changing the relevant UI or upgrading documentation tooling (D03/D04/D10).
+[Zensical 0.0.69](https://github.com/zensical/zensical/releases/tag/v0.0.69) adds `nav-weight` and `markdownextradata` compatibility, improves symlink watching, fixes Unicode minification crashes, and preserves emojis in Markdown exports. UI 0.0.36 includes navigation spacing and instant-navigation fixes. Markdown exports remain blocked (D05); check browser behavior when changing the relevant UI or upgrading documentation tooling (D03/D04/D10).
+
+[Zensical 0.0.70](https://github.com/zensical/zensical/releases/tag/v0.0.70) adds compatibility for `exclude_docs`, `draft_docs`, and `not_in_nav`. UI 0.0.37 improves search accessibility, keyboard handling, and initialization. All three pins now use this version following [#1831](https://github.com/aristanetworks/anta/pull/1831); these additions do not change the deferred feature decisions.
 
 ## Decision register
 
@@ -42,10 +44,10 @@ The entries below record the current choices and when to reconsider them, as of 
 | D07 | **Retained:** standard Python-Markdown admonitions. GitHub alerts (`gh-admonitions`) and Obsidian callouts (`callouts`) remain deferred. | No identified shared-source need justifies another authoring convention. | Actual Markdown needs to render in GitHub or Obsidian as well as the site. Compare both renderers and document the resulting convention. |
 | D08 | **Retained:** local Git date extension. | The footer must follow renames and ignore metadata/license-only edits. Its display string is not RSS timestamp metadata. Native support is tracked in [backlog #18](https://github.com/zensical/backlog/issues/18). | Native support can satisfy those date semantics. Check at Zensical upgrades and compare representative pages before replacing the extension. |
 | D09 | **Retained:** compatible Mike fork and deployment/normalization helpers. | They preserve version order, stable aliases, same-base prerelease cleanup, and historical final builds. A strict site build does not test deployment behavior. | Native/upstream alternatives satisfy these contracts in a disposable-origin integration test, including identical redeploys. Never use the production publishing wrapper for a preview. |
-| D10 | **Adopted:** documentation tooling and library Python support are independent; dependency updates do not enable features automatically. | Zensical 0.0.69 requires Python >=3.11. The root doc group and both hook environments share its pin. | Every documentation-tooling upgrade: align all three pins and check group/interpreter constraints, builds, inventories, and browser behavior without silently changing library support. |
+| D10 | **Adopted:** documentation tooling and library Python support are independent; dependency updates do not enable features automatically. | Zensical 0.0.70 requires Python >=3.11. The root doc group and both hook environments share its pin. | Every documentation-tooling upgrade: align all three pins and check group/interpreter constraints, builds, inventories, and browser behavior without silently changing library support. |
 | D11 | **Deferred:** social cards. | Native support is available, but branding, fonts/assets, caching, versioned URLs, and build cost need evaluation. | A small branded preview demonstrates useful shared-link presentation at acceptable cost. |
 | D12 | **Deferred:** instant link previews. | They may help long API pages but can add clutter and interfere with overlays. | A representative guide/API pilot improves navigation and works with keyboard, touch, palettes, and overlays. |
-| D13 | **Deferred:** build-only asset exclusions. | A temporary narrow pilot worked, but exclusions can filter source documents and effective resources, including theme assets. | An output inventory identifies unnecessary public copies and a narrow comparison proves source reads, raw snippets, downloads, images, templates, and site assets survive. |
+| D13 | **Adopted:** exclude `scripts/**` from the published site. | These files are build/deployment helpers with no authored download links. The 0.0.70 baseline already omits API template copies, so a `templates/**` exclusion is unnecessary. The output comparison is recorded below. | A new download or browser resource needs a file in this directory, or a broader exclusion is proposed. Preserve source reads and compare retained pages, raw snippets, downloads, images, and theme assets before expanding the patterns. |
 | D14 | **Deferred:** blog and RSS. | There is no publication owner or agreed feed date/version policy. | A named owner commits to maintained articles and defines dates, versioned URLs, and duplicate-entry policy. |
 | D15 | **Deferred:** table reader. | Moving manually maintained rows into another file alone does not remove drift. | An authoritative structured dataset can generate a reference table with preserved links and a single maintenance source. |
 | D16 | **Deferred:** audio/video. | Available support alone does not establish a learning need; media adds accessibility and asset costs. | A concrete explanation benefits from media with accessible text/captions, versioned playback, and acceptable page/build cost. |
@@ -58,6 +60,7 @@ When implementation or investigation changes a choice, update its reason and rev
 
 | Recorded | Decisions | Outcome and evidence |
 | --- | --- | --- |
+| 2026-10-22 | D13 — Build-only asset exclusions ([#1840](https://github.com/aristanetworks/anta/pull/1840)) | The previous pilot remained deferred because exclusions could remove source or theme resources. The initial 0.0.69 comparison removed 5 scripts and 7 API template copies. Retesting on 0.0.70 found that template copies are already absent without exclusions, so the scope is narrowed to the 5 build/deployment scripts (21,864 bytes). |
 | 2026-10-22 | Current baseline | Refreshed this guide after the October 21 merge of `main` (`97338a6d`) into #1828. Zensical remains at 0.0.69; the recorded decisions are unchanged. Earlier experiment dates and tested versions remain historical evidence. |
 | 2026-10-21 | Backlog cleanup ([#1828](https://github.com/aristanetworks/anta/pull/1828)) | Removed completed and duplicate follow-up proposals. The 16 decisions retain their rationale and revisit conditions; no follow-up PRs are scheduled. |
 | 2026-10-16 | D10 — Live rebuilds ([#1828](https://github.com/aristanetworks/anta/pull/1828)) | Live trials showed root README and external example edits did not rebuild their dependent pages within 20 seconds. Explicit watch paths for `README.md` and `examples` fix both. Five edit/restore probes passed on Zensical 0.0.69 using served HTML; external changes take about 10 seconds and in-docs changes about 0.5 seconds. No trial content remains. |
@@ -65,9 +68,9 @@ When implementation or investigation changes a choice, update its reason and rev
 | 2026-10-16 | D01/D06 — API references ([#1828](https://github.com/aristanetworks/anta/pull/1828)) | Replaced 47 authored API object links with autorefs, retaining two overview-page links. A clean strict Zensical 0.0.68 build, rendered page/fragment destination audit, and changed-file/final all-files pre-commit checks passed. Backlinks remain deferred and curated API pages are retained under D01/D06. |
 | 2026-10-15 | D01–D16 | Consolidated the choices and earlier experiments from PR #1809 into this register. In particular, backlinks remain deferred because of preview clutter; this is a current choice that can be revisited, not a permanent rejection. |
 
-## Completed work awaiting merge
+## Completed work
 
-As of October 22, 2026, both items are implemented and validated in open PR [#1828](https://github.com/aristanetworks/anta/pull/1828), awaiting merge. The detailed evidence remains below.
+API object references and live snippet rebuilds merged in [#1828](https://github.com/aristanetworks/anta/pull/1828) on October 22, 2026. The detailed evidence remains below.
 
 | Work | Outcome |
 | --- | --- |
@@ -82,13 +85,13 @@ No follow-up PRs are currently scheduled. The remaining ideas are covered by the
 - Preserve working redirects, Git dates, and Mike deployment helpers. Recheck upstream/native support during upgrades; qualify replacements only when proposed (D02/D08/D09).
 - Check search and accessibility when changing the relevant UI or upgrading documentation tooling; open focused fixes for observed problems (D10).
 - Keep Markdown exports blocked until there is demand and evidence addressing the known defects (D05). The 0.0.69 emoji fix does not establish that API links or missing export destinations are fixed.
-- Keep curated API pages and leave social cards, previews, and asset exclusions disabled until their recorded revisit conditions are met (D06/D11/D12/D13). The other optional features remain under D07/D14–D16.
+- Keep curated API pages and leave social cards and previews disabled until their recorded revisit conditions are met (D06/D11/D12). Asset exclusions remain limited to the build/deployment scripts under D13. The other optional features remain under D07/D14–D16.
 
 Add a numbered follow-up only when there is a concrete problem or an agreed feature to implement. Number any future list consecutively from F01; do not reserve gaps for removed proposals.
 
 ## Earlier experiments to preserve
 
-These measurements came from temporary **Zensical 0.0.67** configurations recorded on October 9. They do not qualify the current 0.0.69 baseline, and their trial changes are not enabled in production.
+These measurements came from temporary **Zensical 0.0.67** configurations recorded on October 9. They do not qualify the current 0.0.70 baseline, and their trial changes are not enabled in production.
 
 | Experiment | Result and implication |
 | --- | --- |
@@ -105,6 +108,10 @@ GLightbox's native loader fetches JavaScript and CSS from `https://unpkg.com/gli
 ## Validation and local preview
 
 ### Recorded results
+
+- D13 retest in [#1840](https://github.com/aristanetworks/anta/pull/1840) after merged [#1831](https://github.com/aristanetworks/anta/pull/1831): Zensical 0.0.70 already omits the 7 API template copies without an exclusion. A clean-checkout baseline contains 209 files. Excluding only `scripts/**` removes exactly the 5 build/deployment scripts (21,864 bytes), leaving 204 files. Cached and clean strict builds preserve every retained file byte-for-byte, including 80 HTML files, 35 raw snippets, 68 images, 8 theme assets, and `objects.inv`; no retained HTML `href` or `src` points to a removed path. Bytecode writes were disabled for these runs. External inventory fetches remained unavailable.
+
+- D13 in [#1840](https://github.com/aristanetworks/anta/pull/1840) on Zensical 0.0.69: compared a baseline clean strict build with cached and clean strict builds after enabling `scripts/**` and `templates/**` exclusions. Output decreased from 216 to 204 files, removing exactly 12 raw source copies (43,413 bytes). Every retained file is byte-for-byte identical, including all 80 HTML files, 35 raw snippets, 68 images, 8 theme assets, and `objects.inv`. No retained HTML `href` or `src` points to a removed path. Fixtures, overrides, source files, and repository commands remain available. External Python/mkdocstrings inventories could not be fetched in this environment; this comparison verifies output preservation, not upstream inventory availability.
 
 - Live rebuilds in [#1828](https://github.com/aristanetworks/anta/pull/1828): ran `zensical serve --dev-addr=127.0.0.1:8128` on 0.0.69 and inserted unique temporary markers into the sources below. Polled served HTML for marker appearance and disappearance after restoring each original file; did not restart or touch including pages between edits. The root README and external Python example failed before the explicit watch paths were added. The final run allowed up to 90 seconds per rebuild, and all five trials passed. Explicit external watch paths trigger broader rebuilds than in-docs snippet dependencies; the first shorter run saw transient HTTP 404 responses during rebuilding. These timings describe this local run, not a performance guarantee.
 
@@ -133,7 +140,7 @@ uv run --group doc --with-editable tools/zensical_extensions zensical build --cl
 uv run --group doc --with-editable tools/zensical_extensions zensical serve --dev-addr=127.0.0.1:8000
 ```
 
-- Verify the executable reports 0.0.69. Check rendered guide-to-API destinations, the Git date footer, `objects.inv`, and absence of backlink blocks.
+- Verify the executable reports 0.0.70. Check rendered guide-to-API destinations, the Git date footer, `objects.inv`, and absence of backlink blocks.
 - Run changed-file pre-commit checks first and all-files checks for final validation. Review any hygiene changes before accepting them.
 - Record browser results with changes to the diagram/lightbox helpers (D03/D04); a build or event harness alone does not establish browser acceptance.
 - For URL/version changes, use a disposable local Mike main/release preview. Check direct entry and instant navigation, including targets inside details or tabs.
