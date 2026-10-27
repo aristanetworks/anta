@@ -108,7 +108,7 @@ jobs:
       - name: "Build Zensical documentation offline"
         run: zensical build --strict
   benchmarks:
-    name: Benchmark ANTA for Python 3.12
+    name: Benchmark ANTA
     needs: [file-changes, test-python]
     if: (needs.file-changes.outputs.code == 'true' || needs.file-changes.outputs.benchmarks == 'true') && github.repository == 'aristanetworks/anta'
     permissions:
