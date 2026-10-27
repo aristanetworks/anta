@@ -192,8 +192,10 @@ class VerifyEVPNSanity(AntaTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if at least one check is returned and all statuses are `ok`.
-    * Failure: The test will fail if any check reports a status other than `ok`, including `warn`.
+    * Success: The test will pass if at least one check is returned and all statuses are `ok`,
+      or `warn` when `warning_as_failure` is disabled.
+    * Failure: The test will fail if any check reports an unexpected status.
+      Warnings are treated as failures by default.
     * Skipped: The test will be skipped if no sanity checks are returned.
 
     Examples
@@ -208,19 +210,26 @@ class VerifyEVPNSanity(AntaTest):
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp evpn sanity detail", revision=1)]
     _atomic_support: ClassVar[bool] = True
 
+    class Input(AntaTest.Input):
+        """Input model for the VerifyEVPNSanity test."""
+
+        warning_as_failure: bool = True
+        """Treat checks reporting `warn` as failures. If false, these checks pass."""
+
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyEVPNSanity."""
         command_output = self.instance_commands[0].json_output
+        expected_statuses = ["ok"] if self.inputs.warning_as_failure else ["ok", "warn"]
 
         for category_name, category_data in command_output["categories"].items():
             for item in category_data["items"]:
                 status = item["status"]
                 result = self.result.add(description=f"Category: {category_name} Item: {item['name']}", status=AntaTestStatus.SUCCESS)
-                if status == "ok":
+                if status in expected_statuses:
                     continue
 
-                message = f"Invalid status - Expected: ok Actual: {status}"
+                message = f"Invalid status - Expected: {', '.join(expected_statuses)} Actual: {status}"
                 if reason := item.get("reasonNotOk"):
                     message += f" - {reason}"
                 result.is_failure(message)
