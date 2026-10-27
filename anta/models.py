@@ -403,8 +403,7 @@ class AntaTest(ABC):
         Attributes
         ----------
         result_overwrite
-            Define fields to overwrite in the TestResult object. An empty override is treated as omitted
-            so otherwise equivalent catalog entries do not run the test twice.
+            Define fields to overwrite in the TestResult object. An empty override is treated as omitted.
         """
 
         model_config = ConfigDict(extra="forbid")
