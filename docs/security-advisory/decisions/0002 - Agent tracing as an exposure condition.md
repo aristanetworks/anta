@@ -11,7 +11,7 @@
 
 ## Context
 
-Some advisories condition exposure on an EOS agent trace, usually because it logs secrets. Trace state is not reliably observable: `start trace <agent> setting <facility>/<level> timeout <duration>` leaves no running-config record, and `show trace <agent>` stops reporting it once the timer expires. For SA158, such a trace logged a gNPSI client password in clear text without lasting device evidence.
+Some advisories condition exposure on an EOS agent trace, usually because it logs secrets. Trace state is not reliably observable: `start trace <agent> setting <facility>/<level> timeout <duration>` leaves no running-config record, and `show trace <agent>` stops reporting it once the timer expires. Such a trace can log secrets without lasting device evidence.
 
 ## Decision
 
