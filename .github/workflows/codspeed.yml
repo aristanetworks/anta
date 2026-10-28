@@ -34,7 +34,7 @@ jobs:
           run: pytest --codspeed --no-cov --log-cli-level INFO tests/benchmark
 
   benchmark-memory:
-    name: Benchmark ANTA memory for Python 3.12
+    name: Benchmark ANTA memory for Python 3.14
     runs-on: ubuntu-24.04-arm
     permissions:
       contents: read
@@ -46,7 +46,8 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
-          python-version: "3.12"
+          # Keep the qualified memory runtime explicit; see tests/benchmark/README.md.
+          python-version: "3.14.9"
       - name: Pin pip
         run: pip install "pip>=25.1"
       - name: Install dependencies
@@ -57,4 +58,5 @@ jobs:
           PYTHONHASHSEED: "0"
         with:
           mode: memory
+          runner-version: "5.5.0"
           run: pytest --codspeed --no-cov --log-cli-level INFO tests/benchmark/test_anta.py
