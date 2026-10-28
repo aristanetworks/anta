@@ -54,15 +54,6 @@
       "matchDepTypes": ["dependency-groups"],
       "rangeStrategy": "bump"
     },
-    {
-      "description": "Group non-major Python tooling updates.",
-      "matchManagers": ["pep621"],
-      "matchDepTypes": ["dependency-groups"],
-      "matchUpdateTypes": ["minor", "patch"],
-      "groupName": "Python tooling dependencies",
-      "groupSlug": "python-tooling"
-    },
-
     // -------------------------------------------------------------------------
     // CI Tools (GitHub Actions & pre-commit)
     // Inherits global: reviewers, commitMessagePrefix ("ci:")
@@ -87,6 +78,16 @@
       "labels": ["CI"],
       "rangeStrategy": "bump"
     },
+    // Share the group across managers so duplicated PyPI dependencies update together.
+    // Tool-specific groups below override this default for hook repository aliases.
+    {
+      "description": "Group non-major Python tooling updates across Python and pre-commit.",
+      "matchManagers": ["pep621", "pre-commit"],
+      "matchDepTypes": ["dependency-groups", "pre-commit-python"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "Python tooling dependencies",
+      "groupSlug": "python-tooling"
+    },
     {
       "description": "Group Ruff updates across Python and pre-commit",
       "matchManagers": ["pep621", "pre-commit"],
@@ -110,6 +111,25 @@
       "matchUpdateTypes": ["minor", "patch"],
       "groupName": "codespell",
       "groupSlug": "codespell"
+    },
+
+    // These legacy requirements preserve Python 3.10 support. Keep them aligned with
+    // pyproject.toml until Python 3.10 is dropped; newer Python entries still update.
+    {
+      "description": "Freeze the Python 3.10 tox version.",
+      "matchManagers": ["pep621"],
+      "matchDepTypes": ["dependency-groups"],
+      "matchPackageNames": ["tox"],
+      "matchCurrentValue": "==4.65.0",
+      "enabled": false
+    },
+    {
+      "description": "Freeze the Python 3.10 pre-commit version.",
+      "matchManagers": ["pep621"],
+      "matchDepTypes": ["dependency-groups"],
+      "matchPackageNames": ["pre-commit"],
+      "matchCurrentValue": "==4.6.2",
+      "enabled": false
     },
 
     // -------------------------------------------------------------------------

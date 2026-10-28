@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from contextlib import AbstractContextManager, nullcontext
 from pathlib import Path
-from typing import Any, ClassVar
+from typing import Any, ClassVar, Literal
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -15,6 +15,8 @@ import requests
 
 from anta._advisory.base import _AntaAdvisoryTest
 from anta.cli.get.utils import (
+    _get_unique_commands,
+    _print_commands,
     create_inventory_from_ansible,
     create_inventory_from_cvp,
     extract_examples,
@@ -266,3 +268,48 @@ def test_extract_examples() -> None:
     assert EmptyExampleTest.__doc__ is not None
     assert extract_examples(MissingExampleTest.__doc__) is None
     assert extract_examples(EmptyExampleTest.__doc__) is None
+
+
+@pytest.mark.parametrize("command_type", [AntaCommand, AntaTemplate])
+def test_print_commands_deduplicates_per_test(monkeypatch: pytest.MonkeyPatch, command_type: type[AntaCommand | AntaTemplate]) -> None:
+    """Deduplicate text in order without changing commands or unique output."""
+
+    def make_command(
+        text: str, version: Literal[1, "latest"] = "latest", revision: int | None = None, ofmt: Literal["json", "text"] = "json"
+    ) -> AntaCommand | AntaTemplate:
+        if command_type is AntaTemplate:
+            return AntaTemplate(text, version=version, revision=revision, ofmt=ofmt)
+        return AntaCommand(command=text, version=version, revision=revision, ofmt=ofmt)
+
+    first = make_command("show version")
+    commands = [
+        first,
+        make_command("show hostname"),
+        make_command("show version"),
+        make_command("show version", version=1),
+        make_command("show version", revision=2),
+        make_command("show version", ofmt="text"),
+        make_command("show hostname"),
+        AntaTemplate("show version", revision=1, ofmt="text"),
+        AntaCommand(command="show hostname", version=1),
+    ]
+    other_commands = [make_command("show version"), make_command("show version")]
+    monkeypatch.setattr(MissingExampleTest, "commands", commands)
+    monkeypatch.setattr(EmptyExampleTest, "commands", other_commands)
+    originals = [(command, repr(command)) for command in commands + other_commands]
+    with patch("anta.cli.get.utils.console.print") as mocked_print:
+        _print_commands([MissingExampleTest, EmptyExampleTest])
+    assert [call.args[0] for call in mocked_print.call_args_list] == [
+        f"{MissingExampleTest.__module__}:",
+        "  - MissingExampleTest:",
+        "    - show version",
+        "    - show hostname",
+        "  - EmptyExampleTest:",
+        "    - show version",
+    ]
+    assert MissingExampleTest.commands is commands
+    assert EmptyExampleTest.commands is other_commands
+    assert all(
+        actual is original and repr(actual) == representation for actual, (original, representation) in zip(commands + other_commands, originals, strict=True)
+    )
+    assert _get_unique_commands([MissingExampleTest, EmptyExampleTest]) == {"show version", "show hostname"}
