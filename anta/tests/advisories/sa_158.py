@@ -150,12 +150,13 @@ class SA158(OptionalCommandsMixin, _AntaAdvisoryTest):
     -----
     CVE-2026-73457 does not use EosRpcAuth trace state. An operator can enable the trace at any time with
     `start trace`, which leaves no running-config record and disappears from `show trace Gnpsi` once the
-    timer expires, so trace state cannot rule out exposure (decision 0002).
+    timer expires, so trace state cannot rule out exposure.
 
     Expected Results
     ----------------
     * Success: EOS is outside scope, gNPSI is disabled, or the CVE-2026-73456 authentication prerequisite is absent.
-    * Failure: An affected EOS release has an effective gNPSI transport and, for CVE-2026-73456, an exposed authentication mode.
+    * Failure: An affected EOS release has an effective gNPSI transport with an exposed authentication mode (CVE-2026-73456)
+      or without the mitigation (CVE-2026-73457).
     * Mitigated: For CVE-2026-73457, every effective transport uses mutual TLS with only x509-spiffe authentication.
     * Error: Required EOS, gNPSI transport, or authentication state cannot be determined.
 
