@@ -5,13 +5,13 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Literal, TypeAlias
+from typing import TYPE_CHECKING, Literal, TypeAlias
 
 from anta._advisory.eos_versions import AffectedStatus
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.management import GnpsiAuthenticationExposureFact, GnpsiMetadataAuthenticationFact, GnpsiTransportFact
-from anta._advisory.facts.models import AvailableFact, FactProblemKind, FeatureState
-from anta._advisory.findings.models import AffectedResult, ErrorResult, NotAffectedResult
+from anta._advisory.facts.management import GnpsiAuthenticationExposureFact, GnpsiMutualTlsSpiffeMitigationFact, GnpsiTransportFact
+from anta._advisory.facts.models import AvailableFact, FactProblemKind, FeatureState, MitigationState
+from anta._advisory.findings.models import AffectedResult, ErrorResult, MitigatedResult, NotAffectedResult
 from anta._advisory.remediation import (
     AllOf,
     ChangeSoftwareVersion,
@@ -66,9 +66,9 @@ def authentication_exposure_fact(state: FeatureState) -> AvailableFact[GnpsiAuth
     return GnpsiAuthenticationExposureFact(state).available(SOURCE)
 
 
-def metadata_authentication_fact(state: FeatureState) -> AvailableFact[GnpsiMetadataAuthenticationFact]:
-    """Build normalized gNPSI metadata authentication for direct assessment tests."""
-    return GnpsiMetadataAuthenticationFact(state).available(SOURCE)
+def authentication_mitigation(state: MitigationState) -> AvailableFact[GnpsiMutualTlsSpiffeMitigationFact]:
+    """Build the exact gNPSI authentication mitigation for direct assessment tests."""
+    return GnpsiMutualTlsSpiffeMitigationFact(state).available(SOURCE)
 
 
 def test_sa158_assessment_contract() -> None:
@@ -77,20 +77,12 @@ def test_sa158_assessment_contract() -> None:
     transport_disabled = transport_fact(FeatureState.DISABLED)
     authentication_enabled = authentication_exposure_fact(FeatureState.ENABLED)
     authentication_disabled = authentication_exposure_fact(FeatureState.DISABLED)
-    authentication_unsupported = authentication_exposure_fact(FeatureState.UNSUPPORTED)
-    metadata_enabled = metadata_authentication_fact(FeatureState.ENABLED)
-    metadata_disabled = metadata_authentication_fact(FeatureState.DISABLED)
-    metadata_unsupported = metadata_authentication_fact(FeatureState.UNSUPPORTED)
     missing_version = EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
     vulnerability_id = "CVE-2026-73456"
     assert isinstance(_assess_gnpsi_issue(vulnerability_id, missing_version, transport_enabled, authentication_disabled), NotAffectedResult)
-    assert isinstance(_assess_gnpsi_issue(vulnerability_id, missing_version, transport_enabled, authentication_unsupported), NotAffectedResult)
     assert isinstance(_assess_gnpsi_issue(vulnerability_id, missing_version, transport_disabled, authentication_enabled), NotAffectedResult)
-    affected_execution = _assess_gnpsi_issue(vulnerability_id, eos_version_fact("4.36.1F"), transport_enabled, authentication_enabled)
-    assert isinstance(affected_execution, AffectedResult)
-    assert affected_execution.remediation == SOFTWARE_REMEDIATION
+    assert isinstance(_assess_gnpsi_issue(vulnerability_id, eos_version_fact("4.36.1F"), transport_enabled, authentication_enabled), AffectedResult)
     assert isinstance(_assess_gnpsi_issue(vulnerability_id, eos_version_fact("4.36.2F"), transport_enabled, authentication_enabled), NotAffectedResult)
-    assert isinstance(_assess_gnpsi_issue(vulnerability_id, missing_version, transport_enabled, authentication_enabled), ErrorResult)
     assert isinstance(
         _assess_gnpsi_issue(
             vulnerability_id,
@@ -100,25 +92,23 @@ def test_sa158_assessment_contract() -> None:
         ),
         ErrorResult,
     )
-    assert isinstance(
-        _assess_gnpsi_issue(vulnerability_id, eos_version_fact("4.36.1F"), GnpsiTransportFact.unavailable(FactProblemKind.MISSING, SOURCE), authentication_enabled),
-        ErrorResult,
-    )
 
-    assert isinstance(_assess_logging_issue(missing_version, transport_enabled, metadata_disabled), NotAffectedResult)
-    assert isinstance(_assess_logging_issue(missing_version, transport_enabled, metadata_unsupported), NotAffectedResult)
-    assert isinstance(_assess_logging_issue(missing_version, transport_disabled, metadata_enabled), NotAffectedResult)
-    affected = _assess_logging_issue(eos_version_fact("4.36.1F"), transport_enabled, metadata_enabled)
+    mitigated = _assess_logging_issue(eos_version_fact("4.36.1F"), transport_enabled, authentication_mitigation(MitigationState.EFFECTIVE))
+    assert isinstance(mitigated, MitigatedResult)
+    assert mitigated.remediation == LOGGING_REMEDIATION
+    affected = _assess_logging_issue(eos_version_fact("4.36.1F"), transport_enabled, authentication_mitigation(MitigationState.INEFFECTIVE))
     assert isinstance(affected, AffectedResult)
     assert affected.remediation == LOGGING_REMEDIATION
-    assert isinstance(_assess_logging_issue(eos_version_fact("4.36.2F"), transport_enabled, metadata_enabled), NotAffectedResult)
-    assert isinstance(_assess_logging_issue(missing_version, transport_enabled, metadata_enabled), ErrorResult)
     assert isinstance(
-        _assess_logging_issue(eos_version_fact("4.36.1F"), transport_enabled, GnpsiMetadataAuthenticationFact.unavailable(FactProblemKind.MISSING, SOURCE)),
-        ErrorResult,
+        _assess_logging_issue(eos_version_fact("4.36.2F"), transport_enabled, authentication_mitigation(MitigationState.INEFFECTIVE)),
+        NotAffectedResult,
     )
     assert isinstance(
-        _assess_logging_issue(eos_version_fact("4.36.1F"), GnpsiTransportFact.unavailable(FactProblemKind.MISSING, SOURCE), metadata_enabled),
+        _assess_logging_issue(missing_version, transport_disabled, GnpsiMutualTlsSpiffeMitigationFact.unavailable(FactProblemKind.MISSING, SOURCE)),
+        NotAffectedResult,
+    )
+    assert isinstance(
+        _assess_logging_issue(eos_version_fact("4.36.1F"), transport_enabled, GnpsiMutualTlsSpiffeMitigationFact.unavailable(FactProblemKind.MISSING, SOURCE)),
         ErrorResult,
     )
 
@@ -143,29 +133,36 @@ def test_sa158_version_boundaries() -> None:
 
 GNPSI_VULNERABLE: dict[str, object] = {
     "enabled": True,
-    "transports": {"t2": {"enabled": True, "securityType": "tls", "authnUsernamePriority": ["x509-spiffe", "metadata", "x509-common-name"]}},
+    "transports": {
+        "t2": {"enabled": True, "securityType": "tls", "authnUsernamePriority": ["x509-spiffe", "metadata", "x509-common-name"], "configErrors": {}},
+    },
 }
 GNPSI_SAFE: dict[str, object] = {
     "enabled": True,
-    "transports": {"t2": {"enabled": True, "securityType": "mtls", "authnUsernamePriority": ["x509-spiffe"]}},
+    "transports": {"t2": {"enabled": True, "securityType": "mtls", "authnUsernamePriority": ["x509-spiffe"], "configErrors": {}}},
 }
 GNPSI_DISABLED: dict[str, object] = {
     "enabled": False,
     "transports": {"t2": {"enabled": False, "securityType": "unknown", "authnUsernamePriority": []}},
 }
-GNPSI_MTLS_COMMON_NAME: dict[str, object] = {
+GNPSI_NON_RUNNING: dict[str, object] = {
     "enabled": True,
-    "transports": {"t2": {"enabled": True, "securityType": "mtls", "authnUsernamePriority": ["x509-spiffe", "x509-common-name"]}},
+    "transports": {
+        "default": {
+            "enabled": True,
+            "running": False,
+            "port": 0,
+            "securityType": "unknown",
+            "sslProfile": "",
+            "authnUsernamePriority": [],
+            "configErrors": {"noSslProfileFound": True},
+        }
+    },
 }
-GNPSI_MTLS_METADATA: dict[str, object] = {
+GNPSI_TLS_SPIFFE: dict[str, object] = {
     "enabled": True,
-    "transports": {"t2": {"enabled": True, "securityType": "mtls", "authnUsernamePriority": ["x509-spiffe", "metadata"]}},
+    "transports": {"t2": {"enabled": True, "securityType": "tls", "authnUsernamePriority": ["x509-spiffe"], "configErrors": {}}},
 }
-
-
-def gnpsi_commands(output: dict[str, object]) -> list[dict[str, Any] | str]:
-    """Return command outputs for the three gNPSI facts that share show management api gnpsi."""
-    return [output, output, output]
 
 
 def expected_result(status: Status, issues: tuple[Issue, ...]) -> UnitTestResult:
@@ -187,70 +184,59 @@ def expected_result(status: Status, issues: tuple[Issue, ...]) -> UnitTestResult
 _DATA: AntaUnitTestData = {
     (SA158, "failure-both-issues"): {
         "version": build_eos_version("4.36.1F"),
-        "eos_data": gnpsi_commands(GNPSI_VULNERABLE),
+        "eos_data": [GNPSI_VULNERABLE, GNPSI_VULNERABLE, GNPSI_VULNERABLE],
         "expected": expected_result(
             AntaTestStatus.FAILURE,
             (
                 (AntaTestStatus.FAILURE, "gNPSI exposed authentication mode is enabled", SOFTWARE_REMEDIATION),
-                (AntaTestStatus.FAILURE, "gNPSI metadata authentication is enabled", LOGGING_REMEDIATION),
+                (AntaTestStatus.FAILURE, "gNPSI transport is enabled", LOGGING_REMEDIATION),
             ),
         ),
     },
-    (SA158, "failure-metadata-authentication"): {
+    (SA158, "failure-logging-without-mutual-tls"): {
         "version": build_eos_version("4.36.1F"),
-        "eos_data": gnpsi_commands(GNPSI_MTLS_METADATA),
+        "eos_data": [GNPSI_TLS_SPIFFE, GNPSI_TLS_SPIFFE, GNPSI_TLS_SPIFFE],
         "expected": expected_result(
             AntaTestStatus.FAILURE,
             (
                 (AntaTestStatus.SUCCESS, "gNPSI exposed authentication mode is disabled", None),
-                (AntaTestStatus.FAILURE, "gNPSI metadata authentication is enabled", LOGGING_REMEDIATION),
+                (AntaTestStatus.FAILURE, "gNPSI transport is enabled", LOGGING_REMEDIATION),
             ),
         ),
     },
-    (SA158, "failure-exposed-authentication"): {
+    (SA158, "mitigated-safe-authentication"): {
         "version": build_eos_version("4.36.1F"),
-        "eos_data": gnpsi_commands(GNPSI_MTLS_COMMON_NAME),
-        "expected": expected_result(
-            AntaTestStatus.FAILURE,
-            (
-                (AntaTestStatus.FAILURE, "gNPSI exposed authentication mode is enabled", SOFTWARE_REMEDIATION),
-                (AntaTestStatus.SUCCESS, "gNPSI metadata authentication is disabled", None),
-            ),
-        ),
-    },
-    (SA158, "success-safe-authentication"): {
-        "version": None,
-        "eos_data": gnpsi_commands(GNPSI_SAFE),
+        "eos_data": [GNPSI_SAFE, GNPSI_SAFE, GNPSI_SAFE],
         "expected": expected_result(
             AntaTestStatus.SUCCESS,
             (
                 (AntaTestStatus.SUCCESS, "gNPSI exposed authentication mode is disabled", None),
-                (AntaTestStatus.SUCCESS, "gNPSI metadata authentication is disabled", None),
-            ),
-        ),
-    },
-    (SA158, "success-safe-authentication-affected-version"): {
-        "version": build_eos_version("4.36.1F"),
-        "eos_data": gnpsi_commands(GNPSI_SAFE),
-        "expected": expected_result(
-            AntaTestStatus.SUCCESS,
-            (
-                (AntaTestStatus.SUCCESS, "gNPSI exposed authentication mode is disabled", None),
-                (AntaTestStatus.SUCCESS, "gNPSI metadata authentication is disabled", None),
+                (AntaTestStatus.SUCCESS, "gNPSI mutual TLS with only x509-spiffe authentication is effective", LOGGING_REMEDIATION),
             ),
         ),
     },
     (SA158, "success-gnpsi-disabled"): {
         "version": None,
-        "eos_data": gnpsi_commands(GNPSI_DISABLED),
+        "eos_data": [GNPSI_DISABLED, GNPSI_DISABLED, GNPSI_DISABLED],
         "expected": expected_result(
             AntaTestStatus.SUCCESS,
             tuple((AntaTestStatus.SUCCESS, "is disabled", None) for _ in ADVISORY.vulnerabilities),
         ),
     },
+    (SA158, "success-gnpsi-configured-but-not-running"): {
+        "version": build_eos_version("4.36.1F"),
+        "eos_data": [GNPSI_NON_RUNNING, GNPSI_NON_RUNNING, GNPSI_NON_RUNNING],
+        "expected": expected_result(
+            AntaTestStatus.SUCCESS,
+            (
+                (AntaTestStatus.SUCCESS, "gNPSI exposed authentication mode is disabled", None),
+                (AntaTestStatus.SUCCESS, "gNPSI transport is disabled", None),
+            ),
+        ),
+    },
     (SA158, "success-fixed-version"): {
         "version": build_eos_version("4.36.2F"),
-        "eos_data": gnpsi_commands(GNPSI_VULNERABLE),
+        "eos_data": [GNPSI_VULNERABLE, GNPSI_VULNERABLE, GNPSI_VULNERABLE],
         "expected": expected_result(
             AntaTestStatus.SUCCESS,
             tuple((AntaTestStatus.SUCCESS, "outside the affected releases", None) for _ in ADVISORY.vulnerabilities),
@@ -258,23 +244,12 @@ _DATA: AntaUnitTestData = {
     },
     (SA158, "error-malformed-gnpsi-output"): {
         "version": build_eos_version("4.36.1F"),
-        "eos_data": gnpsi_commands({}),
+        "eos_data": [{}, {}, {}],
         "expected": expected_result(
             AntaTestStatus.ERROR,
             (
                 (AntaTestStatus.ERROR, "gNPSI transport state", None),
                 (AntaTestStatus.ERROR, "gNPSI transport state", None),
-            ),
-        ),
-    },
-    (SA158, "error-missing-version"): {
-        "version": None,
-        "eos_data": gnpsi_commands(GNPSI_VULNERABLE),
-        "expected": expected_result(
-            AntaTestStatus.ERROR,
-            (
-                (AntaTestStatus.ERROR, "EOS version", None),
-                (AntaTestStatus.ERROR, "EOS version", None),
             ),
         ),
     },

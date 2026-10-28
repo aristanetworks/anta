@@ -233,6 +233,66 @@ def test_released_system_model_variants_resolve(model: str, platform_type: Platf
     assert platform.platform_families == {family}
 
 
+@pytest.mark.parametrize(
+    "model",
+    [
+        "ZTX-7230S-4TX-4S-F",
+        "ZTX-7250S-16S-F",
+        " ztx-7230s-4tx-4s-f ",
+        " ztx-7250s-16s-f ",
+    ],
+)
+def test_ztx_platform_identity(model: str) -> None:
+    """Classify ZTX appliances independently of AWE and unrelated hardware families."""
+    platform = _parse_platform(model)
+
+    assert platform.model == model.strip()
+    assert platform.type is PlatformType.APPLIANCE
+    assert platform.platform_families == {PlatformFamily.ZTX_7200}
+    assert not platform.modules
+    assert platform_matches_families(platform, [PlatformFamily.ZTX_7200]) is True
+    assert platform_matches_families(platform, [PlatformFamily.AWE_7200_R]) is False
+    assert platform_matches_families(platform, [PlatformFamily.SERIES_750_X]) is False
+
+
+@pytest.mark.parametrize(
+    "model",
+    [
+        "AWE-7230R-4TX-4S-F",
+        "ZTK-7200",
+        "ZTX-7100",
+        "ZTX-7300",
+        "ZTX-720",
+        "ZTX-72000",
+        "ZTX-7200INVALID",
+        "OTHER-ZTX-7200",
+        "ZTX-7200",
+        "ZTX-7200-4TX-4S-F",
+        "ZTX-7230R-4TX-4S-F",
+        "ZTX-7230S-16S-F",
+        "ZTX-7250S-4TX-4S-F",
+        "ZTX-7230S-4TX-4S-R",
+    ],
+)
+def test_ztx_family_rejects_other_model_identifiers(model: str) -> None:
+    """Keep the ZTX family restricted to the two confirmed appliance SKUs."""
+    assert PlatformFamily.ZTX_7200 not in resolve_platform_families(model)
+
+
+def test_ztx_live_model_identity() -> None:
+    """Resolve the ZTX model identifier observed in live show-version output."""
+    platform = _parse_platform("ZTX-7250S-16S-F")
+
+    assert platform.type is PlatformType.APPLIANCE
+    assert platform.platform_families == {PlatformFamily.ZTX_7200}
+    assert platform_matches_families(platform, [PlatformFamily.SERIES_750_X]) is False
+
+
+def test_ztx_system_family_does_not_match_module_roles() -> None:
+    """Keep ZTX system-model recognition separate from component-family rules."""
+    assert not resolve_platform_families("ZTX-7250S-16S-F", PlatformComponentRole.LINE_CARD)
+
+
 def test_750_chassis_resolves_to_both_published_series() -> None:
     """Represent advisories that label a 750 chassis as 750 or 750X."""
     platform = _parse_platform("CCS-755-CH")

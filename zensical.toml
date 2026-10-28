@@ -21,7 +21,8 @@ extra_javascript = [
   "stylesheets/mermaid-zoom.js",
   "stylesheets/glightbox-zoom.js",
 ]
-watch = ["anta", "tools/zensical_extensions"]
+# Included snippets outside docs_dir need explicit watch paths.
+watch = ["README.md", "anta", "examples", "tools/zensical_extensions"]
 
 # Navigation
 nav = [
@@ -174,6 +175,11 @@ link = "https://pypi.org/project/anta/"
 [project.extra.version]
 provider = "mike"
 default = ["stable"]
+
+# Build/deployment scripts run from the repository; do not publish raw copies.
+# Keep snippets, downloads, and browser assets in the site output.
+[project.plugins.exclude]
+glob = ["scripts/**"]
 
 [project.plugins.mkdocstrings]
 default_handler = "python"
