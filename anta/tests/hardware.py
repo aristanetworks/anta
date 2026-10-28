@@ -568,6 +568,7 @@ class VerifyPCIeErrors(AntaTest):
         """Input model for the VerifyPCIeErrors test."""
 
         thresholds: PCIeThresholds = Field(default_factory=PCIeThresholds)
+        """Maximum allowed PCIe error counts."""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
