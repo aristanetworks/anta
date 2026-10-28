@@ -327,10 +327,10 @@ class VerifyEnvironmentPower(AntaTest):
         input_voltage_feeds: Literal["A", "B", "any", "both"] = "A"
         """Input voltage feeds that must meet the inclusive `min_input_voltage` threshold.
 
-        Select `A` (the default), `B`, `any` (at least one feed), or `both`.
-        Single-input supplies can satisfy `A` or `any`; a missing `inputBVoltage` fails `B` and `both`.
-        Explicitly providing this selector, including `A`, requires a non-None `min_input_voltage`.
-        If both the selector and threshold are omitted, only power-state and supply-count requirements are checked.
+        - "A": Feed A must meet the threshold.
+        - "B": Feed B must meet the threshold (fails if Feed B is missing).
+        - "any": At least one feed must meet the threshold.
+        - "both": Both feeds must meet the threshold.
         """
         min_count: PositiveInteger | None = None
         """Optional minimum number of power supplies required to match the accepted states and voltage. If not provided, all power supplies must match."""
@@ -376,10 +376,9 @@ class VerifyEnvironmentPower(AntaTest):
             if input_b is None:
                 return "Input B voltage not found"
             return f"Input B voltage mismatch - Expected: >= {minimum} Actual: {input_b}" if input_b < minimum else None
-        voltage_valid = False
         if feeds == "any":
             voltage_valid = input_a >= minimum or (input_b is not None and input_b >= minimum)
-        elif feeds == "both":
+        else:
             voltage_valid = input_a >= minimum and input_b is not None and input_b >= minimum
         if voltage_valid:
             return None

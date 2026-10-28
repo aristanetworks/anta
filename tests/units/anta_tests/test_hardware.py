@@ -2795,7 +2795,6 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
-    # Boundary and neither-feed fixtures use synthetic voltage readings.
     (VerifyEnvironmentPower, "voltage-feeds-default-a-low"): {
         "eos_data": [{"powerSupplies": {"1": {"state": "ok", "inputVoltage": 0.0, "inputBVoltage": 244.25}}}],
         "inputs": {"states": ["ok"], "min_input_voltage": 240},
