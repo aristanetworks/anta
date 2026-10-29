@@ -6,7 +6,7 @@
 
 # Zensical documentation status
 
-**Baseline:** Zensical `0.0.71`; based on `upstream/main` at `f72238fd`. **Updated:** October 28, 2026.
+**Baseline:** Zensical `0.0.71`; based on `upstream/main` at `3cfdfe74`. **Updated:** October 29, 2026.
 
 Keep this as a short current-state tracker: what is in place, what was deliberately left out, and outstanding work. Versions refer to ANTA's implementation or verification, not the upstream feature's introduction. Preserve the reason, the condition for reconsidering it, and a PR or compact finding where needed to understand a decision later; a chronological experiment log is unnecessary.
 
@@ -24,9 +24,9 @@ Keep this as a short current-state tracker: what is in place, what was deliberat
 | Authored API object links through autorefs, with centralized MD052 labels | Shipped with 0.0.69 — [#1828](https://github.com/aristanetworks/anta/pull/1828); first validated on 0.0.68 | Resolve object destinations from the API inventory; retain ordinary overview-page links. |
 | Live rebuilds for included snippets and Mermaid | 0.0.69 — #1828 | Explicit README/examples watch paths fix external-source rebuilds. All five edit/restore probes passed. |
 | Markdown export investigation completed | Retested on 0.0.70 | The Python-library guide has 37 object links in HTML and none in any exported variant. Selected exports miss 6 Markdown destinations; exporting all pages fixes those files. Image removal is an accepted, intentional text-export cleanup behavior. |
-| Keep custom API implementation listings marked as source content | Implemented here; export behavior verified on 0.0.70 | Retain the standard `mkdocstrings-source` class on both custom source wrappers. Export validation reduced BGP implementation listings from 33 to 0 while keeping all 24 examples/expected-results sections and unchanged HTML source content. This marker is retained independently of the decision to leave exports disabled. |
+| Keep custom API implementation listings marked as source content | Shipped in [#1853](https://github.com/aristanetworks/anta/pull/1853) on 0.0.71; export behavior verified on 0.0.70 | Retain the standard `mkdocstrings-source` class on both custom source wrappers. Export validation reduced BGP implementation listings from 33 to 0 while keeping all 24 examples/expected-results sections and unchanged HTML source content. This marker is retained independently of the decision to leave exports disabled. |
 | Exclude build-only scripts from published output | 0.0.70 — [#1840](https://github.com/aristanetworks/anta/pull/1840), merged | Exclude only `scripts/**`; the output comparison retained all intended documentation and browser assets. |
-| Curated BGP API coverage and input-model links | Implemented here; first verified on 0.0.70 | All 24 tests, 31 local input fields, 9 intended model classes, and 33 inventory objects are present; 64 emitted local object targets resolve. Module-qualified annotations restore 10 `BgpPeer` links and one `VxlanEndpoint` link shadowed by same-name compatibility attributes. All 23 sampled test-to-model relationships link correctly; runtime schemas and all 11 compatibility aliases are unchanged. Keep curated pages. |
+| Curated test/input-model API coverage and type links | BGP shipped in [#1853](https://github.com/aristanetworks/anta/pull/1853); remaining modules implemented here on 0.0.71 | Expanded the BGP audit across all 32 curated test modules. Module-qualified annotations restore 21 links in total shadowed by compatibility attributes; add the missing OSPF input-model section and descriptions for three omitted input fields. Preserve runtime schemas, compatibility aliases, and curated pages. |
 
 ## Deliberately not adopted
 
@@ -47,9 +47,10 @@ These are decisions, not an implementation backlog. Revisit only for a concrete 
 
 ## Left to do
 
+After this PR merges, no further implementation is scheduled. The remaining work is conditional maintenance.
+
 | Action | Status / scope |
 | --- | --- |
-| Extend API coverage checks when changing other modules | Conditional: the completed audit covers BGP only. Check for missing public objects and type links when touching another module; no whole-site acceptance is claimed. |
 | Revisit upstream replacements during tooling upgrades | Conditional: Git date support, Mike compatibility, and zoom interactions. No replacement PR is needed now. |
 
-For routine upgrades, align all three Zensical pins and run a clean strict build. Check browser interactions when the UI or helpers change; use a disposable Mike preview when version URLs or deployment behavior change. Existing maintainer browser testing and DOM regression checks do not establish exhaustive browser/touch coverage. Never use the production publishing wrapper for a local preview.
+For routine upgrades, align all three Zensical pins and run a clean strict build. Check inventory coverage and type links when adding tests or input models. Check browser interactions when the UI or helpers change; use a disposable Mike preview when version URLs or deployment behavior change. Existing maintainer browser testing and DOM regression checks do not establish exhaustive browser/touch coverage. Never use the production publishing wrapper for a local preview.

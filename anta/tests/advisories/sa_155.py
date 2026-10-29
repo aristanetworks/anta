@@ -73,8 +73,8 @@ class SA155(OptionalCommandsMixin, _AntaAdvisoryTest):
 
     Expected Results
     ----------------
-    * Success: EOS is outside scope or none of the DHCP Option 82 exposure paths is configured.
-    * Failure: An affected EOS release has a DHCP relay, snooping, or server Option 82 exposure path.
+    * Not Affected: EOS is outside scope or none of the DHCP Option 82 exposure paths is configured.
+    * Affected: An affected EOS release has a DHCP relay, snooping, or server Option 82 exposure path.
     * Error: Required EOS or DHCP configuration state cannot be determined.
 
     Examples
