@@ -37,11 +37,16 @@ class PackageVersionFact(ComponentSoftwareFact, CommandsFactDefinition[PackageFa
     component: ClassVar[str]
 
     @classmethod
+    # Keep each failure classification explicit so collection failures stay distinct from missing data.
     # pylint: disable-next=too-many-return-statements
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[PackageFactT]:  # noqa: PLR0911
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[PackageFactT]:  # noqa: C901, PLR0911
         """Extract and normalize the declared package version."""
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
+        if is_unsupported_optional_command(command):
+            return cls.unavailable(FactProblemKind.UNSUPPORTED, source)
+        if command.errors:
+            return cls.unavailable(FactProblemKind.COLLECTION_FAILED, source)
         details = command.json_output.get("details")
         if details is None:
             return cls.unavailable(FactProblemKind.MISSING, source)
@@ -72,7 +77,9 @@ class TerminAttrVersionFact(PackageVersionFact["TerminAttrVersionFact"]):
     component: ClassVar[str] = "TerminAttr"
     key: ClassVar[str] = "software.terminattr.version"
     label: ClassVar[str] = "TerminAttr version"
-    commands: ClassVar[tuple[AntaCommand, ...]] = PackageVersionFact.commands
+    # Advisories can close the component path from configuration alone. Defer
+    # collection failures so the assessment can decide whether version is needed.
+    commands: ClassVar[tuple[AntaCommand, ...]] = (OptionalAntaCommand(command="show version detail", revision=1, defer_errors=True),)
     package_name: ClassVar[str] = "TerminAttr-core"
 
 

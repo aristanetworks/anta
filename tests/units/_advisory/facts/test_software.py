@@ -10,11 +10,31 @@ from typing import TYPE_CHECKING
 import pytest
 
 from anta._advisory.facts.models import AvailableFact, FactProblemKind, MitigationState, UnavailableFact
-from anta._advisory.facts.software import SA171HotfixFact, SA173HotfixFact
+from anta._advisory.facts.software import SA171HotfixFact, SA173HotfixFact, TerminAttrVersionFact
 from tests.units.anta_tests.advisories import OfflineAntaDevice
 
 if TYPE_CHECKING:
     from anta.models import AntaCommand
+
+
+@pytest.mark.parametrize(
+    ("errors", "problem"),
+    [
+        (["This command is not supported on this hardware platform"], FactProblemKind.UNSUPPORTED),
+        (["Permission denied"], FactProblemKind.COLLECTION_FAILED),
+        (["This command is not supported on this hardware platform", "Permission denied"], FactProblemKind.COLLECTION_FAILED),
+    ],
+)
+def test_terminattr_version_collection_failures(errors: list[str], problem: FactProblemKind) -> None:
+    """Normalize deferred failures rather than parsing stale version output as usable evidence."""
+    command = TerminAttrVersionFact.commands[0].model_copy()
+    command.output = {"details": {"packages": {"TerminAttr-core": {"version": "v1.46.3"}}}}
+    command.errors = errors
+    result = TerminAttrVersionFact.derive(OfflineAntaDevice("test"), (command,))
+
+    assert isinstance(result, UnavailableFact)
+    assert result.problem is problem
+    assert result.source.name == "show version detail"
 
 
 @pytest.fixture(name="device")
