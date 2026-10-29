@@ -25,7 +25,7 @@ from anta._advisory.facts.models import (
     MitigationState,
 )
 from anta._advisory.facts.software import SA178HotfixFact
-from anta._advisory.findings.models import AffectedResult, ErrorResult, NotAffectedResult, VersionRelation
+from anta._advisory.findings.models import AffectedEosRelease, AffectedResult, ErrorResult, MitigatedCondition, NotAffectedResult, VersionRelation
 from anta._advisory.remediation import FixedRelease, RemediationPlan, RunCommand, Sequence, software_version_action
 from anta._eos.version import EOSVersion, parse_eos_version
 from anta.result_manager.models import AntaTestStatus
@@ -127,8 +127,7 @@ _DATA: AntaUnitTestData = {
         "eos_data": eos_data(LEGACY_USER),
         "expected": expected_result(
             AntaTestStatus.FAILURE,
-            "The device is affected because EOS version '4.36.2F' is affected, the SNMPv3 authentication key is enabled, the SNMPv3 credential syntax "
-            "is legacy, and SA178 SWIX hotfix is ineffective",
+            "The device is affected because EOS version '4.36.2F' is affected, the SNMPv3 authentication key is enabled, and the SNMPv3 credential syntax is legacy",
             expected_affected_remediation("4.36.2F"),
         ),
     },
@@ -137,8 +136,8 @@ _DATA: AntaUnitTestData = {
         "eos_data": eos_data(LEGACY_USER, NON_PERSISTENT_HOTFIX),
         "expected": expected_result(
             AntaTestStatus.FAILURE,
-            "The device is affected because EOS version '4.33.10M' is affected, the SNMPv3 authentication key is enabled, the SNMPv3 credential syntax "
-            "is legacy, and SA178 SWIX hotfix is ineffective",
+            "The device is affected because EOS version '4.33.10M' is affected, the SNMPv3 authentication key is enabled, and the SNMPv3 credential "
+            "syntax is legacy",
             expected_affected_remediation("4.33.10M"),
         ),
     },
@@ -147,7 +146,8 @@ _DATA: AntaUnitTestData = {
         "eos_data": eos_data(LEGACY_USER, PERSISTENT_HOTFIX),
         "expected": expected_result(
             AntaTestStatus.FAILURE,
-            "The device is affected because EOS version '4.35.6M' is fixed, the SNMPv3 authentication key is enabled, and the SNMPv3 credential syntax is legacy",
+            "The device is affected because the SNMPv3 authentication key is enabled and the SNMPv3 credential syntax is legacy. Mitigated conditions: EOS "
+            "version '4.35.6M' is affected and SA178 SWIX hotfix is effective",
             EXPECTED_CONVERT_REMEDIATION,
         ),
     },
@@ -326,22 +326,26 @@ class TestSA178Assessment(unittest.TestCase):
         assert isinstance(encrypted, NotAffectedResult)
         assert encrypted.decisive == (encrypted_syntax,)
 
-    def test_persistent_hotfix_counts_as_fixed_software_on_listed_releases(self) -> None:
+    def test_persistent_hotfix_mitigates_the_affected_release_on_listed_releases(self) -> None:
         authentication = authentication_fact(FeatureState.ENABLED)
         legacy = syntax_fact(CredentialSyntaxState.LEGACY)
         for version in ("4.36.2F", "4.35.6M", "4.34.8M", "4.33.10M"):
             with self.subTest(version=version):
-                hotfixed = _assess_sa178(version_fact(version), authentication, legacy, hotfix_fact(MitigationState.EFFECTIVE))
+                observed_version = version_fact(version)
+                assert isinstance(observed_version, AvailableFact)
+                effective_hotfix = hotfix_fact(MitigationState.EFFECTIVE)
+                hotfixed = _assess_sa178(observed_version, authentication, legacy, effective_hotfix)
                 unpatched_hotfix = hotfix_fact(MitigationState.INEFFECTIVE)
-                unpatched = _assess_sa178(version_fact(version), authentication, legacy, unpatched_hotfix)
+                unpatched = _assess_sa178(observed_version, authentication, legacy, unpatched_hotfix)
 
                 assert isinstance(hotfixed, AffectedResult)
-                assert hotfixed.context[0].relation is VersionRelation.FIXED
+                assert not hotfixed.context
                 assert hotfixed.conditions == (authentication, legacy)
+                assert hotfixed.mitigated_conditions == (MitigatedCondition(AffectedEosRelease(observed_version), (effective_hotfix,)),)
                 assert hotfixed.remediation == EXPECTED_CONVERT_REMEDIATION
                 assert isinstance(unpatched, AffectedResult)
                 assert unpatched.context[0].relation is VersionRelation.AFFECTED
-                assert unpatched.conditions == (authentication, legacy, unpatched_hotfix)
+                assert unpatched.conditions == (authentication, legacy)
                 assert unpatched.remediation == expected_affected_remediation(version)
 
     def test_hotfix_is_limited_to_exact_releases(self) -> None:
