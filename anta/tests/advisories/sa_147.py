@@ -206,14 +206,9 @@ class SA147(OptionalCommandsMixin, _AntaAdvisoryTest):
       server is also sufficient.
     * Affected: An affected EOS release ships an OpenSSH package older than 10.4; for CVE-2026-60001, the SSH server is not disabled; for
       CVE-2026-60002, strict host-key checking is not effective.
-    * Inconclusive: For CVE-2026-60002, strict host-key checking is effective, but whether operators connect only to trusted servers cannot be
-      determined.
+    * Inconclusive: For CVE-2026-60002, EOS is within the affected scope and OpenSSH is older than 10.4; strict host-key checking is effective,
+      but whether operators connect only to trusted servers cannot be determined.
     * Error: Required EOS, OpenSSH package, SSH server, or strict host-key checking state cannot be determined.
-
-    Notes
-    -----
-    Strict host-key checking is an observable identity control for CVE-2026-60002, but it does not establish that operators connect only to trusted
-    servers as required by the advisory. An affected release with strict host-key checking is therefore inconclusive rather than mitigated.
 
     Examples
     --------

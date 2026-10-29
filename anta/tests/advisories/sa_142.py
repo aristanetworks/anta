@@ -438,11 +438,6 @@ class SA142(OptionalCommandsMixin, _AntaAdvisoryTest):
     * Inconclusive: A conservatively matched chassis cannot be confirmed as an affected switch generation from its installed modules.
     * Error: A required redirect, platform, EOS release, or MTU control state cannot be determined.
 
-    Notes
-    -----
-    This test currently requires the structured EOS platform identity supplied by `AsyncEOSDevice`.
-    Incomplete modular identities remain inconclusive when the installed modules cannot establish the affected family.
-
     Examples
     --------
     ```yaml

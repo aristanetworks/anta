@@ -79,7 +79,7 @@ class SA159(_AntaAdvisoryTest):
 
     Notes
     -----
-    IGMP snooping is instantiated by default, so the EOS version alone determines exposure.
+    IGMP snooping is enabled by default, so the EOS version alone determines exposure.
 
     Examples
     --------
