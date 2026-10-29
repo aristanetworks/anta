@@ -3687,8 +3687,7 @@ it can either exactly match or start with the specified hostname.
   </div>
   <details class="quote mkdocstrings-source">
   <summary>Source code in <code>anta/tests/connectivity.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">146</span>
-<span class="normal">147</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">147</span>
 <span class="normal">148</span>
 <span class="normal">149</span>
 <span class="normal">150</span>
@@ -3767,7 +3766,8 @@ it can either exactly match or start with the specified hostname.
 <span class="normal">223</span>
 <span class="normal">224</span>
 <span class="normal">225</span>
-<span class="normal">226</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyLLDPNeighbors</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">226</span>
+<span class="normal">227</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyLLDPNeighbors</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Verifies the connection status of the specified LLDP (Link Layer Discovery Protocol) neighbors.</span>
 
 <span class="sd">    This test performs the following checks for each specified LLDP neighbor:</span>
@@ -3941,7 +3941,7 @@ it can either exactly match or start with the specified hostname.
               <tr>
                 <td><code>hosts</code></td>
                 <td>
-                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#list">list</a>[<span title="anta.tests.connectivity.VerifyReachability.Input.Host">Host</span>]</code>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="Host (anta.input_models.connectivity.Host)" href="./#anta.input_models.connectivity.Host">Host</a>]</code>
                 </td>
                 <td>
                   <div class="doc-md-description">
@@ -3977,8 +3977,7 @@ it can either exactly match or start with the specified hostname.
   </div>
   <details class="quote mkdocstrings-source">
   <summary>Source code in <code>anta/tests/connectivity.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 25</span>
-<span class="normal"> 26</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 26</span>
 <span class="normal"> 27</span>
 <span class="normal"> 28</span>
 <span class="normal"> 29</span>
@@ -4095,7 +4094,8 @@ it can either exactly match or start with the specified hostname.
 <span class="normal">140</span>
 <span class="normal">141</span>
 <span class="normal">142</span>
-<span class="normal">143</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyReachability</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">143</span>
+<span class="normal">144</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyReachability</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Test network reachability to one or many destination IP(s).</span>
 
 <span class="sd">    Expected Results</span>
@@ -4141,7 +4141,7 @@ it can either exactly match or start with the specified hostname.
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Input model for the VerifyReachability test."""</span>
 
-        <span class="n">hosts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Host</span><span class="p">]</span>
+        <span class="n">hosts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">connectivity_models</span><span class="o">.</span><span class="n">Host</span><span class="p">]</span>
 <span class="w">        </span><span class="sd">"""List of host to ping."""</span>
         <span class="n">Host</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">Host</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Host</span>
 <span class="w">        </span><span class="sd">"""To maintain backward compatibility."""</span>

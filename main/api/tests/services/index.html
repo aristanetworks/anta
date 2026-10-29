@@ -3774,8 +3774,7 @@
   </div>
   <details class="quote mkdocstrings-source">
   <summary>Source code in <code>anta/tests/services.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 54</span>
-<span class="normal"> 55</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 55</span>
 <span class="normal"> 56</span>
 <span class="normal"> 57</span>
 <span class="normal"> 58</span>
@@ -3820,7 +3819,8 @@
 <span class="normal"> 97</span>
 <span class="normal"> 98</span>
 <span class="normal"> 99</span>
-<span class="normal">100</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyDNSLookup</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">100</span>
+<span class="normal">101</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyDNSLookup</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Verifies the DNS (Domain Name Service) name to IP address resolution.</span>
 
 <span class="sd">    Expected Results</span>
@@ -3958,7 +3958,7 @@
               <tr>
                 <td><code>dns_servers</code></td>
                 <td>
-                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#list">list</a>[<span title="anta.tests.services.VerifyDNSServers.Input.DnsServer">DnsServer</span>]</code>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="DnsServer (anta.input_models.services.DnsServer)" href="./#anta.input_models.services.DnsServer">DnsServer</a>]</code>
                 </td>
                 <td>
                   <div class="doc-md-description">
@@ -3980,8 +3980,7 @@
   </div>
   <details class="quote mkdocstrings-source">
   <summary>Source code in <code>anta/tests/services.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">103</span>
-<span class="normal">104</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">104</span>
 <span class="normal">105</span>
 <span class="normal">106</span>
 <span class="normal">107</span>
@@ -4039,7 +4038,8 @@
 <span class="normal">159</span>
 <span class="normal">160</span>
 <span class="normal">161</span>
-<span class="normal">162</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyDNSServers</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">162</span>
+<span class="normal">163</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyDNSServers</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Verifies if the DNS (Domain Name Service) servers are correctly configured.</span>
 
 <span class="sd">    This test performs the following checks for each specified DNS Server:</span>
@@ -4075,7 +4075,7 @@
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Input model for the VerifyDNSServers test."""</span>
 
-        <span class="n">dns_servers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">DnsServer</span><span class="p">]</span>
+        <span class="n">dns_servers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">service_models</span><span class="o">.</span><span class="n">DnsServer</span><span class="p">]</span>
 <span class="w">        </span><span class="sd">"""List of DNS servers to verify."""</span>
         <span class="n">DnsServer</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">DnsServer</span><span class="p">]]</span> <span class="o">=</span> <span class="n">DnsServer</span>
 
@@ -4219,8 +4219,7 @@
   </div>
   <details class="quote mkdocstrings-source">
   <summary>Source code in <code>anta/tests/services.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">165</span>
-<span class="normal">166</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">166</span>
 <span class="normal">167</span>
 <span class="normal">168</span>
 <span class="normal">169</span>
@@ -4296,7 +4295,8 @@
 <span class="normal">239</span>
 <span class="normal">240</span>
 <span class="normal">241</span>
-<span class="normal">242</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyErrdisableRecovery</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">242</span>
+<span class="normal">243</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyErrdisableRecovery</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Verifies the error disable recovery functionality.</span>
 
 <span class="sd">    This test performs the following checks for each specified error disable reason:</span>
@@ -4472,8 +4472,7 @@
   </div>
   <details class="quote mkdocstrings-source">
   <summary>Source code in <code>anta/tests/services.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">17</span>
-<span class="normal">18</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">18</span>
 <span class="normal">19</span>
 <span class="normal">20</span>
 <span class="normal">21</span>
@@ -4506,7 +4505,8 @@
 <span class="normal">48</span>
 <span class="normal">49</span>
 <span class="normal">50</span>
-<span class="normal">51</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyHostname</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">51</span>
+<span class="normal">52</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyHostname</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Verifies the hostname of a device.</span>
 
 <span class="sd">    Expected Results</span>

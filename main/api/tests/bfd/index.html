@@ -3719,8 +3719,7 @@
   </div>
   <details class="quote mkdocstrings-source">
   <summary>Source code in <code>anta/tests/bfd.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">220</span>
-<span class="normal">221</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">221</span>
 <span class="normal">222</span>
 <span class="normal">223</span>
 <span class="normal">224</span>
@@ -3789,7 +3788,8 @@
 <span class="normal">287</span>
 <span class="normal">288</span>
 <span class="normal">289</span>
-<span class="normal">290</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBFDPeersHealth</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">290</span>
+<span class="normal">291</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBFDPeersHealth</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Verifies the health of BFD peers across all VRFs.</span>
 
 <span class="sd">    !!! warning</span>
@@ -3965,7 +3965,7 @@
               <tr>
                 <td><code>bfd_peers</code></td>
                 <td>
-                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#list">list</a>[<span title="anta.tests.bfd.VerifyBFDPeersIntervals.Input.BFDPeer">BFDPeer</span>]</code>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="BFDPeer (anta.input_models.bfd.BFDPeer)" href="./#anta.input_models.bfd.BFDPeer">BFDPeer</a>]</code>
                 </td>
                 <td>
                   <div class="doc-md-description">
@@ -4001,8 +4001,7 @@
   </div>
   <details class="quote mkdocstrings-source">
   <summary>Source code in <code>anta/tests/bfd.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">109</span>
-<span class="normal">110</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">110</span>
 <span class="normal">111</span>
 <span class="normal">112</span>
 <span class="normal">113</span>
@@ -4109,7 +4108,8 @@
 <span class="normal">214</span>
 <span class="normal">215</span>
 <span class="normal">216</span>
-<span class="normal">217</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBFDPeersIntervals</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">217</span>
+<span class="normal">218</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBFDPeersIntervals</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Verifies the operational timers of BFD peer sessions.</span>
 
 <span class="sd">    !!! warning</span>
@@ -4162,7 +4162,7 @@
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Input model for the VerifyBFDPeersIntervals test."""</span>
 
-        <span class="n">bfd_peers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BFDPeer</span><span class="p">]</span>
+        <span class="n">bfd_peers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">bfd_models</span><span class="o">.</span><span class="n">BFDPeer</span><span class="p">]</span>
 <span class="w">        </span><span class="sd">"""List of BFD peers."""</span>
         <span class="n">BFDPeer</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">BFDPeer</span><span class="p">]]</span> <span class="o">=</span> <span class="n">BFDPeer</span>
 <span class="w">        </span><span class="sd">"""To maintain backward compatibility."""</span>
@@ -4314,7 +4314,7 @@
               <tr>
                 <td><code>bfd_peers</code></td>
                 <td>
-                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#list">list</a>[<span title="anta.tests.bfd.VerifyBFDPeersRegProtocols.Input.BFDPeer">BFDPeer</span>]</code>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="BFDPeer (anta.input_models.bfd.BFDPeer)" href="./#anta.input_models.bfd.BFDPeer">BFDPeer</a>]</code>
                 </td>
                 <td>
                   <div class="doc-md-description">
@@ -4350,8 +4350,7 @@
   </div>
   <details class="quote mkdocstrings-source">
   <summary>Source code in <code>anta/tests/bfd.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">293</span>
-<span class="normal">294</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">294</span>
 <span class="normal">295</span>
 <span class="normal">296</span>
 <span class="normal">297</span>
@@ -4424,7 +4423,8 @@
 <span class="normal">364</span>
 <span class="normal">365</span>
 <span class="normal">366</span>
-<span class="normal">367</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBFDPeersRegProtocols</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">367</span>
+<span class="normal">368</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBFDPeersRegProtocols</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Verifies the registered protocols of BFD peer sessions.</span>
 
 <span class="sd">    !!! warning</span>
@@ -4467,7 +4467,7 @@
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Input model for the VerifyBFDPeersRegProtocols test."""</span>
 
-        <span class="n">bfd_peers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BFDPeer</span><span class="p">]</span>
+        <span class="n">bfd_peers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">bfd_models</span><span class="o">.</span><span class="n">BFDPeer</span><span class="p">]</span>
 <span class="w">        </span><span class="sd">"""List of BFD peers."""</span>
         <span class="n">BFDPeer</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">BFDPeer</span><span class="p">]]</span> <span class="o">=</span> <span class="n">BFDPeer</span>
 <span class="w">        </span><span class="sd">"""To maintain backward compatibility."""</span>
@@ -4590,7 +4590,7 @@
               <tr>
                 <td><code>bfd_peers</code></td>
                 <td>
-                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#list">list</a>[<span title="anta.tests.bfd.VerifyBFDSpecificPeers.Input.BFDPeer">BFDPeer</span>]</code>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="BFDPeer (anta.input_models.bfd.BFDPeer)" href="./#anta.input_models.bfd.BFDPeer">BFDPeer</a>]</code>
                 </td>
                 <td>
                   <div class="doc-md-description">
@@ -4626,8 +4626,7 @@
   </div>
   <details class="quote mkdocstrings-source">
   <summary>Source code in <code>anta/tests/bfd.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 46</span>
-<span class="normal"> 47</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 47</span>
 <span class="normal"> 48</span>
 <span class="normal"> 49</span>
 <span class="normal"> 50</span>
@@ -4686,7 +4685,8 @@
 <span class="normal">103</span>
 <span class="normal">104</span>
 <span class="normal">105</span>
-<span class="normal">106</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBFDSpecificPeers</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">106</span>
+<span class="normal">107</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBFDSpecificPeers</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Verifies the state of BFD peer sessions.</span>
 
 <span class="sd">    !!! warning</span>
@@ -4724,7 +4724,7 @@
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Input model for the VerifyBFDSpecificPeers test."""</span>
 
-        <span class="n">bfd_peers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BFDPeer</span><span class="p">]</span>
+        <span class="n">bfd_peers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">bfd_models</span><span class="o">.</span><span class="n">BFDPeer</span><span class="p">]</span>
 <span class="w">        </span><span class="sd">"""List of BFD peers."""</span>
         <span class="n">BFDPeer</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">BFDPeer</span><span class="p">]]</span> <span class="o">=</span> <span class="n">BFDPeer</span>
 <span class="w">        </span><span class="sd">"""To maintain backward compatibility."""</span>

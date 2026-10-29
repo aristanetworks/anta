@@ -3940,6 +3940,34 @@
             </tr>
           </thead>
           <tbody>
+              <tr>
+                <td><code>role</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" title="typing.Literal" href="https://docs.python.org/3/library/typing.html#typing.Literal">Literal</a>[&#39;Master&#39;, &#39;Standby&#39;, &#39;Disconnected&#39;]</code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    Expected role of the CVX server in the cluster.
+                  </div>
+                </td>
+                <td>
+                      <code>&#39;Master&#39;</code>
+                </td>
+              </tr>
+              <tr>
+                <td><code>peer_status</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="CVXPeers (anta.input_models.cvx.CVXPeers)" href="./#anta.input_models.cvx.CVXPeers">CVXPeers</a>]</code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    CVX peers and their expected registration states.
+                  </div>
+                </td>
+                <td>
+                    <em>-</em>
+                </td>
+              </tr>
           </tbody>
         </table>
   </div>
@@ -4022,7 +4050,9 @@
 <span class="normal">287</span>
 <span class="normal">288</span>
 <span class="normal">289</span>
-<span class="normal">290</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyCVXClusterStatus</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyCVXClusterStatus</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Verifies the CVX Server Cluster status.</span>
 
 <span class="sd">    Expected Results</span>
@@ -4055,7 +4085,9 @@
 <span class="w">        </span><span class="sd">"""Input model for the VerifyCVXClusterStatus test."""</span>
 
         <span class="n">role</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"Master"</span><span class="p">,</span> <span class="s2">"Standby"</span><span class="p">,</span> <span class="s2">"Disconnected"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"Master"</span>
+<span class="w">        </span><span class="sd">"""Expected role of the CVX server in the cluster."""</span>
         <span class="n">peer_status</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">CVXPeers</span><span class="p">]</span>
+<span class="w">        </span><span class="sd">"""CVX peers and their expected registration states."""</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
