@@ -103,8 +103,8 @@ class SA172(OptionalCommandsMixin, _AntaAdvisoryTest):
 
     Expected Results
     ----------------
-    * Success: EOS is outside scope or both supported observations prove OSPFv3 is absent.
-    * Failure: An affected EOS release has OSPFv3 configured without complete IPsec authentication coverage.
+    * Not Affected: EOS is outside scope or both supported observations prove OSPFv3 is absent.
+    * Affected: An affected EOS release has OSPFv3 configured without complete IPsec authentication coverage.
     * Mitigated: IPsec authentication covers every configured OSPFv3 interface scope on an affected release.
     * Error: Required EOS, OSPFv3 configuration, or IPsec authentication state cannot be determined.
 

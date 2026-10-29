@@ -110,8 +110,8 @@ class SA169(OptionalCommandsMixin, _AntaAdvisoryTest):
 
     Expected Results
     ----------------
-    * Success: EOS is outside scope, gNSI has no enabled transport, or Authz is disabled.
-    * Failure: Affected EOS has gNSI Authz and multiple transports enabled.
+    * Not Affected: EOS is outside scope, gNSI has no enabled transport, or Authz is disabled.
+    * Affected: Affected EOS has gNSI Authz and multiple transports enabled.
     * Inconclusive: Affected EOS has gNSI Authz and one transport enabled, but a removed secondary transport may have left stale policy state.
     * Error: Required EOS or gNSI state cannot be determined.
 

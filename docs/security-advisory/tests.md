@@ -18,6 +18,11 @@ This page documents each security advisory test currently implemented in ANTA.
 See the [Security Advisory Tests Overview](tests-overview.md) for the support
 matrix.
 
+Each test's expected results use the advisory assessment states described in
+[Security Advisory Reports](reports.md#interpret-results). Standard ANTA test
+statuses map these states as follows: Not Affected and Mitigated are success,
+Affected and Inconclusive are failure, and Error is error.
+
 ::: anta.tests.advisories
 
     options:
