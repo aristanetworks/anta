@@ -4042,6 +4042,10 @@
 <p>This page documents each security advisory test currently implemented in ANTA.
 See the <a href="../tests-overview/">Security Advisory Tests Overview</a> for the support
 matrix.</p>
+<p>Each test&rsquo;s expected results use the advisory assessment states described in
+<a href="../reports/#interpret-results">Security Advisory Reports</a>. Standard ANTA test
+statuses map these states as follows: Not Affected and Mitigated are success,
+Affected and Inconclusive are failure, and Error is error.</p>
 
 
 <div class="doc doc-object doc-module">
@@ -4098,11 +4102,16 @@ matrix.</p>
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: The test will pass if no SNMPv3 authentication key is configured, or every key uses encrypted syntax.</li>
-<li>Failure: The test will fail if an SNMPv3 authentication key uses legacy or mixed syntax. Affected software requires an upgrade followed by
-  credential conversion; fixed software requires credential conversion because upgrading does not rewrite existing configuration.</li>
-<li>Error: The test will error if the required EOS version, authentication-key state, or credential syntax cannot be determined.</li>
+<li>Not Affected: No SNMPv3 authentication key is configured, or every key uses encrypted syntax.</li>
+<li>Affected: An SNMPv3 authentication key uses legacy or mixed syntax.</li>
+<li>Error: The required EOS version, authentication-key state, or credential syntax cannot be determined.</li>
 </ul>
+</details>
+
+<details class="note" open>
+  <summary>Notes</summary>
+  <p>Legacy or mixed credential syntax is reported as affected on both affected and fixed software, because upgrading EOS does not rewrite existing
+configuration. Affected software requires an upgrade followed by credential conversion; fixed software requires credential conversion only.</p>
 </details>
 
 
@@ -4163,19 +4172,23 @@ matrix.</p>
 
 
         <p>Verify whether the device is impacted by Security Advisory 0177.</p>
-<p>The advisory describes the exposure as requiring active MLAG. This test deliberately uses the complete persistent MLAG configuration instead:
-a configured domain ID, local interface, peer address, and peer link are treated as exposed regardless of the currently reported operational
-state. An inactive peer or domain can become active immediately after evidence collection, so transient inactivity does not establish that the
-device is not affected.</p>
 
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: EOS or the platform is outside scope, PIM Sparse Mode is absent, or the complete MLAG configuration is absent.</li>
-<li>Failure: An affected EOS release and platform have both PIM Sparse Mode and the complete MLAG configuration.</li>
+<li>Not Affected: EOS or the platform is outside scope, PIM Sparse Mode is absent, or the complete MLAG configuration is absent.</li>
+<li>Affected: An affected EOS release and platform have both PIM Sparse Mode and the complete MLAG configuration.</li>
 <li>Error: Required EOS, platform, PIM Sparse Mode, or MLAG configuration cannot be determined.</li>
 </ul>
+</details>
+
+<details class="note" open>
+  <summary>Notes</summary>
+  <p>The advisory describes the exposure as requiring active MLAG. This test deliberately uses the complete persistent MLAG configuration instead:
+a configured domain ID, local interface, peer address, and peer link are treated as exposed regardless of the currently reported operational
+state. An inactive peer or domain can become active immediately after evidence collection, so transient inactivity does not establish that the
+device is not affected.</p>
 </details>
 
 
@@ -4241,9 +4254,9 @@ device is not affected.</p>
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: The test passes when EOS or the platform is outside scope, or loose uRPF is not configured.</li>
-<li>Failure: The test fails when an affected EOS release and platform have loose IPv4 or IPv6 uRPF configured.</li>
-<li>Error: The test errors when required EOS, platform, loose-uRPF, or any needed switch-card state cannot be determined.</li>
+<li>Not Affected: EOS or the platform is outside scope, or loose uRPF is not configured.</li>
+<li>Affected: An affected EOS release and platform have loose IPv4 or IPv6 uRPF configured.</li>
+<li>Error: Required EOS, platform, loose-uRPF, or any needed switch-card state cannot be determined.</li>
 </ul>
 </details>
 
@@ -4310,9 +4323,9 @@ device is not affected.</p>
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: The test passes when the EOS version is outside scope or no PIM sparse-mode interface is configured.</li>
-<li>Failure: The test fails when an affected EOS version has an IPv4 or IPv6 PIM sparse-mode interface.</li>
-<li>Error: The test errors when required EOS version or PIM sparse-mode state cannot be determined.</li>
+<li>Not Affected: The EOS version is outside scope or no PIM sparse-mode interface is configured.</li>
+<li>Affected: An affected EOS version has an IPv4 or IPv6 PIM sparse-mode interface.</li>
+<li>Error: Required EOS version or PIM sparse-mode state cannot be determined.</li>
 </ul>
 </details>
 
@@ -4379,8 +4392,8 @@ device is not affected.</p>
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: EOS is outside scope, P4Runtime is disabled, or mTLS is used without request accounting or gNSI Acctz.</li>
-<li>Failure: P4Runtime lacks mTLS, or accounting is active while gNSI Authz is disabled or unsupported.</li>
+<li>Not Affected: EOS is outside scope, P4Runtime is disabled, or mTLS is used without request accounting or gNSI Acctz.</li>
+<li>Affected: P4Runtime lacks mTLS, or accounting is active while gNSI Authz is disabled or unsupported.</li>
 <li>Inconclusive: Accounting and gNSI Authz are enabled, but the installed Authz policy cannot be verified.</li>
 <li>Error: Required EOS, P4Runtime, TLS, accounting, or gNSI Authz state cannot be determined.</li>
 </ul>
@@ -4449,12 +4462,16 @@ device is not affected.</p>
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: The test will pass if the EOS version is outside scope or both supported observations prove OSPFv3 is absent.</li>
-<li>Failure: The test will fail if affected EOS has OSPFv3 configured without complete IPsec coverage or an applicable hotfix.</li>
-<li>Mitigated: The test is mitigated when IPsec covers every configured OSPFv3 scope or an applicable persistent hotfix is installed.</li>
-<li>Error: The test will error if required EOS version, OSPFv3 configuration, IPsec coverage, or applicable hotfix state cannot be determined.</li>
+<li>Not Affected: The EOS version is outside scope or both supported observations prove OSPFv3 is absent.</li>
+<li>Affected: Affected EOS has OSPFv3 configured without complete IPsec coverage or an applicable hotfix.</li>
+<li>Mitigated: IPsec covers every configured OSPFv3 scope or an applicable persistent hotfix is installed.</li>
+<li>Error: Required EOS version, OSPFv3 configuration, IPsec coverage, or applicable hotfix state cannot be determined.</li>
 </ul>
-<p>Active-neighbor absence is not accepted as a safe state because adjacency state is transient. IPsec mitigation is evaluated against persistent
+</details>
+
+<details class="note" open>
+  <summary>Notes</summary>
+  <p>Active-neighbor absence is not accepted as a safe state because adjacency state is transient. IPsec mitigation is evaluated against persistent
 interface, VRF, area, and address-family configuration instead of the neighbors present when the test runs.</p>
 </details>
 
@@ -4521,8 +4538,8 @@ interface, VRF, area, and address-family configuration instead of the neighbors 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: EOS is outside scope or both supported observations prove OSPFv3 is absent.</li>
-<li>Failure: An affected EOS release has OSPFv3 configured without complete IPsec authentication coverage.</li>
+<li>Not Affected: EOS is outside scope or both supported observations prove OSPFv3 is absent.</li>
+<li>Affected: An affected EOS release has OSPFv3 configured without complete IPsec authentication coverage.</li>
 <li>Mitigated: IPsec authentication covers every configured OSPFv3 interface scope on an affected release.</li>
 <li>Error: Required EOS, OSPFv3 configuration, or IPsec authentication state cannot be determined.</li>
 </ul>
@@ -4591,17 +4608,20 @@ interface, VRF, area, and address-family configuration instead of the neighbors 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: An issue&rsquo;s EOS version is outside scope; or, for CVE-2026-73435, no OSPFv2 process is configured; or, for
+<li>Not Affected: An issue&rsquo;s EOS version is outside scope; or, for CVE-2026-73435, no OSPFv2 process is configured; or, for
   CVE-2026-73436, OSPF segment routing is not enabled.</li>
-<li>Failure: On an affected EOS release, an active OSPFv2 broadcast interface reports cryptographic authentication
+<li>Affected: On an affected EOS release, an active OSPFv2 broadcast interface reports cryptographic authentication
   for CVE-2026-73435, or OSPF segment routing is enabled for CVE-2026-73436.</li>
-<li>Mitigated: For CVE-2026-73435, the SWIX is installed and boot-persistent on an explicitly supported release. This
-  is decisive even when no qualifying broadcast interface is currently active.</li>
+<li>Mitigated: For CVE-2026-73435, the SWIX is installed and boot-persistent on an explicitly supported release.</li>
 <li>Inconclusive: For CVE-2026-73435, an affected EOS release has an OSPFv2 process configured, but no active
   broadcast interface reporting cryptographic authentication is currently observable.</li>
 <li>Error: Required EOS, OSPFv2, or applicable SWIX state cannot be determined.</li>
 </ul>
-<p>The two vulnerabilities have independent version boundaries and prerequisites. In particular, 4.34.7.1M fixes
+</details>
+
+<details class="note" open>
+  <summary>Notes</summary>
+  <p>The two vulnerabilities have independent version boundaries and prerequisites. In particular, 4.34.7.1M fixes
 CVE-2026-73435 but remains affected by CVE-2026-73436.</p>
 <p>CVE-2026-73435 follows this decision pattern:</p>
 <ul>
@@ -4611,7 +4631,8 @@ CVE-2026-73435 but remains affected by CVE-2026-73436.</p>
 <li>A configured OSPFv2 process without a currently observable qualifying active interface is inconclusive. Interface
   state can change without an OSPF configuration change, and authentication may be inherited from area, process, or
   interface configuration.</li>
-<li>An applicable effective SWIX resolves that uncertainty and produces a mitigated result.</li>
+<li>An applicable effective SWIX resolves that uncertainty and produces a mitigated result, even when no qualifying broadcast interface is
+  currently active.</li>
 </ul>
 <p>The test deliberately does not reconstruct effective OSPF behavior from static network, passive-interface, or
 authentication configuration. Process configuration is used only to distinguish an absent exposure path from an
@@ -4681,8 +4702,8 @@ unresolved inactive one.</p>
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: EOS is outside scope or no enabled gNMI transport uses request authorization.</li>
-<li>Failure: An affected EOS release has an enabled gNMI transport using request authorization.</li>
+<li>Not Affected: EOS is outside scope or no enabled gNMI transport uses request authorization.</li>
+<li>Affected: An affected EOS release has an enabled gNMI transport using request authorization.</li>
 <li>Error: Required EOS or gNMI authorization state cannot be determined.</li>
 </ul>
 </details>
@@ -4750,8 +4771,8 @@ unresolved inactive one.</p>
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: EOS is outside scope, gNSI has no enabled transport, or Authz is disabled.</li>
-<li>Failure: Affected EOS has gNSI Authz and multiple transports enabled.</li>
+<li>Not Affected: EOS is outside scope, gNSI has no enabled transport, or Authz is disabled.</li>
+<li>Affected: Affected EOS has gNSI Authz and multiple transports enabled.</li>
 <li>Inconclusive: Affected EOS has gNSI Authz and one transport enabled, but a removed secondary transport may have left stale policy state.</li>
 <li>Error: Required EOS or gNSI state cannot be determined.</li>
 </ul>
@@ -4820,8 +4841,8 @@ unresolved inactive one.</p>
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: EOS is outside scope or gNMI, RESTCONF, and NETCONF are all disabled or unsupported.</li>
-<li>Failure: An affected EOS release has at least one of those OpenConfig services enabled.</li>
+<li>Not Affected: EOS is outside scope or gNMI, RESTCONF, and NETCONF are all disabled or unsupported.</li>
+<li>Affected: An affected EOS release has at least one of those OpenConfig services enabled.</li>
 <li>Error: No service proves exposure and required EOS or service state cannot be determined.</li>
 </ul>
 </details>
@@ -4889,9 +4910,9 @@ unresolved inactive one.</p>
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: The test will pass if the EOS version is outside the affected releases, no gNSI transport is enabled, or Authz is disabled.</li>
-<li>Failure: The test will fail if affected EOS has an enabled gNSI transport and Authz service.</li>
-<li>Error: The test will error if required EOS version, transport, or Authz state cannot be determined.</li>
+<li>Not Affected: The EOS version is outside the affected releases, no gNSI transport is enabled, or Authz is disabled.</li>
+<li>Affected: Affected EOS has an enabled gNSI transport and Authz service.</li>
+<li>Error: Required EOS version, transport, or Authz state cannot be determined.</li>
 </ul>
 </details>
 
@@ -4958,8 +4979,8 @@ unresolved inactive one.</p>
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: EOS is outside scope or no gNMI transport is enabled.</li>
-<li>Failure: An affected EOS release has an enabled gNMI transport.</li>
+<li>Not Affected: EOS is outside scope or no gNMI transport is enabled.</li>
+<li>Affected: An affected EOS release has an enabled gNMI transport.</li>
 <li>Error: Required EOS or gNMI state cannot be determined.</li>
 </ul>
 </details>
@@ -5027,8 +5048,8 @@ unresolved inactive one.</p>
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: EOS is outside scope or gNSI Credentialz is disabled or unsupported.</li>
-<li>Failure: An affected EOS release has gNSI Credentialz enabled.</li>
+<li>Not Affected: EOS is outside scope or gNSI Credentialz is disabled or unsupported.</li>
+<li>Affected: An affected EOS release has gNSI Credentialz enabled.</li>
 <li>Error: Required EOS or Credentialz state cannot be determined.</li>
 </ul>
 </details>
@@ -5096,9 +5117,9 @@ unresolved inactive one.</p>
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: The test will pass if EOS is outside scope, gNMI or Pathz is disabled, or the Pathz policy has no user/group path overlap.</li>
-<li>Failure: The test will fail if affected EOS has gNMI and Pathz enabled with user and group rules for the same path.</li>
-<li>Error: The test will error if required EOS, gNMI, Pathz, or persisted policy state cannot be determined.</li>
+<li>Not Affected: EOS is outside scope, gNMI or Pathz is disabled, or the Pathz policy has no user/group path overlap.</li>
+<li>Affected: Affected EOS has gNMI and Pathz enabled with user and group rules for the same path.</li>
+<li>Error: Required EOS, gNMI, Pathz, or persisted policy state cannot be determined.</li>
 </ul>
 </details>
 
@@ -5165,8 +5186,8 @@ unresolved inactive one.</p>
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: EOS is outside scope or no enabled gNMI transport combines mutual TLS with request authorization.</li>
-<li>Failure: An affected release has an exposed transport without the documented AAA mitigation.</li>
+<li>Not Affected: EOS is outside scope or no enabled gNMI transport combines mutual TLS with request authorization.</li>
+<li>Affected: An affected release has an exposed transport without the documented AAA mitigation.</li>
 <li>Mitigated: The exposed transport is covered by explicit privilege-level-zero AAA authorization.</li>
 <li>Error: Required EOS, transport, SSL-profile, or AAA state cannot be determined.</li>
 </ul>
@@ -5235,12 +5256,11 @@ unresolved inactive one.</p>
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: The test will pass if the EOS version is outside the affected releases, or if an affected
-  release older than 4.33.2F has the current Certz path disabled or unsupported.</li>
-<li>Failure: The test will fail if an affected EOS version has an enabled gNSI transport and Certz service.</li>
-<li>Inconclusive: The test is inconclusive when EOS 4.33.2F or later has the Certz path closed but Bootz
-  certificate use during initial provisioning is unknown.</li>
-<li>Error: The test will error if EOS or current Certz-path state needed for the assessment cannot be determined.</li>
+<li>Not Affected: The EOS version is outside the affected releases, or an affected release older than 4.33.2F has the current
+  Certz path disabled or unsupported.</li>
+<li>Affected: An affected EOS version has an enabled gNSI transport and Certz service.</li>
+<li>Inconclusive: EOS 4.33.2F or later has the Certz path closed, but Bootz certificate use during initial provisioning is unknown.</li>
+<li>Error: EOS or current Certz-path state needed for the assessment cannot be determined.</li>
 </ul>
 </details>
 
@@ -5307,11 +5327,15 @@ unresolved inactive one.</p>
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: EOS is outside scope or the local vulnerable MLAG dual-primary configuration is absent.</li>
-<li>Failure: An affected EOS release has MLAG dual-primary heartbeat configured with the errdisable-all action.</li>
+<li>Not Affected: EOS is outside scope or the local vulnerable MLAG dual-primary configuration is absent.</li>
+<li>Affected: An affected EOS release has MLAG dual-primary heartbeat configured with the errdisable-all action.</li>
 <li>Error: Required EOS or local MLAG state cannot be determined.</li>
 </ul>
-<p>Transient MLAG, peer-link, heartbeat, and dual-primary operational states do not remove exposure from a device with the vulnerable configuration.</p>
+</details>
+
+<details class="note" open>
+  <summary>Notes</summary>
+  <p>Transient MLAG, peer-link, heartbeat, and dual-primary operational states do not remove exposure from a device with the vulnerable configuration.</p>
 </details>
 
 
@@ -5377,12 +5401,16 @@ unresolved inactive one.</p>
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: An issue&rsquo;s EOS version is outside scope; no IS-IS instance is enabled; or the issue-specific prerequisite is absent.</li>
-<li>Failure: An affected EOS release reports the issue-specific IS-IS prerequisite.</li>
+<li>Not Affected: An issue&rsquo;s EOS version is outside scope; no IS-IS instance is enabled; or the issue-specific prerequisite is absent.</li>
+<li>Affected: An affected EOS release reports the issue-specific IS-IS prerequisite.</li>
 <li>Inconclusive: For CVE-2026-73446, an affected EOS release has IS-IS enabled, but no qualifying active interface is currently observable.</li>
 <li>Error: Required EOS or IS-IS state cannot be determined.</li>
 </ul>
-<p>Each vulnerability has an independent version matrix and prerequisite: a reported non-passive broadcast interface, any enabled IS-IS instance,
+</details>
+
+<details class="note" open>
+  <summary>Notes</summary>
+  <p>Each vulnerability has an independent version matrix and prerequisite: a reported non-passive broadcast interface, any enabled IS-IS instance,
 or graceful restart.</p>
 <p>A reported non-passive broadcast interface confirms CVE-2026-73446 exposure regardless of its current adjacency count. When IS-IS is enabled but no
 qualifying interface is reported, the result is inconclusive because a configured interface may be temporarily down and omitted from operational
@@ -5452,10 +5480,15 @@ output. The test deliberately does not reconstruct effective interface type, pas
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: EOS is outside the affected releases.</li>
-<li>Failure: EOS is within the affected releases; IGMP snooping is instantiated by default.</li>
+<li>Not Affected: EOS is outside the affected releases.</li>
+<li>Affected: EOS is within the affected releases.</li>
 <li>Error: The EOS version cannot be determined.</li>
 </ul>
+</details>
+
+<details class="note" open>
+  <summary>Notes</summary>
+  <p>IGMP snooping is enabled by default, so the EOS version alone determines exposure.</p>
 </details>
 
 
@@ -5521,12 +5554,16 @@ output. The test deliberately does not reconstruct effective interface type, pas
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: EOS is outside scope, gNPSI is disabled, or the issue-specific authentication or trace prerequisite is absent.</li>
-<li>Failure: An affected EOS release has an enabled gNPSI transport and the issue-specific prerequisite.</li>
+<li>Not Affected: EOS is outside scope, gNPSI is disabled, or the issue-specific authentication or trace prerequisite is absent.</li>
+<li>Affected: An affected EOS release has an enabled gNPSI transport and the issue-specific prerequisite.</li>
 <li>Mitigated: Credential tracing is enabled, but every effective transport uses mutual TLS with only x509-spiffe authentication.</li>
 <li>Error: Required EOS, gNPSI transport, authentication, or trace state cannot be determined.</li>
 </ul>
-<p>CVE-2026-73456 evaluates TLS or mTLS authentication combinations. CVE-2026-73457 evaluates explicit EosRpcAuth tracing and the
+</details>
+
+<details class="note" open>
+  <summary>Notes</summary>
+  <p>CVE-2026-73456 evaluates TLS or mTLS authentication combinations. CVE-2026-73457 evaluates explicit EosRpcAuth tracing and the
 source-defined mutual-TLS/x509-spiffe mitigation across every effective transport.</p>
 </details>
 
@@ -5593,11 +5630,16 @@ source-defined mutual-TLS/x509-spiffe mitigation across every effective transpor
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: EOS is outside scope or the configuration prerequisite for an issue is absent; replay also requires anti-replay after updating.</li>
-<li>Failure: An affected release has the issue&rsquo;s VRRP prerequisite, or a conditionally fixed release lacks anti-replay for the replay issue.</li>
+<li>Not Affected: EOS is outside scope, the configuration prerequisite for an issue is absent, or a conditionally fixed release has anti-replay
+  enabled for the replay issue.</li>
+<li>Affected: An affected release has the issue&rsquo;s VRRP prerequisite, or a conditionally fixed release lacks anti-replay for the replay issue.</li>
 <li>Error: Required EOS or VRRP state cannot be determined.</li>
 </ul>
-<p>Replay protection is disabled by default after updating, so CVE-2026-73443 requires both fixed software and the global anti-replay setting.
+</details>
+
+<details class="note" open>
+  <summary>Notes</summary>
+  <p>Replay protection is disabled by default after updating, so CVE-2026-73443 requires both fixed software and the global anti-replay setting.
 Assessment uses persistent VRRP configuration rather than transient operational state. CVE-2026-73444 and CVE-2026-73443 require VRRPv2
 with IP-AH authentication, while CVE-2026-73442 applies when either VRRPv2 or VRRPv3 is configured.</p>
 </details>
@@ -5665,12 +5707,16 @@ with IP-AH authentication, while CVE-2026-73442 applies when either VRRPv2 or VR
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: DHCP relay is inactive, EOS is outside scope, or a conditionally fixed release has reply validation enabled.</li>
-<li>Failure: Active DHCP relay is neither fully resolved nor covered by operational enforcement-disabled IP locking.</li>
+<li>Not Affected: DHCP relay is inactive, EOS is outside scope, or a conditionally fixed release has reply validation enabled.</li>
+<li>Affected: Active DHCP relay is neither fully resolved nor covered by operational enforcement-disabled IP locking.</li>
 <li>Mitigated: Enforcement-disabled IP locking operationally covers every active relay interface and address family.</li>
 <li>Error: Required EOS, DHCP relay, reply-validation, or IP-locking scope cannot be determined.</li>
 </ul>
-<p>A software update alone is insufficient. The advisory requires reply source-address validation on every fixed release.
+</details>
+
+<details class="note" open>
+  <summary>Notes</summary>
+  <p>A software update alone is insufficient. The advisory requires reply source-address validation on every fixed release.
 Its alternative IP-locking mitigation is accepted only from operational state whose interface or VLAN and IPv4/IPv6
 coverage can be correlated with every active DHCP relay path. Unsupported IP locking proves that mitigation is absent.</p>
 </details>
@@ -5738,8 +5784,8 @@ coverage can be correlated with every active DHCP relay path. Unsupported IP loc
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: EOS is outside scope or none of the DHCP Option 82 exposure paths is configured.</li>
-<li>Failure: An affected EOS release has a DHCP relay, snooping, or server Option 82 exposure path.</li>
+<li>Not Affected: EOS is outside scope or none of the DHCP Option 82 exposure paths is configured.</li>
+<li>Affected: An affected EOS release has a DHCP relay, snooping, or server Option 82 exposure path.</li>
 <li>Error: Required EOS or DHCP configuration state cannot be determined.</li>
 </ul>
 </details>
@@ -5802,18 +5848,22 @@ coverage can be correlated with every active DHCP relay path. Unsupported IP loc
 
 
         <p>Verify whether the device is impacted by Security Advisory 0154.</p>
-<p>BFD is exposed when it is enabled and authentication is configured. Active peers are not
-required because peer state is transient and a configured interface or peer may establish
-a session after the test runs.</p>
 
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: EOS is outside scope, BFD is shut down, or BFD authentication is not configured.</li>
-<li>Failure: An affected EOS release has BFD enabled with authentication configured.</li>
+<li>Not Affected: EOS is outside scope, BFD is shut down, or BFD authentication is not configured.</li>
+<li>Affected: An affected EOS release has BFD enabled with authentication configured.</li>
 <li>Error: Required EOS or BFD state cannot be determined.</li>
 </ul>
+</details>
+
+<details class="note" open>
+  <summary>Notes</summary>
+  <p>BFD is exposed when it is enabled and authentication is configured. Active peers are not
+required because peer state is transient and a configured interface or peer may establish
+a session after the test runs.</p>
 </details>
 
 
@@ -5879,9 +5929,9 @@ a session after the test runs.</p>
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: Each issue passes when the EOS version is outside its affected scope or its risky trace level is disabled.</li>
-<li>Failure: An issue fails when an affected EOS release has its risky trace level enabled.</li>
-<li>Error: An issue errors when required EOS version or trace state cannot be determined.</li>
+<li>Not Affected: For each issue, the EOS version is outside its affected scope or its risky trace level is disabled.</li>
+<li>Affected: An affected EOS release has an issue&rsquo;s risky trace level enabled.</li>
+<li>Error: Required EOS version or trace state for an issue cannot be determined.</li>
 </ul>
 </details>
 
@@ -5948,11 +5998,15 @@ a session after the test runs.</p>
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: EOS is outside scope, login authentication is disabled, or no password-capable management service is enabled.</li>
-<li>Failure: Affected EOS has login authentication and password-capable SSH or Telnet enabled.</li>
+<li>Not Affected: EOS is outside scope, login authentication is disabled, or no password-capable management service is enabled.</li>
+<li>Affected: Affected EOS has login authentication and password-capable SSH or Telnet enabled.</li>
 <li>Error: Required EOS, AAA, or management-service configuration cannot be determined.</li>
 </ul>
-<p>SSH and Telnet exposure is determined from configuration, including configured VRF scope. Current VRF operational state is transient and
+</details>
+
+<details class="note" open>
+  <summary>Notes</summary>
+  <p>SSH and Telnet exposure is determined from configuration, including configured VRF scope. Current VRF operational state is transient and
 does not prove safety because a down VRF can return without any management-service configuration change.</p>
 </details>
 
@@ -6019,8 +6073,8 @@ does not prove safety because a down VRF can return without any management-servi
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: EOS or platform is outside scope, or no shared SVI ingress ACL is configured.</li>
-<li>Failure: Affected EOS and platform have a shared SVI ingress ACL configured.</li>
+<li>Not Affected: EOS or platform is outside scope, or no shared SVI ingress ACL is configured.</li>
+<li>Affected: Affected EOS and platform have a shared SVI ingress ACL configured.</li>
 <li>Error: Required EOS, platform, or shared SVI ingress ACL state cannot be determined.</li>
 </ul>
 </details>
@@ -6088,11 +6142,15 @@ does not prove safety because a down VRF can return without any management-servi
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: An issue passes when EOS or platform is outside its scope, or no controlled 802.1X authenticator is active.</li>
-<li>Inconclusive: An applicable issue is inconclusive because static or dynamic ACL assignment cannot be ruled out from device state.</li>
-<li>Error: An issue errors when required EOS, platform, or 802.1X state cannot be determined.</li>
+<li>Not Affected: EOS or platform is outside an issue&rsquo;s scope, or no controlled 802.1X authenticator is active.</li>
+<li>Inconclusive: An issue applies, but static or dynamic ACL assignment cannot be ruled out from device state.</li>
+<li>Error: Required EOS, platform, or 802.1X state for an issue cannot be determined.</li>
 </ul>
-<p>Whether an operator previously ran <code>clear dot1x host all</code> does not change exposure assessment. For CVE-2026-75945,
+</details>
+
+<details class="note" open>
+  <summary>Notes</summary>
+  <p>Whether an operator previously ran <code>clear dot1x host all</code> does not change exposure assessment. For CVE-2026-75945,
 rerunning that command is presented only as conditional mitigation advice when a supplicant remains authenticated.</p>
 </details>
 
@@ -6159,8 +6217,8 @@ rerunning that command is presented only as conditional mitigation advice when a
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: EOS or platform is outside scope, or either required dynamic-authorization feature is absent.</li>
-<li>Failure: An affected physical platform and EOS release has both required features configured.</li>
+<li>Not Affected: EOS or platform is outside scope, or either required dynamic-authorization feature is absent.</li>
+<li>Affected: An affected physical platform and EOS release has both required features configured.</li>
 <li>Error: Required EOS, platform, 802.1X, or RADIUS proxy state cannot be determined.</li>
 </ul>
 </details>
@@ -6223,16 +6281,18 @@ rerunning that command is presented only as conditional mitigation advice when a
 
 
         <p>Verify whether the device is impacted by Security Advisory 0147.</p>
-<p>Strict host-key checking is an observable identity control for CVE-2026-60002, but it does not establish that operators connect only to trusted
-servers as required by the advisory. An affected release with strict host-key checking is therefore inconclusive rather than mitigated.</p>
 
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: The test will pass if every vulnerability is not affected.</li>
-<li>Failure: The test will fail if any vulnerability is affected or inconclusive.</li>
-<li>Error: The test will error if evidence required for a vulnerability is invalid.</li>
+<li>Not Affected: EOS is outside a vulnerability&rsquo;s scope or the relevant OpenSSH package is 10.4 or later; for CVE-2026-60001, a disabled SSH
+  server is also sufficient.</li>
+<li>Affected: An affected EOS release ships an OpenSSH package older than 10.4; for CVE-2026-60001, the SSH server is not disabled; for
+  CVE-2026-60002, strict host-key checking is not effective.</li>
+<li>Inconclusive: For CVE-2026-60002, EOS is within the affected scope and OpenSSH is older than 10.4; strict host-key checking is effective,
+  but whether operators connect only to trusted servers cannot be determined.</li>
+<li>Error: Required EOS, OpenSSH package, SSH server, or strict host-key checking state cannot be determined.</li>
 </ul>
 </details>
 
@@ -6296,22 +6356,22 @@ servers as required by the advisory. An affected release with strict host-key ch
         <p>Verify whether the device is impacted by Security Advisory 0146.</p>
 
 
+<details class="expected-results" open>
+  <summary>Expected Results</summary>
+  <ul>
+<li>Not Affected: No affected gRPC service is enabled.</li>
+<li>Affected: An affected gRPC service is enabled without mTLS.</li>
+<li>Mitigated: All affected services are protected with mTLS.</li>
+<li>Error: A required service, EOS release, component version, or mTLS state cannot be determined.</li>
+</ul>
+</details>
+
 <details class="note" open>
   <summary>Notes</summary>
   <p>TerminAttr validates its configured certificate, private key, and client CA files when it starts. A running TerminAttr
 process configured with the complete mTLS arguments therefore has valid files and enforces mTLS. If file validation
 prevents TerminAttr from starting, its gRPC service is not exposed. The TerminAttr mTLS path is therefore safely
 classified as mitigated.</p>
-</details>
-
-<details class="expected-results" open>
-  <summary>Expected Results</summary>
-  <ul>
-<li>Success: The test will pass if no affected gRPC service is enabled.</li>
-<li>Failure: The test will fail if an affected gRPC service is enabled without mTLS.</li>
-<li>Mitigated: The test is mitigated if all affected services are protected with mTLS.</li>
-<li>Error: The test will error if a required service, EOS release, component version, or mTLS state cannot be determined.</li>
-</ul>
 </details>
 
 
@@ -6374,19 +6434,13 @@ classified as mitigated.</p>
         <p>Verify whether the device is impacted by Security Advisory 0142.</p>
 
 
-<details class="note" open>
-  <summary>Notes</summary>
-  <p>This test currently requires the structured EOS platform identity supplied by <code>AsyncEOSDevice</code>.
-Incomplete modular identities remain inconclusive when the installed modules cannot establish the affected family.</p>
-</details>
-
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: The test will pass if no affected redirect path is active or a conditional fix is complete.</li>
-<li>Failure: The test will fail if a vulnerable redirect path is active or a conditional fix is incomplete.</li>
-<li>Inconclusive: The test is inconclusive for a conservatively matched chassis.</li>
-<li>Error: The test will error if a required redirect, platform, EOS release, or MTU control state cannot be determined.</li>
+<li>Not Affected: No affected redirect path is active or a conditional fix is complete.</li>
+<li>Affected: A vulnerable redirect path is active or a conditional fix is incomplete.</li>
+<li>Inconclusive: A conservatively matched chassis cannot be confirmed as an affected switch generation from its installed modules.</li>
+<li>Error: A required redirect, platform, EOS release, or MTU control state cannot be determined.</li>
 </ul>
 </details>
 
@@ -6453,9 +6507,9 @@ Incomplete modular identities remain inconclusive when the installed modules can
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: The test will pass if the EOS version or Secure Boot state is not affected.</li>
-<li>Failure: The test will fail if an affected EOS version has Secure Boot supported and enabled.</li>
-<li>Error: The test will error if the EOS version or Secure Boot state cannot be determined.</li>
+<li>Not Affected: EOS is outside scope or Secure Boot is not enabled.</li>
+<li>Affected: An affected EOS release has Secure Boot supported and enabled.</li>
+<li>Error: The EOS version or Secure Boot state cannot be determined.</li>
 </ul>
 </details>
 
@@ -6519,20 +6573,21 @@ Incomplete modular identities remain inconclusive when the installed modules can
         <p>Verify whether the device is impacted by Security Advisory 0117.</p>
 
 
+<details class="expected-results" open>
+  <summary>Expected Results</summary>
+  <ul>
+<li>Not Affected: EOS is outside scope, no gNMI transport is enabled, or neither gNMI accounting nor risky OpenConfig tracing is configured.</li>
+<li>Inconclusive: An affected EOS release has gNMI enabled with accounting or risky OpenConfig tracing, but the gNOI File service and
+  effective gNSI Authz controls cannot be evaluated.</li>
+<li>Error: Required EOS, gNMI, accounting, or trace state cannot be determined.</li>
+</ul>
+</details>
+
 <details class="note" open>
   <summary>Notes</summary>
   <p>Exposure signals remain inconclusive because disabling the gNOI File service and an
 effective gNSI Authz policy that blocks TransferToRemote cannot currently be evaluated
 with trusted narrow EOS evidence.</p>
-</details>
-
-<details class="expected-results" open>
-  <summary>Expected Results</summary>
-  <ul>
-<li>Success: The test will pass if the EOS version or configuration is not affected.</li>
-<li>Inconclusive: The test is inconclusive if exposure signals exist but required control evidence is unavailable.</li>
-<li>Error: The test will error if required EOS version or configuration evidence is invalid.</li>
-</ul>
 </details>
 
 
@@ -6627,7 +6682,7 @@ with trusted narrow EOS evidence.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    September 10, 2026
+    October 29, 2026
   </span>
 
     
