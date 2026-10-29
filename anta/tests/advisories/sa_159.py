@@ -73,9 +73,13 @@ class SA159(_AntaAdvisoryTest):
 
     Expected Results
     ----------------
-    * Success: EOS is outside the affected releases.
-    * Failure: EOS is within the affected releases; IGMP snooping is instantiated by default.
+    * Not Affected: EOS is outside the affected releases.
+    * Affected: EOS is within the affected releases.
     * Error: The EOS version cannot be determined.
+
+    Notes
+    -----
+    IGMP snooping is instantiated by default, so the EOS version alone determines exposure.
 
     Examples
     --------

@@ -78,8 +78,8 @@ class SA165(OptionalCommandsMixin, _AntaAdvisoryTest):
 
     Expected Results
     ----------------
-    * Success: EOS is outside scope or gNSI Credentialz is disabled or unsupported.
-    * Failure: An affected EOS release has gNSI Credentialz enabled.
+    * Not Affected: EOS is outside scope or gNSI Credentialz is disabled or unsupported.
+    * Affected: An affected EOS release has gNSI Credentialz enabled.
     * Error: Required EOS or Credentialz state cannot be determined.
 
     Examples
