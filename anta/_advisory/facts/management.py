@@ -53,7 +53,6 @@ RESTCONF_COMMAND = OptionalAntaCommand(command="show management api restconf", r
 NETCONF_COMMAND = OptionalAntaCommand(command="show management api netconf", revision=1)
 SSL_PROFILE_COMMAND = OptionalAntaCommand(command="show management security ssl profile", revision=1)
 SNMP_COMMAND = AntaCommand(command="show snmp", revision=1)
-SNMPV3_USER_COMMAND = OptionalAntaCommand(command="show snmp user", revision=1)
 SNMPV3_USER_CONFIG_COMMAND = AntaCommand(command="show running-config | include ^snmp-server user", ofmt="text")
 
 
@@ -186,8 +185,21 @@ def _feature_source(command: AntaCommand) -> FactSource:
 
 
 _SNMPV3_CREDENTIAL_CLAUSES = frozenset({"auth", "priv"})
-_SNMPV3_LOCAL_VERSION_INDEX = 4
-_SNMPV3_REMOTE_VERSION_INDEX = 6
+_SNMPV3_AUTHENTICATION_CLAUSES = frozenset({"auth"})
+_SNMP_USER_SECURITY_MODEL_INDEX = 4
+_SNMP_USER_SECURITY_MODELS = frozenset({"v1", "v2c", "v3"})
+
+
+def _snmp_user_security_model_index(tokens: tuple[str, ...]) -> int | None:
+    """Return the security-model token index after the optional remote host and UDP port of one SNMP user line."""
+    index = _SNMP_USER_SECURITY_MODEL_INDEX
+    if tokens[index : index + 1] == ("remote",):
+        index += 2
+        if tokens[index : index + 1] == ("udp-port",):
+            index += 2
+    if index >= len(tokens) or tokens[index] not in _SNMP_USER_SECURITY_MODELS:
+        return None
+    return index
 
 
 def _snmpv3_credential_clause_states(
@@ -235,12 +247,10 @@ def _snmpv3_credential_syntax(
             return None
         if tuple(tokens[:2]) != ("snmp-server", "user"):
             return None
-        version_index = (
-            _SNMPV3_REMOTE_VERSION_INDEX
-            if len(tokens) > _SNMPV3_LOCAL_VERSION_INDEX and tokens[_SNMPV3_LOCAL_VERSION_INDEX] == "remote"
-            else _SNMPV3_LOCAL_VERSION_INDEX
-        )
-        if len(tokens) <= version_index or tokens[version_index] != "v3":
+        version_index = _snmp_user_security_model_index(tokens)
+        if version_index is None:
+            return None
+        if tokens[version_index] != "v3":
             continue
         states = _snmpv3_credential_clause_states(tokens[version_index + 1 :], observed_clauses)
         if states is None:
@@ -377,50 +387,25 @@ class SnmpAgentFact(FeatureFact, CommandsFactDefinition["SnmpAgentFact"]):
 
 @dataclass(frozen=True, slots=True)
 class SnmpV3AuthenticationFact(FeatureFact, CommandsFactDefinition["SnmpV3AuthenticationFact"]):
-    """Whether a local or remote SNMPv3 user has a configured authentication key."""
+    """Whether a local or remote SNMPv3 user has a configured authentication key.
+
+    ``show snmp user`` does not list remote users, so only the user configuration covers both local and remote users.
+    """
 
     feature: ClassVar[FeatureRef] = SubFeature(FeatureName.SNMPV3, "authentication key")
     key: ClassVar[str] = "feature.snmpv3.authentication_key"
     label: ClassVar[str] = "SNMPv3 authentication key state"
-    commands: ClassVar[tuple[AntaCommand, ...]] = (SNMPV3_USER_COMMAND,)
+    commands: ClassVar[tuple[AntaCommand, ...]] = (SNMPV3_USER_CONFIG_COMMAND,)
 
     @classmethod
-    # pylint: disable-next=too-many-return-statements
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[SnmpV3AuthenticationFact]:  # noqa: C901, PLR0911
-        """Normalize SNMPv3 authentication-key presence from structured operational state."""
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[SnmpV3AuthenticationFact]:
+        """Normalize authentication-key presence from the narrow SNMP user configuration output."""
         (command,) = commands
         source = _feature_source(command)
-        if is_unsupported_optional_command(command):
-            return cls(FeatureState.UNSUPPORTED).available(source)
-        if "usersByVersion" not in command.json_output:
-            return cls.unavailable(FactProblemKind.MISSING, source)
-        users_by_version = command.json_output["usersByVersion"]
-        if not isinstance(users_by_version, Mapping):
+        authentication_syntax = _snmpv3_credential_syntax(command.text_output, _SNMPV3_AUTHENTICATION_CLAUSES)
+        if authentication_syntax is None:
             return cls.unavailable(FactProblemKind.MALFORMED, source)
-        version = users_by_version.get("v3")
-        if version is None:
-            return cls(FeatureState.DISABLED).available(source)
-        if not isinstance(version, Mapping):
-            return cls.unavailable(FactProblemKind.MALFORMED, source)
-        users = version.get("users")
-        if users is None:
-            return cls(FeatureState.DISABLED).available(source)
-        if not isinstance(users, Mapping):
-            return cls.unavailable(FactProblemKind.MALFORMED, source)
-        enabled = False
-        for user in users.values():
-            if not isinstance(user, Mapping):
-                return cls.unavailable(FactProblemKind.MALFORMED, source)
-            parameters = user.get("v3Params")
-            if parameters is None:
-                continue
-            if not isinstance(parameters, Mapping):
-                return cls.unavailable(FactProblemKind.MALFORMED, source)
-            authentication_type = parameters.get("authType")
-            if authentication_type is not None and not isinstance(authentication_type, str):
-                return cls.unavailable(FactProblemKind.MALFORMED, source)
-            enabled |= isinstance(authentication_type, str) and authentication_type.casefold() not in {"", "none", "noauth"}
-        state = FeatureState.ENABLED if enabled else FeatureState.DISABLED
+        state = FeatureState.DISABLED if authentication_syntax is CredentialSyntaxState.NOT_CONFIGURED else FeatureState.ENABLED
         return cls(state).available(source)
 
 

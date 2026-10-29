@@ -13,14 +13,17 @@ from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import SnmpV3AuthenticationFact, SnmpV3CredentialSyntaxFact
 from anta._advisory.facts.models import (
+    AvailableFact,
     CredentialSyntaxState,
     Fact,
     FactsBase,
     FeatureState,
+    MitigationState,
     UnavailableFact,
     fact_field,
     facts_dataclass,
 )
+from anta._advisory.facts.software import SA178HotfixFact
 from anta._advisory.findings.assessment import assess_eos_version
 from anta._advisory.findings.models import AffectedResult, EosReleaseAssessment, ErrorResult, NotAffectedResult, VersionRelation, VulnerabilityResult
 from anta._advisory.findings.projection import project_vulnerability_result
@@ -32,24 +35,25 @@ from anta.decorators import preview_test_class
 
 # pylint: disable=duplicate-code
 AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
-    VersionRule(major=4, minor=36, patch_lte=1),
-    VersionRule(major=4, minor=35, patch_lte=5),
-    VersionRule(major=4, minor=34, patch_lte=7),
-    VersionRule(major=4, minor=33, patch_lte=9),
+    VersionRule(major=4, minor=36, patch_lte=2),
+    VersionRule(major=4, minor=35, patch_lte=6),
+    VersionRule(major=4, minor=34, patch_lte=8),
+    VersionRule(major=4, minor=33, patch_lte=10),
     VersionRule(major=4, minor_lt=33),
 )
 FIXED_RELEASES = (
-    FixedRelease(EOSVersion(4, 36, 2, suffix="F")),
-    FixedRelease(EOSVersion(4, 35, 6, suffix="M")),
-    FixedRelease(EOSVersion(4, 34, 8, suffix="M")),
-    FixedRelease(EOSVersion(4, 33, 10, suffix="M")),
+    FixedRelease(EOSVersion(4, 36, 3, suffix="M")),
+    FixedRelease(EOSVersion(4, 35, 7, suffix="M")),
+    FixedRelease(EOSVersion(4, 34, 9, suffix="M")),
+    FixedRelease(EOSVersion(4, 33, 11, suffix="M")),
 )
 # pylint: enable=duplicate-code
+HOTFIX_RELEASES = frozenset({"4.36.2F", "4.35.6M", "4.34.8M", "4.33.10M"})
 CONVERT_CREDENTIALS = RunCommand(("configure convert new-syntax",))
 
 ADVISORY = _AdvisoryMetadata(
     sa_number="0178",
-    last_updated=date(2026, 9, 9),
+    last_updated=date(2026, 10, 28),
     title="Security Advisory 0178",
     vulnerabilities=(
         _AdvisoryVulnerability(
@@ -67,15 +71,16 @@ ADVISORY = _AdvisoryMetadata(
 VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
-def _assess_sa178(  # pylint: disable=too-many-return-statements
+def _assess_sa178(
     version: Fact[EosVersionFact],
     authentication: Fact[SnmpV3AuthenticationFact],
     credential_syntax: Fact[SnmpV3CredentialSyntaxFact],
+    hotfix: Fact[SA178HotfixFact],
 ) -> VulnerabilityResult:
-    """Assess EOS software and the legacy SNMPv3 credential-syntax prerequisite.
+    """Assess EOS software, the release-specific hotfix, and the legacy SNMPv3 credential-syntax prerequisite.
 
-    Legacy or mixed credential syntax is required for exposure. Upgrading EOS does not convert existing credentials, so credentials that
-    retain legacy syntax on a fixed release still require ``configure convert new-syntax``.
+    Legacy or mixed credential syntax is required for exposure. Upgrading EOS or installing the hotfix does not convert existing credentials, so
+    credentials that retain legacy syntax on fixed or hotfixed software still require ``configure convert new-syntax``.
     """
     if not isinstance(authentication, UnavailableFact) and authentication.value.state is not FeatureState.ENABLED:
         return NotAffectedResult(vulnerability_id=VULNERABILITY_ID, decisive=(authentication,))
@@ -86,7 +91,13 @@ def _assess_sa178(  # pylint: disable=too-many-return-statements
         return NotAffectedResult(vulnerability_id=VULNERABILITY_ID, decisive=(credential_syntax,))
 
     software_context = assess_eos_version(version, AFFECTED_VERSION_MATRIX)
-    problems = tuple(fact for fact in (software_context, authentication, credential_syntax) if isinstance(fact, UnavailableFact))
+    hotfix_applies = (
+        isinstance(software_context, EosReleaseAssessment)
+        and software_context.relation is VersionRelation.AFFECTED
+        and str(software_context.fact.value) in HOTFIX_RELEASES
+    )
+    required = (software_context, authentication, credential_syntax, hotfix) if hotfix_applies else (software_context, authentication, credential_syntax)
+    problems = tuple(fact for fact in required if isinstance(fact, UnavailableFact))
     if problems:
         return ErrorResult(vulnerability_id=VULNERABILITY_ID, problems=problems)
 
@@ -95,20 +106,19 @@ def _assess_sa178(  # pylint: disable=too-many-return-statements
     assert not isinstance(credential_syntax, UnavailableFact)  # noqa: S101
     configured_authentication = authentication
     legacy_credential_syntax = credential_syntax
-    if software_context.relation is VersionRelation.AFFECTED:
+    applicable_hotfix = hotfix if hotfix_applies and isinstance(hotfix, AvailableFact) else None
+    if software_context.relation is VersionRelation.AFFECTED and (applicable_hotfix is None or applicable_hotfix.value.state is not MitigationState.EFFECTIVE):
+        hotfix_conditions = () if applicable_hotfix is None else (applicable_hotfix,)
         return AffectedResult(
             vulnerability_id=VULNERABILITY_ID,
             context=(software_context,),
-            conditions=(configured_authentication, legacy_credential_syntax),
+            conditions=(configured_authentication, legacy_credential_syntax, *hotfix_conditions),
             remediation=RemediationPlan(Sequence((software_version_action(FIXED_RELEASES, current_version=software_context.fact.value), CONVERT_CREDENTIALS))),
         )
 
-    if software_context.relation is VersionRelation.OUTSIDE_SCOPE:
-        software_context = EosReleaseAssessment(software_context.fact, VersionRelation.FIXED)
-
     return AffectedResult(
         vulnerability_id=VULNERABILITY_ID,
-        context=(software_context,),
+        context=(EosReleaseAssessment(software_context.fact, VersionRelation.FIXED),),
         conditions=(configured_authentication, legacy_credential_syntax),
         remediation=RemediationPlan(CONVERT_CREDENTIALS),
     )
@@ -120,10 +130,14 @@ class SA178(OptionalCommandsMixin, _AntaAdvisoryTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if no SNMPv3 authentication key is configured, or every key uses encrypted syntax.
-    * Failure: The test will fail if an SNMPv3 authentication key uses legacy or mixed syntax. Affected software requires an upgrade followed by
-      credential conversion; fixed software requires credential conversion because upgrading does not rewrite existing configuration.
-    * Error: The test will error if the required EOS version, authentication-key state, or credential syntax cannot be determined.
+    * Success: The test will pass if no local or remote SNMPv3 user has an authentication key, or every key uses encrypted syntax.
+    * Failure: The test will fail if a local or remote SNMPv3 credential uses legacy or mixed syntax. Affected software requires an upgrade followed
+      by credential conversion; fixed software, or a release listed by the advisory with its hotfix installed and boot-persistent, requires credential
+      conversion because neither the upgrade nor the hotfix rewrites existing configuration.
+    * Error: The test will error if the required EOS version, authentication-key state, credential syntax, or applicable hotfix state cannot be
+      determined.
+
+    SNMPv3 users are assessed from the running configuration because remote users are not listed by `show snmp user`.
 
     Examples
     --------
@@ -140,6 +154,7 @@ class SA178(OptionalCommandsMixin, _AntaAdvisoryTest):
         version: Fact[EosVersionFact] = fact_field(EosVersionFact)
         authentication: Fact[SnmpV3AuthenticationFact] = fact_field(SnmpV3AuthenticationFact)
         credential_syntax: Fact[SnmpV3CredentialSyntaxFact] = fact_field(SnmpV3CredentialSyntaxFact)
+        hotfix: Fact[SA178HotfixFact] = fact_field(SA178HotfixFact)
 
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
     description = "Verify whether the device is impacted by Security Advisory 0178."
@@ -149,6 +164,6 @@ class SA178(OptionalCommandsMixin, _AntaAdvisoryTest):
     def test(self) -> None:
         """Derive the declared facts, assess the vulnerability, and project it."""
         facts = self.Facts.collect(self)
-        finding = _assess_sa178(facts.version, facts.authentication, facts.credential_syntax)
+        finding = _assess_sa178(facts.version, facts.authentication, facts.credential_syntax, facts.hotfix)
         atomic_result = self.result.add(f"Verify {VULNERABILITY_ID}.", vulnerability_ids=(VULNERABILITY_ID,))
         project_vulnerability_result(atomic_result, finding)

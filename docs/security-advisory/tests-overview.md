@@ -34,7 +34,7 @@ ANTA** identifies the first release aligned with that revision.
 | Security Advisory 0181 | | N/A | | VeloCloud; not covered by ANTA |
 | Security Advisory 0180 | | N/A | | VeloCloud; not covered by ANTA |
 | Security Advisory 0179 | | N/A | | VeloCloud; not covered by ANTA |
-| Security Advisory 0178 | 2026-09-09 | v1.10 | | |
+| Security Advisory 0178 | 2026-10-28 | v1.10 | v1.11 | |
 | Security Advisory 0177 | 2026-09-17 | v1.10 | v1.11 | |
 | Security Advisory 0176 | 2026-09-09 | v1.10 | | |
 | Security Advisory 0175 | 2026-09-09 | v1.10 | | |
