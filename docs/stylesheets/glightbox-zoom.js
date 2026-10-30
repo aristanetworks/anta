@@ -17,6 +17,8 @@
     let offsetY = 0
     let startX = 0
     let startY = 0
+    let dragOriginX = 0
+    let dragOriginY = 0
     let suppressClick = false
 
     function reset() {
@@ -30,6 +32,11 @@
 
     image.dataset.antaZoomReady = "true"
     image.classList.add("anta-zoomable")
+    image.draggable = false
+
+    image.addEventListener("dragstart", function(event) {
+      event.preventDefault()
+    })
 
     image.addEventListener("click", function() {
       if (suppressClick) {
@@ -51,8 +58,12 @@
 
       activePointerId = event.pointerId
       dragged = false
+      suppressClick = false
+      dragOriginX = offsetX
+      dragOriginY = offsetY
       startX = event.clientX - offsetX
       startY = event.clientY - offsetY
+      event.preventDefault()
       image.setPointerCapture(event.pointerId)
     })
 
@@ -63,10 +74,14 @@
 
       const nextX = event.clientX - startX
       const nextY = event.clientY - startY
-      if (Math.abs(nextX - offsetX) > 3 || Math.abs(nextY - offsetY) > 3) {
+      if (Math.abs(nextX - dragOriginX) > 3 || Math.abs(nextY - dragOriginY) > 3) {
         dragged = true
         image.classList.add("anta-dragging")
       }
+      if (!dragged) {
+        return
+      }
+      event.preventDefault()
       offsetX = nextX
       offsetY = nextY
       image.style.transform = `translate3d(${offsetX}px, ${offsetY}px, 0)`
@@ -84,9 +99,6 @@
       }
       if (dragged) {
         suppressClick = true
-        window.setTimeout(function() {
-          suppressClick = false
-        }, 0)
       }
     }
 

@@ -156,6 +156,49 @@ DATA: AntaUnitTestData = {
         "inputs": {"groups": ["GROUP1"]},
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["TACACS server group(s) GROUP1 are not configured"]},
     },
+    (VerifyAuthenMethods, "success-login-default-only-console-not-required"): {
+        "eos_data": [
+            {
+                "loginAuthenMethods": {"default": {"methods": ["local"]}},
+                "enableAuthenMethods": {"default": {"methods": ["local"]}},
+                "dot1xAuthenMethods": {"default": {"methods": []}},
+            }
+        ],
+        "inputs": {"methods": ["local"], "types": ["login"], "require_console_method": False},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyAuthenMethods, "failure-login-default-only-console-required-by-default"): {
+        "eos_data": [{"loginAuthenMethods": {"default": {"methods": ["local"]}}}],
+        "inputs": {"methods": ["local"], "types": ["login"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["AAA authentication methods are not configured for login console"]},
+    },
+    (VerifyAuthenMethods, "failure-login-console-missing-and-default-mismatch"): {
+        "eos_data": [{"loginAuthenMethods": {"default": {"methods": ["local"]}}}],
+        "inputs": {"methods": ["tacacs+", "local"], "types": ["login"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "AAA authentication methods are not configured for login console",
+                "AAA authentication methods group tacacs+, local are not matching for login/default",
+            ],
+        },
+    },
+    (VerifyAuthenMethods, "failure-login-default-mismatch-console-not-required"): {
+        "eos_data": [{"loginAuthenMethods": {"default": {"methods": ["local"]}}}],
+        "inputs": {"methods": ["tacacs+", "local"], "types": ["login"], "require_console_method": False},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["AAA authentication methods group tacacs+, local are not matching for login/default"],
+        },
+    },
+    (VerifyAuthenMethods, "failure-login-console-mismatch-console-not-required"): {
+        "eos_data": [{"loginAuthenMethods": {"console": {"methods": ["group radius", "local"]}, "default": {"methods": ["local"]}}}],
+        "inputs": {"methods": ["local"], "types": ["login"], "require_console_method": False},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["AAA authentication methods local are not matching for login/console"],
+        },
+    },
     (VerifyAuthenMethods, "success-login-enable"): {
         "eos_data": [
             {
@@ -189,18 +232,17 @@ DATA: AntaUnitTestData = {
         "inputs": {"methods": ["radius"], "types": ["dot1x"]},
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
-    (VerifyAuthenMethods, "failure-no-login-console"): {
+    (VerifyAuthenMethods, "failure-no-login-auth-details"): {
         "eos_data": [
             {
-                "loginAuthenMethods": {"default": {"methods": ["group tacacs+", "local"]}},
                 "enableAuthenMethods": {"default": {"methods": ["group tacacs+", "local"]}},
                 "dot1xAuthenMethods": {"default": {"methods": ["group radius"]}},
             }
         ],
         "inputs": {"methods": ["tacacs+", "local"], "types": ["login", "enable"]},
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["AAA authentication methods are not configured for login console"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["AAA authentication methods are not configured for login"]},
     },
-    (VerifyAuthenMethods, "failure-login-console"): {
+    (VerifyAuthenMethods, "failure-login-method-list"): {
         "eos_data": [
             {
                 "loginAuthenMethods": {"default": {"methods": ["group tacacs+", "local"]}, "login": {"methods": ["group radius", "local"]}},
@@ -209,7 +251,7 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"methods": ["tacacs+", "local"], "types": ["login", "enable"]},
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["AAA authentication methods group tacacs+, local are not matching for login console"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["AAA authentication methods group tacacs+, local are not matching for login/login"]},
     },
     (VerifyAuthenMethods, "failure-login-console-method-list"): {
         "eos_data": [
@@ -220,7 +262,26 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"methods": ["tacacs+", "local"], "types": ["login", "enable"]},
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["AAA authentication methods group tacacs+, local are not matching for login console"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["AAA authentication methods group tacacs+, local are not matching for login/console"]},
+    },
+    (VerifyAuthenMethods, "failure-login-console-and-command-api"): {
+        "eos_data": [
+            {
+                "loginAuthenMethods": {
+                    "console": {"methods": ["group radius", "local"]},
+                    "default": {"methods": ["group tacacs+", "local"]},
+                    "command-api": {"methods": ["none"]},
+                },
+            }
+        ],
+        "inputs": {"methods": ["tacacs+", "local"], "types": ["login"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "AAA authentication methods group tacacs+, local are not matching for login/console",
+                "AAA authentication methods group tacacs+, local are not matching for login/command-api",
+            ],
+        },
     },
     (VerifyAuthenMethods, "failure-login-command-api-and-default-method-lists"): {
         "eos_data": [
@@ -235,7 +296,13 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"methods": ["none"], "types": ["login"]},
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["AAA authentication methods none are not matching for login"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "AAA authentication methods none are not matching for login/default",
+                "AAA authentication methods none are not matching for login/command-api",
+            ],
+        },
     },
     (VerifyAuthenMethods, "failure-login-default"): {
         "eos_data": [
@@ -246,12 +313,16 @@ DATA: AntaUnitTestData = {
             }
         ],
         "inputs": {"methods": ["tacacs+", "local"], "types": ["login", "enable"]},
-        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["AAA authentication methods group tacacs+, local are not matching for login"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "AAA authentication methods group tacacs+, local are not matching for login/default",
+            ],
+        },
     },
-    (VerifyAuthenMethods, "failure-login-console-missing-does-not-skip-enable"): {
+    (VerifyAuthenMethods, "failure-login-missing-does-not-skip-enable"): {
         "eos_data": [
             {
-                "loginAuthenMethods": {"default": {"methods": ["group tacacs+", "local"]}},
                 "enableAuthenMethods": {"default": {"methods": ["group radius", "local"]}},
                 "dot1xAuthenMethods": {"default": {"methods": ["group radius"]}},
             }
@@ -260,8 +331,8 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "AAA authentication methods are not configured for login console",
-                "AAA authentication methods group tacacs+, local are not matching for enable",
+                "AAA authentication methods are not configured for login",
+                "AAA authentication methods group tacacs+, local are not matching for enable/default",
             ],
         },
     },

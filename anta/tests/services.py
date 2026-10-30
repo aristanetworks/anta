@@ -9,6 +9,7 @@ from __future__ import annotations
 # pyright: reportAttributeAccessIssue=false
 from typing import ClassVar
 
+from anta.input_models import services as service_models
 from anta.input_models.services import DnsServer, ErrDisableReason, ErrdisableRecovery
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_dict_superset, get_item
@@ -136,7 +137,7 @@ class VerifyDNSServers(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyDNSServers test."""
 
-        dns_servers: list[DnsServer]
+        dns_servers: list[service_models.DnsServer]
         """List of DNS servers to verify."""
         DnsServer: ClassVar[type[DnsServer]] = DnsServer
 

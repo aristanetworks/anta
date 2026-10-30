@@ -120,10 +120,14 @@ class SA178(OptionalCommandsMixin, _AntaAdvisoryTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if no SNMPv3 authentication key is configured, or every key uses encrypted syntax.
-    * Failure: The test will fail if an SNMPv3 authentication key uses legacy or mixed syntax. Affected software requires an upgrade followed by
-      credential conversion; fixed software requires credential conversion because upgrading does not rewrite existing configuration.
-    * Error: The test will error if the required EOS version, authentication-key state, or credential syntax cannot be determined.
+    * Not Affected: No SNMPv3 authentication key is configured, or every key uses encrypted syntax.
+    * Affected: An SNMPv3 authentication key uses legacy or mixed syntax.
+    * Error: The required EOS version, authentication-key state, or credential syntax cannot be determined.
+
+    Notes
+    -----
+    Legacy or mixed credential syntax is reported as affected on both affected and fixed software, because upgrading EOS does not rewrite existing
+    configuration. Affected software requires an upgrade followed by credential conversion; fixed software requires credential conversion only.
 
     Examples
     --------

@@ -589,9 +589,9 @@ h5.doc-heading {
 }
 
 /*
- * Keep GLightbox usable when its CDN-hosted stylesheet is unavailable.
- * Zensical loads the lightbox JavaScript and CSS dynamically, so a blocked or
- * failed CSS request would otherwise render the slide at the end of the page.
+ * Preserve layout for an existing lightbox if its library styles are removed.
+ * These rules do not replace CDN asset loading or initialize GLightbox after
+ * a failed asset request.
  */
 .glightbox-container {
   height: 100%;
@@ -766,6 +766,8 @@ h5.doc-heading {
 
 .glightbox-container .gslide-image img.anta-zoomable {
   cursor: zoom-in;
+  touch-action: none;
+  user-select: none;
 }
 
 .glightbox-container .gslide.zoomed .gslide-image img.anta-zoomable {

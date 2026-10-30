@@ -18,6 +18,9 @@ To help development, open your PR as soon as possible even in draft mode. It hel
 
 ## Create a development environment
 
+!!! tip "pip dependency groups"
+    The `--group` option used in this guide requires pip 25.1 or newer.
+
 Run the following commands to create an ANTA development environment:
 
 ```bash
@@ -54,6 +57,7 @@ py311  -> Run pytest with py311
 py312  -> Run pytest with py312
 py313  -> Run pytest with py313
 py314  -> Run pytest with py314
+py315  -> Run pytest with py315
 report -> Generate coverage report
 ```
 
@@ -111,7 +115,13 @@ Add the unit test to the appropriate submodule test file under `tests/units/anta
 
 ### How to run unit tests
 
-To run the unit test suite from an activated development environment:
+To create an environment for running tests without installing development tools:
+
+```bash
+pip install -e ".[cli]" --group test
+```
+
+To run the unit test suite from that environment or an activated development environment:
 
 ```bash
 pytest tests/units
@@ -127,14 +137,18 @@ pytest tests/units/anta_tests/test_system.py::test
 If you use [`uv`](https://docs.astral.sh/uv/) for your local workflow, it can create or update the environment before running pytest:
 
 ```bash
-uv run --group dev --extra cli pytest tests/units
+uv run --no-default-groups --group test --extra cli pytest tests/units
 ```
+
+`--no-default-groups` excludes uv's default `dev` group from dependency selection. By default, `uv run` retains extra packages already installed in the environment.
+
+The `test` group contains the dependencies needed to run pytest. The `benchmark` group adds the benchmark plugins. The `tox` group installs tox with the version constraints for the active Python interpreter. The `dev` group includes the test, lint, and tox groups plus the release versioning tool.
 
 Use tox when you want to run the unit tests in the same isolated environments used by CI:
 
 ```bash
 tox -e py311 -- tests/units
-tox -e py310,py311,py312,py313,py314 -- tests/units
+tox -e py310,py311,py312,py313,py314,py315 -- tests/units
 ```
 
 The `--` separator passes the remaining arguments to pytest, so the same file or test-node selection works with tox:
@@ -146,12 +160,12 @@ tox -e py311 -- tests/units/anta_tests/test_system.py::test
 ```
 
 !!! note "Python versions and tox"
-    The tox environments are mapped to concrete Python versions (`py310`, `py311`, `py312`, `py313`, and `py314`). Running one tox environment requires that matching Python interpreter to be installed and discoverable on your machine; running the full matrix requires all of them.
+    The tox environments are mapped to concrete Python versions (`py310`, `py311`, `py312`, `py313`, `py314`, and `py315`). Running one tox environment requires that matching Python interpreter to be installed and discoverable on your machine; running the full matrix requires all of them.
 
     `uv` can help install and manage Python interpreters, for example:
 
     ```bash
-    uv python install 3.10 3.11 3.12 3.13 3.14
+    uv python install 3.10 3.11 3.12 3.13 3.14 3.15
     ```
 
     This does not replace tox for matrix testing in this repository. It only makes it easier to provide the Python interpreters that tox needs.
@@ -359,7 +373,9 @@ Documentation source lives under `docs/` and is built from the repository root. 
 
 ### Install documentation requirements
 
-Run pip to install the documentation requirements from the root of the repo:
+Documentation tooling requires Python 3.11 or newer. ANTA's library Python requirements are defined separately in `pyproject.toml`.
+
+Run pip with a compatible Python interpreter to install the documentation requirements from the root of the repo:
 
 ```bash
 pip install -e . --group doc -e tools/zensical_extensions
@@ -390,6 +406,39 @@ Use `zensical build --clean` when you want to remove the previous generated outp
 ```bash
 zensical build --clean
 ```
+
+### Preserve page and heading links
+
+When moving a documentation page or renaming a heading, preserve its published URL with Zensical's native redirects. Existing bookmarks and links from issues, external guides, and release notes may still use the old location. Update links in the repository to the new destination as well.
+
+Add redirects to `zensical.toml` using paths relative to `docs/`, including the `.md` extension. Do not put deployment prefixes such as `/main/` or `/stable/` in these source paths.
+
+```toml
+[project.plugins.redirects.redirect_maps]
+# Move a whole page.
+"old-guide.md" = "guides/new-guide.md"
+# Rename a heading on an existing page.
+"guide.md#old-heading" = "guide.md#new-heading"
+# Move a section when splitting a page.
+"guide.md#moved-section" = "guides/new-guide.md#moved-section"
+```
+
+These paths are examples; add mappings only for actual moves and existing targets. Check the rendered heading IDs rather than assuming how Zensical will derive them. Keep redirects pointing to the final destination when reorganizing content again, and avoid cycles.
+
+Run `zensical build --clean --strict`, then use the local preview to open each old page URL and fragment directly. Confirm that the correct section is displayed, including targets inside collapsed details or content tabs. For a versioned deployment, also check a local Mike preview so the redirect stays within the selected version. Existing historical release builds acquire new redirects only if they are rebuilt.
+
+### Link to Python API objects
+
+Use object references when linking prose to generated Python API documentation:
+
+```markdown
+Create an [AntaInventory][anta.inventory.AntaInventory] and add an
+[AsyncEOSDevice][anta.device.AsyncEOSDevice].
+```
+
+`autorefs` resolves these identifiers to their documented locations without hard-coding the API page path or heading anchor. Keep ordinary Markdown links for guides and other authored pages.
+
+Register new object identifiers under `MD052.ignored_labels` in `.github/.markdownlint-cli2.yaml` (lowercase with underscores removed, as reported by MD052). This central list allows autorefs syntax while keeping MD052 enabled for ordinary reference links; it does not validate Python objects. After adding or changing an object reference, run `zensical build --strict` and check that the link opens the intended object in the rendered site.
 
 ### Generated CLI snippets
 
