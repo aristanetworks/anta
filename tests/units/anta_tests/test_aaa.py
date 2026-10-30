@@ -155,6 +155,17 @@ DATA: AntaUnitTestData = {
         "inputs": {"groups": ["GROUP1"]},
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["TACACS server group(s) GROUP1 are not configured"]},
     },
+    (VerifyAuthenMethods, "success-login-default-only"): {
+        "eos_data": [
+            {
+                "loginAuthenMethods": {"default": {"methods": ["local"]}},
+                "enableAuthenMethods": {"default": {"methods": ["local"]}},
+                "dot1xAuthenMethods": {"default": {"methods": []}},
+            }
+        ],
+        "inputs": {"methods": ["local"], "types": ["login"]},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
     (VerifyAuthenMethods, "success-login-enable"): {
         "eos_data": [
             {
