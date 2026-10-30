@@ -220,6 +220,25 @@ DATA: AntaUnitTestData = {
         "inputs": {"methods": ["tacacs+", "local"], "types": ["login", "enable"]},
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["AAA authentication methods group tacacs+, local are not matching for login/console"]},
     },
+    (VerifyAuthenMethods, "failure-login-console-and-command-api"): {
+        "eos_data": [
+            {
+                "loginAuthenMethods": {
+                    "console": {"methods": ["group radius", "local"]},
+                    "default": {"methods": ["group tacacs+", "local"]},
+                    "command-api": {"methods": ["none"]},
+                },
+            }
+        ],
+        "inputs": {"methods": ["tacacs+", "local"], "types": ["login"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "AAA authentication methods group tacacs+, local are not matching for login/console",
+                "AAA authentication methods group tacacs+, local are not matching for login/command-api",
+            ],
+        },
+    },
     (VerifyAuthenMethods, "failure-login-command-api-and-default-method-lists"): {
         "eos_data": [
             {
