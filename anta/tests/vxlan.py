@@ -17,12 +17,7 @@ from anta.models import AntaCommand, AntaTest
 from anta.tools import get_value
 
 if TYPE_CHECKING:
-    import sys
-
-    if sys.version_info >= (3, 11):
-        from typing import Self
-    else:
-        from typing_extensions import Self
+    from typing import Self
 
     from anta.models import AntaTemplate
 

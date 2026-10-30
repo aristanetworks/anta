@@ -7,7 +7,7 @@ from __future__ import annotations
 
 # Pyright does not understand AntaTest.Input typing
 # pyright: reportAttributeAccessIssue=false
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import ClassVar
 
 from anta.custom_types import PositiveInteger
@@ -417,7 +417,7 @@ class VerifyAPISSLCertificate(AntaTest):
                 continue
 
             expiry_time = certificate_data["notAfter"]
-            day_difference = (datetime.fromtimestamp(expiry_time, tz=timezone.utc) - datetime.fromtimestamp(current_timestamp, tz=timezone.utc)).days
+            day_difference = (datetime.fromtimestamp(expiry_time, tz=UTC) - datetime.fromtimestamp(current_timestamp, tz=UTC)).days
 
             # Verify certificate expiry
             if 0 < day_difference < certificate.expiry_threshold:

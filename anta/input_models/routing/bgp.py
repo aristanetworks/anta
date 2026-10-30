@@ -15,12 +15,7 @@ from pydantic_extra_types.mac_address import MacAddress
 from anta.custom_types import Afi, BgpCommunity, BgpDropStats, BgpUpdateError, Interface, MultiProtocolCaps, RedistributedAfiSafi, RedistributedProtocol, Safi, Vni
 
 if TYPE_CHECKING:
-    import sys
-
-    if sys.version_info >= (3, 11):
-        from typing import Self
-    else:
-        from typing_extensions import Self
+    from typing import Self
 
 AFI_SAFI_EOS_KEY = {
     ("ipv4", "unicast"): "ipv4Unicast",

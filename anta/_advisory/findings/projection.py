@@ -5,9 +5,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
-from typing_extensions import assert_never
+from typing import TYPE_CHECKING, assert_never
 
 from anta._advisory.facts.models import (
     ComponentSoftwareFact,

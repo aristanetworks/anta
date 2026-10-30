@@ -1070,7 +1070,7 @@ class TestAsyncEOSDeviceOperations:
         caplog.set_level(logging.WARNING)
 
         # Simulating a low-level asyncio timeout created without additional context
-        with patch.object(async_device._client, "check_api_endpoint", side_effect=ConnectTimeout(message=str(asyncio.TimeoutError()))):
+        with patch.object(async_device._client, "check_api_endpoint", side_effect=ConnectTimeout(message=str(TimeoutError()))):
             await async_device.refresh()
 
             assert not async_device.is_online
