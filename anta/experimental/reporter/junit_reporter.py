@@ -1,0 +1,278 @@
+# Copyright (c) 2025-2026 Arista Networks, Inc.
+# Use of this source code is governed by the Apache License 2.0
+# that can be found in the LICENSE file.
+"""Experimental JUnit report management for ANTA."""
+
+from __future__ import annotations
+
+import datetime as dt
+import hashlib
+import json
+import logging
+import re
+import xml.etree.ElementTree as ET
+from collections import Counter
+from dataclasses import dataclass
+from typing import TYPE_CHECKING
+
+from anta.logger import anta_log_exception
+from anta.result_manager.models import AntaTestStatus, TestResult
+
+# pylint: disable = too-few-public-methods
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from anta.result_manager import ResultManager
+
+logger = logging.getLogger(__name__)
+
+# XML 1.0 permits tab, LF, CR and these Unicode ranges (W3C XML, production 2).
+_INVALID_XML_CHARACTERS = re.compile(r"[^\x09\x0a\x0d\x20-\ud7ff\ue000-\ufffd\U00010000-\U0010ffff]")
+
+
+def _escape_xml_characters(value: str) -> str:
+    """Render XML-invalid characters as visible escapes while preserving valid text."""
+    return _INVALID_XML_CHARACTERS.sub(lambda match: match.group().encode("unicode_escape").decode("ascii"), value)
+
+
+@dataclass
+class _TestSuite:
+    """Dataclass to track TestSuite information."""
+
+    element: ET.Element
+    name: str
+    hostname: str
+    timestamp: str
+    filename: str | None
+    suite_tests: int = 0
+    suite_failures: int = 0
+    suite_errors: int = 0
+    suite_skipped: int = 0
+    suite_time: float = 0.0
+
+
+class JUnitReporter:
+    """An experimental reporter that generates JUnit XML output.
+
+    This reporter's API, behavior and output may change between releases.
+
+    Note
+    ----
+      There are things to be added there as required:
+      * tracking assertions per test
+    """
+
+    @classmethod
+    def _get_testcase_name(cls, result: TestResult, duplicate_names: set[str]) -> str:
+        """Return the JUnit testcase name for an ANTA test result."""
+        testcase_name = result.test
+        if result.description:
+            testcase_name = f"{testcase_name} - {result.description}"
+
+        if testcase_name in duplicate_names:
+            return f"{testcase_name} [{cls._get_testcase_identity_hash(result)}]"
+
+        return testcase_name
+
+    @staticmethod
+    def _get_testcase_identity_hash(result: TestResult) -> str:
+        """Return a stable hash from existing result fields for JUnit testcase deduplication."""
+        identity_data = {
+            "name": result.name,
+            "test": result.test,
+            "description": result.description,
+            "categories": result.categories,
+            "custom_field": result.custom_field,
+            "atomic_results": [atomic.description for atomic in result.atomic_results],
+        }
+        identity_json = json.dumps(identity_data, sort_keys=True, separators=(",", ":"))
+        return hashlib.blake2s(identity_json.encode("utf-8"), digest_size=8).hexdigest()
+
+    @classmethod
+    def _add_test_to_testsuite(cls, result: TestResult, testsuite: _TestSuite, duplicate_names: set[str]) -> None:
+        """Build testcase for a given TestResult and add it to the testsuite root element.
+
+        Represent UNSET as an error because no final ANTA status was recorded.
+
+        TODO: Add file and line.
+        For file and line we could consider augmenting TestResult to keep track of the class used for the test,
+        instead of just the string of the name.
+
+        Parameters
+        ----------
+        result:
+            The TestResult.
+        testsuite:
+            The testsuite element to attach the test to.
+        duplicate_names:
+            Testcase names used by multiple results in this testsuite.
+        """
+        testcase = ET.SubElement(testsuite.element, "testcase")
+        testcase.set("name", cls._get_testcase_name(result, duplicate_names))
+        testcase.set("classname", result.name)
+
+        # Add properties
+        properties = ET.SubElement(testcase, "properties")
+        description = ET.SubElement(properties, "property")
+        description.set("name", "description")
+        description.text = result.description
+
+        # Per-test duration is intentionally not measured: command caching and reuse
+        # prevent meaningful attribution of collection time to individual tests, and
+        # timing the test function alone provides little useful information.
+        # Keep 0.0 as a JUnit compatibility placeholder, not a measured duration.
+        duration = 0.0
+        testcase.set("time", f"{duration:.3f}")
+        testsuite.suite_time += duration
+
+        # Add failure, error, skipped or success elements based on status
+        if result.result == AntaTestStatus.FAILURE:
+            failure = ET.SubElement(testcase, "failure")
+            failure.set("message", "Test Failed")
+            failure.set("type", "AssertionError")
+            failure.text = "\n".join(result.messages)
+            testsuite.suite_failures += 1
+
+        elif result.result == AntaTestStatus.ERROR:
+            error = ET.SubElement(testcase, "error")
+            error.set("message", "Test Error")
+            error.set("type", "RuntimeError")
+            error.text = "\n".join(result.messages)
+            testsuite.suite_errors += 1
+
+        elif result.result == AntaTestStatus.UNSET:
+            error = ET.SubElement(testcase, "error")
+            error.set("message", "ANTA result is UNSET: no final status was recorded")
+            error.set("type", "UnsetResult")
+            error.text = "\n".join(result.messages)
+            testsuite.suite_errors += 1
+
+        elif result.result == AntaTestStatus.SKIPPED:
+            skipped = ET.SubElement(testcase, "skipped")
+            skipped.set("message", "Test Skipped")
+            skipped.text = "\n".join(result.messages)
+            testsuite.suite_skipped += 1
+
+        # AntaTestStatus.SUCCESS requires no extra element
+
+    @classmethod
+    def _build_testsuite(cls, device_name: str, results: list[TestResult], testsuites: ET.Element, catalog_path: Path | None = None) -> None:
+        """Build testsuite for a given device and add it to the testsuites root element.
+
+        Parameters
+        ----------
+        device_name:
+            The device name.
+        results:
+            The list of TestResult for this device.
+        testsuites:
+            The root element of the JUnit report to attach the testuite to.
+        catalog_path:
+            The path to the catalog where the test was defined.
+        """
+        testsuite = _TestSuite(
+            element=ET.SubElement(testsuites, "testsuite"),
+            name=f"ANTA Tests on {device_name}",
+            hostname=device_name,
+            timestamp=dt.datetime.now(tz=dt.timezone.utc).isoformat(),
+            filename=str(catalog_path) if catalog_path else None,
+            suite_tests=len(results),
+        )
+
+        testcase_names = [f"{result.test} - {result.description}" if result.description else result.test for result in results]
+        duplicate_names = {name for name, count in Counter(testcase_names).items() if count > 1}
+
+        # Iterate through results for this device to create <testcase> elements
+        for result in results:
+            JUnitReporter._add_test_to_testsuite(result, testsuite, duplicate_names)
+
+        # Set attributes for the current test suite
+        testsuite.element.set("name", testsuite.name)
+        testsuite.element.set("hostname", testsuite.hostname)
+        testsuite.element.set("timestamp", testsuite.timestamp)
+        testsuite.element.set("tests", str(testsuite.suite_tests))
+        testsuite.element.set("failures", str(testsuite.suite_failures))
+        testsuite.element.set("errors", str(testsuite.suite_errors))
+        testsuite.element.set("skipped", str(testsuite.suite_skipped))
+        testsuite.element.set("time", f"{testsuite.suite_time:.3f}")
+
+        if testsuite.filename is not None:
+            testsuite.element.set("filename", testsuite.filename)
+
+    @staticmethod
+    def _validate_testcase_identities(testsuites: ET.Element) -> None:
+        """Reject repeated classname/name pairs after XML character escaping."""
+        identities: set[tuple[str, str]] = set()
+        for testcase in testsuites.findall("./testsuite/testcase"):
+            identity = (testcase.attrib["classname"], testcase.attrib["name"])
+            if identity in identities:
+                message = (
+                    f"Duplicate JUnit testcase identity for device {identity[0]!r}: {identity[1]!r}. "
+                    "Give repeated invocations distinct result_overwrite.description values."
+                )
+                raise ValueError(message)
+            identities.add(identity)
+
+    @classmethod
+    def generate(cls, results: ResultManager, output_path: Path, catalog_path: Path | None = None) -> None:
+        """Generate the JUnit XML report and saves it to the output path.
+
+        Parameters
+        ----------
+        results:
+            The ResultManager containing the test results to create the report for.
+        output_path:
+            The Path where the report should be saved.
+        catalog_path:
+            The catalog where the test was defined.
+
+        Raises
+        ------
+        ValueError
+            If multiple testcases have the same serialized classname and name.
+        """
+        # Group results by device (each device becomes a test suite)
+        results_by_device: dict[str, list[TestResult]] = {}
+        for result in results.get_results(sort_by=["categories", "test"]):
+            device_name = result.name
+            if device_name not in results_by_device:
+                results_by_device[device_name] = []
+            results_by_device[device_name].append(result)
+
+        # Create the root <testsuites> element
+        testsuites = ET.Element("testsuites")
+
+        # Iterate through devices to create <testsuite> elements
+        for device_name, device_results in results_by_device.items():
+            cls._build_testsuite(device_name, device_results, testsuites, catalog_path)
+
+        # Set attributes for the root testsuites element
+        testsuites.set("tests", str(results.get_total_results(set(AntaTestStatus))))
+        testsuites.set("failures", str(results.get_total_results({AntaTestStatus.FAILURE})))
+        testsuites.set("errors", str(results.get_total_results({AntaTestStatus.ERROR, AntaTestStatus.UNSET})))
+        testsuites.set("skipped", str(results.get_total_results({AntaTestStatus.SKIPPED})))
+
+        total_time = 0.0
+        testsuites.set("time", f"{total_time:.3f}")  # Total time for all suites
+
+        # Write the XML to the file
+        try:
+            tree = ET.ElementTree(testsuites)
+            # Sanitize every serialized value, including device names and catalog paths.
+            for element in testsuites.iter():
+                element.attrib.update({name: _escape_xml_characters(value) for name, value in element.attrib.items()})
+                if element.text is not None:
+                    element.text = _escape_xml_characters(element.text)
+            # Check the serialized identities, including collisions introduced by visible escapes.
+            cls._validate_testcase_identities(testsuites)
+            ET.indent(tree, space="  ", level=0)
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            tree.write(output_path, encoding="utf-8", xml_declaration=True)
+
+            logger.info("JUnit report generated successfully at: %s", output_path)
+
+        except Exception as exc:
+            message = f"Error while writing the JUNIT file '{output_path.resolve()}'."
+            anta_log_exception(exc, message, logger)
+            raise
