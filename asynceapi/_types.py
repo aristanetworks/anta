@@ -5,16 +5,10 @@
 
 from __future__ import annotations
 
-import sys
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Any, Literal, NotRequired, TypedDict
 
 if TYPE_CHECKING:
     from ._constants import EapiCommandFormat
-
-if sys.version_info >= (3, 11):
-    from typing import NotRequired, TypedDict
-else:
-    from typing_extensions import NotRequired, TypedDict
 
 EapiJsonOutput = dict[str, Any]
 """Type definition of an eAPI JSON output response."""

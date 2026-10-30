@@ -10,7 +10,7 @@ from enum import Enum
 from typing import TYPE_CHECKING, Generic, TypeAlias, TypeVar
 
 if TYPE_CHECKING:
-    from typing_extensions import Never
+    from typing import Never
 
 T = TypeVar("T")
 

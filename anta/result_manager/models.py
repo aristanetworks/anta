@@ -8,7 +8,7 @@ from __future__ import annotations
 import sys
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 from pydantic import BaseModel, Field
@@ -19,22 +19,14 @@ else:
     from typing_extensions import override
 
 
-class AntaTestStatus(str, Enum):
-    """Test status Enum for the TestResult.
-
-    NOTE: This could be updated to StrEnum when Python 3.11 is the minimum supported version in ANTA.
-    """
+class AntaTestStatus(StrEnum):
+    """Test status Enum for the TestResult."""
 
     UNSET = "unset"
     SUCCESS = "success"
     FAILURE = "failure"
     ERROR = "error"
     SKIPPED = "skipped"
-
-    @override
-    def __str__(self) -> str:
-        """Override the __str__ method to return the value of the Enum, mimicking the behavior of StrEnum."""
-        return self.value
 
 
 _STATUS_PRIORITY = {

@@ -25,12 +25,7 @@ from anta.result_manager.models import AntaTestStatus
 from anta.tools import custom_division, get_item, get_value, get_value_by_range_key, is_interface_ignored, time_ago
 
 if TYPE_CHECKING:
-    import sys
-
-    if sys.version_info >= (3, 11):
-        from typing import Self
-    else:
-        from typing_extensions import Self
+    from typing import Self
 
 BPS_GBPS_CONVERSIONS = 1000000000
 NO_LIGHT_DBM = -30.0

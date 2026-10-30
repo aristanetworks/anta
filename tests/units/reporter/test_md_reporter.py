@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from io import StringIO
 from pathlib import Path
 from typing import TYPE_CHECKING, ClassVar
@@ -80,8 +80,8 @@ def test_md_report_generator_generate_with_extra_data(tmp_path: Path, result_man
     expected_report = "test_md_report_extra_data.md"
 
     # Build the extra_data
-    start_time = datetime(2025, 5, 20, 8, 30, 0, tzinfo=timezone.utc)
-    end_time = datetime(2025, 5, 20, 8, 35, 30, 500000, tzinfo=timezone.utc)
+    start_time = datetime(2025, 5, 20, 8, 30, 0, tzinfo=UTC)
+    end_time = datetime(2025, 5, 20, 8, 35, 30, 500000, tzinfo=UTC)
     extra_data = {
         "anta_version": "v1.4.0",
         "test_execution_start_time": start_time,
@@ -333,8 +333,8 @@ def test_md_report_base_format_snake_case_to_title_case(value: str, expected_out
     ("value", "expected_output"),
     [
         # Datetime tests
-        pytest.param(datetime(2023, 1, 15, 10, 30, 45, 123456, tzinfo=timezone.utc), "2023-01-15 10:30:45.123+00:00", id="datetime_with_milliseconds"),
-        pytest.param(datetime(2024, 7, 20, 14, 0, 0, tzinfo=timezone.utc), "2024-07-20 14:00:00.000+00:00", id="datetime_without_milliseconds"),
+        pytest.param(datetime(2023, 1, 15, 10, 30, 45, 123456, tzinfo=UTC), "2023-01-15 10:30:45.123+00:00", id="datetime_with_milliseconds"),
+        pytest.param(datetime(2024, 7, 20, 14, 0, 0, tzinfo=UTC), "2024-07-20 14:00:00.000+00:00", id="datetime_without_milliseconds"),
         # Timedelta tests
         pytest.param(timedelta(hours=1, minutes=5, seconds=30, milliseconds=500), "1 hour, 5 minutes, 30 seconds", id="timedelta_full"),
         pytest.param(timedelta(days=2), "48 hours", id="timedelta_only_days"),

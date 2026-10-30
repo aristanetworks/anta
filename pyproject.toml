@@ -257,8 +257,8 @@ exclude = [
 
 line-length = 165
 
-# Keep the existing lint target until the Python 3.11 source modernization.
-target-version = "py310"
+# Python 3.11 is the lowest supported version for ANTA.
+target-version = "py311"
 
 [tool.ruff.lint]
 # select all cause we like being suffering
@@ -271,6 +271,7 @@ select = ["ALL",
     "D417",
 ]
 ignore = [
+  "UP042",   # StrEnum changes __str__; migrate only enums with compatible string behavior
   "COM812",  # Ignoring conflicting rules that may cause conflicts when used with the formatter
   "ISC001",  # Ignoring conflicting rules that may cause conflicts when used with the formatter
   "TD002",   # We don't have require authors in TODO
@@ -312,6 +313,9 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
 
 
 [tool.ruff.lint.per-file-ignores]
+"asynceapi/aio_portcheck.py" = [
+  "ASYNC109", # Keep the public timeout parameter, which is enforced with asyncio.wait_for
+]
 "tests/*" = [
   "S101",    # Complains about asserts in units and libs.
   "SLF001",  # Lots of private member accessed for test purposes
