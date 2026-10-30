@@ -3816,20 +3816,7 @@
   </div>
   <details class="quote mkdocstrings-source">
   <summary>Source code in <code>anta/tests/aaa.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">339</span>
-<span class="normal">340</span>
-<span class="normal">341</span>
-<span class="normal">342</span>
-<span class="normal">343</span>
-<span class="normal">344</span>
-<span class="normal">345</span>
-<span class="normal">346</span>
-<span class="normal">347</span>
-<span class="normal">348</span>
-<span class="normal">349</span>
-<span class="normal">350</span>
-<span class="normal">351</span>
-<span class="normal">352</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">352</span>
 <span class="normal">353</span>
 <span class="normal">354</span>
 <span class="normal">355</span>
@@ -3874,7 +3861,20 @@
 <span class="normal">394</span>
 <span class="normal">395</span>
 <span class="normal">396</span>
-<span class="normal">397</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyAcctConsoleMethods</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">397</span>
+<span class="normal">398</span>
+<span class="normal">399</span>
+<span class="normal">400</span>
+<span class="normal">401</span>
+<span class="normal">402</span>
+<span class="normal">403</span>
+<span class="normal">404</span>
+<span class="normal">405</span>
+<span class="normal">406</span>
+<span class="normal">407</span>
+<span class="normal">408</span>
+<span class="normal">409</span>
+<span class="normal">410</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyAcctConsoleMethods</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Verifies the AAA accounting console method lists for different accounting types (system, exec, commands, dot1x).</span>
 
 <span class="sd">    Expected Results</span>
@@ -4058,20 +4058,7 @@
   </div>
   <details class="quote mkdocstrings-source">
   <summary>Source code in <code>anta/tests/aaa.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">278</span>
-<span class="normal">279</span>
-<span class="normal">280</span>
-<span class="normal">281</span>
-<span class="normal">282</span>
-<span class="normal">283</span>
-<span class="normal">284</span>
-<span class="normal">285</span>
-<span class="normal">286</span>
-<span class="normal">287</span>
-<span class="normal">288</span>
-<span class="normal">289</span>
-<span class="normal">290</span>
-<span class="normal">291</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">291</span>
 <span class="normal">292</span>
 <span class="normal">293</span>
 <span class="normal">294</span>
@@ -4116,7 +4103,20 @@
 <span class="normal">333</span>
 <span class="normal">334</span>
 <span class="normal">335</span>
-<span class="normal">336</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyAcctDefaultMethods</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span>
+<span class="normal">342</span>
+<span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyAcctDefaultMethods</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Verifies the AAA accounting default method lists for different accounting types (system, exec, commands, dot1x).</span>
 
 <span class="sd">    Expected Results</span>
@@ -4211,7 +4211,18 @@ This means the test cannot validate different expected methods per method-list n
   <summary>Expected Results</summary>
   <ul>
 <li>Success: The test will pass if the provided AAA authentication method list is matching in the configured authentication types.</li>
-<li>Failure: The test will fail if the provided AAA authentication method list is NOT matching in the configured authentication types.</li>
+<li>Failure: The test will fail if the provided AAA authentication method list is NOT matching in the configured authentication types.
+  It will also fail if <code>login</code> is selected and its console method list is absent while <code>require_console_method</code> is <code>True</code>.</li>
+</ul>
+</details>
+
+<details class="note" open>
+  <summary>Notes</summary>
+  <ul>
+<li>For backward compatibility, <code>require_console_method</code> defaults to <code>True</code>: the test fails when <code>login</code> is selected
+  and no explicit console method list is returned. This list is named <code>login</code> before EOS 4.36 and <code>console</code>
+  starting with EOS 4.36. Set <code>require_console_method: false</code> to allow EOS to use the default login method list
+  without an explicit console list. All returned method lists are still checked.</li>
 </ul>
 </details>
 
@@ -4294,6 +4305,24 @@ This means the test cannot validate different expected methods per method-list n
                     <em>-</em>
                 </td>
               </tr>
+              <tr>
+                <td><code>require_console_method</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#bool">bool</a></code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    Require an explicit console method list when verifying login authentication.
+
+Defaults to `True` for backward compatibility. Set to `False` to allow EOS to use the default login
+method list without an explicit `login` (before EOS 4.36) or `console` (EOS 4.36 and later) list.
+All returned method lists are still checked.
+                  </div>
+                </td>
+                <td>
+                      <code>True</code>
+                </td>
+              </tr>
           </tbody>
         </table>
   </div>
@@ -4369,7 +4398,20 @@ This means the test cannot validate different expected methods per method-list n
 <span class="normal">220</span>
 <span class="normal">221</span>
 <span class="normal">222</span>
-<span class="normal">223</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyAuthenMethods</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyAuthenMethods</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Verifies the AAA authentication method lists for different authentication types (login, enable, dot1x).</span>
 
 <span class="sd">    !!! warning</span>
@@ -4381,6 +4423,14 @@ This means the test cannot validate different expected methods per method-list n
 <span class="sd">    ----------------</span>
 <span class="sd">    * Success: The test will pass if the provided AAA authentication method list is matching in the configured authentication types.</span>
 <span class="sd">    * Failure: The test will fail if the provided AAA authentication method list is NOT matching in the configured authentication types.</span>
+<span class="sd">      It will also fail if `login` is selected and its console method list is absent while `require_console_method` is `True`.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    * For backward compatibility, `require_console_method` defaults to `True`: the test fails when `login` is selected</span>
+<span class="sd">      and no explicit console method list is returned. This list is named `login` before EOS 4.36 and `console`</span>
+<span class="sd">      starting with EOS 4.36. Set `require_console_method: false` to allow EOS to use the default login method list</span>
+<span class="sd">      without an explicit console list. All returned method lists are still checked.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -4408,32 +4458,37 @@ This means the test cannot validate different expected methods per method-list n
 <span class="w">        </span><span class="sd">"""List of expected AAA authentication methods."""</span>
         <span class="n">types</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">"login"</span><span class="p">,</span> <span class="s2">"enable"</span><span class="p">,</span> <span class="s2">"dot1x"</span><span class="p">]]</span>
 <span class="w">        </span><span class="sd">"""List of authentication types to verify."""</span>
+        <span class="c1"># TODO(ANTA 2.0): Remove this backward-compatibility input and the requirement for an explicit console method list.</span>
+        <span class="n">require_console_method</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="w">        </span><span class="sd">"""Require an explicit console method list when verifying login authentication.</span>
+
+<span class="sd">        Defaults to `True` for backward compatibility. Set to `False` to allow EOS to use the default login</span>
+<span class="sd">        method list without an explicit `login` (before EOS 4.36) or `console` (EOS 4.36 and later) list.</span>
+<span class="sd">        All returned method lists are still checked.</span>
+<span class="sd">        """</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Main test function for VerifyAuthenMethods."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
-        <span class="n">not_matching</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">command_output</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">auth_type</span> <span class="o">=</span> <span class="n">k</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"AuthenMethods"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">auth_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">types</span><span class="p">:</span>
-                <span class="c1"># We do not need to verify this accounting type</span>
-                <span class="k">continue</span>
-            <span class="c1"># Starting with EOS 4.36, the login method list for console authentication is named console.</span>
-            <span class="k">if</span> <span class="n">auth_type</span> <span class="o">==</span> <span class="s2">"login"</span><span class="p">:</span>
-                <span class="n">auth_details</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"console"</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"login"</span><span class="p">))</span>
-                <span class="k">if</span> <span class="n">auth_details</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"AAA authentication methods are not configured for login console"</span><span class="p">)</span>
-                    <span class="k">continue</span>
-                <span class="k">if</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">auth_details</span><span class="p">[</span><span class="s2">"methods"</span><span class="p">])</span> <span class="o">!=</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">methods</span><span class="p">):</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"AAA authentication methods </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">methods</span><span class="p">)</span><span class="si">}</span><span class="s2"> are not matching for login console"</span><span class="p">)</span>
-                    <span class="k">continue</span>
-            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">methods</span><span class="p">[</span><span class="s2">"methods"</span><span class="p">])</span> <span class="o">!=</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">methods</span><span class="p">)</span> <span class="k">for</span> <span class="n">methods</span> <span class="ow">in</span> <span class="n">v</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
-                <span class="n">not_matching</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">auth_type</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">not_matching</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"AAA authentication methods </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">methods</span><span class="p">)</span><span class="si">}</span><span class="s2"> are not matching for </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">not_matching</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">auth_type</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"login"</span><span class="p">,</span> <span class="s2">"enable"</span><span class="p">,</span> <span class="s2">"dot1x"</span><span class="p">):</span>
+            <span class="c1"># We do not need to verify this authentication type</span>
+            <span class="k">if</span> <span class="n">auth_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">types</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">auth_type_lookup</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">auth_type</span><span class="si">}</span><span class="s2">AuthenMethods"</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">auth_details</span> <span class="o">:=</span> <span class="n">command_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">auth_type_lookup</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"AAA authentication methods are not configured for </span><span class="si">{</span><span class="n">auth_type</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">auth_type</span> <span class="o">==</span> <span class="s2">"login"</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">require_console_method</span> <span class="ow">and</span> <span class="n">auth_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"console"</span><span class="p">,</span> <span class="n">auth_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"login"</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">"AAA authentication methods are not configured for login console"</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">method</span><span class="p">,</span> <span class="n">details</span> <span class="ow">in</span> <span class="n">auth_details</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">details</span><span class="p">[</span><span class="s2">"methods"</span><span class="p">])</span> <span class="o">!=</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">methods</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">"AAA authentication methods </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">methods</span><span class="p">)</span><span class="si">}</span><span class="s2"> are not matching for </span><span class="si">{</span><span class="n">auth_type</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -4557,20 +4612,7 @@ This means the test cannot validate different expected methods per method-list n
   </div>
   <details class="quote mkdocstrings-source">
   <summary>Source code in <code>anta/tests/aaa.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">226</span>
-<span class="normal">227</span>
-<span class="normal">228</span>
-<span class="normal">229</span>
-<span class="normal">230</span>
-<span class="normal">231</span>
-<span class="normal">232</span>
-<span class="normal">233</span>
-<span class="normal">234</span>
-<span class="normal">235</span>
-<span class="normal">236</span>
-<span class="normal">237</span>
-<span class="normal">238</span>
-<span class="normal">239</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">239</span>
 <span class="normal">240</span>
 <span class="normal">241</span>
 <span class="normal">242</span>
@@ -4606,7 +4648,20 @@ This means the test cannot validate different expected methods per method-list n
 <span class="normal">272</span>
 <span class="normal">273</span>
 <span class="normal">274</span>
-<span class="normal">275</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyAuthzMethods</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyAuthzMethods</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Verifies the AAA authorization method lists for different authorization types (commands, exec).</span>
 
 <span class="sd">    Expected Results</span>
