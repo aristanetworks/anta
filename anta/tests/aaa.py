@@ -189,12 +189,6 @@ class VerifyAuthenMethods(AntaTest):
             - login
             - enable
             - dot1x
-      - VerifyAuthenMethods:
-          methods:
-            - local
-          types:
-            - login
-          require_console_method: false
     ```
     """
 
