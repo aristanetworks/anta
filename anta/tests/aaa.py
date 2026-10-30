@@ -203,6 +203,7 @@ class VerifyAuthenMethods(AntaTest):
         """List of expected AAA authentication methods."""
         types: set[Literal["login", "enable", "dot1x"]]
         """List of authentication types to verify."""
+        # TODO(ANTA 2.0): Remove this backward-compatibility input and the requirement for an explicit console method list.
         require_console_method: bool = True
         """Require an explicit console method list when verifying login authentication.
 
