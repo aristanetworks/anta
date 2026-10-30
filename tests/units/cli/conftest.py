@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import json
 import logging
 import shutil
 from typing import TYPE_CHECKING, Any, Literal
@@ -61,6 +62,17 @@ MOCK_CLI_TEXT: dict[str, asynceapi.EapiCommandError | str] = {
     "show running-config | include aaa authorization exec default": "aaa authorization exec default local",
 }
 
+# Mock on-device JSON output for bug compliance SysDB queries via PyClient
+MOCK_SYSDB_OUTPUT = json.dumps(
+    {
+        "/Sysdb/routing/bgp/config": {
+            "asNumber": 65001,
+            "shutdown": False,
+            "maxPaths": 4,
+        }
+    }
+)
+
 
 @pytest.fixture
 def temp_env(anta_env: dict[str, str], tmp_path: Path) -> dict[str, str]:
@@ -98,7 +110,7 @@ def click_runner(capsys: pytest.CaptureFixture[str], anta_env: dict[str, str]) -
             print(result.output)  # noqa: T201
             return result
 
-    def cli(
+    def cli(  # noqa: C901
         command: str | None = None,
         commands: list[dict[str, Any]] | None = None,
         ofmt: Literal["json", "text"] = "json",
@@ -121,6 +133,10 @@ def click_runner(capsys: pytest.CaptureFixture[str], anta_env: dict[str, str]) -
                     if isinstance(output, asynceapi.EapiCommandError):
                         raise output
                     return output
+            # Match SysDB PyClient commands (used by anta bug feature)
+            if ofmt == "text" and "bash -c" in command_str and "mktemp" in command_str:
+                logger.info("Mocking SysDB PyClient command")
+                return MOCK_SYSDB_OUTPUT  # type: ignore[return-value]
             message = f"Command '{command_str}' is not mocked"
             logger.critical(message)
             raise NotImplementedError(message)
