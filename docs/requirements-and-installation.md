@@ -14,7 +14,7 @@ tags:
 
 ## Python version
 
-Python 3 (`>=3.10`) is required:
+Python 3 (`>=3.11`) is required:
 
 ```bash
 python --version
