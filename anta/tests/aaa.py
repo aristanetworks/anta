@@ -164,17 +164,18 @@ class VerifyAuthenMethods(AntaTest):
         For example, when `login` is selected, every method list under `loginAuthenMethods` must match the expected methods.
         This means the test cannot validate different expected methods per method-list name.
 
-    !!! note "Backward compatibility"
-        By default, `require_console_method` is `True` to preserve the existing failure when `login` is selected
-        and no explicit console method list is returned. This list is named `login` before EOS 4.36 and `console`
-        starting with EOS 4.36. Set `require_console_method: false` to allow EOS to use the default login method list
-        without an explicit console list. All returned method lists are still checked.
-
     Expected Results
     ----------------
     * Success: The test will pass if the provided AAA authentication method list is matching in the configured authentication types.
     * Failure: The test will fail if the provided AAA authentication method list is NOT matching in the configured authentication types.
       It will also fail if `login` is selected and its console method list is absent while `require_console_method` is `True`.
+
+    Notes
+    -----
+    * For backward compatibility, `require_console_method` defaults to `True`: the test fails when `login` is selected
+      and no explicit console method list is returned. This list is named `login` before EOS 4.36 and `console`
+      starting with EOS 4.36. Set `require_console_method: false` to allow EOS to use the default login method list
+      without an explicit console list. All returned method lists are still checked.
 
     Examples
     --------
