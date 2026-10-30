@@ -167,6 +167,16 @@ class SA173HotfixFact(PersistentHotfixFact["SA173HotfixFact"]):
 
 
 @dataclass(frozen=True, slots=True)
+class SA178HotfixFact(PersistentHotfixFact["SA178HotfixFact"]):
+    """Installed and boot-persistent SA178 SWIX hotfix."""
+
+    key: ClassVar[str] = "mitigation.hotfix.sa178"
+    label: ClassVar[str] = "SA178 SWIX hotfix"
+    commands: ClassVar[tuple[AntaCommand, ...]] = PersistentHotfixFact.commands
+    extension_name: ClassVar[str] = "SecurityAdvisory178_CVE-2026-73440_Hotfix.swix"
+
+
+@dataclass(frozen=True, slots=True)
 class SA171HotfixFact(PersistentHotfixFact["SA171HotfixFact"]):
     """Installed and boot-persistent SA171 CVE-2026-73435 SWIX hotfix."""
 

@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING, Any, ClassVar, cast
 
 import pytest
 
+from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.models import (
     ComponentSoftwareFact,
     Fact,
@@ -26,6 +27,7 @@ from anta._advisory.facts.models import (
     MitigationState,
 )
 from anta._advisory.findings.models import (
+    AffectedEosRelease,
     AffectedResult,
     ComponentVersionAssessment,
     ErrorResult,
@@ -144,6 +146,34 @@ def test_project_affected_result_with_ineffective_control() -> None:
 
     assert atomic.result is AntaTestStatus.FAILURE
     assert atomic.messages == ["The device is affected because the Secure Boot feature is enabled and Example mitigation is ineffective."]
+
+
+def test_project_affected_result_with_mitigated_condition() -> None:
+    """Render conditions already covered by an effective mitigation after the unmitigated conditions."""
+    exposure = ExampleFeatureFact(FeatureState.ENABLED).available(SOURCE)
+    covered = AffectedEosRelease(EosVersionFact.from_version(EOSVersion(4, 35, 1, suffix="F")).available(SOURCE))
+    mitigation = ExampleMitigationFact(MitigationState.EFFECTIVE).available(SOURCE)
+    parent = _parent()
+    atomic = parent.add("Verify vulnerability.", vulnerability_ids=(VULNERABILITY_ID,))
+
+    project_vulnerability_result(
+        atomic,
+        AffectedResult(
+            vulnerability_id=VULNERABILITY_ID,
+            conditions=(exposure,),
+            mitigated_conditions=(MitigatedCondition(covered, (mitigation,)),),
+            remediation=REMEDIATION,
+        ),
+    )
+
+    assert atomic.result is AntaTestStatus.FAILURE
+    assert atomic.messages == [
+        (
+            "The device is affected because the Secure Boot feature is enabled. Mitigated conditions: EOS version '4.35.1F' is affected and Example "
+            "mitigation is effective."
+        )
+    ]
+    assert atomic.remediation == REMEDIATION
 
 
 def test_affected_result_rejects_effective_control_as_a_condition() -> None:

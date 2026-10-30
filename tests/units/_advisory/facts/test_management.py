@@ -96,7 +96,6 @@ def text_command(definition: type, output: str) -> AntaCommand:
     "definition",
     [
         Dot1xDynamicAuthorizationFact,
-        SnmpV3AuthenticationFact,
         RestconfTransportFact,
         NetconfTransportFact,
         GnpsiTransportFact,
@@ -541,28 +540,55 @@ def test_gnpsi_trace_preserves_collection_failure(device: OfflineAntaDevice, err
     assert fact.problem is FactProblemKind.COLLECTION_FAILED
 
 
+SNMPV3_LOCAL_AUTH_USER = (
+    "snmp-server user alice privgrp v3 localized f5717fe4604a9614e900 auth sha256 b064c0bde9dcc6b5c405ba2c9d8138e11442e52b869df49085ea35a9f2e0c642 "
+    "priv aes 87e9789864bc8fa7f72c0bb57ec4c59b"
+)
+SNMPV3_REMOTE_AUTH_USER = (
+    "snmp-server user remote operators remote 192.0.2.1 v3 localized 800000000301020304 auth sha256 8cbb4157a6094abec416eb3a4731c7ef425f67fde50262ce5273e4dc873e7eaf"
+)
+SNMPV3_REMOTE_UDP_PORT_AUTH_USER = (
+    "snmp-server user remoteport operators remote 192.0.2.2 udp-port 1162 v3 localized 800000000301020305 auth sha256 "
+    "863e9b56ccbfd7d764cf718cb7cc5c5dff575871b59df84e98c21b0c049b1ed5"
+)
+SNMPV3_REMOTE_IPV6_AUTH_USER = "snmp-server user remotev6 operators remote 2001:db8::1 v3 localized 800000000301020306 auth md5 37f3973e9ff70a66492e9434d9d6887c"
+SNMP_NO_AUTH_USERS = "snmp-server user bob noauthgrp v3\nsnmp-server user v2user noauthgrp v2c\nsnmp-server user remotenoauth noauthgrp remote 192.0.2.1 v3"
+
+
 @pytest.mark.parametrize(
     ("output", "state"),
     [
-        ({"usersByVersion": {}}, FeatureState.DISABLED),
-        ({"usersByVersion": {"v3": {}}}, FeatureState.DISABLED),
-        ({"usersByVersion": {"v3": {"users": {"alice": {"v3Params": {"authType": "None"}}}}}}, FeatureState.DISABLED),
-        ({"usersByVersion": {"v3": {"users": {"alice": {"v3Params": {"privType": "AES-128"}}}}}}, FeatureState.DISABLED),
-        ({"usersByVersion": {"v3": {"users": {"alice": {"v3Params": {"authType": "SHA-256"}}}}}}, FeatureState.ENABLED),
+        ("", FeatureState.DISABLED),
+        (SNMP_NO_AUTH_USERS, FeatureState.DISABLED),
+        (SNMPV3_LOCAL_AUTH_USER, FeatureState.ENABLED),
+        (SNMPV3_REMOTE_AUTH_USER, FeatureState.ENABLED),
+        (SNMPV3_REMOTE_UDP_PORT_AUTH_USER, FeatureState.ENABLED),
+        (SNMPV3_REMOTE_IPV6_AUTH_USER, FeatureState.ENABLED),
+        (f"{SNMP_NO_AUTH_USERS}\n{SNMPV3_REMOTE_AUTH_USER}", FeatureState.ENABLED),
+        ("snmp-server user encrypted operators v3 localized 80000001 auth sha256 key 7 A1B2", FeatureState.ENABLED),
     ],
 )
-def test_snmpv3_authentication_key_states(device: OfflineAntaDevice, output: dict[str, object], state: FeatureState) -> None:
-    """Normalize authentication-key presence without reading configured values."""
-    fact = SnmpV3AuthenticationFact.derive(device, (json_command(SnmpV3AuthenticationFact, output),))
+def test_snmpv3_authentication_key_states(device: OfflineAntaDevice, output: str, state: FeatureState) -> None:
+    """Normalize local and remote authentication-key presence without reading configured values."""
+    fact = SnmpV3AuthenticationFact.derive(device, (text_command(SnmpV3AuthenticationFact, output),))
 
     assert isinstance(fact, AvailableFact)
     assert fact.definition is SnmpV3AuthenticationFact
     assert fact.value.state is state
+    assert fact.source.name == "show running-config | include ^snmp-server user"
 
 
-def test_snmpv3_authentication_key_rejects_malformed_output(device: OfflineAntaDevice) -> None:
-    """Reject malformed structured SNMPv3 user output."""
-    fact = SnmpV3AuthenticationFact.derive(device, (json_command(SnmpV3AuthenticationFact, {"usersByVersion": {"v3": {"users": []}}}),))
+@pytest.mark.parametrize(
+    "output",
+    [
+        "snmp-server community public ro",
+        "snmp-server user alice operators v3 auth sha",
+        "snmp-server user alice operators remote 192.0.2.1 vrf MGMT v3 auth sha A1B2",
+    ],
+)
+def test_snmpv3_authentication_key_rejects_malformed_output(device: OfflineAntaDevice, output: str) -> None:
+    """Reject output outside the established SNMP user grammar."""
+    fact = SnmpV3AuthenticationFact.derive(device, (text_command(SnmpV3AuthenticationFact, output),))
 
     assert isinstance(fact, UnavailableFact)
     assert fact.problem is FactProblemKind.MALFORMED
@@ -600,6 +626,13 @@ def test_snmp_agent_invalid_output(device: OfflineAntaDevice, output: dict[str, 
             "snmp-server user remote operators remote 192.0.2.1 v3 localized 80000002 auth sha A1B2",
             CredentialSyntaxState.LEGACY,
         ),
+        (SNMPV3_REMOTE_UDP_PORT_AUTH_USER, CredentialSyntaxState.LEGACY),
+        (SNMPV3_REMOTE_IPV6_AUTH_USER, CredentialSyntaxState.LEGACY),
+        (SNMP_NO_AUTH_USERS, CredentialSyntaxState.NOT_CONFIGURED),
+        (
+            "snmp-server user remoteport operators remote 192.0.2.2 udp-port 1162 v3 localized 80000002 auth sha256 key 7 A1B2",
+            CredentialSyntaxState.ENCRYPTED,
+        ),
         ("snmp-server user encrypted operators v3 localized 80000001 auth sha256 key 7 A1B2", CredentialSyntaxState.ENCRYPTED),
         ("snmp-server user auth priv v3 auth sha256 key 7 A1B2", CredentialSyntaxState.ENCRYPTED),
         (
@@ -632,6 +665,10 @@ def test_snmpv3_credential_syntax_states(device: OfflineAntaDevice, output: str,
         "snmp-server user alice operators v3 auth sha key 5 A1B2",
         "snmp-server user alice operators v3 auth sha key 7",
         "snmp-server user 'alice operators v3 auth sha A1B2",
+        "snmp-server user alice operators",
+        "snmp-server user alice operators remote 192.0.2.1",
+        "snmp-server user alice operators remote 192.0.2.1 vrf MGMT v3 auth sha A1B2",
+        "snmp-server user alice operators udp-port 1162 v3 auth sha A1B2",
     ],
 )
 def test_snmpv3_credential_syntax_rejects_malformed_output(device: OfflineAntaDevice, output: str) -> None:

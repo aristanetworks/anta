@@ -25,6 +25,7 @@ from anta._advisory.findings.models import (
     ErrorResult,
     FindingEvidence,
     InconclusiveResult,
+    MitigatedCondition,
     MitigatedResult,
     NotAffectedResult,
     PlatformAssessment,
@@ -102,6 +103,11 @@ def _render_mitigation(mitigation: AvailableFact[MitigationFact]) -> str:
     return f"{mitigation.definition.label} is {mitigation.value.state.value}"
 
 
+def _render_mitigated_condition(item: MitigatedCondition) -> str:
+    """Render one affected condition with the effective mitigations that cover it."""
+    return _join_clauses((_render_evidence(item.condition), *(_render_mitigation(mitigation) for mitigation in item.mitigations)))
+
+
 def _render_result(result: VulnerabilityResult) -> tuple[AdvisoryStatus, str, RemediationPlan | None]:
     """Render one structured finding into the current advisory projection contract."""
     if isinstance(result, NotAffectedResult):
@@ -109,21 +115,16 @@ def _render_result(result: VulnerabilityResult) -> tuple[AdvisoryStatus, str, Re
         return AdvisoryStatus.NOT_AFFECTED, f"The device is not affected because {evidence}.", None
     if isinstance(result, AffectedResult):
         evidence = _join_clauses(tuple(_render_evidence(item) for item in (*result.context, *result.conditions)))
-        return AdvisoryStatus.AFFECTED, f"The device is affected because {evidence}.", result.remediation
+        message = f"The device is affected because {evidence}."
+        if result.mitigated_conditions:
+            mitigated = _join_clauses(tuple(_render_mitigated_condition(item) for item in result.mitigated_conditions))
+            message = f"{message} Mitigated conditions: {mitigated}."
+        return AdvisoryStatus.AFFECTED, message, result.remediation
     if isinstance(result, MitigatedResult):
-        mitigated_conditions = tuple(
-            _join_clauses(
-                (
-                    _render_evidence(item.condition),
-                    *(_render_mitigation(mitigation) for mitigation in item.mitigations),
-                )
-            )
-            for item in result.mitigated_conditions
-        )
         evidence = _join_clauses(
             (
                 *(_render_evidence(item) for item in result.context),
-                *mitigated_conditions,
+                *(_render_mitigated_condition(item) for item in result.mitigated_conditions),
             )
         )
         return AdvisoryStatus.MITIGATED, f"The device is affected but mitigated because {evidence}.", result.remediation
