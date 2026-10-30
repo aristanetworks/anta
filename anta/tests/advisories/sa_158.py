@@ -13,7 +13,6 @@ from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import (
     GnpsiAuthenticationExposureFact,
-    GnpsiEosRpcAuthTraceFact,
     GnpsiMutualTlsSpiffeMitigationFact,
     GnpsiTransportFact,
 )
@@ -114,33 +113,30 @@ def _assess_gnpsi_issue(
 def _assess_logging_issue(
     version: Fact[EosVersionFact],
     transport: Fact[GnpsiTransportFact],
-    trace: Fact[GnpsiEosRpcAuthTraceFact],
     authentication_mitigation: Fact[GnpsiMutualTlsSpiffeMitigationFact],
 ) -> VulnerabilityResult:
     """Assess credential logging and the exact source-defined authentication mitigation."""
-    if not isinstance(trace, UnavailableFact) and trace.value.state is not FeatureState.ENABLED:
-        return NotAffectedResult(vulnerability_id=LOGGING_ID, decisive=(trace,))
     if not isinstance(transport, UnavailableFact) and transport.value.state is not FeatureState.ENABLED:
         return NotAffectedResult(vulnerability_id=LOGGING_ID, decisive=(transport,))
     eos_release = assess_eos_scope(LOGGING_ID, version, AFFECTED_VERSION_MATRIX)
     if not isinstance(eos_release, EosReleaseAssessment):
         return eos_release
-    problems = tuple(fact for fact in (transport, trace, authentication_mitigation) if isinstance(fact, UnavailableFact))
+    problems = tuple(fact for fact in (transport, authentication_mitigation) if isinstance(fact, UnavailableFact))
     if problems:
         return ErrorResult(vulnerability_id=LOGGING_ID, problems=problems)
     remediation = _logging_remediation_plan(eos_release.fact.value)
-    available_trace = cast("AvailableFact[GnpsiEosRpcAuthTraceFact]", trace)
+    available_transport = cast("AvailableFact[GnpsiTransportFact]", transport)
     available_mitigation = cast("AvailableFact[GnpsiMutualTlsSpiffeMitigationFact]", authentication_mitigation)
     if available_mitigation.value.state is MitigationState.EFFECTIVE:
         return MitigatedResult(
             vulnerability_id=LOGGING_ID,
-            mitigated_conditions=(MitigatedCondition(condition=available_trace, mitigations=(available_mitigation,)),),
+            mitigated_conditions=(MitigatedCondition(condition=available_transport, mitigations=(available_mitigation,)),),
             context=(eos_release,),
             remediation=remediation,
         )
     return AffectedResult(
         vulnerability_id=LOGGING_ID,
-        conditions=(cast("AvailableFact[GnpsiTransportFact]", transport), available_trace),
+        conditions=(available_transport,),
         context=(eos_release,),
         remediation=remediation,
     )
@@ -152,15 +148,20 @@ class SA158(OptionalCommandsMixin, _AntaAdvisoryTest):
 
     Expected Results
     ----------------
-    * Not Affected: EOS is outside scope, gNPSI is disabled, or the issue-specific authentication or trace prerequisite is absent.
-    * Affected: An affected EOS release has an enabled gNPSI transport and the issue-specific prerequisite.
-    * Mitigated: Credential tracing is enabled, but every effective transport uses mutual TLS with only x509-spiffe authentication.
-    * Error: Required EOS, gNPSI transport, authentication, or trace state cannot be determined.
+    * Not Affected: EOS is outside scope, gNPSI is disabled, or the CVE-2026-73456 authentication prerequisite is absent.
+    * Affected: An affected EOS release has an effective gNPSI transport with an exposed authentication mode (CVE-2026-73456)
+      or without the mitigation (CVE-2026-73457).
+    * Mitigated: For CVE-2026-73457, every effective transport uses mutual TLS with only x509-spiffe authentication.
+    * Error: Required EOS, gNPSI transport, or authentication state cannot be determined.
 
     Notes
     -----
-    CVE-2026-73456 evaluates TLS or mTLS authentication combinations. CVE-2026-73457 evaluates explicit EosRpcAuth tracing and the
-    source-defined mutual-TLS/x509-spiffe mitigation across every effective transport.
+    CVE-2026-73456 evaluates TLS or mTLS authentication combinations. CVE-2026-73457 evaluates the source-defined
+    mutual-TLS/x509-spiffe mitigation across every effective transport.
+
+    CVE-2026-73457 does not use EosRpcAuth trace state. An operator can enable the trace at any time with
+    `start trace`, which leaves no running-config record and disappears from `show trace Gnpsi` once the
+    timer expires, so trace state cannot rule out exposure.
 
     Examples
     --------
@@ -177,7 +178,6 @@ class SA158(OptionalCommandsMixin, _AntaAdvisoryTest):
         version: Fact[EosVersionFact] = fact_field(EosVersionFact)
         transport: Fact[GnpsiTransportFact] = fact_field(GnpsiTransportFact)
         authentication: Fact[GnpsiAuthenticationExposureFact] = fact_field(GnpsiAuthenticationExposureFact)
-        trace: Fact[GnpsiEosRpcAuthTraceFact] = fact_field(GnpsiEosRpcAuthTraceFact)
         mitigation: Fact[GnpsiMutualTlsSpiffeMitigationFact] = fact_field(GnpsiMutualTlsSpiffeMitigationFact)
 
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
@@ -190,15 +190,7 @@ class SA158(OptionalCommandsMixin, _AntaAdvisoryTest):
         facts = self.Facts.collect(self)
         findings = (
             (CODE_EXECUTION_ID, _assess_gnpsi_issue(CODE_EXECUTION_ID, facts.version, facts.transport, facts.authentication)),
-            (
-                LOGGING_ID,
-                _assess_logging_issue(
-                    facts.version,
-                    facts.transport,
-                    facts.trace,
-                    facts.mitigation,
-                ),
-            ),
+            (LOGGING_ID, _assess_logging_issue(facts.version, facts.transport, facts.mitigation)),
         )
         for vulnerability_id, finding in findings:
             atomic = self.result.add(f"Verify {vulnerability_id}.", vulnerability_ids=(vulnerability_id,))
