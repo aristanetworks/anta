@@ -155,7 +155,7 @@ DATA: AntaUnitTestData = {
         "inputs": {"groups": ["GROUP1"]},
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["TACACS server group(s) GROUP1 are not configured"]},
     },
-    (VerifyAuthenMethods, "success-login-default-only"): {
+    (VerifyAuthenMethods, "success-login-default-only-console-not-required"): {
         "eos_data": [
             {
                 "loginAuthenMethods": {"default": {"methods": ["local"]}},
@@ -163,8 +163,40 @@ DATA: AntaUnitTestData = {
                 "dot1xAuthenMethods": {"default": {"methods": []}},
             }
         ],
-        "inputs": {"methods": ["local"], "types": ["login"]},
+        "inputs": {"methods": ["local"], "types": ["login"], "require_console_method": False},
         "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyAuthenMethods, "failure-login-default-only-console-required-by-default"): {
+        "eos_data": [{"loginAuthenMethods": {"default": {"methods": ["local"]}}}],
+        "inputs": {"methods": ["local"], "types": ["login"]},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["AAA authentication methods are not configured for login console"]},
+    },
+    (VerifyAuthenMethods, "failure-login-console-missing-and-default-mismatch"): {
+        "eos_data": [{"loginAuthenMethods": {"default": {"methods": ["local"]}}}],
+        "inputs": {"methods": ["tacacs+", "local"], "types": ["login"]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "AAA authentication methods are not configured for login console",
+                "AAA authentication methods group tacacs+, local are not matching for login/default",
+            ],
+        },
+    },
+    (VerifyAuthenMethods, "failure-login-default-mismatch-console-not-required"): {
+        "eos_data": [{"loginAuthenMethods": {"default": {"methods": ["local"]}}}],
+        "inputs": {"methods": ["tacacs+", "local"], "types": ["login"], "require_console_method": False},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["AAA authentication methods group tacacs+, local are not matching for login/default"],
+        },
+    },
+    (VerifyAuthenMethods, "failure-login-console-mismatch-console-not-required"): {
+        "eos_data": [{"loginAuthenMethods": {"console": {"methods": ["group radius", "local"]}, "default": {"methods": ["local"]}}}],
+        "inputs": {"methods": ["local"], "types": ["login"], "require_console_method": False},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["AAA authentication methods local are not matching for login/console"],
+        },
     },
     (VerifyAuthenMethods, "success-login-enable"): {
         "eos_data": [
