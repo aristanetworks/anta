@@ -207,16 +207,17 @@ class SA171(OptionalCommandsMixin, _AntaAdvisoryTest):
 
     Expected Results
     ----------------
-    * Success: An issue's EOS version is outside scope; or, for CVE-2026-73435, no OSPFv2 process is configured; or, for
+    * Not Affected: An issue's EOS version is outside scope; or, for CVE-2026-73435, no OSPFv2 process is configured; or, for
       CVE-2026-73436, OSPF segment routing is not enabled.
-    * Failure: On an affected EOS release, an active OSPFv2 broadcast interface reports cryptographic authentication
+    * Affected: On an affected EOS release, an active OSPFv2 broadcast interface reports cryptographic authentication
       for CVE-2026-73435, or OSPF segment routing is enabled for CVE-2026-73436.
-    * Mitigated: For CVE-2026-73435, the SWIX is installed and boot-persistent on an explicitly supported release. This
-      is decisive even when no qualifying broadcast interface is currently active.
+    * Mitigated: For CVE-2026-73435, the SWIX is installed and boot-persistent on an explicitly supported release.
     * Inconclusive: For CVE-2026-73435, an affected EOS release has an OSPFv2 process configured, but no active
       broadcast interface reporting cryptographic authentication is currently observable.
     * Error: Required EOS, OSPFv2, or applicable SWIX state cannot be determined.
 
+    Notes
+    -----
     The two vulnerabilities have independent version boundaries and prerequisites. In particular, 4.34.7.1M fixes
     CVE-2026-73435 but remains affected by CVE-2026-73436.
 
@@ -228,7 +229,8 @@ class SA171(OptionalCommandsMixin, _AntaAdvisoryTest):
     * A configured OSPFv2 process without a currently observable qualifying active interface is inconclusive. Interface
       state can change without an OSPF configuration change, and authentication may be inherited from area, process, or
       interface configuration.
-    * An applicable effective SWIX resolves that uncertainty and produces a mitigated result.
+    * An applicable effective SWIX resolves that uncertainty and produces a mitigated result, even when no qualifying broadcast interface is
+      currently active.
 
     The test deliberately does not reconstruct effective OSPF behavior from static network, passive-interface, or
     authentication configuration. Process configuration is used only to distinguish an absent exposure path from an

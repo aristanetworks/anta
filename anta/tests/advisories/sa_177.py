@@ -140,16 +140,18 @@ def _assess_sa177(  # noqa: PLR0911
 class SA177(OptionalCommandsMixin, _AntaAdvisoryTest):
     """Verify whether the device is impacted by Security Advisory 0177.
 
+    Expected Results
+    ----------------
+    * Not Affected: EOS or the platform is outside scope, PIM Sparse Mode is absent, or the complete MLAG configuration is absent.
+    * Affected: An affected EOS release and platform have both PIM Sparse Mode and the complete MLAG configuration.
+    * Error: Required EOS, platform, PIM Sparse Mode, or MLAG configuration cannot be determined.
+
+    Notes
+    -----
     The advisory describes the exposure as requiring active MLAG. This test deliberately uses the complete persistent MLAG configuration instead:
     a configured domain ID, local interface, peer address, and peer link are treated as exposed regardless of the currently reported operational
     state. An inactive peer or domain can become active immediately after evidence collection, so transient inactivity does not establish that the
     device is not affected.
-
-    Expected Results
-    ----------------
-    * Success: EOS or the platform is outside scope, PIM Sparse Mode is absent, or the complete MLAG configuration is absent.
-    * Failure: An affected EOS release and platform have both PIM Sparse Mode and the complete MLAG configuration.
-    * Error: Required EOS, platform, PIM Sparse Mode, or MLAG configuration cannot be determined.
 
     Examples
     --------

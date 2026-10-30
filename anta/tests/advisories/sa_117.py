@@ -127,17 +127,18 @@ def _assess_sa117(  # noqa: PLR0911
 class SA117(OptionalCommandsMixin, _AntaAdvisoryTest):
     """Verify whether the device is impacted by Security Advisory 0117.
 
+    Expected Results
+    ----------------
+    * Not Affected: EOS is outside scope, no gNMI transport is enabled, or neither gNMI accounting nor risky OpenConfig tracing is configured.
+    * Inconclusive: An affected EOS release has gNMI enabled with accounting or risky OpenConfig tracing, but the gNOI File service and
+      effective gNSI Authz controls cannot be evaluated.
+    * Error: Required EOS, gNMI, accounting, or trace state cannot be determined.
+
     Notes
     -----
     Exposure signals remain inconclusive because disabling the gNOI File service and an
     effective gNSI Authz policy that blocks TransferToRemote cannot currently be evaluated
     with trusted narrow EOS evidence.
-
-    Expected Results
-    ----------------
-    * Success: The test will pass if the EOS version or configuration is not affected.
-    * Inconclusive: The test is inconclusive if exposure signals exist but required control evidence is unavailable.
-    * Error: The test will error if required EOS version or configuration evidence is invalid.
 
     Examples
     --------
