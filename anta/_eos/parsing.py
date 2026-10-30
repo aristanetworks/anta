@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, Generic, TypeAlias, TypeVar
 
 if TYPE_CHECKING:
     # Pylint misclassifies calls on ParseResult as non-returning with typing.Never.
-    from typing_extensions import Never
+    from typing import Never
 
 T = TypeVar("T")
 
