@@ -23,6 +23,35 @@ Each test's expected results use the advisory assessment states described in
 statuses map these states as follows: Not Affected and Mitigated are success,
 Affected and Inconclusive are failure, and Error is error.
 
+## SA178: credential syntax and hotfix assessment
+
+SA178 checks both local and remote SNMPv3 authentication keys using the current EOS release, applicable persistent SWIX, and credential syntax.
+On affected releases, encrypted syntax without an effective applicable SWIX remains Affected; encrypted syntax with that SWIX is Mitigated.
+Legacy syntax remains Affected on both fixed and hotfixed software because installing the SWIX or upgrading does not convert existing credentials.
+
+For configured authentication keys and available required evidence:
+
+| Credential syntax | EOS release | SWIX state | Assessment | Remediation |
+| --- | --- | --- | --- | --- |
+| Legacy | Affected | Effective and applicable | Affected | Convert credentials with the SWIX active. |
+| Legacy | Affected | Absent, ineffective, or not applicable | Affected | Upgrade to a fixed release, then convert credentials. |
+| Legacy | Fixed | Any; ignored | Affected | Convert credentials. |
+| Encrypted | Affected | Effective and applicable | Mitigated | Preserve the SWIX; follow fixed-release upgrade guidance. |
+| Encrypted | Affected | Absent, ineffective, or not applicable | Affected | Upgrade to a fixed release, then convert credentials. |
+| Encrypted | Fixed | Any; ignored | Not Affected | None. |
+
+Conversion guidance means running `configure convert new-syntax`. An effective applicable SWIX must match a documented eligible release and be
+installed and boot-persistent. Affected produces ANTA failure; Mitigated and Not Affected produce ANTA success.
+
+The assessment classifies current software, hotfix, and credential syntax. It does not establish whether or when credential conversion was
+performed. Copying encrypted credentials between releases is outside its scope. Salt offsets alone cannot establish whether a key is affected;
+the assessment does not decode credential payloads or classify keys by salt offset.
+
+If no authentication keys are configured, the result is Not Affected even when software or SWIX evidence is unavailable. Otherwise, missing
+required evidence produces Error. Fixed releases with encrypted credentials remain Not Affected without requiring SWIX evidence.
+
+## Test reference
+
 ::: anta.tests.advisories
 
     options:
