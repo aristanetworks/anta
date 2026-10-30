@@ -92,7 +92,7 @@ def _assess_sa178(
 
     Upgrading EOS or installing the hotfix does not convert existing credentials, so credentials that retain legacy syntax on fixed or hotfixed
     software still require ``configure convert new-syntax``. On affected releases, encrypted credentials are mitigated only with an effective
-    applicable hotfix. Credential conversion history and copying encrypted credentials between releases are outside this assessment's scope.
+    applicable hotfix.
     """
     if not isinstance(authentication, UnavailableFact) and authentication.value.state is not FeatureState.ENABLED:
         return NotAffectedResult(vulnerability_id=VULNERABILITY_ID, decisive=(authentication,))
@@ -174,9 +174,7 @@ class SA178(OptionalCommandsMixin, _AntaAdvisoryTest):
     the hotfix rewrites existing credentials. With legacy credentials, fixed releases and releases with an effective persistent hotfix require only
     credential conversion. Other affected releases need an upgrade followed by credential conversion.
 
-    The assessment uses current software, hotfix, and credential syntax. It does not establish whether or when credential conversion was performed.
-    Copying encrypted credentials between releases is outside its scope. Salt offsets alone cannot establish whether a key is affected; the
-    assessment does not decode credential payloads or classify keys by salt offset.
+    The assessment does not validate the origin of encrypted credentials copied between releases.
 
     Examples
     --------
