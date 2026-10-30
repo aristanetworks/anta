@@ -7,6 +7,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import unittest
 from functools import partial
 from typing import TYPE_CHECKING, Any
@@ -25,8 +26,10 @@ from anta._advisory.facts.models import (
     MitigationState,
 )
 from anta._advisory.facts.software import SA178HotfixFact
-from anta._advisory.findings.models import AffectedEosRelease, AffectedResult, ErrorResult, MitigatedCondition, NotAffectedResult, VersionRelation
-from anta._advisory.remediation import FixedRelease, RemediationPlan, RunCommand, Sequence, software_version_action
+from anta._advisory.findings.models import AffectedEosRelease, AffectedResult, ErrorResult, MitigatedCondition, MitigatedResult, NotAffectedResult, VersionRelation
+from anta._advisory.remediation import FixedRelease, RemediationPlan, RunCommand, Sequence, software_version_action, software_version_plan
+from anta._advisory.results import _AdvisoryAtomicTestResult
+from anta._advisory.status import AdvisoryStatus
 from anta._eos.version import EOSVersion, parse_eos_version
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_178 import ADVISORY, AFFECTED_VERSION_MATRIX, HOTFIX_RELEASES, SA178, _assess_sa178
@@ -34,6 +37,7 @@ from tests.units.anta_tests import build_eos_version, test
 from tests.units.anta_tests.advisories import build_expected_advisory_result
 
 if TYPE_CHECKING:
+    from anta.device import AntaDevice
     from tests.units.anta_tests import AntaUnitTestData
 
 SOURCE = FactSource("unit test", FactSourceKind.DEVICE_METADATA)
@@ -156,8 +160,9 @@ _DATA: AntaUnitTestData = {
         "eos_data": eos_data(ENCRYPTED_USER, PERSISTENT_HOTFIX),
         "expected": expected_result(
             AntaTestStatus.SUCCESS,
-            "The device is not affected because the SNMPv3 credential syntax is encrypted",
-            None,
+            "The device is affected but mitigated because the SNMPv3 credential syntax is encrypted and EOS version '4.34.8M' is affected and SA178 "
+            "SWIX hotfix is effective",
+            software_version_plan(EXPECTED_FIXED_RELEASES, current_version=EOSVersion(4, 34, 8, suffix="M")),
         ),
     },
     (SA178, "failure-fixed-version-with-legacy-syntax"): {
@@ -348,6 +353,51 @@ class TestSA178Assessment(unittest.TestCase):
                 assert unpatched.conditions == (authentication, legacy)
                 assert unpatched.remediation == expected_affected_remediation(version)
 
+    def test_encrypted_credentials_with_persistent_hotfix_are_mitigated(self) -> None:
+        authentication = authentication_fact(FeatureState.ENABLED)
+        encrypted = syntax_fact(CredentialSyntaxState.ENCRYPTED)
+        effective_hotfix = hotfix_fact(MitigationState.EFFECTIVE)
+        for version in ("4.36.2F", "4.35.6M", "4.34.8M", "4.33.10M"):
+            with self.subTest(version=version):
+                observed_version = version_fact(version)
+                assert isinstance(observed_version, AvailableFact)
+                finding = _assess_sa178(observed_version, authentication, encrypted, effective_hotfix)
+
+                assert isinstance(finding, MitigatedResult)
+                assert finding.context == (encrypted,)
+                assert finding.mitigated_conditions == (MitigatedCondition(AffectedEosRelease(observed_version), (effective_hotfix,)),)
+                assert finding.remediation == software_version_plan(EXPECTED_FIXED_RELEASES, current_version=observed_version.value)
+
+    def test_encrypted_credentials_without_confirmed_applicable_hotfix_are_not_affected(self) -> None:
+        encrypted = syntax_fact(CredentialSyntaxState.ENCRYPTED)
+        effective_hotfix = hotfix_fact(MitigationState.EFFECTIVE)
+        unavailable_hotfix = SA178HotfixFact.unavailable(FactProblemKind.COLLECTION_FAILED, SOURCE)
+        for version, hotfix in (
+            ("4.36.3M", effective_hotfix),
+            ("4.36.1F", effective_hotfix),
+            ("4.36.2.1F", effective_hotfix),
+            ("4.36.2F", hotfix_fact(MitigationState.INEFFECTIVE)),
+            ("4.36.2F", unavailable_hotfix),
+            (None, effective_hotfix),
+        ):
+            with self.subTest(version=version, hotfix=hotfix):
+                finding = _assess_sa178(version_fact(version), authentication_fact(FeatureState.ENABLED), encrypted, hotfix)
+
+                assert isinstance(finding, NotAffectedResult)
+                assert finding.decisive == (encrypted,)
+
+    def test_encrypted_credentials_with_unavailable_authentication_remain_not_affected(self) -> None:
+        encrypted = syntax_fact(CredentialSyntaxState.ENCRYPTED)
+        finding = _assess_sa178(
+            version_fact("4.35.6M"),
+            SnmpV3AuthenticationFact.unavailable(FactProblemKind.MALFORMED, SOURCE),
+            encrypted,
+            hotfix_fact(MitigationState.EFFECTIVE),
+        )
+
+        assert isinstance(finding, NotAffectedResult)
+        assert finding.decisive == (encrypted,)
+
     def test_hotfix_is_limited_to_exact_releases(self) -> None:
         authentication = authentication_fact(FeatureState.ENABLED)
         legacy = syntax_fact(CredentialSyntaxState.LEGACY)
@@ -377,6 +427,18 @@ class TestSA178Assessment(unittest.TestCase):
 
         assert isinstance(no_credentials, NotAffectedResult)
         assert isinstance(encrypted, NotAffectedResult)
+
+    def test_unconfigured_credentials_short_circuit_other_unavailable_facts(self) -> None:
+        unconfigured = syntax_fact(CredentialSyntaxState.NOT_CONFIGURED)
+        finding = _assess_sa178(
+            version_fact(None),
+            SnmpV3AuthenticationFact.unavailable(FactProblemKind.MALFORMED, SOURCE),
+            unconfigured,
+            SA178HotfixFact.unavailable(FactProblemKind.MISSING, SOURCE),
+        )
+
+        assert isinstance(finding, NotAffectedResult)
+        assert finding.decisive == (unconfigured,)
 
     def test_unavailable_required_facts_are_errors(self) -> None:
         finding = _assess_sa178(
@@ -418,3 +480,23 @@ class TestSA178(unittest.TestCase):
             SnmpV3CredentialSyntaxFact.commands[0],
             *SA178HotfixFact.commands,
         ]
+
+
+def test_hotfixed_encrypted_credentials_project_as_mitigated(device: AntaDevice) -> None:
+    """Keep the semantic mitigated status, hotfix evidence, and fixed-release guidance in the executed test result."""
+    device.version = build_eos_version("4.35.6M")
+    advisory_test = SA178(device, eos_data=eos_data(ENCRYPTED_USER, PERSISTENT_HOTFIX))
+
+    asyncio.run(advisory_test.test())
+
+    assert advisory_test.result.result is AntaTestStatus.SUCCESS
+    atomic_result = advisory_test.result.atomic_results[0]
+    assert isinstance(atomic_result, _AdvisoryAtomicTestResult)
+    assert atomic_result.advisory_status is AdvisoryStatus.MITIGATED
+    assert atomic_result.messages == [
+        (
+            "The device is affected but mitigated because the SNMPv3 credential syntax is encrypted and EOS version '4.35.6M' is affected and SA178 "
+            "SWIX hotfix is effective."
+        )
+    ]
+    assert atomic_result.remediation == software_version_plan(EXPECTED_FIXED_RELEASES, current_version=EOSVersion(4, 35, 6, suffix="M"))

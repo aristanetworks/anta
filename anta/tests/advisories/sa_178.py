@@ -31,6 +31,7 @@ from anta._advisory.findings.models import (
     EosReleaseAssessment,
     ErrorResult,
     MitigatedCondition,
+    MitigatedResult,
     NotAffectedResult,
     VersionRelation,
     VulnerabilityResult,
@@ -38,7 +39,7 @@ from anta._advisory.findings.models import (
 from anta._advisory.findings.projection import project_vulnerability_result
 from anta._advisory.models import _AdvisoryMetadata, _AdvisoryVulnerability, _AdvisoryVulnerabilitySeverity
 from anta._advisory.optional_commands import OptionalCommandsMixin
-from anta._advisory.remediation import FixedRelease, RemediationPlan, RunCommand, Sequence, software_version_action
+from anta._advisory.remediation import FixedRelease, RemediationPlan, RunCommand, Sequence, software_version_action, software_version_plan
 from anta._eos.version import EOSVersion
 from anta.decorators import preview_test_class
 
@@ -88,23 +89,36 @@ def _assess_sa178(
 ) -> VulnerabilityResult:
     """Assess EOS software, the release-specific hotfix, and the legacy SNMPv3 credential-syntax prerequisite.
 
-    Legacy or mixed credential syntax is required for exposure. Upgrading EOS or installing the hotfix does not convert existing credentials, so
-    credentials that retain legacy syntax on fixed or hotfixed software still require ``configure convert new-syntax``.
+    Upgrading EOS or installing the hotfix does not convert existing credentials, so credentials that retain legacy syntax on fixed or hotfixed
+    software still require ``configure convert new-syntax``. Encrypted credentials remain not affected unless an applicable persistent hotfix
+    confirms that the affected software is mitigated.
     """
     if not isinstance(authentication, UnavailableFact) and authentication.value.state is not FeatureState.ENABLED:
         return NotAffectedResult(vulnerability_id=VULNERABILITY_ID, decisive=(authentication,))
-    if not isinstance(credential_syntax, UnavailableFact) and credential_syntax.value.state not in {
-        CredentialSyntaxState.LEGACY,
-        CredentialSyntaxState.MIXED,
-    }:
+    if not isinstance(credential_syntax, UnavailableFact) and credential_syntax.value.state is CredentialSyntaxState.NOT_CONFIGURED:
         return NotAffectedResult(vulnerability_id=VULNERABILITY_ID, decisive=(credential_syntax,))
-
     software_context = assess_eos_version(version, AFFECTED_VERSION_MATRIX)
     version_eligible_for_hotfix = (
         isinstance(software_context, EosReleaseAssessment)
         and software_context.relation is VersionRelation.AFFECTED
         and str(software_context.fact.value) in HOTFIX_RELEASES
     )
+    applicable_hotfix = hotfix if version_eligible_for_hotfix and isinstance(hotfix, AvailableFact) else None
+    if not isinstance(credential_syntax, UnavailableFact) and credential_syntax.value.state is CredentialSyntaxState.ENCRYPTED:
+        if (
+            isinstance(authentication, AvailableFact)
+            and isinstance(software_context, EosReleaseAssessment)
+            and applicable_hotfix is not None
+            and applicable_hotfix.value.state is MitigationState.EFFECTIVE
+        ):
+            return MitigatedResult(
+                vulnerability_id=VULNERABILITY_ID,
+                context=(credential_syntax,),
+                mitigated_conditions=(MitigatedCondition(AffectedEosRelease(software_context.fact), (applicable_hotfix,)),),
+                remediation=software_version_plan(FIXED_RELEASES, current_version=software_context.fact.value),
+            )
+        return NotAffectedResult(vulnerability_id=VULNERABILITY_ID, decisive=(credential_syntax,))
+
     required = (
         (software_context, authentication, credential_syntax, hotfix) if version_eligible_for_hotfix else (software_context, authentication, credential_syntax)
     )
@@ -117,27 +131,25 @@ def _assess_sa178(
     assert not isinstance(credential_syntax, UnavailableFact)  # noqa: S101
     configured_authentication = authentication
     legacy_credential_syntax = credential_syntax
-    applicable_hotfix = hotfix if version_eligible_for_hotfix and isinstance(hotfix, AvailableFact) else None
+    context: tuple[EosReleaseAssessment, ...]
+    mitigated_conditions: tuple[MitigatedCondition, ...] = ()
+    remediation = RemediationPlan(CONVERT_CREDENTIALS)
     if software_context.relation is VersionRelation.AFFECTED:
         if applicable_hotfix is not None and applicable_hotfix.value.state is MitigationState.EFFECTIVE:
-            return AffectedResult(
-                vulnerability_id=VULNERABILITY_ID,
-                conditions=(configured_authentication, legacy_credential_syntax),
-                mitigated_conditions=(MitigatedCondition(AffectedEosRelease(software_context.fact), (applicable_hotfix,)),),
-                remediation=RemediationPlan(CONVERT_CREDENTIALS),
-            )
-        return AffectedResult(
-            vulnerability_id=VULNERABILITY_ID,
-            context=(software_context,),
-            conditions=(configured_authentication, legacy_credential_syntax),
-            remediation=RemediationPlan(Sequence((software_version_action(FIXED_RELEASES, current_version=software_context.fact.value), CONVERT_CREDENTIALS))),
-        )
+            mitigated_conditions = (MitigatedCondition(AffectedEosRelease(software_context.fact), (applicable_hotfix,)),)
+            context = ()
+        else:
+            context = (software_context,)
+            remediation = RemediationPlan(Sequence((software_version_action(FIXED_RELEASES, current_version=software_context.fact.value), CONVERT_CREDENTIALS)))
+    else:
+        context = (EosReleaseAssessment(software_context.fact, VersionRelation.FIXED),)
 
     return AffectedResult(
         vulnerability_id=VULNERABILITY_ID,
-        context=(EosReleaseAssessment(software_context.fact, VersionRelation.FIXED),),
+        context=context,
         conditions=(configured_authentication, legacy_credential_syntax),
-        remediation=RemediationPlan(CONVERT_CREDENTIALS),
+        mitigated_conditions=mitigated_conditions,
+        remediation=remediation,
     )
 
 
@@ -147,15 +159,17 @@ class SA178(OptionalCommandsMixin, _AntaAdvisoryTest):
 
     Expected Results
     ----------------
-    * Not Affected: No local or remote SNMPv3 user has an authentication key, or every key uses encrypted syntax.
-    * Affected: A local or remote SNMPv3 authentication key uses legacy or mixed syntax.
+    * Not Affected: No local or remote SNMPv3 user has an authentication key, or every key uses encrypted syntax without a confirmed applicable
+      persistent hotfix.
+    * Affected: A local or remote SNMPv3 authentication key uses legacy syntax.
+    * Mitigated: Every authentication key uses encrypted syntax, and an affected EOS release has its applicable hotfix installed and boot-persistent.
     * Error: The required EOS version, authentication-key state, credential syntax, or applicable hotfix state cannot be determined.
 
     Notes
     -----
-    SNMPv3 users are read from the running configuration because `show snmp user` does not list remote users. Legacy or mixed syntax is reported as
-    affected on fixed releases and on hotfix releases with the persistent hotfix installed, because neither the upgrade nor the hotfix rewrites
-    existing configuration; those devices only need credential conversion. Other affected releases need an upgrade followed by credential conversion.
+    SNMPv3 users are read from the running configuration because `show snmp user` does not list remote users. Neither upgrading EOS nor installing
+    the hotfix rewrites existing credentials. With legacy credentials, fixed releases and releases with an effective persistent hotfix require only
+    credential conversion. Other affected releases need an upgrade followed by credential conversion.
 
     Examples
     --------

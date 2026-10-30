@@ -189,11 +189,14 @@ class AffectedResult(VulnerabilityResultBase):
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class MitigatedResult(VulnerabilityResultBase):
-    """Every confirmed affected condition is paired with an effective mitigation."""
+    """Every confirmed affected condition is paired with an effective mitigation.
+
+    ``context`` retains supporting evidence for the overall mitigated conclusion.
+    """
 
     mitigated_conditions: tuple[MitigatedCondition, ...]
     remediation: RemediationPlan
-    context: tuple[EosReleaseAssessment | ComponentVersionAssessment | PlatformAssessment, ...] = ()
+    context: tuple[FindingEvidence, ...] = ()
 
     def __post_init__(self) -> None:
         VulnerabilityResultBase.__post_init__(self)
