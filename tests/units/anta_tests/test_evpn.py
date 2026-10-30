@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, Any
 
 from anta.models import AntaTest
 from anta.result_manager.models import AntaTestStatus
-from anta.tests.evpn import VerifyEVPNType5Routes
+from anta.tests.evpn import VerifyEVPNSanity, VerifyEVPNType5Routes
 from tests.units.anta_tests import test
 
 if TYPE_CHECKING:
@@ -445,5 +445,152 @@ DATA: AntaUnitTestData = {
         ],
         "inputs": {"prefixes": [{"address": "fd00:dc:5::1/128", "vni": 500}]},
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Prefix: fd00:dc:5::1/128 VNI: 500 - No active and valid path found across all RDs"]},
+    },
+    (VerifyEVPNSanity, "success-all-categories"): {
+        "eos_data": [
+            {
+                "categories": {
+                    "General": {"items": [{"name": "Send community", "status": "ok"}]},
+                    "L2": {"items": [{"name": "MAC-VRF route-distinguisher", "status": "ok"}]},
+                    "VXLAN": {"items": [{"name": "VRF to VNI map for IP-VRF", "status": "ok"}]},
+                }
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {"description": "Category: General Item: Send community", "result": AntaTestStatus.SUCCESS},
+                {"description": "Category: L2 Item: MAC-VRF route-distinguisher", "result": AntaTestStatus.SUCCESS},
+                {"description": "Category: VXLAN Item: VRF to VNI map for IP-VRF", "result": AntaTestStatus.SUCCESS},
+            ],
+        },
+    },
+    (VerifyEVPNSanity, "failure-mixed-statuses"): {
+        "eos_data": [
+            {
+                "categories": {
+                    "General": {
+                        "items": [
+                            {
+                                "name": "Send community",
+                                "status": "fail",
+                                "reasonNotOk": "Extended community not sent to 10.0.0.2",
+                            },
+                            {"name": "Multi-agent mode", "status": "ok"},
+                            {
+                                "name": "Neighbor established",
+                                "status": "warn",
+                                "reasonNotOk": "Following EVPN sessions are not established: 10.0.0.2",
+                            },
+                        ],
+                        "description": "General EVPN verification",
+                    },
+                    "L2": {
+                        "items": [
+                            {
+                                "name": "MAC-VRF route-distinguisher",
+                                "status": "warn",
+                                "reasonNotOk": "The MAC-VRF VLAN 100 is not configured with a route-distinguisher",
+                            },
+                            {"name": "MAC-VRF redistribute", "status": "fail"},
+                        ]
+                    },
+                    "VXLAN": {"items": [{"name": "VRF to VNI map for IP-VRF", "status": "ok"}]},
+                }
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Category: General Item: Send community - Invalid status - Expected: ok Actual: fail - Extended community not sent to 10.0.0.2",
+                "Category: General Item: Neighbor established - Invalid status - Expected: ok Actual: warn - Following EVPN sessions are not established: 10.0.0.2",
+                (
+                    "Category: L2 Item: MAC-VRF route-distinguisher - Invalid status - Expected: ok Actual: warn - "
+                    "The MAC-VRF VLAN 100 is not configured with a route-distinguisher"
+                ),
+                "Category: L2 Item: MAC-VRF redistribute - Invalid status - Expected: ok Actual: fail",
+            ],
+            "atomic_results": [
+                {
+                    "description": "Category: General Item: Send community",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Invalid status - Expected: ok Actual: fail - Extended community not sent to 10.0.0.2"],
+                },
+                {"description": "Category: General Item: Multi-agent mode", "result": AntaTestStatus.SUCCESS},
+                {
+                    "description": "Category: General Item: Neighbor established",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Invalid status - Expected: ok Actual: warn - Following EVPN sessions are not established: 10.0.0.2"],
+                },
+                {
+                    "description": "Category: L2 Item: MAC-VRF route-distinguisher",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Invalid status - Expected: ok Actual: warn - The MAC-VRF VLAN 100 is not configured with a route-distinguisher"],
+                },
+                {
+                    "description": "Category: L2 Item: MAC-VRF redistribute",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Invalid status - Expected: ok Actual: fail"],
+                },
+                {"description": "Category: VXLAN Item: VRF to VNI map for IP-VRF", "result": AntaTestStatus.SUCCESS},
+            ],
+        },
+    },
+    (VerifyEVPNSanity, "skipped-empty-categories"): {
+        "eos_data": [{"categories": {}}],
+        "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["No EVPN sanity checks detected"]},
+    },
+    (VerifyEVPNSanity, "success-warnings-allowed"): {
+        "inputs": {"warning_as_failure": False},
+        "eos_data": [
+            {
+                "categories": {
+                    "General": {
+                        "items": [
+                            {"name": "Multi-agent mode", "status": "ok"},
+                            {
+                                "name": "Neighbor established",
+                                "status": "warn",
+                                "reasonNotOk": "Following EVPN sessions are not established: 10.0.0.2",
+                            },
+                        ]
+                    }
+                }
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {"description": "Category: General Item: Multi-agent mode", "result": AntaTestStatus.SUCCESS},
+                {"description": "Category: General Item: Neighbor established", "result": AntaTestStatus.SUCCESS},
+            ],
+        },
+    },
+    (VerifyEVPNSanity, "failure-warnings-allowed"): {
+        "inputs": {"warning_as_failure": False},
+        "eos_data": [
+            {
+                "categories": {
+                    "General": {
+                        "items": [
+                            {"name": "Send community", "status": "fail", "reasonNotOk": "Extended community not sent to 10.0.0.2"},
+                            {"name": "Neighbor established", "status": "warn"},
+                        ]
+                    }
+                }
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Category: General Item: Send community - Invalid status - Expected: ok, warn Actual: fail - Extended community not sent to 10.0.0.2"],
+            "atomic_results": [
+                {
+                    "description": "Category: General Item: Send community",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Invalid status - Expected: ok, warn Actual: fail - Extended community not sent to 10.0.0.2"],
+                },
+                {"description": "Category: General Item: Neighbor established", "result": AntaTestStatus.SUCCESS},
+            ],
+        },
     },
 }
