@@ -113,9 +113,9 @@ class SA140(_AntaAdvisoryTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if the EOS version or Secure Boot state is not affected.
-    * Failure: The test will fail if an affected EOS version has Secure Boot supported and enabled.
-    * Error: The test will error if the EOS version or Secure Boot state cannot be determined.
+    * Not Affected: EOS is outside scope or Secure Boot is not enabled.
+    * Affected: An affected EOS release has Secure Boot supported and enabled.
+    * Error: The EOS version or Secure Boot state cannot be determined.
 
     Examples
     --------

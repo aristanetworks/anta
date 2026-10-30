@@ -13,6 +13,7 @@ from typing import Any, ClassVar, TypeVar
 
 from pydantic import PositiveInt, field_validator
 
+from anta.input_models.routing import bgp as bgp_models
 from anta.input_models.routing.bgp import BgpAddressFamily, BgpAfi, BgpNeighbor, BgpPeer, BgpRoute, BgpVrf, VxlanEndpoint
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import format_data, get_item, get_value
@@ -652,7 +653,7 @@ class VerifyBGPPeerMPCaps(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPPeerMPCaps test."""
 
-        bgp_peers: list[BgpPeer]
+        bgp_peers: list[bgp_models.BgpPeer]
         """List of BGP peers."""
         BgpPeer: ClassVar[type[BgpPeer]] = BgpPeer
 
@@ -743,7 +744,7 @@ class VerifyBGPPeerASNCap(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPPeerASNCap test."""
 
-        bgp_peers: list[BgpPeer]
+        bgp_peers: list[bgp_models.BgpPeer]
         """List of BGP peers."""
         BgpPeer: ClassVar[type[BgpPeer]] = BgpPeer
 
@@ -813,7 +814,7 @@ class VerifyBGPPeerRouteRefreshCap(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPPeerRouteRefreshCap test."""
 
-        bgp_peers: list[BgpPeer]
+        bgp_peers: list[bgp_models.BgpPeer]
         """List of BGP peers."""
         BgpPeer: ClassVar[type[BgpPeer]] = BgpPeer
 
@@ -885,7 +886,7 @@ class VerifyBGPPeerMD5Auth(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPPeerMD5Auth test."""
 
-        bgp_peers: list[BgpPeer]
+        bgp_peers: list[bgp_models.BgpPeer]
         """List of BGP peers."""
         BgpPeer: ClassVar[type[BgpPeer]] = BgpPeer
 
@@ -948,7 +949,7 @@ class VerifyEVPNType2Route(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyEVPNType2Route test."""
 
-        vxlan_endpoints: list[VxlanEndpoint]
+        vxlan_endpoints: list[bgp_models.VxlanEndpoint]
         """List of VXLAN endpoints to verify."""
         VxlanEndpoint: ClassVar[type[VxlanEndpoint]] = VxlanEndpoint
 
@@ -1024,7 +1025,7 @@ class VerifyBGPAdvCommunities(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPAdvCommunities test."""
 
-        bgp_peers: list[BgpPeer]
+        bgp_peers: list[bgp_models.BgpPeer]
         """List of BGP peers."""
         BgpPeer: ClassVar[type[BgpPeer]] = BgpPeer
 
@@ -1096,7 +1097,7 @@ class VerifyBGPTimers(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPTimers test."""
 
-        bgp_peers: list[BgpPeer]
+        bgp_peers: list[bgp_models.BgpPeer]
         """List of BGP peers."""
         BgpPeer: ClassVar[type[BgpPeer]] = BgpPeer
 
@@ -1183,7 +1184,7 @@ class VerifyBGPPeerDropStats(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPPeerDropStats test."""
 
-        bgp_peers: list[BgpPeer]
+        bgp_peers: list[bgp_models.BgpPeer]
         """List of BGP peers."""
         BgpPeer: ClassVar[type[BgpPeer]] = BgpPeer
 
@@ -1266,7 +1267,7 @@ class VerifyBGPPeerUpdateErrors(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPPeerUpdateErrors test."""
 
-        bgp_peers: list[BgpPeer]
+        bgp_peers: list[bgp_models.BgpPeer]
         """List of BGP peers."""
         BgpPeer: ClassVar[type[BgpPeer]] = BgpPeer
 
@@ -1343,7 +1344,7 @@ class VerifyBgpRouteMaps(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBgpRouteMaps test."""
 
-        bgp_peers: list[BgpPeer]
+        bgp_peers: list[bgp_models.BgpPeer]
         """List of BGP peers."""
         BgpPeer: ClassVar[type[BgpPeer]] = BgpPeer
 
@@ -1428,7 +1429,7 @@ class VerifyBGPPeerRouteLimit(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPPeerRouteLimit test."""
 
-        bgp_peers: list[BgpPeer]
+        bgp_peers: list[bgp_models.BgpPeer]
         """List of BGP peers."""
         BgpPeer: ClassVar[type[BgpPeer]] = BgpPeer
 
