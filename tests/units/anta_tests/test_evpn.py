@@ -466,6 +466,7 @@ DATA: AntaUnitTestData = {
         },
     },
     (VerifyEVPNSanity, "failure-mixed-statuses"): {
+        "inputs": {"warning_as_failure": True},
         "eos_data": [
             {
                 "categories": {
@@ -541,7 +542,6 @@ DATA: AntaUnitTestData = {
         "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["No EVPN sanity checks detected"]},
     },
     (VerifyEVPNSanity, "success-warnings-allowed"): {
-        "inputs": {"warning_as_failure": False},
         "eos_data": [
             {
                 "categories": {
@@ -560,9 +560,14 @@ DATA: AntaUnitTestData = {
         ],
         "expected": {
             "result": AntaTestStatus.SUCCESS,
+            "messages": ["Category: General Item: Neighbor established - Status: warn - Following EVPN sessions are not established: 10.0.0.2"],
             "atomic_results": [
                 {"description": "Category: General Item: Multi-agent mode", "result": AntaTestStatus.SUCCESS},
-                {"description": "Category: General Item: Neighbor established", "result": AntaTestStatus.SUCCESS},
+                {
+                    "description": "Category: General Item: Neighbor established",
+                    "result": AntaTestStatus.SUCCESS,
+                    "messages": ["Status: warn - Following EVPN sessions are not established: 10.0.0.2"],
+                },
             ],
         },
     },
@@ -582,14 +587,17 @@ DATA: AntaUnitTestData = {
         ],
         "expected": {
             "result": AntaTestStatus.FAILURE,
-            "messages": ["Category: General Item: Send community - Invalid status - Expected: ok, warn Actual: fail - Extended community not sent to 10.0.0.2"],
+            "messages": [
+                "Category: General Item: Send community - Invalid status - Expected: ok, warn Actual: fail - Extended community not sent to 10.0.0.2",
+                "Category: General Item: Neighbor established - Status: warn",
+            ],
             "atomic_results": [
                 {
                     "description": "Category: General Item: Send community",
                     "result": AntaTestStatus.FAILURE,
                     "messages": ["Invalid status - Expected: ok, warn Actual: fail - Extended community not sent to 10.0.0.2"],
                 },
-                {"description": "Category: General Item: Neighbor established", "result": AntaTestStatus.SUCCESS},
+                {"description": "Category: General Item: Neighbor established", "result": AntaTestStatus.SUCCESS, "messages": ["Status: warn"]},
             ],
         },
     },

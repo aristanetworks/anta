@@ -342,6 +342,7 @@ anta.tests.cvx:
 anta.tests.evpn:
   - VerifyEVPNSanity:
       # Verifies there are no EVPN sanity-check inconsistencies.
+      warning_as_failure: true
   - VerifyEVPNType5Routes:
       # Verifies EVPN Type-5 routes for given IP prefixes and VNIs.
       prefixes:

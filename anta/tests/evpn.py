@@ -193,9 +193,9 @@ class VerifyEVPNSanity(AntaTest):
     Expected Results
     ----------------
     * Success: The test will pass if at least one check is returned and all statuses are `ok`,
-      or `warn` when `warning_as_failure` is disabled.
+      or `warn` when `warning_as_failure` is disabled (the default). Warning details are retained as messages.
     * Failure: The test will fail if any check reports an unexpected status.
-      Warnings are treated as failures by default.
+      Warnings are treated as failures when `warning_as_failure` is enabled.
     * Skipped: The test will be skipped if no sanity checks are returned.
 
     Examples
@@ -203,6 +203,7 @@ class VerifyEVPNSanity(AntaTest):
     ```yaml
     anta.tests.evpn:
       - VerifyEVPNSanity:
+            warning_as_failure: true
     ```
     """
 
@@ -213,8 +214,8 @@ class VerifyEVPNSanity(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyEVPNSanity test."""
 
-        warning_as_failure: bool = True
-        """Treat checks reporting `warn` as failures. If false, these checks pass."""
+        warning_as_failure: bool = False
+        """Treat checks reporting `warn` as failures. By default, these checks pass with warning messages."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -226,13 +227,17 @@ class VerifyEVPNSanity(AntaTest):
             for item in category_data["items"]:
                 status = item["status"]
                 result = self.result.add(description=f"Category: {category_name} Item: {item['name']}", status=AntaTestStatus.SUCCESS)
-                if status in expected_statuses:
+                if status == "ok":
                     continue
 
-                message = f"Invalid status - Expected: {', '.join(expected_statuses)} Actual: {status}"
+                warning_allowed = status == "warn" and not self.inputs.warning_as_failure
+                message = f"Status: {status}" if warning_allowed else f"Invalid status - Expected: {', '.join(expected_statuses)} Actual: {status}"
                 if reason := item.get("reasonNotOk"):
                     message += f" - {reason}"
-                result.is_failure(message)
+                if warning_allowed:
+                    result.is_success(message)
+                else:
+                    result.is_failure(message)
 
         if not self.result.atomic_results:
             self.result.is_skipped("No EVPN sanity checks detected")
