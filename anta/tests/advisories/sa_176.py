@@ -130,9 +130,9 @@ class SA176(OptionalCommandsMixin, _AntaAdvisoryTest):
 
     Expected Results
     ----------------
-    * Success: The test passes when EOS or the platform is outside scope, or loose uRPF is not configured.
-    * Failure: The test fails when an affected EOS release and platform have loose IPv4 or IPv6 uRPF configured.
-    * Error: The test errors when required EOS, platform, loose-uRPF, or any needed switch-card state cannot be determined.
+    * Not Affected: EOS or the platform is outside scope, or loose uRPF is not configured.
+    * Affected: An affected EOS release and platform have loose IPv4 or IPv6 uRPF configured.
+    * Error: Required EOS, platform, loose-uRPF, or any needed switch-card state cannot be determined.
 
     Examples
     --------

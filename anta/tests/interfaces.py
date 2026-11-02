@@ -18,6 +18,7 @@ from pydantic_extra_types.mac_address import MacAddress
 
 from anta.custom_types import DropPrecedence, EthernetInterface, Interface, InterfaceType, ManagementInterface, Percent, PortChannelInterface, PositiveInteger
 from anta.decorators import skip_on_platforms
+from anta.input_models import interfaces as interface_models
 from anta.input_models.interfaces import InterfaceDetail, InterfaceState
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.result_manager.models import AntaTestStatus
@@ -344,7 +345,7 @@ class VerifyInterfacesStatus(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyInterfacesStatus test."""
 
-        interfaces: list[InterfaceState]
+        interfaces: list[interface_models.InterfaceState]
         """List of interfaces with their expected state."""
         InterfaceState: ClassVar[type[InterfaceState]] = InterfaceState
 
@@ -1039,7 +1040,7 @@ class VerifyLACPInterfacesStatus(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyLACPInterfacesStatus test."""
 
-        interfaces: list[InterfaceState]
+        interfaces: list[interface_models.InterfaceState]
         """List of interfaces with their expected state."""
         InterfaceState: ClassVar[type[InterfaceState]] = InterfaceState
 

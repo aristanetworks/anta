@@ -10,6 +10,7 @@ from __future__ import annotations
 from typing import ClassVar
 
 from anta.decorators import deprecated_test_class
+from anta.input_models import stun as stun_models
 from anta.input_models.stun import StunClientTranslation
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_value
@@ -55,7 +56,7 @@ class VerifyStunClientTranslation(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyStunClientTranslation test."""
 
-        stun_clients: list[StunClientTranslation]
+        stun_clients: list[stun_models.StunClientTranslation]
         """List of STUN clients."""
         StunClientTranslation: ClassVar[type[StunClientTranslation]] = StunClientTranslation
 

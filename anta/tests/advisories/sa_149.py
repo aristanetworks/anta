@@ -131,8 +131,8 @@ class SA149(OptionalCommandsMixin, _AntaAdvisoryTest):
 
     Expected Results
     ----------------
-    * Success: EOS or platform is outside scope, or either required dynamic-authorization feature is absent.
-    * Failure: An affected physical platform and EOS release has both required features configured.
+    * Not Affected: EOS or platform is outside scope, or either required dynamic-authorization feature is absent.
+    * Affected: An affected physical platform and EOS release has both required features configured.
     * Error: Required EOS, platform, 802.1X, or RADIUS proxy state cannot be determined.
 
     Examples

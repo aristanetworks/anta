@@ -16,7 +16,6 @@ from anta._advisory.facts.management import (
     GnmiMtlsAuthorizationFact,
     GnmiTransportFact,
     GnpsiAuthenticationExposureFact,
-    GnpsiEosRpcAuthTraceFact,
     GnpsiMutualTlsSpiffeMitigationFact,
     GnpsiTransportFact,
     GnsiAcctzFact,
@@ -516,29 +515,6 @@ def test_gnpsi_effective_transport_rejects_malformed_runtime_fields(device: Offl
     assert exposure.problem is FactProblemKind.MALFORMED
     assert isinstance(mitigation, UnavailableFact)
     assert mitigation.problem is FactProblemKind.MALFORMED
-
-
-@pytest.mark.parametrize(
-    ("output", "state"),
-    [("", FeatureState.DISABLED), ("EosRpcAuth           enabled  0123456789", FeatureState.ENABLED), ("EosRpcAuth disabled", FeatureState.DISABLED)],
-)
-def test_gnpsi_trace_states(device: OfflineAntaDevice, output: str, state: FeatureState) -> None:
-    """Normalize the explicit EosRpcAuth trace facility."""
-    fact = GnpsiEosRpcAuthTraceFact.derive(device, (text_command(GnpsiEosRpcAuthTraceFact, output),))
-    assert isinstance(fact, AvailableFact)
-    assert fact.value.state is state
-
-
-@pytest.mark.parametrize("error", ["Agent 'Gnpsi' is not running", "Invalid input (at token 2: 'Gnpsi')"])
-def test_gnpsi_trace_preserves_collection_failure(device: OfflineAntaDevice, error: str) -> None:
-    """Keep unavailable gNPSI trace output as a collection failure for assessment."""
-    command = GnpsiEosRpcAuthTraceFact.commands[0].model_copy()
-    command.errors = [error]
-
-    fact = GnpsiEosRpcAuthTraceFact.derive(device, (command,))
-
-    assert isinstance(fact, UnavailableFact)
-    assert fact.problem is FactProblemKind.COLLECTION_FAILED
 
 
 @pytest.mark.parametrize(

@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING, ClassVar, TypeVar
 
 from pydantic import field_validator
 
+from anta.input_models import connectivity as connectivity_models
 from anta.input_models.connectivity import Host, LLDPNeighbor, Neighbor
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.result_manager.models import AntaTestStatus
@@ -68,7 +69,7 @@ class VerifyReachability(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyReachability test."""
 
-        hosts: list[Host]
+        hosts: list[connectivity_models.Host]
         """List of host to ping."""
         Host: ClassVar[type[Host]] = Host
         """To maintain backward compatibility."""

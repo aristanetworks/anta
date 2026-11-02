@@ -249,7 +249,9 @@ class VerifyCVXClusterStatus(AntaTest):
         """Input model for the VerifyCVXClusterStatus test."""
 
         role: Literal["Master", "Standby", "Disconnected"] = "Master"
+        """Expected role of the CVX server in the cluster."""
         peer_status: list[CVXPeers]
+        """CVX peers and their expected registration states."""
 
     @AntaTest.anta_test
     def test(self) -> None:

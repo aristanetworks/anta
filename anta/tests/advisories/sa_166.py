@@ -79,8 +79,8 @@ class SA166(OptionalCommandsMixin, _AntaAdvisoryTest):
 
     Expected Results
     ----------------
-    * Success: EOS is outside scope or no gNMI transport is enabled.
-    * Failure: An affected EOS release has an enabled gNMI transport.
+    * Not Affected: EOS is outside scope or no gNMI transport is enabled.
+    * Affected: An affected EOS release has an enabled gNMI transport.
     * Error: Required EOS or gNMI state cannot be determined.
 
     Examples

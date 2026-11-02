@@ -52,7 +52,6 @@ default environments:
 clean  -> Erase previous coverage reports
 lint   -> Check the code style
 type   -> Check typing
-py310  -> Run pytest with py310
 py311  -> Run pytest with py311
 py312  -> Run pytest with py312
 py313  -> Run pytest with py313
@@ -142,13 +141,13 @@ uv run --no-default-groups --group test --extra cli pytest tests/units
 
 `--no-default-groups` excludes uv's default `dev` group from dependency selection. By default, `uv run` retains extra packages already installed in the environment.
 
-The `test` group contains the dependencies needed to run pytest. The `benchmark` group adds the benchmark plugins. The `dev` group includes the test and lint groups plus tox and the release versioning tool.
+The `test` group contains the dependencies needed to run pytest. The `benchmark` group adds the benchmark plugins. The `tox` group installs tox with the version constraints for the active Python interpreter. The `dev` group includes the test, lint, and tox groups plus the release versioning tool.
 
 Use tox when you want to run the unit tests in the same isolated environments used by CI:
 
 ```bash
 tox -e py311 -- tests/units
-tox -e py310,py311,py312,py313,py314,py315 -- tests/units
+tox -e py311,py312,py313,py314,py315 -- tests/units
 ```
 
 The `--` separator passes the remaining arguments to pytest, so the same file or test-node selection works with tox:
@@ -160,12 +159,12 @@ tox -e py311 -- tests/units/anta_tests/test_system.py::test
 ```
 
 !!! note "Python versions and tox"
-    The tox environments are mapped to concrete Python versions (`py310`, `py311`, `py312`, `py313`, `py314`, and `py315`). Running one tox environment requires that matching Python interpreter to be installed and discoverable on your machine; running the full matrix requires all of them.
+    The tox environments are mapped to concrete Python versions (`py311`, `py312`, `py313`, `py314`, and `py315`). Running one tox environment requires that matching Python interpreter to be installed and discoverable on your machine; running the full matrix requires all of them.
 
     `uv` can help install and manage Python interpreters, for example:
 
     ```bash
-    uv python install 3.10 3.11 3.12 3.13 3.14 3.15
+    uv python install 3.11 3.12 3.13 3.14 3.15
     ```
 
     This does not replace tox for matrix testing in this repository. It only makes it easier to provide the Python interpreters that tox needs.

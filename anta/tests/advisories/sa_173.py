@@ -115,11 +115,13 @@ class SA173(OptionalCommandsMixin, _AntaAdvisoryTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if the EOS version is outside scope or both supported observations prove OSPFv3 is absent.
-    * Failure: The test will fail if affected EOS has OSPFv3 configured without complete IPsec coverage or an applicable hotfix.
-    * Mitigated: The test is mitigated when IPsec covers every configured OSPFv3 scope or an applicable persistent hotfix is installed.
-    * Error: The test will error if required EOS version, OSPFv3 configuration, IPsec coverage, or applicable hotfix state cannot be determined.
+    * Not Affected: The EOS version is outside scope or both supported observations prove OSPFv3 is absent.
+    * Affected: Affected EOS has OSPFv3 configured without complete IPsec coverage or an applicable hotfix.
+    * Mitigated: IPsec covers every configured OSPFv3 scope or an applicable persistent hotfix is installed.
+    * Error: Required EOS version, OSPFv3 configuration, IPsec coverage, or applicable hotfix state cannot be determined.
 
+    Notes
+    -----
     Active-neighbor absence is not accepted as a safe state because adjacency state is transient. IPsec mitigation is evaluated against persistent
     interface, VRF, area, and address-family configuration instead of the neighbors present when the test runs.
 

@@ -89,10 +89,12 @@ class SA152(OptionalCommandsMixin, _AntaAdvisoryTest):
 
     Expected Results
     ----------------
-    * Success: EOS is outside scope, login authentication is disabled, or no password-capable management service is enabled.
-    * Failure: Affected EOS has login authentication and password-capable SSH or Telnet enabled.
+    * Not Affected: EOS is outside scope, login authentication is disabled, or no password-capable management service is enabled.
+    * Affected: Affected EOS has login authentication and password-capable SSH or Telnet enabled.
     * Error: Required EOS, AAA, or management-service configuration cannot be determined.
 
+    Notes
+    -----
     SSH and Telnet exposure is determined from configuration, including configured VRF scope. Current VRF operational state is transient and
     does not prove safety because a down VRF can return without any management-service configuration change.
 

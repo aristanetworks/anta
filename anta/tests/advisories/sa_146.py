@@ -244,19 +244,19 @@ def _assess_sa146(paths: tuple[_GrpcPath, ...]) -> VulnerabilityResult:  # noqa:
 class SA146(OptionalCommandsMixin, _AntaAdvisoryTest):
     """Verify whether the device is impacted by Security Advisory 0146.
 
+    Expected Results
+    ----------------
+    * Not Affected: No affected gRPC service is enabled.
+    * Affected: An affected gRPC service is enabled without mTLS.
+    * Mitigated: All affected services are protected with mTLS.
+    * Error: A required service, EOS release, component version, or mTLS state cannot be determined.
+
     Notes
     -----
     TerminAttr validates its configured certificate, private key, and client CA files when it starts. A running TerminAttr
     process configured with the complete mTLS arguments therefore has valid files and enforces mTLS. If file validation
     prevents TerminAttr from starting, its gRPC service is not exposed. The TerminAttr mTLS path is therefore safely
     classified as mitigated.
-
-    Expected Results
-    ----------------
-    * Success: The test will pass if no affected gRPC service is enabled.
-    * Failure: The test will fail if an affected gRPC service is enabled without mTLS.
-    * Mitigated: The test is mitigated if all affected services are protected with mTLS.
-    * Error: The test will error if a required service, EOS release, component version, or mTLS state cannot be determined.
 
     Examples
     --------

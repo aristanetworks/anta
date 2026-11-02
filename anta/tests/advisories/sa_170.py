@@ -75,8 +75,8 @@ class SA170(OptionalCommandsMixin, _AntaAdvisoryTest):
 
     Expected Results
     ----------------
-    * Success: EOS is outside scope or no enabled gNMI transport uses request authorization.
-    * Failure: An affected EOS release has an enabled gNMI transport using request authorization.
+    * Not Affected: EOS is outside scope or no enabled gNMI transport uses request authorization.
+    * Affected: An affected EOS release has an enabled gNMI transport using request authorization.
     * Error: Required EOS or gNMI authorization state cannot be determined.
 
     Examples

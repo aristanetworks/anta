@@ -88,8 +88,8 @@ class SA168(OptionalCommandsMixin, _AntaAdvisoryTest):
 
     Expected Results
     ----------------
-    * Success: EOS is outside scope or gNMI, RESTCONF, and NETCONF are all disabled or unsupported.
-    * Failure: An affected EOS release has at least one of those OpenConfig services enabled.
+    * Not Affected: EOS is outside scope or gNMI, RESTCONF, and NETCONF are all disabled or unsupported.
+    * Affected: An affected EOS release has at least one of those OpenConfig services enabled.
     * Error: No service proves exposure and required EOS or service state cannot be determined.
 
     Examples

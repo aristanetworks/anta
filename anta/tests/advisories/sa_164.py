@@ -103,9 +103,9 @@ class SA164(OptionalCommandsMixin, _AntaAdvisoryTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if EOS is outside scope, gNMI or Pathz is disabled, or the Pathz policy has no user/group path overlap.
-    * Failure: The test will fail if affected EOS has gNMI and Pathz enabled with user and group rules for the same path.
-    * Error: The test will error if required EOS, gNMI, Pathz, or persisted policy state cannot be determined.
+    * Not Affected: EOS is outside scope, gNMI or Pathz is disabled, or the Pathz policy has no user/group path overlap.
+    * Affected: Affected EOS has gNMI and Pathz enabled with user and group rules for the same path.
+    * Error: Required EOS, gNMI, Pathz, or persisted policy state cannot be determined.
 
     Examples
     --------

@@ -97,9 +97,9 @@ class SA167(OptionalCommandsMixin, _AntaAdvisoryTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if the EOS version is outside the affected releases, no gNSI transport is enabled, or Authz is disabled.
-    * Failure: The test will fail if affected EOS has an enabled gNSI transport and Authz service.
-    * Error: The test will error if required EOS version, transport, or Authz state cannot be determined.
+    * Not Affected: The EOS version is outside the affected releases, no gNSI transport is enabled, or Authz is disabled.
+    * Affected: Affected EOS has an enabled gNSI transport and Authz service.
+    * Error: Required EOS version, transport, or Authz state cannot be determined.
 
     Examples
     --------

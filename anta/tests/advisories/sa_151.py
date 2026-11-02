@@ -95,8 +95,8 @@ class SA151(OptionalCommandsMixin, _AntaAdvisoryTest):
 
     Expected Results
     ----------------
-    * Success: EOS or platform is outside scope, or no shared SVI ingress ACL is configured.
-    * Failure: Affected EOS and platform have a shared SVI ingress ACL configured.
+    * Not Affected: EOS or platform is outside scope, or no shared SVI ingress ACL is configured.
+    * Affected: Affected EOS and platform have a shared SVI ingress ACL configured.
     * Error: Required EOS, platform, or shared SVI ingress ACL state cannot be determined.
 
     Examples

@@ -8,7 +8,7 @@
 from __future__ import annotations
 
 import sys
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from anta.models import AntaTest
 from anta.result_manager.models import AntaTestStatus
@@ -2794,6 +2794,159 @@ DATA: AntaUnitTestData = {
                 "Expected >=3 power supplies but found only 2 installed",
             ],
         },
+    },
+    (VerifyEnvironmentPower, "voltage-feeds-default-a-low"): {
+        "eos_data": [{"powerSupplies": {"1": {"state": "ok", "inputVoltage": 0.0, "inputBVoltage": 244.25}}}],
+        "inputs": {"states": ["ok"], "min_input_voltage": 240},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "atomic_results": [
+                {"description": "Power Slot: 1", "result": AntaTestStatus.FAILURE, "messages": ["Input voltage mismatch - Expected: >= 240 Actual: 0.0"]}
+            ],
+            "messages": ["Power Slot: 1 - Input voltage mismatch - Expected: >= 240 Actual: 0.0"],
+        },
+    },
+    (VerifyEnvironmentPower, "voltage-feeds-b-equal"): {
+        "eos_data": [{"powerSupplies": {"1": {"state": "ok", "inputVoltage": 0.0, "inputBVoltage": 240.0}}}],
+        "inputs": {"states": ["ok"], "min_input_voltage": 240, "input_voltage_feeds": "B"},
+        "expected": {"result": AntaTestStatus.SUCCESS, "atomic_results": [{"description": "Power Slot: 1", "result": AntaTestStatus.SUCCESS, "messages": []}]},
+    },
+    (VerifyEnvironmentPower, "voltage-feeds-b-low"): {
+        "eos_data": [{"powerSupplies": {"1": {"state": "ok", "inputVoltage": 244.25, "inputBVoltage": 0.0}}}],
+        "inputs": {"states": ["ok"], "min_input_voltage": 240, "input_voltage_feeds": "B"},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "atomic_results": [
+                {"description": "Power Slot: 1", "result": AntaTestStatus.FAILURE, "messages": ["Input B voltage mismatch - Expected: >= 240 Actual: 0.0"]}
+            ],
+            "messages": ["Power Slot: 1 - Input B voltage mismatch - Expected: >= 240 Actual: 0.0"],
+        },
+    },
+    (VerifyEnvironmentPower, "voltage-feeds-b-missing"): {
+        "eos_data": [{"powerSupplies": {"1": {"state": "ok", "inputVoltage": 246.0}}}],
+        "inputs": {"states": ["ok"], "min_input_voltage": 240, "input_voltage_feeds": "B"},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "atomic_results": [{"description": "Power Slot: 1", "result": AntaTestStatus.FAILURE, "messages": ["Input B voltage not found"]}],
+            "messages": ["Power Slot: 1 - Input B voltage not found"],
+        },
+    },
+    (VerifyEnvironmentPower, "voltage-feeds-any-a"): {
+        "eos_data": [{"powerSupplies": {"1": {"state": "ok", "inputVoltage": 244.25, "inputBVoltage": 0.0}}}],
+        "inputs": {"states": ["ok"], "min_input_voltage": 240, "input_voltage_feeds": "any"},
+        "expected": {"result": AntaTestStatus.SUCCESS, "atomic_results": [{"description": "Power Slot: 1", "result": AntaTestStatus.SUCCESS, "messages": []}]},
+    },
+    (VerifyEnvironmentPower, "voltage-feeds-any-b"): {
+        "eos_data": [{"powerSupplies": {"1": {"state": "ok", "inputVoltage": 0.0, "inputBVoltage": 244.25}}}],
+        "inputs": {"states": ["ok"], "min_input_voltage": 240, "input_voltage_feeds": "any"},
+        "expected": {"result": AntaTestStatus.SUCCESS, "atomic_results": [{"description": "Power Slot: 1", "result": AntaTestStatus.SUCCESS, "messages": []}]},
+    },
+    (VerifyEnvironmentPower, "voltage-feeds-any-neither"): {
+        "eos_data": [{"powerSupplies": {"1": {"state": "ok", "inputVoltage": 239.75, "inputBVoltage": 239.75}}}],
+        "inputs": {"states": ["ok"], "min_input_voltage": 240, "input_voltage_feeds": "any"},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "atomic_results": [
+                {
+                    "description": "Power Slot: 1",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Input voltage mismatch - Expected: any feeds >= 240 Actual: A: 239.75, B: 239.75"],
+                }
+            ],
+            "messages": ["Power Slot: 1 - Input voltage mismatch - Expected: any feeds >= 240 Actual: A: 239.75, B: 239.75"],
+        },
+    },
+    (VerifyEnvironmentPower, "voltage-feeds-any-single"): {
+        "eos_data": [{"powerSupplies": {"1": {"state": "ok", "inputVoltage": 246.0}}}],
+        "inputs": {"states": ["ok"], "min_input_voltage": 240, "input_voltage_feeds": "any"},
+        "expected": {"result": AntaTestStatus.SUCCESS, "atomic_results": [{"description": "Power Slot: 1", "result": AntaTestStatus.SUCCESS, "messages": []}]},
+    },
+    (VerifyEnvironmentPower, "voltage-feeds-both-equal"): {
+        "eos_data": [{"powerSupplies": {"1": {"state": "ok", "inputVoltage": 240.0, "inputBVoltage": 240.0}}}],
+        "inputs": {"states": ["ok"], "min_input_voltage": 240, "input_voltage_feeds": "both"},
+        "expected": {"result": AntaTestStatus.SUCCESS, "atomic_results": [{"description": "Power Slot: 1", "result": AntaTestStatus.SUCCESS, "messages": []}]},
+    },
+    (VerifyEnvironmentPower, "voltage-feeds-both-low"): {
+        "eos_data": [{"powerSupplies": {"1": {"state": "ok", "inputVoltage": 244.25, "inputBVoltage": 0.0}}}],
+        "inputs": {"states": ["ok"], "min_input_voltage": 240, "input_voltage_feeds": "both"},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "atomic_results": [
+                {
+                    "description": "Power Slot: 1",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Input voltage mismatch - Expected: both feeds >= 240 Actual: A: 244.25, B: 0.0"],
+                }
+            ],
+            "messages": ["Power Slot: 1 - Input voltage mismatch - Expected: both feeds >= 240 Actual: A: 244.25, B: 0.0"],
+        },
+    },
+    (VerifyEnvironmentPower, "voltage-feeds-both-low-missing"): {
+        "eos_data": [{"powerSupplies": {"1": {"state": "ok", "inputVoltage": 0.0}}}],
+        "inputs": {"states": ["ok"], "min_input_voltage": 240, "input_voltage_feeds": "both"},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "atomic_results": [
+                {
+                    "description": "Power Slot: 1",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": ["Input voltage mismatch - Expected: both feeds >= 240 Actual: A: 0.0, B: missing"],
+                }
+            ],
+            "messages": ["Power Slot: 1 - Input voltage mismatch - Expected: both feeds >= 240 Actual: A: 0.0, B: missing"],
+        },
+    },
+    (VerifyEnvironmentPower, "voltage-feeds-b-min-count"): {
+        "eos_data": [
+            {
+                "powerSupplies": {
+                    "1": {"state": "ok", "inputVoltage": 244.25, "inputBVoltage": 0.0},
+                    "2": {"state": "ok", "inputVoltage": 0.0, "inputBVoltage": 244.25},
+                }
+            }
+        ],
+        "inputs": {"states": ["ok"], "min_input_voltage": 240, "input_voltage_feeds": "B", "min_count": 2},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Expected >=2 power supplies with state ok and input voltage (B) >=240V, but found 1",
+                "Power Slot: 1 - Input B voltage mismatch - Expected: >= 240 Actual: 0.0",
+            ],
+        },
+    },
+    (VerifyEnvironmentPower, "voltage-feeds-any-min-count"): {
+        "eos_data": [{"powerSupplies": {"1": {"state": "ok", "inputVoltage": 244.25, "inputBVoltage": 0.0}, "2": {"state": "ok", "inputVoltage": 0.0}}}],
+        "inputs": {"states": ["ok"], "min_input_voltage": 240, "input_voltage_feeds": "any", "min_count": 2},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Expected >=2 power supplies with state ok and input voltage (any feeds) >=240V, but found 1",
+                "Power Slot: 2 - Input voltage mismatch - Expected: any feeds >= 240 Actual: A: 0.0, B: missing",
+            ],
+        },
+    },
+    (VerifyEnvironmentPower, "voltage-feeds-both-min-count"): {
+        "eos_data": [{"powerSupplies": {"1": {"state": "ok", "inputVoltage": 240.0, "inputBVoltage": 240.0}, "2": {"state": "ok", "inputVoltage": 0.0}}}],
+        "inputs": {"states": ["ok"], "min_input_voltage": 240, "input_voltage_feeds": "both", "min_count": 2},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Expected >=2 power supplies with state ok and input voltage (both feeds) >=240V, but found 1",
+                "Power Slot: 2 - Input voltage mismatch - Expected: both feeds >= 240 Actual: A: 0.0, B: missing",
+            ],
+        },
+    },
+    (VerifyEnvironmentPower, "voltage-feeds-any-mixed-min-count"): {
+        "eos_data": [
+            {
+                "powerSupplies": {
+                    "1": {"state": "ok", "inputVoltage": 244.25, "inputBVoltage": 0.0},
+                    "2": {"state": "ok", "inputVoltage": 0.0, "inputBVoltage": 244.25},
+                }
+            }
+        ],
+        "inputs": {"states": ["ok"], "min_input_voltage": 240, "input_voltage_feeds": "any", "min_count": 2},
+        "expected": {"result": AntaTestStatus.SUCCESS},
     },
     (VerifyAdverseDrops, "success"): {
         "eos_data": [

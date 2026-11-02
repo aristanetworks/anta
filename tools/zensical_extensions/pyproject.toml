@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "anta-zensical-extensions"
 version = "0.0.0"
 description = "Documentation-only Zensical extensions for ANTA."
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
   "markdown>=3.7",
   # This repo-local extension is always installed with the root doc dependency

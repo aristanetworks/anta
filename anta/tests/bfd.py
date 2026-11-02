@@ -13,6 +13,7 @@ from typing import TYPE_CHECKING, Any, ClassVar, TypeVar
 
 from pydantic import Field, field_validator
 
+from anta.input_models import bfd as bfd_models
 from anta.input_models.bfd import BFDPeer
 from anta.models import AntaCommand, AntaTest
 from anta.tools import get_value
@@ -81,7 +82,7 @@ class VerifyBFDSpecificPeers(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBFDSpecificPeers test."""
 
-        bfd_peers: list[BFDPeer]
+        bfd_peers: list[bfd_models.BFDPeer]
         """List of BFD peers."""
         BFDPeer: ClassVar[type[BFDPeer]] = BFDPeer
         """To maintain backward compatibility."""
@@ -159,7 +160,7 @@ class VerifyBFDPeersIntervals(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBFDPeersIntervals test."""
 
-        bfd_peers: list[BFDPeer]
+        bfd_peers: list[bfd_models.BFDPeer]
         """List of BFD peers."""
         BFDPeer: ClassVar[type[BFDPeer]] = BFDPeer
         """To maintain backward compatibility."""
@@ -333,7 +334,7 @@ class VerifyBFDPeersRegProtocols(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBFDPeersRegProtocols test."""
 
-        bfd_peers: list[BFDPeer]
+        bfd_peers: list[bfd_models.BFDPeer]
         """List of BFD peers."""
         BFDPeer: ClassVar[type[BFDPeer]] = BFDPeer
         """To maintain backward compatibility."""

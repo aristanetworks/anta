@@ -228,10 +228,12 @@ class SA150(OptionalCommandsMixin, _AntaAdvisoryTest):
 
     Expected Results
     ----------------
-    * Success: An issue passes when EOS or platform is outside its scope, or no controlled 802.1X authenticator is active.
-    * Inconclusive: An applicable issue is inconclusive because static or dynamic ACL assignment cannot be ruled out from device state.
-    * Error: An issue errors when required EOS, platform, or 802.1X state cannot be determined.
+    * Not Affected: EOS or platform is outside an issue's scope, or no controlled 802.1X authenticator is active.
+    * Inconclusive: An issue applies, but static or dynamic ACL assignment cannot be ruled out from device state.
+    * Error: Required EOS, platform, or 802.1X state for an issue cannot be determined.
 
+    Notes
+    -----
     Whether an operator previously ran `clear dot1x host all` does not change exposure assessment. For CVE-2026-75945,
     rerunning that command is presented only as conditional mitigation advice when a supplicant remains authenticated.
 

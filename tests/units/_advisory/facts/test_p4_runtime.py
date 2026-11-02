@@ -11,6 +11,7 @@ import pytest
 
 from anta._advisory.facts.models import AvailableFact, FactProblemKind, FeatureState, UnavailableFact
 from anta._advisory.facts.p4_runtime import P4RuntimeAccountingFact, P4RuntimeFact, P4RuntimeMtlsFact
+from anta._eos.version import EOSVersion
 from tests.units.anta_tests.advisories import OfflineAntaDevice
 
 if TYPE_CHECKING:
@@ -35,6 +36,14 @@ P4_RUNTIME_DISABLED_WITHOUT_TRANSPORT: tuple[dict[str, object], ...] = (
     {"devices": {}, "enabled": False, "numClients": 0},
     {"authzEnabled": False, "devices": {}, "enabled": False, "lastServiceStartTimeStamp": 0, "numClients": 0},
 )
+P4_RUNTIME_ENABLED_WITHOUT_ACCOUNTING_FIELD: dict[str, object] = {
+    "enabled": True,
+    "transport": {"port": 9559, "vrfName": "default", "authnUsernamePriority": ["x509-spiffe", "metadata", "x509-common-name"]},
+    "numClients": 0,
+    "devices": {},
+    "authzEnabled": False,
+    "lastServiceStartTimeStamp": 583302.571419129,
+}
 
 
 @pytest.mark.parametrize(("enabled", "state"), [(True, FeatureState.ENABLED), (False, FeatureState.DISABLED)])
@@ -54,6 +63,30 @@ def test_p4_runtime_accounting_states(enabled: bool, state: FeatureState) -> Non
 
     assert isinstance(fact, AvailableFact)
     assert fact.value.state is state
+
+
+@pytest.mark.parametrize("version", [EOSVersion(4, 32, 5, suffix="M"), EOSVersion(4, 33, 0, suffix="F")])
+def test_p4_runtime_absent_accounting_is_unsupported_on_older_eos(version: EOSVersion) -> None:
+    """Treat request accounting as unsupported on EOS releases that omit the field."""
+    device = OfflineAntaDevice("unit-test")
+    device.version = version
+
+    fact = P4RuntimeAccountingFact.derive(device, (command(P4RuntimeAccountingFact, P4_RUNTIME_ENABLED_WITHOUT_ACCOUNTING_FIELD),))
+
+    assert isinstance(fact, AvailableFact)
+    assert fact.value.state is FeatureState.UNSUPPORTED
+
+
+@pytest.mark.parametrize("version", [EOSVersion(4, 33, 1, suffix="F"), EOSVersion(4, 33, 1, suffix="F", hotfix=2), EOSVersion(4, 36, 0, suffix="F")])
+def test_p4_runtime_absent_accounting_is_missing_on_supported_eos(version: EOSVersion) -> None:
+    """Keep request accounting incomplete once EOS reports the field."""
+    device = OfflineAntaDevice("unit-test")
+    device.version = version
+
+    fact = P4RuntimeAccountingFact.derive(device, (command(P4RuntimeAccountingFact, P4_RUNTIME_ENABLED_WITHOUT_ACCOUNTING_FIELD),))
+
+    assert isinstance(fact, UnavailableFact)
+    assert fact.problem is FactProblemKind.MISSING
 
 
 @pytest.mark.parametrize(

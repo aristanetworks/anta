@@ -11,6 +11,7 @@ from datetime import datetime, timezone
 from typing import ClassVar
 
 from anta.custom_types import PositiveInteger
+from anta.input_models import security as security_models
 from anta.input_models.security import ACL, APISSLCertificate, IPSecPeer, IPSecPeers
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.result_manager.models import AntaTestStatus
@@ -392,7 +393,7 @@ class VerifyAPISSLCertificate(AntaTest):
     class Input(AntaTest.Input):
         """Input parameters for the VerifyAPISSLCertificate test."""
 
-        certificates: list[APISSLCertificate]
+        certificates: list[security_models.APISSLCertificate]
         """List of API SSL certificates."""
         APISSLCertificate: ClassVar[type[APISSLCertificate]] = APISSLCertificate
 

@@ -21,7 +21,7 @@
   {% set heading_level = heading_level + 1 %}
   {% include "anta_test.html.jinja" with context %}
   {# render source after children - TODO make add flag to respect disabling it.. though do we want to disable?#}
-  <details class="quote">
+  <details class="quote mkdocstrings-source">
   <summary>Source code in <code>
     {%- if class.relative_filepath.is_absolute() -%}
       {{ class.relative_package_filepath }}
@@ -36,7 +36,7 @@
   {% set heading_level = heading_level + 1 %}
   {% include "anta_test_input_model.html.jinja" with context %}
   {# render source after children - TODO make add flag to respect disabling it.. though do we want to disable?#}
-  <details class="quote">
+  <details class="quote mkdocstrings-source">
   <summary>Source code in <code>
     {%- if class.relative_filepath.is_absolute() -%}
       {{ class.relative_package_filepath }}
