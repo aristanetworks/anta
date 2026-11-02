@@ -1,0 +1,7 @@
+interface:
+  display_name: "ANTA Test Authoring"
+  short_description: "Author and qualify ANTA tests safely"
+  default_prompt: "Use $anta-test-authoring to create or validate an ANTA test or catalog entry."
+
+policy:
+  allow_implicit_invocation: true
