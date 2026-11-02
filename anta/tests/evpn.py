@@ -7,11 +7,14 @@
 # pyright: reportAttributeAccessIssue=false
 from __future__ import annotations
 
-from typing import Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from anta.input_models.evpn import EVPNPath, EVPNRoute, EVPNType5Prefix
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.result_manager.models import AntaTestStatus
+
+if TYPE_CHECKING:
+    from anta.result_manager.models import AtomicTestResult
 
 
 class VerifyEVPNType5Routes(AntaTest):
@@ -225,19 +228,23 @@ class VerifyEVPNSanity(AntaTest):
 
         for category_name, category_data in command_output["categories"].items():
             for item in category_data["items"]:
-                status = item["status"]
                 result = self.result.add(description=f"Category: {category_name} Item: {item['name']}", status=AntaTestStatus.SUCCESS)
-                if status == "ok":
-                    continue
-
-                warning_allowed = status == "warn" and not self.inputs.warning_as_failure
-                message = f"Status: {status}" if warning_allowed else f"Invalid status - Expected: {', '.join(expected_statuses)} Actual: {status}"
-                if reason := item.get("reasonNotOk"):
-                    message += f" - {reason}"
-                if warning_allowed:
-                    result.is_success(message)
-                else:
-                    result.is_failure(message)
+                self._verify_check(item, result, expected_statuses)
 
         if not self.result.atomic_results:
             self.result.is_skipped("No EVPN sanity checks detected")
+
+    def _verify_check(self, item: dict[str, Any], result: AtomicTestResult, expected_statuses: list[str]) -> None:
+        """Evaluate one EVPN sanity check and update its atomic result."""
+        status = item["status"]
+        if status == "ok":
+            return
+
+        warning_allowed = status == "warn" and not self.inputs.warning_as_failure
+        message = f"Status: {status}" if warning_allowed else f"Invalid status - Expected: {', '.join(expected_statuses)} Actual: {status}"
+        if reason := item.get("reasonNotOk"):
+            message += f" - {reason}"
+        if warning_allowed:
+            result.is_success(message)
+        else:
+            result.is_failure(message)
