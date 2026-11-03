@@ -1,34 +1,20 @@
 name: "Pull Request Triage"
 
 on:
-  pull_request_target: # zizmor: ignore[dangerous-triggers] Uses pull_request_target only for trusted metadata checks and PR assignment, not to check out or execute PR code.
+  pull_request:
     types:
       - opened
+      - reopened
       - edited
       - synchronize
+      - ready_for_review
 
 permissions:
-  contents: read
+  pull-requests: read
 
 jobs:
-  assign_author:
-    name: "Assign Author to PR"
-    # https://github.com/marketplace/actions/auto-author-assign
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      issues: write
-      pull-requests: write
-    steps:
-      - uses: toshimaru/auto-author-assign@a78a94b219445cece8ccf0d45fec60af449f212a # v3.1.0
-        with:
-          repo-token: "${{ secrets.GITHUB_TOKEN }}"
-
   check_pr_semantic:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: read
     steps:
       # Please look up the latest version from
       # https://github.com/amannn/action-semantic-pull-request/releases
