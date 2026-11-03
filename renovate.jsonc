@@ -26,8 +26,10 @@
   "prConcurrentLimit": 5,
   "prHourlyLimit": 2,
 
+  // The pep621 manager also maintains uv.lock, including transitive dependencies.
   "lockFileMaintenance": {
     "enabled": true,
+    "schedule": ["before 5am on monday"],
     "rebaseWhen": "behind-base-branch"
   },
 

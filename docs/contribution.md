@@ -60,6 +60,44 @@ py315  -> Run pytest with py315
 report -> Generate coverage report
 ```
 
+### Locked dependencies
+
+The committed `uv.lock` records exact versions of the root project's runtime dependencies, CLI extra, and dependency groups so GitHub Dependabot can detect known vulnerabilities in the resolved dependencies. Renovate refreshes the lock weekly, including transitive dependencies, and updates it alongside dependency declaration changes.
+
+To reproduce the locked unit-test environment, install [uv](https://docs.astral.sh/uv/getting-started/installation/) 0.9.25 or newer and run from the repository root:
+
+```bash
+uv sync --locked --no-default-groups --group test --extra cli
+COLUMNS=165 uv run --no-sync python -m pytest tests/units --no-cov
+```
+
+CI checks lock freshness and runs this environment in addition to the existing tox checks. Tox continues to resolve dependencies independently across the supported Python versions. Pre-commit continues to manage its own isolated hook environments.
+
+When changing project metadata or dependency declarations in `pyproject.toml`, regenerate and commit the lock together with the manifest:
+
+```bash
+uv lock
+uv lock --check
+```
+
+To deliberately upgrade a selected dependency or refresh the complete graph within the declared requirements:
+
+```bash
+uv lock --upgrade-package <package-name>
+uv lock --upgrade
+```
+
+Routine uv resolution excludes registry releases from the last seven days for both direct and transitive dependencies, aligning with Renovate's release-age policy. For an urgent security fix, maintainers can temporarily bypass uv's cooldown for the affected package:
+
+```toml
+[tool.uv.exclude-newer-package]
+affected-package = false
+```
+
+Record the advisory and reason in the PR, update the affected package, and remove the exception once the release is seven days old. Any applicable Renovate approval or release-age restrictions must also be handled when expediting its PRs.
+
+A lock update selects versions for environments that consume it. Ordinary pip installations use ANTA's published dependency ranges. When addressing a relevant vulnerability, also assess whether those ranges must exclude affected versions; updating the lock alone does not change downstream requirements or existing installations.
+
 ### Code linting
 
 ```bash
