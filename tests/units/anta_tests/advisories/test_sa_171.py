@@ -16,7 +16,7 @@ from anta._advisory.facts.models import (
     FeatureState,
     MitigationState,
 )
-from anta._advisory.facts.routing import Ospfv2BroadcastAuthenticationFact, Ospfv2ProcessConfiguredFact, Ospfv2SegmentRoutingFact
+from anta._advisory.facts.routing import Ospfv2BroadcastAuthenticationFact, Ospfv2ProcessConfiguredFact
 from anta._advisory.facts.software import SA171HotfixFact
 from anta._advisory.findings.models import AffectedResult, ErrorResult, InconclusiveResult, MitigatedResult, NotAffectedResult
 from anta._advisory.remediation import FixedRelease, RemediationPlan, software_version_plan
@@ -27,11 +27,12 @@ from anta.tests.advisories.sa_171 import (
     BROADCAST_AFFECTED_VERSIONS,
     SA171,
     SEGMENT_ROUTING_AFFECTED_VERSIONS,
-    SEGMENT_ROUTING_FIXED_RELEASES,
-    SEGMENT_ROUTING_ID,
     _assess_broadcast_issue,
 )
-from tests.units.anta_tests import build_eos_version, test
+from tests.units.anta_tests import (
+    build_eos_version,
+    test,  # noqa: F401 - Pytest collects this imported test function.
+)
 from tests.units.anta_tests.advisories.fact_builders import SOURCE, assert_version_statuses, eos_version_fact
 
 if TYPE_CHECKING:

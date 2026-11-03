@@ -36,7 +36,10 @@ from anta.tests.advisories.sa_117 import (
     SA117,
     _assess_sa117,
 )
-from tests.units.anta_tests import build_eos_version, test
+from tests.units.anta_tests import (
+    build_eos_version,
+    test,  # noqa: F401 - Pytest collects this imported test function.
+)
 from tests.units.anta_tests.advisories import OfflineAntaDevice, build_expected_advisory_result
 
 EXPECTED_FIXED_RELEASES = (
