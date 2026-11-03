@@ -466,7 +466,6 @@ DATA: AntaUnitTestData = {
         },
     },
     (VerifyEVPNSanity, "failure-mixed-statuses"): {
-        "inputs": {"warning_as_failure": True},
         "eos_data": [
             {
                 "categories": {
@@ -500,6 +499,7 @@ DATA: AntaUnitTestData = {
                 }
             }
         ],
+        "inputs": {"warning_as_failure": True},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
@@ -572,7 +572,6 @@ DATA: AntaUnitTestData = {
         },
     },
     (VerifyEVPNSanity, "failure-warnings-allowed"): {
-        "inputs": {"warning_as_failure": False},
         "eos_data": [
             {
                 "categories": {
@@ -585,6 +584,7 @@ DATA: AntaUnitTestData = {
                 }
             }
         ],
+        "inputs": {"warning_as_failure": False},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
