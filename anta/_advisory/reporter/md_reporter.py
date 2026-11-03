@@ -49,7 +49,8 @@ ADVISORY_RESULT_LABELS = {
 """Markdown labels that need a non-breaking space so column headers and cells do not wrap mid-phrase."""
 
 
-class SecurityAdvisoryMDReportBase(MDReportBase):
+# Intentionally abstract: concrete report sections implement generate_section().
+class SecurityAdvisoryMDReportBase(MDReportBase):  # pylint: disable=abstract-method
     """Base class for security advisory markdown report sections."""
 
     def __init__(

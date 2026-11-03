@@ -84,7 +84,7 @@ lint = [
   "codespell>=2.4.3,<2.5.0",
   "pre-commit>=4.7.0",
   "pylint-pydantic>=0.4.1",
-  "pylint>=4.1.3",
+  "pylint>=4.1.3,<4.1.4",
   "pyright",
   "ruff>=0.17.3,<0.17.4",
   "types-PyYAML",
@@ -277,7 +277,6 @@ ignore = [
   "TD002",   # We don't have require authors in TODO
   "TD003",   # We don't have an issue link for all TODOs today
   "FIX002",  # Line contains TODO - ignoring for ruff for now
-  "F821",    # Disable undefined-name until resolution of #10451
 ]
 
 # Allow autofix for all enabled rules (when `--fix`) is provided.
@@ -291,11 +290,12 @@ dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 convention = "numpy"
 
 [tool.ruff.lint.pylint]
-# These settings are used to configure pylint rules run in ruff. In order to keep sane and while
-# we have not removed pylint completely, these settings should be kept in sync with our pylintrc file.
-# https://github.com/astral-sh/ruff/issues/970
+# Ruff owns the overlapping complexity checks so thresholds and per-file exceptions
+# have one source of truth. Keep Pylint-only design checks until Ruff has stable replacements.
 max-branches = 13
 max-args = 10
+max-returns = 6
+max-statements = 50
 
 [tool.ruff.lint.mccabe]
 # Unlike Flake8, default to a complexity level of 10.
@@ -351,7 +351,7 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
 ]
 "anta/tests/routing/isis.py" = [
   "C901",     # TODO: test function is too complex, needs a refactor
-  "PLR0912"   # Too many branches (15/12) (too-many-branches), needs a refactor
+  "PLR0912"   # Too many branches; needs a refactor
 ]
 "anta/tests/logging.py" = [
   "A005",  # TODO: Module `logging` shadows a Python standard-library module
@@ -379,15 +379,21 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
 # Pylint
 ################################
 [tool.pylint]
-disable = [ # Any rule listed here can be disabled: https://github.com/astral-sh/ruff/issues/970
+# Delegate verified duplicates to enabled, stable Ruff rules rather than copying
+# the full tracker: https://github.com/astral-sh/ruff/issues/970 also lists preview rules.
+disable = [
     "invalid-name",
     "fixme",
     "unused-import",
     "unused-argument",
     "keyword-arg-before-vararg",
     "protected-access",
-    "too-many-arguments",
+    "too-many-arguments", # PLR0913
     "too-many-positional-arguments",
+    # Ruff owns complexity limits and exceptions; avoid conflicting Pylint defaults.
+    "too-many-branches", # PLR0912
+    "too-many-return-statements", # PLR0911
+    "too-many-statements", # PLR0915
     "wrong-import-position",
     "pointless-statement",
     "broad-exception-caught",
@@ -397,15 +403,42 @@ disable = [ # Any rule listed here can be disabled: https://github.com/astral-sh
     "global-statement",
     "reimported",
     "wrong-import-order",
-    "wrong-import-position",
     "unnecessary-lambda",
     "abstract-class-instantiated", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-instantiation-of-abstract-classes-abstract
     "unexpected-keyword-arg", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-arguments-in-calls-call-arg and other rules
     "no-value-for-parameter", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-arguments-in-calls-call-arg
-    "import-outside-toplevel"
+    "import-outside-toplevel",
+    # Stable Ruff replacements for duplicate style and syntax checks.
+    "anomalous-backslash-in-string", # W605
+    "assert-on-tuple", # F631
+    "f-string-without-interpolation", # F541
+    "bare-except", # E722
+    "eval-used", # S307
+    "exec-used", # S102
+    "nonexistent-operator", # B002
+    "notimplemented-raised", # F901
+    "multiple-imports", # E401
+    "multiple-statements", # E701, E702
+    "unnecessary-semicolon", # E703
+    "trailing-whitespace", # W291
+    "missing-final-newline", # W292
+    "bad-classmethod-argument", # N804
+    "no-self-argument", # N805
+    "unnecessary-lambda-assignment", # E731
+    "unnecessary-direct-lambda-call", # PLC3002
+    "no-else-return", # RET505
+    "no-else-raise", # RET506
+    "no-else-continue", # RET507
+    "no-else-break", # RET508
+    "useless-object-inheritance", # UP004
+    "super-with-arguments", # UP008
+    "redundant-u-string-prefix", # UP025
+    "global-at-module-level", # PLW0604
+    "self-assigning-variable", # PLW0127
+    "useless-else-on-loop", # PLW0120
+    "useless-import-alias", # PLC0414
+    "ungrouped-imports", # I001
 ]
-max-statements=61
-max-returns=8
 max-locals=23
 max-line-length=165
 max-module-lines=1700

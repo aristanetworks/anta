@@ -42,7 +42,6 @@ class _ServiceConfig:
     protocols: frozenset[str] = frozenset()
 
 
-# pylint: disable-next=too-many-return-statements,too-many-branches
 def _parse_service_config(output: str, service: str) -> _ServiceConfig | None:  # noqa: C901, PLR0911, PLR0912
     """Parse SSH or Telnet without collecting all-default configuration."""
     default_enabled = service == "ssh"

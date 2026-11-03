@@ -73,7 +73,6 @@ ADVISORY = _AdvisoryMetadata(
 )
 
 
-# pylint: disable-next=too-many-return-statements
 def _assess_sa117(  # noqa: PLR0911
     version: Fact[EosVersionFact],
     gnmi: Fact[GnmiTransportFact],
