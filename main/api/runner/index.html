@@ -3693,7 +3693,7 @@
                 <span class="k">if</span> <span class="n">manager</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">manager</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">test_instance</span><span class="o">.</span><span class="n">result</span><span class="p">)</span>
                 <span class="n">coros</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">test_instance</span><span class="o">.</span><span class="n">test</span><span class="p">())</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># noqa: PERF203, BLE001</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># noqa: BLE001</span>
                 <span class="c1"># An AntaTest instance is potentially user-defined code.</span>
                 <span class="c1"># We need to catch everything and exit gracefully with an error message.</span>
                 <span class="n">message</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
