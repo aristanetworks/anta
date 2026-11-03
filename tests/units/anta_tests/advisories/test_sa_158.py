@@ -25,7 +25,10 @@ from anta._advisory.remediation import (
 from anta._eos.version import EOSVersion
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_158 import ADVISORY, AFFECTED_VERSION_MATRIX, SA158, _assess_gnpsi_issue, _assess_logging_issue
-from tests.units.anta_tests import build_eos_version, test
+from tests.units.anta_tests import (
+    build_eos_version,
+    test,  # noqa: F401 - Pytest collects this imported test function.
+)
 from tests.units.anta_tests.advisories.fact_builders import SOURCE, assert_version_statuses, eos_version_fact
 
 if TYPE_CHECKING:

@@ -17,7 +17,10 @@ from anta.tests.vxlan import (
     VerifyVxlanVniBinding,
     VerifyVxlanVtep,
 )
-from tests.units.anta_tests import AntaUnitTest, test
+from tests.units.anta_tests import (
+    AntaUnitTest,
+    test,  # noqa: F401 - Pytest collects this imported test function.
+)
 
 AntaUnitTestData: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
 

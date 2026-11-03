@@ -13,7 +13,6 @@ from typing import TYPE_CHECKING, Any, Literal, TypeAlias
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.models import (
-    AvailableFact,
     Fact,
     FactProblemKind,
     FactSource,
@@ -40,7 +39,10 @@ from anta.tests.advisories.sa_153 import (
     _assess_private_key,
     _assess_tacacs_key,
 )
-from tests.units.anta_tests import build_eos_version, test
+from tests.units.anta_tests import (
+    build_eos_version,
+    test,  # noqa: F401 - Pytest collects this imported test function.
+)
 
 if TYPE_CHECKING:
     from tests.units.anta_tests import AntaUnitTestData, AtomicResult, UnitTestResult
