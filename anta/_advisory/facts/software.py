@@ -38,7 +38,6 @@ class PackageVersionFact(ComponentSoftwareFact, CommandsFactDefinition[PackageFa
 
     @classmethod
     # Keep each failure classification explicit so collection failures stay distinct from missing data.
-    # pylint: disable-next=too-many-return-statements
     def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[PackageFactT]:  # noqa: C901, PLR0911
         """Extract and normalize the declared package version."""
         (command,) = commands

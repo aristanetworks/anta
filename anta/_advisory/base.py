@@ -21,7 +21,8 @@ else:
 _PREVIEW_WARNING = "Security Advisory tests are in preview"
 
 
-class _AntaAdvisoryTest(AntaTest):
+# Intentionally abstract: concrete advisories implement test().
+class _AntaAdvisoryTest(AntaTest):  # pylint: disable=abstract-method
     """Base class for advisories driven by a nested typed ``Facts`` container.
 
     Every concrete advisory declares ``Facts`` with ``@facts_dataclass``. The

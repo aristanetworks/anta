@@ -211,7 +211,8 @@ def _has_segment_security_redirect(output: object) -> bool | None:
 RedirectFactT = TypeVar("RedirectFactT", bound="RedirectConfigurationFact[Any]")
 
 
-class RedirectConfigurationFact(CommandsFactDefinition[RedirectFactT], Generic[RedirectFactT]):
+# Intentionally abstract: each redirection path implements parse().
+class RedirectConfigurationFact(CommandsFactDefinition[RedirectFactT], Generic[RedirectFactT]):  # pylint: disable=abstract-method
     """Base fact for one next-hop redirection path."""
 
     @classmethod
