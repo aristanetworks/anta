@@ -6,8 +6,7 @@
 # pylint: disable=C0302
 from __future__ import annotations
 
-import sys
-from datetime import UTC, datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING, Any
 
 from anta.models import AntaTest
