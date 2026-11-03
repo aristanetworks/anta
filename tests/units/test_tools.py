@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from contextlib import AbstractContextManager
 from contextlib import nullcontext as does_not_raise
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING, Any
 from unittest.mock import AsyncMock, patch
 
@@ -649,7 +649,7 @@ def test_is_interface_ignored(input_params: dict[str, Any], expected_output: boo
 )
 def test_time_ago(time_delta: timedelta, expected_output: str) -> None:
     """Tests the time_ago function with various time deltas."""
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     test_timestamp = (now - time_delta).timestamp()
 
     assert time_ago(test_timestamp) == expected_output
