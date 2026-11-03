@@ -67,7 +67,7 @@ The committed `uv.lock` records exact versions of the root project's runtime dep
 To reproduce the locked unit-test environment, install [uv](https://docs.astral.sh/uv/getting-started/installation/) 0.9.25 or newer and run from the repository root:
 
 ```bash
-uv sync --locked --no-default-groups --group test --extra cli
+uv sync --locked --python 3.11 --no-default-groups --group test --extra cli
 COLUMNS=165 uv run --no-sync python -m pytest tests/units --no-cov
 ```
 
