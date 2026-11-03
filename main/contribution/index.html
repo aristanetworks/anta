@@ -3697,7 +3697,8 @@ tox<span class="w"> </span>-e<span class="w"> </span>py311<span class="w"> </spa
 <h4 id="how-to-write-a-unit-test-for-an-antatest-subclass">How to write a unit test for an AntaTest subclass<a class="headerlink" href="#how-to-write-a-unit-test-for-an-antatest-subclass" title="Permanent link">&para;</a></h4>
 <p>The Python modules in the <code>tests.units.anta_tests</code> package define test parameters for AntaTest subclasses unit tests.
 A generic test function is written for all unit tests of the <code>AntaTest</code> subclasses.
-In order for your unit tests to be correctly collected, you need to import the generic test function even if not used in the Python module.</p>
+In order for your unit tests to be correctly collected, you need to import the generic test function even if not used in the Python module.
+Keep this import on its own line with <code># noqa: F401</code> because pytest collects the imported function. Other imports remain subject to Ruff&rsquo;s unused-import checks.</p>
 <p>The <code>pytest_generate_tests</code> function definition in <code>conftest.py</code> is called during test collection.</p>
 <p>The <code>pytest_generate_tests</code> function will parametrize the generic test function based on the <code>DATA</code> constant defined in modules in the <code>tests.units.anta_tests</code> package.</p>
 <p>See <a href="https://docs.pytest.org/en/stable/how-to/parametrize.html#basic-pytest-generate-tests-example">https://docs.pytest.org/en/stable/how-to/parametrize.html#basic-pytest-generate-tests-example</a></p>
@@ -3755,7 +3756,7 @@ In order for your unit tests to be correctly collected, you need to import the g
 <span class="kn">from</span><span class="w"> </span><span class="nn">anta.tests.system</span><span class="w"> </span><span class="kn">import</span> <span class="n">VerifyUptime</span>
 
 <span class="c1"># Import the generic test function</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tests.units.anta_tests</span><span class="w"> </span><span class="kn">import</span> <span class="n">test</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tests.units.anta_tests</span><span class="w"> </span><span class="kn">import</span> <span class="n">test</span>  <span class="c1"># noqa: F401 - Pytest collects this imported test function.</span>
 
 <span class="c1"># Define test parameters</span>
 <span class="n">DATA</span><span class="p">:</span> <span class="n">AntaUnitTestData</span> <span class="o">=</span> <span class="p">{</span>
@@ -3778,7 +3779,7 @@ In order for your unit tests to be correctly collected, you need to import the g
 </code></pre></div>
 <p>Test example for <code>anta.tests.connectivity.VerifyReachability</code> AntaTest that contains atomic results.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">anta.tests.connectivity</span><span class="w"> </span><span class="kn">import</span> <span class="n">VerifyReachability</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tests.units.anta_tests</span><span class="w"> </span><span class="kn">import</span> <span class="n">test</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tests.units.anta_tests</span><span class="w"> </span><span class="kn">import</span> <span class="n">test</span>  <span class="c1"># noqa: F401 - Pytest collects this imported test function.</span>
 
 <span class="n">DATA</span><span class="p">:</span> <span class="n">AntaUnitTestData</span> <span class="o">=</span> <span class="p">{</span>
     <span class="p">(</span><span class="n">VerifyReachability</span><span class="p">,</span> <span class="s2">"failure-ip"</span><span class="p">):</span> <span class="p">{</span>
@@ -3973,7 +3974,7 @@ git<span class="w"> </span>diff<span class="w"> </span>--exit-code<span class="w
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    October 30, 2026
+    November 3, 2026
   </span>
 
     
