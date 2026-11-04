@@ -71,7 +71,7 @@ repos:
           - types-requests==2.33.0.20261006
           - types-pyOpenSSL==24.1.0.20240722
           - pylint_pydantic==0.4.1
-          - pytest==9.1.1
+          - pytest==9.2.0
           - pytest-codspeed!=4.1.0
           - respx==0.23.1
           - pydantic-settings==2.16.1
@@ -96,7 +96,7 @@ repos:
         language: python
         additional_dependencies:
           - anta[cli]
-          - pytest>=9.1.1
+          - pytest>=9.2.0
           - respx==0.23.1
           - pytest-httpx>=0.36.2
           - pytest-codspeed>=5.0.3
