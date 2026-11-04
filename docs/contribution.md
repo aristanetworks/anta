@@ -87,14 +87,14 @@ uv lock --upgrade-package <package-name>
 uv lock --upgrade
 ```
 
-Routine uv resolution excludes registry releases from the last seven days for both direct and transitive dependencies, aligning with Renovate's release-age policy. For an urgent security fix, maintainers can temporarily bypass uv's cooldown for the affected package:
+Routine uv resolution excludes distributions uploaded to package registries within the last seven days for both direct and transitive dependencies, aligning with Renovate's release-age policy. The cutoff uses each wheel or source archive's upload timestamp, not the package version's release date. For an urgent security fix, maintainers can temporarily bypass uv's cooldown for the affected package:
 
 ```toml
 [tool.uv.exclude-newer-package]
 affected-package = false
 ```
 
-Record the advisory and reason in the PR, update the affected package, and remove the exception once the release is seven days old. Any applicable Renovate approval or release-age restrictions must also be handled when expediting its PRs.
+Record the advisory and reason in the PR, update the affected package, and remove the exception once the distributions required by the supported environments are at least seven days old, measured from their registry upload times. Any applicable Renovate approval or release-age restrictions must also be handled when expediting its PRs.
 
 A lock update selects versions for environments that consume it. Ordinary pip installations use ANTA's published dependency ranges. When addressing a relevant vulnerability, also assess whether those ranges must exclude affected versions; updating the lock alone does not change downstream requirements or existing installations.
 
