@@ -47,7 +47,7 @@ def test_published_tls_configurations(authentication: str, ca_file: str | None, 
 
     assert isinstance(fact, AvailableFact)
     assert fact.value.state is (FeatureState.ENABLED if ca_file is None else FeatureState.DISABLED)
-    assert fact.value.connections == (TerminAttrTlsConnection("default", ("apiserver.arista.io:443",), ca_file),)
+    assert fact.value.connections == (TerminAttrTlsConnection("primary", ("apiserver.arista.io:443",), ca_file),)
     assert fact.source.name == "show running-configuration | section TerminAttr"
     assert "token.json" not in repr(fact.value)
     assert "key.pem" not in repr(fact.value)
@@ -94,9 +94,60 @@ def test_flat_and_scoped_connections_are_both_retained() -> None:
     assert isinstance(fact, AvailableFact)
     assert fact.value.connections == (
         TerminAttrTlsConnection("backup", ("backup.example:443",), None),
-        TerminAttrTlsConnection("default", ("apiserver.arista.io:443",), "ca with spaces.pem"),
+        TerminAttrTlsConnection("primary", ("apiserver.arista.io:443",), "ca with spaces.pem"),
     )
     assert fact.value.state is FeatureState.ENABLED
+
+
+@pytest.mark.parametrize("global_first", [True, False])
+@pytest.mark.parametrize(
+    ("global_arguments", "scoped_arguments", "ca_file"),
+    [
+        (
+            "-cvaddr=apiserver.arista.io:443 -cvauth=token-secure,token,private-ca.pem",
+            "-cvopt primary.addr=ignored.example:443 -cvopt primary.auth=token-secure,token",
+            "private-ca.pem",
+        ),
+        ("-cvaddr=apiserver.arista.io:443", "-cvopt primary.auth=token-secure,token", None),
+        ("-cvauth=token-secure,token,private-ca.pem", "-cvopt primary.addr=apiserver.arista.io:443", "private-ca.pem"),
+        (
+            "-cvaddr= -cvauth=",
+            "-cvopt primary.addr=apiserver.arista.io:443 -cvopt primary.auth=token-secure,token,private-ca.pem",
+            "private-ca.pem",
+        ),
+    ],
+)
+def test_primary_options_merge_with_global_precedence(global_arguments: str, scoped_arguments: str, ca_file: str | None, *, global_first: bool) -> None:
+    """Global flags override only nonempty primary fields, independently of argument order."""
+    arguments = (global_arguments, scoped_arguments) if global_first else (scoped_arguments, global_arguments)
+    fact = TerminAttrDefaultCaTlsFact.parse((command(config(" ".join(arguments))),))
+
+    assert isinstance(fact, AvailableFact)
+    assert fact.value.connections == (TerminAttrTlsConnection("primary", ("apiserver.arista.io:443",), ca_file),)
+    assert fact.value.state is (FeatureState.ENABLED if ca_file is None else FeatureState.DISABLED)
+
+
+@pytest.mark.parametrize("scoped_argument", ["backup.addr=backup.example:443", "backup.auth=token-secure,token"])
+def test_secondary_cluster_does_not_inherit_global_options(scoped_argument: str) -> None:
+    """Globals complete primary only; a secondary cluster still needs its own address and authentication."""
+    output = config(f"-cvaddr=apiserver.arista.io:443 -cvauth=token-secure,token -cvopt {scoped_argument}")
+    fact = TerminAttrDefaultCaTlsFact.parse((command(output),))
+
+    assert isinstance(fact, UnavailableFact)
+    assert fact.problem is FactProblemKind.MISSING
+
+
+@pytest.mark.parametrize("option", ["-cvconfig", "-cvconfig=true", "--cvconfig", "--cvconfig=false"])
+@pytest.mark.parametrize("ca_file", [None, "private-ca.pem"])
+def test_cvconfig_preserves_tls_client_selection(option: str, ca_file: str | None) -> None:
+    """Dynamic segmentation subscriptions leave the client's destination and CA selection unchanged."""
+    authentication = "token-secure,token" if ca_file is None else f"token-secure,token,{ca_file}"
+    output = config(f"-cvaddr=apiserver.arista.io:443 {option} -cvauth={authentication}")
+    fact = TerminAttrDefaultCaTlsFact.parse((command(output),))
+
+    assert isinstance(fact, AvailableFact)
+    assert fact.value.connections == (TerminAttrTlsConnection("primary", ("apiserver.arista.io:443",), ca_file),)
+    assert fact.value.state is (FeatureState.ENABLED if ca_file is None else FeatureState.DISABLED)
 
 
 @pytest.mark.parametrize(
@@ -120,14 +171,13 @@ def test_flat_and_scoped_connections_are_both_retained() -> None:
         (config("-cvaddr=host:443 -cvauth=certs,cert,key,ca,extra"), FactProblemKind.MALFORMED),
         (config("-cvaddr=host:443 -cvauth=unknown,credential"), FactProblemKind.UNSUPPORTED),
         (config("-cvaddr=host:443 -cvauth=token,token"), FactProblemKind.UNSUPPORTED),
-        (config("-cvconfig"), FactProblemKind.UNSUPPORTED),
-        (config("-cvconfig=true"), FactProblemKind.UNSUPPORTED),
         (config("-cvopt addr=host:443"), FactProblemKind.MALFORMED),
         (config("-cvopt .addr=host:443"), FactProblemKind.MALFORMED),
         (config("-cvopt cloud.addr"), FactProblemKind.MALFORMED),
         (config("-cvopt cloud.addr="), FactProblemKind.MISSING),
         (config("-cvopt cloud.addr=host:443"), FactProblemKind.MISSING),
         (config("-cvopt cloud.auth=token-secure,token"), FactProblemKind.MISSING),
+        (config("-cvopt foo.bar.addr=apiserver.arista.io:443 -cvopt foo.bar.auth=token-secure,token"), FactProblemKind.MALFORMED),
         (config("-cvaddr=host:443 -cvaddr=other:443 -cvauth=certs,cert,key"), FactProblemKind.INVALID),
         (config("-cvopt cloud.addr=host:443 -cvopt cloud.addr=other:443"), FactProblemKind.INVALID),
         (config('-cvaddr="unterminated'), FactProblemKind.MALFORMED),

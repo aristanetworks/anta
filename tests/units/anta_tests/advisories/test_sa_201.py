@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""Independent source-boundary and end-to-end tests for SA-0201 revision 1.1."""
+"""Independent source-boundary and end-to-end tests for SA-0201 revision 1.2."""
 
 # The expected remediation stays independent from the production command literal.
 # pylint: disable=duplicate-code
@@ -18,7 +18,6 @@ import pytest
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.models import AvailableFact, Fact, FactProblemKind, FactSource, FactSourceKind, FeatureState
-from anta._advisory.facts.platform import PlatformIdentityFact
 from anta._advisory.facts.software import TerminAttrVersionFact
 from anta._advisory.facts.terminattr import TerminAttrDefaultCaTlsFact, TerminAttrTlsConnection
 from anta._advisory.findings.models import AffectedResult, ComponentVersionAssessment, ErrorResult, InconclusiveResult, NotAffectedResult, VersionRelation
@@ -39,7 +38,6 @@ from anta._advisory.remediation import (
 from anta._advisory.results import _AdvisoryAtomicTestResult, _get_atomic_vulnerability_ids
 from anta._advisory.status import AdvisoryStatus
 from anta._advisory.version import SemanticVersion
-from anta._eos.platform import PlatformFamily, PlatformType
 from anta._eos.version import EOSVersion, parse_eos_version
 from anta.models import AntaCommand
 from anta.result_manager.models import AntaTestStatus
@@ -52,7 +50,11 @@ from anta.tests.advisories.sa_201 import (
     _compatible_terminattr_fixes,
     _terminattr_version_assessment,
 )
-from tests.units.anta_tests import build_eos_platform, build_eos_version, test
+from tests.units.anta_tests import (
+    build_eos_platform,
+    build_eos_version,
+    test,  # noqa: F401 - Pytest collects this imported test function.
+)
 from tests.units.anta_tests.advisories import OfflineAntaDevice, build_expected_advisory_result
 
 if TYPE_CHECKING:
@@ -121,7 +123,6 @@ EXPECTED_COMPONENT_ONLY_PLAN = RemediationPlan(ChangeSoftwareVersion(SoftwareTar
 expected_result = partial(build_expected_advisory_result, "CVE-2026-111943")
 CUSTOM_UNRESOLVED = "custom programs' outbound TLS behavior and trust-store selection is device state not exposed."
 INCONCLUSIVE_PREFIX = "The assessment is inconclusive and the device may be affected. Indications: "
-EOS_AND_PLATFORM = "EOS version '4.36.3M' is affected and platform 'cEOSLab' is within the affected platform scope"
 
 _DATA: AntaUnitTestData = {
     (SA201, "affected-cvaas-default-ca"): {
@@ -130,7 +131,7 @@ _DATA: AntaUnitTestData = {
         "eos_data": [CONFIG, PACKAGE],
         "expected": expected_result(
             AntaTestStatus.FAILURE,
-            "The device is affected because EOS version '4.36.3M' is affected, platform 'cEOSLab' is within the affected platform scope, "
+            "The device is affected because EOS version '4.36.3M' is affected, "
             "TerminAttr 'v1.46.2' is affected, and the TerminAttr TLS client using the default CA trust store is enabled.",
             EXPECTED_COMBINED_PLAN,
         ),
@@ -141,8 +142,7 @@ _DATA: AntaUnitTestData = {
         "eos_data": [CONFIG, FIXED_PACKAGE],
         "expected": expected_result(
             AntaTestStatus.FAILURE,
-            INCONCLUSIVE_PREFIX + "EOS version '4.36.3M' is affected, platform 'cEOSLab' is within the affected platform scope, "
-            "and TerminAttr 'v1.46.3' is outside the affected releases. Unresolved: " + CUSTOM_UNRESOLVED,
+            INCONCLUSIVE_PREFIX + "EOS version '4.36.3M' is affected and TerminAttr 'v1.46.3' is outside the affected releases. Unresolved: " + CUSTOM_UNRESOLVED,
             EXPECTED_EOS_PLAN,
         ),
     },
@@ -150,13 +150,21 @@ _DATA: AntaUnitTestData = {
         "version": build_eos_version("4.36.3M"),
         "platform": build_eos_platform("cEOSLab"),
         "eos_data": [CUSTOM_CA_CONFIG, {}],
-        "expected": expected_result(AntaTestStatus.FAILURE, INCONCLUSIVE_PREFIX + EOS_AND_PLATFORM + ". Unresolved: " + CUSTOM_UNRESOLVED, EXPECTED_EOS_PLAN),
+        "expected": expected_result(
+            AntaTestStatus.FAILURE,
+            INCONCLUSIVE_PREFIX + "EOS version '4.36.3M' is affected. Unresolved: " + CUSTOM_UNRESOLVED,
+            EXPECTED_EOS_PLAN,
+        ),
     },
     (SA201, "absent-terminattr-does-not-prove-custom-program-absence"): {
         "version": build_eos_version("4.36.3M"),
         "platform": build_eos_platform("cEOSLab"),
         "eos_data": ["", {}],
-        "expected": expected_result(AntaTestStatus.FAILURE, INCONCLUSIVE_PREFIX + EOS_AND_PLATFORM + ". Unresolved: " + CUSTOM_UNRESOLVED, EXPECTED_EOS_PLAN),
+        "expected": expected_result(
+            AntaTestStatus.FAILURE,
+            INCONCLUSIVE_PREFIX + "EOS version '4.36.3M' is affected. Unresolved: " + CUSTOM_UNRESOLVED,
+            EXPECTED_EOS_PLAN,
+        ),
     },
     (SA201, "component-remains-affected-outside-eos-list"): {
         "version": build_eos_version("4.36.4M"),
@@ -164,8 +172,8 @@ _DATA: AntaUnitTestData = {
         "eos_data": [CONFIG, PACKAGE],
         "expected": expected_result(
             AntaTestStatus.FAILURE,
-            "The device is affected because EOS version '4.36.4M' is outside the affected releases, platform 'cEOSLab' is within the affected platform "
-            "scope, TerminAttr 'v1.46.2' is affected, and the TerminAttr TLS client using the default CA trust store is enabled.",
+            "The device is affected because EOS version '4.36.4M' is outside the affected releases, TerminAttr 'v1.46.2' is affected, "
+            "and the TerminAttr TLS client using the default CA trust store is enabled.",
             EXPECTED_COMPONENT_ONLY_PLAN,
         ),
     },
@@ -204,20 +212,19 @@ _DATA: AntaUnitTestData = {
         "eos_data": [CONFIG.replace("apiserver.arista.io", "cloud.example"), PACKAGE],
         "expected": expected_result(
             AntaTestStatus.FAILURE,
-            INCONCLUSIVE_PREFIX + "EOS version '4.36.4M' is outside the affected releases, platform 'cEOSLab' is within the affected platform scope, "
+            INCONCLUSIVE_PREFIX + "EOS version '4.36.4M' is outside the affected releases, "
             "TerminAttr 'v1.46.2' is affected, and the TerminAttr TLS client using the default CA trust store is enabled. "
             "Unresolved: whether the configured default-CA TLS destination is CVaaS is external state.",
             EXPECTED_COMPONENT_ONLY_PLAN,
         ),
     },
-    (SA201, "ambiguous-veos-is-not-a-safe-cvx-exclusion"): {
+    (SA201, "veos-retains-custom-program-uncertainty"): {
         "version": build_eos_version("4.36.3M"),
         "platform": build_eos_platform("vEOS"),
         "eos_data": ["", {}],
         "expected": expected_result(
             AntaTestStatus.FAILURE,
-            INCONCLUSIVE_PREFIX + "EOS version '4.36.3M' is affected. Unresolved: CloudVision eXchange versus CloudEOS identity is incomplete platform "
-            "identity and " + CUSTOM_UNRESOLVED,
+            INCONCLUSIVE_PREFIX + "EOS version '4.36.3M' is affected. Unresolved: " + CUSTOM_UNRESOLVED,
             EXPECTED_EOS_PLAN,
         ),
     },
@@ -250,11 +257,6 @@ def version_fact(version: str | None = "4.36.3M") -> Fact[EosVersionFact]:
     if version is None:
         return EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
     return EosVersionFact.from_version(parse_eos_version(version).unwrap()).available(SOURCE)
-
-
-def platform_fact(family: PlatformFamily = PlatformFamily.CEOS_LAB) -> AvailableFact[PlatformIdentityFact]:
-    """Construct a semantic platform identity independently of the platform parser."""
-    return PlatformIdentityFact("test-platform", PlatformType.VIRTUAL, (), frozenset({family})).available(SOURCE)
 
 
 def tls_fact(*, ca_file: str | None = None, address: str = "apiserver.arista.io:443") -> AvailableFact[TerminAttrDefaultCaTlsFact]:
@@ -312,7 +314,7 @@ def test_eos_source_boundaries(version: str, affected: bool) -> None:
     [
         ("v0.99.99", True),
         ("v1.0.0", True),
-        ("v1.30.99", True),
+        *((f"v1.{minor}.99", True) for minor in range(31)),
         ("v1.31.0", True),
         ("v1.31.17", True),
         ("v1.31.18", False),
@@ -352,56 +354,21 @@ def test_component_source_boundaries(version: str, affected: bool) -> None:
     assert result.relation is (VersionRelation.AFFECTED if affected else VersionRelation.OUTSIDE_SCOPE)
 
 
-@pytest.mark.parametrize(
-    "family",
-    [
-        PlatformFamily.SERIES_710,
-        PlatformFamily.SERIES_720_D,
-        PlatformFamily.SERIES_720_XP,
-        PlatformFamily.SERIES_722_XPM,
-        PlatformFamily.SERIES_750_X,
-        PlatformFamily.SERIES_7010_TX,
-        PlatformFamily.SERIES_7020_R,
-        PlatformFamily.SERIES_7020_R4,
-        PlatformFamily.SERIES_7130,
-        PlatformFamily.SERIES_7170,
-        PlatformFamily.SERIES_7050_X3,
-        PlatformFamily.SERIES_7050_X4,
-        PlatformFamily.SERIES_7060_X,
-        PlatformFamily.SERIES_7060_X2,
-        PlatformFamily.SERIES_7060_X4,
-        PlatformFamily.SERIES_7060_X5,
-        PlatformFamily.SERIES_7060_X6,
-        PlatformFamily.SERIES_7260_X,
-        PlatformFamily.SERIES_7260_X3,
-        PlatformFamily.SERIES_7280_R,
-        PlatformFamily.SERIES_7280_R2,
-        PlatformFamily.SERIES_7280_R3,
-        PlatformFamily.SERIES_7280_R4,
-        PlatformFamily.SERIES_7300_X,
-        PlatformFamily.SERIES_7300_X3,
-        PlatformFamily.SERIES_7320_X,
-        PlatformFamily.SERIES_7358_X4,
-        PlatformFamily.SERIES_7368_X4,
-        PlatformFamily.SERIES_7388_X5,
-        PlatformFamily.SERIES_7500_R,
-        PlatformFamily.SERIES_7500_R2,
-        PlatformFamily.SERIES_7500_R3,
-        PlatformFamily.SERIES_7700_R4,
-        PlatformFamily.SERIES_7800_R3,
-        PlatformFamily.SERIES_7800_R4,
-        PlatformFamily.AWE_5000,
-        PlatformFamily.AWE_7200_R,
-        PlatformFamily.ZTX_7200,
-        PlatformFamily.CLOUDEOS,
-        PlatformFamily.CEOS_LAB,
-        PlatformFamily.VEOS_LAB,
-    ],
-)
-def test_all_listed_eos_families(family: PlatformFamily) -> None:
-    """Every source-listed EOS family retains its independently established TerminAttr exposure."""
-    result = _assess_sa201(version_fact(), platform_fact(family), tls_fact(), TerminAttrVersionFact("v1.46.2").available(PACKAGE_SOURCE))
-    assert isinstance(result, AffectedResult)
+@pytest.mark.parametrize("model", ["cEOSLab", "vEOS", "CloudEOS", "DCS-7150S-64", "unknown", None])
+async def test_platform_identity_does_not_limit_software_assessment(model: str | None) -> None:
+    """Virtual, physical, unrecognized, and missing platform metadata cannot exclude established TerminAttr exposure."""
+    device = OfflineAntaDevice("test")
+    device.version = parse_eos_version("4.36.3M").unwrap()
+    device.platform = build_eos_platform(model) if model is not None else None
+    await device.refresh()
+    instance = SA201(device=device, eos_data=[CONFIG, PACKAGE])
+    await instance.test()
+
+    assert instance.result.result is AntaTestStatus.FAILURE
+    assert len(instance.result.atomic_results) == 1
+    atomic = instance.result.atomic_results[0]
+    assert isinstance(atomic, _AdvisoryAtomicTestResult)
+    assert atomic.advisory_status is AdvisoryStatus.AFFECTED
 
 
 @pytest.mark.parametrize(
@@ -409,12 +376,19 @@ def test_all_listed_eos_families(family: PlatformFamily) -> None:
     [
         ("4.26.9M", ("v1.31.18",)),
         ("4.27.0F", ("v1.34.15", "v1.31.18")),
-        ("4.29.99M", ("v1.34.15", "v1.31.18")),
-        ("4.30.0F", ("v1.46.3", "v1.43.11", "v1.34.15", "v1.31.18")),
-        ("4.31.10M", ("v1.46.3", "v1.43.11", "v1.34.15", "v1.31.18")),
-        ("4.31.11M", ("v1.46.3", "v1.43.11", "v1.34.15")),
-        ("4.32.11M", ("v1.46.3", "v1.43.11", "v1.34.15")),
-        ("4.32.12M", ("v1.46.3", "v1.43.11")),
+        ("4.27.99M", ("v1.34.15", "v1.31.18")),
+        ("4.28.0F", ("v1.37.15", "v1.34.15", "v1.31.18")),
+        ("4.29.0F", ("v1.40.15", "v1.37.15", "v1.34.15", "v1.31.18")),
+        ("4.29.99M", ("v1.40.15", "v1.37.15", "v1.34.15", "v1.31.18")),
+        ("4.30.0F", ("v1.46.3", "v1.43.11", "v1.40.15", "v1.37.15", "v1.34.15", "v1.31.18")),
+        ("4.31.10M", ("v1.46.3", "v1.43.11", "v1.40.15", "v1.37.15", "v1.34.15", "v1.31.18")),
+        ("4.31.11M", ("v1.46.3", "v1.43.11", "v1.40.15", "v1.37.15", "v1.34.15")),
+        ("4.32.11M", ("v1.46.3", "v1.43.11", "v1.40.15", "v1.37.15", "v1.34.15")),
+        ("4.32.12M", ("v1.46.3", "v1.43.11", "v1.40.15", "v1.37.15")),
+        ("4.33.10M", ("v1.46.3", "v1.43.11", "v1.40.15", "v1.37.15")),
+        ("4.33.11M", ("v1.46.3", "v1.43.11", "v1.40.15")),
+        ("4.34.8M", ("v1.46.3", "v1.43.11", "v1.40.15")),
+        ("4.34.9M", ("v1.46.3", "v1.43.11")),
         ("4.35.7M", ("v1.46.3", "v1.43.11")),
         ("4.35.8M", ("v1.46.3",)),
         ("4.36.3M", ("v1.46.3",)),
@@ -429,18 +403,17 @@ def test_component_fix_eos_compatibility(version: str, expected: tuple[str, ...]
 
 def test_all_required_unavailable_facts_are_retained() -> None:
     """One missing prerequisite must not hide the other needed observations."""
-    platform = PlatformIdentityFact.unavailable(FactProblemKind.MISSING, SOURCE)
     tls = TerminAttrDefaultCaTlsFact.unavailable(FactProblemKind.MALFORMED, CONFIG_SOURCE)
     component = TerminAttrVersionFact.unavailable(FactProblemKind.MISSING, PACKAGE_SOURCE)
-    result = _assess_sa201(version_fact(None), platform, tls, component)
+    result = _assess_sa201(version_fact(None), tls, component)
     assert isinstance(result, ErrorResult)
-    assert result.problems == (version_fact(None), platform, tls, component)
+    assert result.problems == (version_fact(None), tls, component)
 
 
 @pytest.mark.parametrize("version", ["1.46.2", "v1.46", "v1.46.2-dev", "invalid"])
 def test_invalid_required_component_version_is_error(version: str) -> None:
     """Unexpected package versions must not silently leave the affected range."""
-    result = _assess_sa201(version_fact(), platform_fact(), tls_fact(), TerminAttrVersionFact(version).available(PACKAGE_SOURCE))
+    result = _assess_sa201(version_fact(), tls_fact(), TerminAttrVersionFact(version).available(PACKAGE_SOURCE))
     assert isinstance(result, ErrorResult)
     assert result.problems[0].problem is FactProblemKind.INVALID
 
@@ -448,33 +421,15 @@ def test_invalid_required_component_version_is_error(version: str) -> None:
 def test_disabled_component_ignores_unneeded_package_and_retains_eos_uncertainty() -> None:
     """Explicit CA selection removes the package dependency but cannot prove custom-program safety."""
     missing = TerminAttrVersionFact.unavailable(FactProblemKind.MISSING, PACKAGE_SOURCE)
-    result = _assess_sa201(version_fact(), platform_fact(), tls_fact(ca_file="ca.pem"), missing)
+    result = _assess_sa201(version_fact(), tls_fact(ca_file="ca.pem"), missing)
     assert isinstance(result, InconclusiveResult)
     assert len(result.unresolved) == 1
     assert result.remediation == EXPECTED_EOS_PLAN
 
 
-def test_unknown_platform_is_an_error() -> None:
-    """An unrecognized platform cannot prove either an affected family or an exclusion."""
-    unknown = PlatformIdentityFact("unknown", PlatformType.UNKNOWN, (), frozenset()).available(SOURCE)
-    result = _assess_sa201(version_fact(), unknown, tls_fact(), TerminAttrVersionFact("v1.46.2").available(PACKAGE_SOURCE))
-    assert isinstance(result, ErrorResult)
-
-
-def test_unlisted_family_short_circuits_unavailable_inputs() -> None:
-    """A source-excluded family can decide scope without unrelated unavailable inputs."""
-    result = _assess_sa201(
-        version_fact(None),
-        platform_fact(PlatformFamily.SERIES_7150),
-        TerminAttrDefaultCaTlsFact.unavailable(FactProblemKind.MISSING, CONFIG_SOURCE),
-        TerminAttrVersionFact.unavailable(FactProblemKind.MISSING, PACKAGE_SOURCE),
-    )
-    assert isinstance(result, NotAffectedResult)
-
-
 def test_two_independent_unobservable_properties_are_retained() -> None:
     """An unidentified cloud destination must not hide independent custom-program exposure."""
-    result = _assess_sa201(version_fact(), platform_fact(), tls_fact(address="cloud.example:443"), TerminAttrVersionFact("v1.46.2").available(PACKAGE_SOURCE))
+    result = _assess_sa201(version_fact(), tls_fact(address="cloud.example:443"), TerminAttrVersionFact("v1.46.2").available(PACKAGE_SOURCE))
     assert isinstance(result, InconclusiveResult)
     assert len(result.unresolved) == 2
 
@@ -502,7 +457,7 @@ def test_cluster_ca_coverage_is_not_transferred(
             TerminAttrTlsConnection("other", ("onprem.example:443",), other_ca),
         ),
     ).available(CONFIG_SOURCE)
-    result = _assess_sa201(version_fact("4.36.4M"), platform_fact(), tls, TerminAttrVersionFact("v1.46.2").available(PACKAGE_SOURCE))
+    result = _assess_sa201(version_fact("4.36.4M"), tls, TerminAttrVersionFact("v1.46.2").available(PACKAGE_SOURCE))
     assert isinstance(result, result_type)
 
 
@@ -528,6 +483,37 @@ async def test_exact_end_to_end_finding(case: AntaUnitTest) -> None:
     assert len(expected_atomics) == 1
     assert atomic.remediation == expected_atomics[0].get("remediation")
     assert atomic.advisory_status in {AdvisoryStatus.AFFECTED, AdvisoryStatus.INCONCLUSIVE, AdvisoryStatus.NOT_AFFECTED, AdvisoryStatus.ERROR}
+
+
+@pytest.mark.parametrize(
+    ("arguments", "semantic_status"),
+    [
+        (
+            (
+                "-cvaddr=apiserver.arista.io:443 -cvauth=token-secure,token,private-ca.pem "
+                "-cvopt primary.addr=apiserver.arista.io:443 -cvopt primary.auth=token-secure,token"
+            ),
+            AdvisoryStatus.NOT_AFFECTED,
+        ),
+        ("-cvaddr=apiserver.arista.io:443 -cvopt primary.auth=token-secure,token", AdvisoryStatus.AFFECTED),
+        ("-cvaddr=apiserver.arista.io:443 -cvauth=token-secure,token -cvconfig", AdvisoryStatus.AFFECTED),
+        ("-cvopt foo.bar.addr=apiserver.arista.io:443 -cvopt foo.bar.auth=token-secure,token", AdvisoryStatus.ERROR),
+    ],
+)
+async def test_effective_client_configuration_status(arguments: str, semantic_status: AdvisoryStatus) -> None:
+    """Assess actual parsed configuration so primary merging and unrelated flags cannot distort the advisory status."""
+    device = OfflineAntaDevice("test")
+    device.version = parse_eos_version("4.36.4M").unwrap()
+    device.platform = build_eos_platform("cEOSLab")
+    await device.refresh()
+    configuration = f"daemon TerminAttr\n   exec /usr/bin/TerminAttr {arguments}\n   no shutdown\n"
+    instance = SA201(device=device, eos_data=[configuration, PACKAGE])
+    await instance.test()
+
+    assert len(instance.result.atomic_results) == 1
+    atomic = instance.result.atomic_results[0]
+    assert isinstance(atomic, _AdvisoryAtomicTestResult)
+    assert atomic.advisory_status is semantic_status
 
 
 async def test_unsupported_configuration_does_not_pass() -> None:
@@ -598,7 +584,7 @@ async def test_deferred_collection_failure_reaches_assessment(
 def test_source_metadata_and_command_contract() -> None:
     """Keep revision, provisional severity estimate, publication identity, and fact-owned commands aligned."""
     assert ADVISORY.sa_number == "0201"
-    assert ADVISORY.last_updated == date(2026, 10, 26)
+    assert ADVISORY.last_updated == date(2026, 10, 29)
     assert tuple(vulnerability.id for vulnerability in ADVISORY.vulnerabilities) == ("CVE-2026-111943",)
     assert ADVISORY.vulnerabilities[0].severity is _AdvisoryVulnerabilitySeverity.CRITICAL
     assert len(SA201.commands) == 2

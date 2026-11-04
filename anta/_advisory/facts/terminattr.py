@@ -123,17 +123,20 @@ class TerminAttrTlsConnection:
     ca_file: str | None
 
 
+# Parsing TerminAttr's command line is not this author's favorite choice.
+# No supported structured interface was found that exposes effective client
+# settings for every configured cluster. Runtime connection records can disappear
+# when connections close, so their absence cannot prove a client is unconfigured.
+# Keep this parser limited to the evidence needed by advisory assessments.
 # Keep each option-validation failure mapped to its specific fact problem kind.
 def _tls_client_options(arguments: Sequence[str]) -> dict[str, dict[str, str]] | FactProblemKind:  # noqa: C901
     """Normalize flat and per-cluster CloudVision address/authentication options."""
     clusters: dict[str, dict[str, str]] = {}
+    primary_options: dict[str, str] = {}
     index = 0
     while index < len(arguments):
         option, separator, value = arguments[index].partition("=")
         index += 1
-        if option in {"-cvconfig", "--cvconfig"} and value != "false":
-            # Externally supplied configuration cannot be inferred from this exec line.
-            return FactProblemKind.UNSUPPORTED
         if option not in {"-cvaddr", "-cvauth", "-cvopt", "--cvaddr", "--cvauth", "--cvopt"}:
             continue
         if not separator:
@@ -141,21 +144,26 @@ def _tls_client_options(arguments: Sequence[str]) -> dict[str, dict[str, str]] |
                 return FactProblemKind.MISSING
             value = arguments[index]
             index += 1
-        cluster = "default"
         name = option.lstrip("-").removeprefix("cv")
         if name == "opt":
             scoped_option, separator, value = value.partition("=")
-            cluster, dot, name = scoped_option.rpartition(".")
-            if not separator or not dot or not cluster:
+            cluster, dot, name = scoped_option.partition(".")
+            if not separator or not dot or not cluster or "." in name:
                 return FactProblemKind.MALFORMED
             if name not in {"addr", "auth"}:
                 continue
-        if not value:
-            return FactProblemKind.MISSING
-        options = clusters.setdefault(cluster, {})
+            if not value:
+                return FactProblemKind.MISSING
+            options = clusters.setdefault(cluster, {})
+        else:
+            options = primary_options
         if name in options:
             return FactProblemKind.INVALID
         options[name] = value
+    if primary_options:
+        # TerminAttr merges nonempty global fields into primary after parsing all
+        # cvopt entries, so precedence does not depend on command-line order.
+        clusters.setdefault("primary", {}).update({name: value for name, value in primary_options.items() if value})
     return clusters
 
 
@@ -182,10 +190,11 @@ def _tls_connections(options: Mapping[str, Mapping[str, str]]) -> tuple[TerminAt
 class TerminAttrDefaultCaTlsFact(FeatureFact, CommandsFactDefinition["TerminAttrDefaultCaTlsFact"]):
     """Persistent secure CloudVision clients selecting the default CA trust store.
 
-    Only ``certs`` and ``token-secure`` authentication are supported. Dynamic
-    ``cvconfig`` configuration and other authentication modes are unavailable,
-    rather than being interpreted as absence of TLS. Daemon running state and
-    current sessions are intentionally not used to classify configured clients.
+    Only ``certs`` and ``token-secure`` authentication are supported. Other
+    authentication modes are unavailable, rather than being interpreted as
+    absence of TLS. Dynamic segmentation subscriptions (``cvconfig``) do not
+    change client trust selection. Daemon running state and current sessions
+    are intentionally not used to classify configured clients.
     """
 
     feature: ClassVar[SubFeature] = SubFeature(FeatureName.TERMINATTR, "TLS client using the default CA trust store")

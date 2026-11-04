@@ -2,7 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 # pylint: disable=duplicate-code  # Keep advisory-specific scope constants local to each test.
-"""ANTA test for Arista Security Advisory 201, revision 1.1."""
+"""ANTA test for Arista Security Advisory 201, revision 1.2."""
 
 from __future__ import annotations
 
@@ -14,10 +14,9 @@ from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.models import AvailableFact, Fact, FactProblemKind, FactsBase, FeatureState, UnavailableFact, fact_field, facts_dataclass
-from anta._advisory.facts.platform import PlatformIdentityFact
 from anta._advisory.facts.software import TerminAttrVersionFact
 from anta._advisory.facts.terminattr import TerminAttrDefaultCaTlsFact
-from anta._advisory.findings.assessment import assess_eos_version, assess_platform_scope
+from anta._advisory.findings.assessment import assess_eos_version
 from anta._advisory.findings.models import (
     AffectedComponentVersion,
     AffectedResult,
@@ -27,7 +26,6 @@ from anta._advisory.findings.models import (
     FindingEvidence,
     InconclusiveResult,
     NotAffectedResult,
-    PlatformAssessment,
     Unobservable,
     UnobservableKind,
     VersionRelation,
@@ -49,7 +47,6 @@ from anta._advisory.remediation import (
     software_version_plan,
 )
 from anta._advisory.version import SemanticVersion
-from anta._eos.platform import PlatformFamily
 from anta._eos.version import EOSVersion
 from anta.decorators import preview_test_class
 
@@ -65,67 +62,75 @@ AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
     VersionRule(major=4, minor=28, patch_lte=14),
     VersionRule(major=4, minor_lt=28),
 )
-# Revision 1.1 does not identify a fixed EOS release. Outside scope is not a claim of a published fix.
+# Revision 1.2 does not identify a fixed EOS release. Outside scope is not a claim of a published fix.
 FIXED_RELEASES: tuple[FixedRelease, ...] = ()
-TERMINATTR_LAST_AFFECTED_PATCH = {31: 17, 34: 14, 37: 14, 40: 14, 43: 10, 46: 2}
-TERMINATTR_FULLY_AFFECTED_MINOR_RANGES = ((0, 30), (32, 33), (35, 36), (38, 39), (41, 42), (44, 45))
+# Each key is a v1.x minor release. None means every patch is affected;
+# otherwise the last affected patch is inclusive. Unlisted minors are outside scope.
+TERMINATTR_LAST_AFFECTED_PATCH: dict[int, int | None] = {
+    46: 2,
+    45: None,
+    44: None,
+    43: 10,
+    42: None,
+    41: None,
+    40: 14,
+    39: None,
+    38: None,
+    37: 14,
+    36: None,
+    35: None,
+    34: 14,
+    33: None,
+    32: None,
+    31: 17,
+    30: None,
+    29: None,
+    28: None,
+    27: None,
+    26: None,
+    25: None,
+    24: None,
+    23: None,
+    22: None,
+    21: None,
+    20: None,
+    19: None,
+    18: None,
+    17: None,
+    16: None,
+    15: None,
+    14: None,
+    13: None,
+    12: None,
+    11: None,
+    10: None,
+    9: None,
+    8: None,
+    7: None,
+    6: None,
+    5: None,
+    4: None,
+    3: None,
+    2: None,
+    1: None,
+    0: None,
+}
 TERMINATTR_FIXED_RELEASES = (
     FixedRelease(SemanticVersion(1, 46, 3, prefix="v")),
     FixedRelease(SemanticVersion(1, 43, 11, prefix="v")),
+    FixedRelease(SemanticVersion(1, 40, 15, prefix="v")),
+    FixedRelease(SemanticVersion(1, 37, 15, prefix="v")),
     FixedRelease(SemanticVersion(1, 34, 15, prefix="v")),
     FixedRelease(SemanticVersion(1, 31, 18, prefix="v")),
 )
 TERMINATTR_EOS_COMPATIBILITY = {
     SemanticVersion(1, 46, 3): (EOSVersion(4, 30, 0, suffix="F"), EOSVersion(4, 36, 3, suffix="M")),
     SemanticVersion(1, 43, 11): (EOSVersion(4, 30, 0, suffix="F"), EOSVersion(4, 35, 7, suffix="M")),
+    SemanticVersion(1, 40, 15): (EOSVersion(4, 29, 0, suffix="F"), EOSVersion(4, 34, 8, suffix="M")),
+    SemanticVersion(1, 37, 15): (EOSVersion(4, 28, 0, suffix="F"), EOSVersion(4, 33, 10, suffix="M")),
     SemanticVersion(1, 34, 15): (EOSVersion(4, 27, 0, suffix="F"), EOSVersion(4, 32, 11, suffix="M")),
     SemanticVersion(1, 31, 18): (None, EOSVersion(4, 31, 10, suffix="M")),
 }
-AFFECTED_PLATFORMS = frozenset(
-    {
-        PlatformFamily.SERIES_710,
-        PlatformFamily.SERIES_720_D,
-        PlatformFamily.SERIES_720_XP,
-        PlatformFamily.SERIES_722_XPM,
-        PlatformFamily.SERIES_750_X,
-        PlatformFamily.SERIES_7010_TX,
-        PlatformFamily.SERIES_7020_R,
-        PlatformFamily.SERIES_7020_R4,
-        PlatformFamily.SERIES_7130,
-        PlatformFamily.SERIES_7170,
-        PlatformFamily.SERIES_7050_X3,
-        PlatformFamily.SERIES_7050_X4,
-        PlatformFamily.SERIES_7060_X,
-        PlatformFamily.SERIES_7060_X2,
-        PlatformFamily.SERIES_7060_X4,
-        PlatformFamily.SERIES_7060_X5,
-        PlatformFamily.SERIES_7060_X6,
-        PlatformFamily.SERIES_7260_X,
-        PlatformFamily.SERIES_7260_X3,
-        PlatformFamily.SERIES_7280_R,
-        PlatformFamily.SERIES_7280_R2,
-        PlatformFamily.SERIES_7280_R3,
-        PlatformFamily.SERIES_7280_R4,
-        PlatformFamily.SERIES_7300_X,
-        PlatformFamily.SERIES_7300_X3,
-        PlatformFamily.SERIES_7320_X,
-        PlatformFamily.SERIES_7358_X4,
-        PlatformFamily.SERIES_7368_X4,
-        PlatformFamily.SERIES_7388_X5,
-        PlatformFamily.SERIES_7500_R,
-        PlatformFamily.SERIES_7500_R2,
-        PlatformFamily.SERIES_7500_R3,
-        PlatformFamily.SERIES_7700_R4,
-        PlatformFamily.SERIES_7800_R3,
-        PlatformFamily.SERIES_7800_R4,
-        PlatformFamily.AWE_5000,
-        PlatformFamily.AWE_7200_R,
-        PlatformFamily.ZTX_7200,
-        PlatformFamily.CLOUDEOS,
-        PlatformFamily.CEOS_LAB,
-        PlatformFamily.VEOS_LAB,
-    }
-)
 CA_DISTRUST_CONFIGURATION = (
     "event-handler sa_0201_fix",
     "trigger on-boot",
@@ -153,7 +158,7 @@ CUSTOM_PROGRAM_CONDITION = "custom scripts or programs use the default EOS trust
 
 ADVISORY = _AdvisoryMetadata(
     sa_number="0201",
-    last_updated=date(2026, 10, 26),
+    last_updated=date(2026, 10, 29),
     title="Security Advisory 0201",
     vulnerabilities=(
         _AdvisoryVulnerability(
@@ -184,9 +189,7 @@ def _terminattr_version_assessment(fact: Fact[TerminAttrVersionFact]) -> Compone
         return TerminAttrVersionFact.unavailable(FactProblemKind.INVALID, fact.source)
     if version.major == 1:
         last_patch = TERMINATTR_LAST_AFFECTED_PATCH.get(version.minor)
-        affected = (
-            version.patch <= last_patch if last_patch is not None else any(first <= version.minor <= last for first, last in TERMINATTR_FULLY_AFFECTED_MINOR_RANGES)
-        )
+        affected = version.minor in TERMINATTR_LAST_AFFECTED_PATCH and (last_patch is None or version.patch <= last_patch)
     else:
         affected = version.major < 1
     return ComponentVersionAssessment(fact, VersionRelation.AFFECTED if affected else VersionRelation.OUTSIDE_SCOPE)
@@ -232,55 +235,38 @@ def _remediation(eos: EosReleaseAssessment, component: ComponentVersionAssessmen
     )
 
 
-# Keep independent evidence checks adjacent so decisive finding precedence is clear.
-# pylint: disable-next=too-many-branches
-def _assess_sa201(  # noqa: C901, PLR0912
-    version: Fact[EosVersionFact],
-    platform: Fact[PlatformIdentityFact],
+def _required_fact_errors(
+    eos: EosReleaseAssessment | UnavailableFact[EosVersionFact],
     tls: Fact[TerminAttrDefaultCaTlsFact],
-    terminattr: Fact[TerminAttrVersionFact],
-) -> VulnerabilityResult:
-    """Assess independently versioned TLS clients without claiming knowledge of arbitrary programs."""
-    eos = assess_eos_version(version, AFFECTED_VERSION_MATRIX)
-    component = _terminattr_version_assessment(terminattr)
+    component: ComponentVersionAssessment | UnavailableFact[TerminAttrVersionFact],
+) -> ErrorResult | None:
+    """Collect every required input problem, ignoring evidence for a closed client path."""
     tls_disabled = isinstance(tls, AvailableFact) and tls.value.state is FeatureState.DISABLED
     component_outside = isinstance(component, ComponentVersionAssessment) and component.relation is VersionRelation.OUTSIDE_SCOPE
-    if isinstance(eos, EosReleaseAssessment) and eos.relation is VersionRelation.OUTSIDE_SCOPE:
-        if tls_disabled:
-            assert isinstance(tls, AvailableFact)  # noqa: S101
-            return NotAffectedResult(vulnerability_id=VULNERABILITY_ID, decisive=(eos, tls))
-        if component_outside:
-            assert isinstance(component, ComponentVersionAssessment)  # noqa: S101
-            return NotAffectedResult(vulnerability_id=VULNERABILITY_ID, decisive=(eos, component))
-
-    # The current model parser classifies bare vEOS as CVX even though CloudEOS can
-    # report the same model. That identity cannot safely prove the advisory's CVX exclusion.
-    ambiguous_cvx = isinstance(platform, AvailableFact) and PlatformFamily.CVX in platform.value.platform_families
-    platform_scope = None if ambiguous_cvx else assess_platform_scope(VULNERABILITY_ID, platform, AFFECTED_PLATFORMS)
-    if isinstance(platform_scope, NotAffectedResult):
-        return platform_scope
-    problems = []
+    problems: list[UnavailableFact[object]] = []
     if isinstance(eos, UnavailableFact):
         problems.append(eos)
-    if isinstance(platform_scope, ErrorResult):
-        problems.extend(platform_scope.problems)
     if not component_outside and isinstance(tls, UnavailableFact):
         problems.append(tls)
     if not tls_disabled and isinstance(component, UnavailableFact):
         problems.append(component)
     if problems:
         return ErrorResult(vulnerability_id=VULNERABILITY_ID, problems=tuple(problems))
+    return None
 
-    assert isinstance(eos, EosReleaseAssessment)  # noqa: S101
+
+def _assess_sa201_exposure(
+    eos: EosReleaseAssessment,
+    tls: Fact[TerminAttrDefaultCaTlsFact],
+    component: ComponentVersionAssessment | UnavailableFact[TerminAttrVersionFact],
+) -> AffectedResult | InconclusiveResult:
+    """Resolve observable TerminAttr exposure and retain uncertainty about other TLS clients."""
+    tls_disabled = isinstance(tls, AvailableFact) and tls.value.state is FeatureState.DISABLED
+    component_outside = isinstance(component, ComponentVersionAssessment) and component.relation is VersionRelation.OUTSIDE_SCOPE
     applicable_component = component if not tls_disabled and isinstance(component, ComponentVersionAssessment) else None
     remediation = _remediation(eos, applicable_component)
     indications: list[FindingEvidence] = [eos]
     unresolved = []
-    if ambiguous_cvx:
-        unresolved.append(Unobservable(UnobservableKind.INCOMPLETE_PLATFORM_IDENTITY, "CloudVision eXchange versus CloudEOS identity"))
-    else:
-        assert isinstance(platform_scope, PlatformAssessment)  # noqa: S101
-        indications.append(platform_scope)
 
     if applicable_component is not None:
         indications.append(applicable_component)
@@ -293,12 +279,11 @@ def _assess_sa201(  # noqa: C901, PLR0912
             connection.ca_file is None and any(address.rsplit(":", 1)[0].lower().rstrip(".") == "apiserver.arista.io" for address in connection.addresses)
             for connection in tls.value.connections
         )
-        if documented_destination and not ambiguous_cvx:
+        if documented_destination:
             assert isinstance(applicable_component, ComponentVersionAssessment)  # noqa: S101
-            assert isinstance(platform_scope, PlatformAssessment)  # noqa: S101
             return AffectedResult(
                 vulnerability_id=VULNERABILITY_ID,
-                context=(eos, platform_scope),
+                context=(eos,),
                 conditions=(AffectedComponentVersion(applicable_component.fact), tls),
                 remediation=remediation,
             )
@@ -309,10 +294,41 @@ def _assess_sa201(  # noqa: C901, PLR0912
     return InconclusiveResult(vulnerability_id=VULNERABILITY_ID, indications=tuple(indications), unresolved=tuple(unresolved), remediation=remediation)
 
 
+def _assess_sa201(
+    version: Fact[EosVersionFact],
+    tls: Fact[TerminAttrDefaultCaTlsFact],
+    terminattr: Fact[TerminAttrVersionFact],
+) -> VulnerabilityResult:
+    """Apply software exclusions before required inputs and exposure assessment on every EOS platform."""
+    eos = assess_eos_version(version, AFFECTED_VERSION_MATRIX)
+    component = _terminattr_version_assessment(terminattr)
+    if isinstance(eos, EosReleaseAssessment) and eos.relation is VersionRelation.OUTSIDE_SCOPE:
+        if isinstance(tls, AvailableFact) and tls.value.state is FeatureState.DISABLED:
+            return NotAffectedResult(vulnerability_id=VULNERABILITY_ID, decisive=(eos, tls))
+        if isinstance(component, ComponentVersionAssessment) and component.relation is VersionRelation.OUTSIDE_SCOPE:
+            return NotAffectedResult(vulnerability_id=VULNERABILITY_ID, decisive=(eos, component))
+
+    errors = _required_fact_errors(eos, tls, component)
+    if errors is not None:
+        return errors
+
+    assert isinstance(eos, EosReleaseAssessment)  # noqa: S101
+    return _assess_sa201_exposure(eos, tls, component)
+
+
 @preview_test_class(warning_message=_PREVIEW_WARNING)
 class SA201(OptionalCommandsMixin, _AntaAdvisoryTest):
     """Assess outbound TLS certificate-trust exposure described by Security Advisory 0201.
 
+    Expected Results
+    ----------------
+    * Not Affected: Both software/exposure paths are outside scope.
+    * Affected: Affected TerminAttr has a configured default-CA TLS client to the documented CVaaS endpoint.
+    * Inconclusive: An unidentified destination or custom-program behavior on affected EOS prevents a complete assessment.
+    * Error: Required EOS version, TerminAttr configuration, or applicable component version is unavailable or invalid.
+
+    Notes
+    -----
     EOS and TerminAttr releases are assessed independently. Enabled, persistently configured TerminAttr clients are evaluated even when no
     session is currently established. Explicit CA selection closes only that client path; a TerminAttr upgrade does not close the separate
     custom-program path on affected EOS. Arbitrary programs' TLS behavior and CA selection cannot be established by this test.
@@ -321,19 +337,12 @@ class SA201(OptionalCommandsMixin, _AntaAdvisoryTest):
     after the certificate and key for certs. The prose's reference to a second argument is not used to reinterpret those examples.
 
     Only the advisory's explicitly identified CVaaS endpoint, apiserver.arista.io, proves a CVaaS destination; other default-CA destinations
-    remain inconclusive. Secure certs and token-secure authentication, including per-cluster options, are supported. Dynamic cvconfig and
-    other authentication modes require additional evidence and produce an error when needed. A bare vEOS identity cannot safely distinguish
-    excluded CloudVision eXchange from CloudEOS and remains inconclusive. Other Arista products covered by the advisory are outside this test.
+    remain inconclusive. Secure certs and token-secure authentication, including per-cluster options, are supported. Other authentication
+    modes require additional evidence and produce an error when needed. All EOS platforms, including CVX, are assessed without platform-family
+    exclusions. Other Arista products covered by the advisory are outside this test.
 
     No mitigation success is claimed from an on-boot event handler: its configuration alone cannot prove execution or effective CA distrust.
     The advisory's CA-distrust workaround requires a reload and can disrupt legitimate TLS endpoints relying on the distrusted roots.
-
-    Expected Results
-    ----------------
-    * Success: Both software/exposure paths are outside scope, or platform identity decisively excludes an affected EOS family.
-    * Failure: Affected TerminAttr has a configured default-CA TLS client to the documented CVaaS endpoint. INCONCLUSIVE also fails: an
-      unidentified destination, ambiguous CVX identity, or custom-program behavior on affected EOS prevents a complete assessment.
-    * Error: Required EOS version, platform identity, TerminAttr configuration, or applicable component version is unavailable or invalid.
 
     Examples
     --------
@@ -348,7 +357,6 @@ class SA201(OptionalCommandsMixin, _AntaAdvisoryTest):
         """Collected facts required to assess the advisory."""
 
         version: Fact[EosVersionFact] = fact_field(EosVersionFact)
-        platform: Fact[PlatformIdentityFact] = fact_field(PlatformIdentityFact)
         tls: Fact[TerminAttrDefaultCaTlsFact] = fact_field(TerminAttrDefaultCaTlsFact)
         terminattr: Fact[TerminAttrVersionFact] = fact_field(TerminAttrVersionFact)
 
@@ -360,6 +368,6 @@ class SA201(OptionalCommandsMixin, _AntaAdvisoryTest):
     def test(self) -> None:
         """Collect declared facts, assess the vulnerability, and project its atomic result."""
         facts = self.Facts.collect(self)
-        finding = _assess_sa201(facts.version, facts.platform, facts.tls, facts.terminattr)
+        finding = _assess_sa201(facts.version, facts.tls, facts.terminattr)
         atomic = self.result.add(f"Verify {VULNERABILITY_ID}.", vulnerability_ids=(VULNERABILITY_ID,))
         project_vulnerability_result(atomic, finding)
