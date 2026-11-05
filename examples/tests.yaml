@@ -1150,6 +1150,8 @@ anta.tests.routing.generic:
         - prefix: 10.100.1.5/32
           vrf: default
           route_type: iBGP
+  - VerifyRouteMapSanity:
+      # Verifies that all objects referenced in route-maps are defined.
   - VerifyRoutingProtocolModel:
       # Verifies the configured routing protocol model.
       model: multi-agent

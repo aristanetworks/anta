@@ -612,3 +612,95 @@ class VerifyIPv4RoutePresencePerVRF(AntaTest):
             # Verifying that the expected IPv4 prefix is present or not in the routing table
             if prefix not in routes_details:
                 result.is_failure("Route not found")
+
+
+class VerifyRouteMapSanity(AntaTest):
+    """Verifies that all objects referenced in route-maps are defined.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the command output is empty or no undefined objects or continue targets are reported.
+    * Failure: The test will fail if any route-map references an undefined object or continue target.
+
+    !!! note
+        Ignored set entries alone do not cause a failure.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      generic:
+        - VerifyRouteMapSanity:
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["routing"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show route-map config-sanity")]
+    _atomic_support: ClassVar[bool] = True
+
+    _REFERENCE_TYPES: ClassVar[dict[str, str]] = {
+        "accessList": "AccessList",
+        "asPathList": "AS-path list",
+        "prefixList": "Prefix-list",
+        "ipv6PrefixList": "IPv6 prefix-list",
+        "ipAddrDynamicPrefixList": "Dynamic prefix-list",
+        "routerIdPrefixList": "Router-ID prefix-list",
+        "routeTagSet": "Tag set",
+        "aggregateAttributes": "Aggregate-attributes route-map",
+        "community": "Community",
+        "largeCommunity": "Large community",
+        "extCommunity": "Extended community",
+        "communityAddOrReplace": "Community",
+        "name": "Sub-route-map",
+    }
+
+    @classmethod
+    def _get_match_reference_messages(cls, match_rules: dict[str, Any]) -> list[str]:
+        """Return failure messages for named match references retained by config-sanity.
+
+        EOS removes valid named references from this diagnostic model. Community-list
+        names are handled separately since their presence alone does not indicate a failure.
+        """
+        messages = [
+            f"{cls._REFERENCE_TYPES[rule]} {reference} is undefined"
+            for rule in (
+                "accessList",
+                "asPathList",
+                "prefixList",
+                "ipv6PrefixList",
+                "ipAddrDynamicPrefixList",
+                "routerIdPrefixList",
+                "routeTagSet",
+            )
+            if (reference := match_rules.get(rule))
+        ]
+        if reference := match_rules.get("aggregation", {}).get("aggregateAttributes"):
+            messages.append(f"Aggregate-attributes route-map {reference} is undefined")
+        return messages
+
+    @classmethod
+    def _get_undefined_reference_messages(cls, entry: dict[str, Any]) -> list[str]:
+        """Return failure messages for undefined objects and continue targets in a sequence."""
+        messages: list[str] = []
+        for rule_group in ("matchRules", "setRules", "subRouteMap"):
+            for rule, debug_info in entry.get(rule_group, {}).get("debugInfo", {}).items():
+                if "undefined" in debug_info:
+                    reference_type = cls._REFERENCE_TYPES.get(rule, rule)
+                    messages.append(f"{reference_type} {debug_info['undefined']} is undefined")
+        messages.extend(cls._get_match_reference_messages(entry.get("matchRules", {})))
+        if entry.get("continueClause"):
+            target = entry.get("continueSeqno", "next sequence")
+            messages.append(f"continue target {target} is undefined")
+        return messages
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyRouteMapSanity."""
+        command_output = self.instance_commands[0].json_output
+        self.result.is_success()
+
+        for name, route_map in command_output.get("routeMaps", {}).items():
+            result = self.result.add(description=f"Route-Map: {name}", status=AntaTestStatus.SUCCESS)
+            for sequence, entry in route_map.get("entries", {}).items():
+                for message in self._get_undefined_reference_messages(entry):
+                    result.is_failure(f"Sequence: {sequence} - {message}")
