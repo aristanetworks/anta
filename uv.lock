@@ -131,13 +131,13 @@ dev = [
     { name = "pylint", specifier = ">=4.1.3" },
     { name = "pylint-pydantic", specifier = ">=0.4.1" },
     { name = "pyright" },
-    { name = "pytest", specifier = ">=9.1.1" },
+    { name = "pytest", specifier = ">=9.2.0" },
     { name = "pytest-asyncio", specifier = ">=1.4.1" },
     { name = "pytest-cov", specifier = ">=7.1.0" },
     { name = "pytest-httpx", specifier = ">=0.36.2" },
     { name = "respx", specifier = ">=0.23.1" },
     { name = "ruff", specifier = ">=0.17.3,<0.17.4" },
-    { name = "tox", specifier = ">=4.67.2,<5.0.0" },
+    { name = "tox", specifier = ">=4.67.4,<5.0.0" },
     { name = "types-pyopenssl" },
     { name = "types-pyyaml" },
     { name = "types-requests" },
@@ -169,13 +169,13 @@ lint = [
     { name = "yamllint", specifier = ">=1.38.0" },
 ]
 test = [
-    { name = "pytest", specifier = ">=9.1.1" },
+    { name = "pytest", specifier = ">=9.2.0" },
     { name = "pytest-asyncio", specifier = ">=1.4.1" },
     { name = "pytest-cov", specifier = ">=7.1.0" },
     { name = "pytest-httpx", specifier = ">=0.36.2" },
     { name = "respx", specifier = ">=0.23.1" },
 ]
-tox = [{ name = "tox", specifier = ">=4.67.2,<5.0.0" }]
+tox = [{ name = "tox", specifier = ">=4.67.4,<5.0.0" }]
 
 [[package]]
 name = "anyio"
@@ -1606,7 +1606,7 @@ wheels = [
 
 [[package]]
 name = "pytest"
-version = "9.1.1"
+version = "9.2.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "colorama", marker = "sys_platform == 'win32'" },
@@ -1615,9 +1615,9 @@ dependencies = [
     { name = "pluggy" },
     { name = "pygments" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e4/47/b9efed96c114afcfa3c9d3fe98a76a1d14c74a9e266d397cf6eb64be5e01/pytest-9.1.1.tar.gz", hash = "sha256:1088fbde8f2b49d95a549a195707afa7a76a3ce9bcadc26b6d71f0ffda5fe313", size = 1636369, upload-time = "2026-06-19T10:58:32.857Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/79/42/bb4641652e58dedeac2ec51abc1f8cae4fee4ec63899a0999016229a0f2a/pytest-9.2.0.tar.gz", hash = "sha256:97c4f3b1f3c7414aa36465e09b8220f1d03627993bd51b1282e193753c80557b", size = 1797555, upload-time = "2026-10-27T21:30:20.728Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/24/25/1de2678b631f5a49215c6c96fff41ba892b0a34df68d6d80292b1b48aa7f/pytest-9.1.1-py3-none-any.whl", hash = "sha256:37a86b45efb9a47a61a36449063e8e18d0cab3161329fc099eb21783169c4f0c", size = 386536, upload-time = "2026-06-19T10:58:31.347Z" },
+    { url = "https://files.pythonhosted.org/packages/51/39/1f5d8c8877a0fa327db959c19341d4be61660de1ab6b7391f9eb805bcd67/pytest-9.2.0-py3-none-any.whl", hash = "sha256:07acdcf88ec174f907dc01af70bf52d49b014bbab03faeeade31c96b18c2e588", size = 411776, upload-time = "2026-10-27T21:30:19.131Z" },
 ]
 
 [[package]]
@@ -1994,7 +1994,7 @@ wheels = [
 
 [[package]]
 name = "tox"
-version = "4.67.2"
+version = "4.67.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "cachetools" },
@@ -2009,9 +2009,9 @@ dependencies = [
     { name = "typing-extensions", marker = "python_full_version < '3.13'" },
     { name = "virtualenv" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/2c/cc/590d979d858960bad441d1b3b6d5f898806132ff2b25a6cbdcbfadb0ceea/tox-4.67.2.tar.gz", hash = "sha256:be272aa5b9503fc084c82da242df124835e23cb86fc337f8e33804f011fc3ca5", size = 347457, upload-time = "2026-10-27T08:19:49.474Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/64/bf/c0eb714b28d21c225eec423efc4243d806de64b5678fec6a15e03a361c09/tox-4.67.4.tar.gz", hash = "sha256:6f97945d3ca1c204337aeecd858b178b30fc5cf9d0b0c15aacea12d1c5eb0946", size = 351271, upload-time = "2026-10-28T06:33:30.12Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/6f/75/0996c8b8a32bfb2fad0241a101b68097d1a99853ab1310c313223b4ee33a/tox-4.67.2-py3-none-any.whl", hash = "sha256:429c249603ef9c99fec3871ac2d9e05d00cc7c02c110c099a2fe942bcb90fb8a", size = 238079, upload-time = "2026-10-27T08:19:47.799Z" },
+    { url = "https://files.pythonhosted.org/packages/27/0e/1a4927a8b5b6bc34a6dec3020094daca52605f2050ecd921cfe36a37c480/tox-4.67.4-py3-none-any.whl", hash = "sha256:e1be08d3dbeb44c7a87ec6b4f0be840b0a0db375013c3c801e5bb428c5607361", size = 239419, upload-time = "2026-10-28T06:33:28.487Z" },
 ]
 
 [[package]]
