@@ -1155,8 +1155,23 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
-    (VerifyRouteMapSanity, "success-optional-rules-absent"): {
-        "eos_data": [{"routeMaps": {"RM-BGP-EXPORT": {"entries": {"10": {}, "20": {"matchRules": {}, "setRules": {}}}}}}],
+    (VerifyRouteMapSanity, "success-no-reference-findings"): {
+        "eos_data": [
+            {
+                "routeMaps": {
+                    "RM-BGP-EXPORT": {
+                        "entries": {
+                            "10": {
+                                "filterType": "permit",
+                                "matchRules": {"debugInfo": {}},
+                                "setRules": {"debugInfo": {}},
+                                "description": [],
+                            }
+                        }
+                    }
+                }
+            }
+        ],
         "expected": {
             "result": AntaTestStatus.SUCCESS,
             "atomic_results": [
@@ -1174,12 +1189,14 @@ DATA: AntaUnitTestData = {
                     "RM-BGP-IMPORT": {
                         "entries": {
                             "10": {
-                                "continueClause": False,
-                                "subRouteMap": {"name": "RM-BGP-IMPORT-CHILD", "debugInfo": {}},
-                                "description": ["undefined is a word in this description"],
-                                "matchRules": {"community": "CL-BGP-IMPORT", "debugInfo": {}},
+                                "filterType": "permit",
+                                "description": [],
+                                "matchRules": {"debugInfo": {}},
                                 "setRules": {
-                                    "communityAddOrReplace": {"communityLists": ["CL-BGP-IMPORT"]},
+                                    "communityAddOrReplace": {
+                                        "operationType": "default",
+                                        "communityLists": ["CL-BGP-IMPORT", "CL-BGP-IMPORT-REGEXP"],
+                                    },
                                     "debugInfo": {"communityAddOrReplace": {"ignored": "CL-BGP-IMPORT-REGEXP"}},
                                 },
                             }
@@ -1205,12 +1222,30 @@ DATA: AntaUnitTestData = {
                     "RM-BGP-EXPORT": {
                         "entries": {
                             "10": {
-                                "matchRules": {"debugInfo": {"community": {"undefined": "CL-BGP-EXPORT"}, "prefixList": {"undefined": "PL-IPV4-EXPORT"}}},
-                                "setRules": {"debugInfo": {"communityAddOrReplace": {"undefined": "CL-BGP-EXPORT-SET"}}},
+                                "filterType": "permit",
+                                "matchRules": {
+                                    "community": "CL-BGP-EXPORT",
+                                    "prefixList": "PL-IPV4-EXPORT",
+                                    "debugInfo": {"community": {"undefined": "CL-BGP-EXPORT"}},
+                                },
+                                "setRules": {
+                                    "communityAddOrReplace": {"operationType": "default", "communityLists": ["CL-BGP-EXPORT-SET"]},
+                                    "debugInfo": {"communityAddOrReplace": {"undefined": "CL-BGP-EXPORT-SET"}},
+                                },
+                                "description": [],
                             }
                         }
                     },
-                    "RM-BGP-IMPORT": {"entries": {"10": {"matchRules": {"debugInfo": {}}, "setRules": {"debugInfo": {}}}}},
+                    "RM-BGP-IMPORT": {
+                        "entries": {
+                            "10": {
+                                "filterType": "permit",
+                                "matchRules": {"community": "CL-BGP-IMPORT", "debugInfo": {"community": {"undefined": "CL-BGP-IMPORT"}}},
+                                "setRules": {"debugInfo": {}},
+                                "description": [],
+                            }
+                        }
+                    },
                 }
             }
         ],
@@ -1218,8 +1253,9 @@ DATA: AntaUnitTestData = {
             "result": AntaTestStatus.FAILURE,
             "messages": [
                 "Route-Map: RM-BGP-EXPORT - Sequence: 10 - Community CL-BGP-EXPORT is undefined",
-                "Route-Map: RM-BGP-EXPORT - Sequence: 10 - Prefix-list PL-IPV4-EXPORT is undefined",
                 "Route-Map: RM-BGP-EXPORT - Sequence: 10 - Community CL-BGP-EXPORT-SET is undefined",
+                "Route-Map: RM-BGP-EXPORT - Sequence: 10 - Prefix-list PL-IPV4-EXPORT is undefined",
+                "Route-Map: RM-BGP-IMPORT - Sequence: 10 - Community CL-BGP-IMPORT is undefined",
             ],
             "atomic_results": [
                 {
@@ -1227,19 +1263,38 @@ DATA: AntaUnitTestData = {
                     "result": AntaTestStatus.FAILURE,
                     "messages": [
                         "Sequence: 10 - Community CL-BGP-EXPORT is undefined",
-                        "Sequence: 10 - Prefix-list PL-IPV4-EXPORT is undefined",
                         "Sequence: 10 - Community CL-BGP-EXPORT-SET is undefined",
+                        "Sequence: 10 - Prefix-list PL-IPV4-EXPORT is undefined",
                     ],
                 },
                 {
                     "description": "Route-Map: RM-BGP-IMPORT",
-                    "result": AntaTestStatus.SUCCESS,
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": [
+                        "Sequence: 10 - Community CL-BGP-IMPORT is undefined",
+                    ],
                 },
             ],
         },
     },
     (VerifyRouteMapSanity, "failure-continue-next"): {
-        "eos_data": [{"routeMaps": {"RM-BGP-EXPORT": {"entries": {"10": {"continueClause": True}}}}}],
+        "eos_data": [
+            {
+                "routeMaps": {
+                    "RM-BGP-EXPORT": {
+                        "entries": {
+                            "10": {
+                                "filterType": "permit",
+                                "matchRules": {"debugInfo": {}},
+                                "setRules": {"debugInfo": {}},
+                                "continueClause": True,
+                                "description": [],
+                            }
+                        }
+                    }
+                }
+            }
+        ],
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [

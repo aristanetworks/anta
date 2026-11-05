@@ -654,15 +654,14 @@ class VerifyRouteMapSanity(AntaTest):
         "name": "Sub-route-map",
     }
 
-    @classmethod
-    def _get_match_reference_messages(cls, match_rules: dict[str, Any]) -> list[str]:
+    def _get_match_reference_messages(self, match_rules: dict[str, Any]) -> list[str]:
         """Return failure messages for named match references retained by config-sanity.
 
         EOS removes valid named references from this diagnostic model. Community-list
         names are handled separately since their presence alone does not indicate a failure.
         """
         messages = [
-            f"{cls._REFERENCE_TYPES[rule]} {reference} is undefined"
+            f"{self._REFERENCE_TYPES[rule]} {reference} is undefined"
             for rule in (
                 "accessList",
                 "asPathList",
@@ -678,16 +677,15 @@ class VerifyRouteMapSanity(AntaTest):
             messages.append(f"Aggregate-attributes route-map {reference} is undefined")
         return messages
 
-    @classmethod
-    def _get_undefined_reference_messages(cls, entry: dict[str, Any]) -> list[str]:
+    def _get_undefined_reference_messages(self, entry: dict[str, Any]) -> list[str]:
         """Return failure messages for undefined objects and continue targets in a sequence."""
         messages: list[str] = []
         for rule_group in ("matchRules", "setRules", "subRouteMap"):
             for rule, debug_info in entry.get(rule_group, {}).get("debugInfo", {}).items():
                 if "undefined" in debug_info:
-                    reference_type = cls._REFERENCE_TYPES.get(rule, rule)
+                    reference_type = self._REFERENCE_TYPES.get(rule, rule)
                     messages.append(f"{reference_type} {debug_info['undefined']} is undefined")
-        messages.extend(cls._get_match_reference_messages(entry.get("matchRules", {})))
+        messages.extend(self._get_match_reference_messages(entry.get("matchRules", {})))
         if entry.get("continueClause"):
             target = entry.get("continueSeqno", "next sequence")
             messages.append(f"continue target {target} is undefined")
