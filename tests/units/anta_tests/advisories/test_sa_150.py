@@ -47,11 +47,14 @@ from anta.tests.advisories.sa_150 import (
     _assess_cve_75945,
     _assess_cve_77191,
 )
-from tests.units.anta_tests import build_eos_platform, build_eos_version, test
+from tests.units.anta_tests import (
+    build_eos_platform,
+    build_eos_version,
+    test,  # noqa: F401 - Pytest collects this imported test function.
+)
 
 if TYPE_CHECKING:
     from anta._advisory.eos_versions import VersionRule
-    from anta._eos.platform import PlatformIdentity
     from tests.units.anta_tests import AntaUnitTestData, AtomicResult, UnitTestResult
 
 SOURCE = FactSource("unit test", FactSourceKind.DEVICE_METADATA)

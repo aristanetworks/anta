@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from typing import TYPE_CHECKING
 from unittest.mock import MagicMock
 
@@ -42,8 +42,8 @@ ADVISORY = _AdvisoryMetadata(
 )
 
 ADVISORY_ANTA_VERSION = "v1.4.0"
-ADVISORY_RUN_START_TIME = datetime(2025, 5, 20, 8, 30, 0, tzinfo=timezone.utc)
-ADVISORY_RUN_END_TIME = datetime(2025, 5, 20, 8, 35, 30, 500000, tzinfo=timezone.utc)
+ADVISORY_RUN_START_TIME = datetime(2025, 5, 20, 8, 30, 0, tzinfo=UTC)
+ADVISORY_RUN_END_TIME = datetime(2025, 5, 20, 8, 35, 30, 500000, tzinfo=UTC)
 ADVISORY_RUN_START_TIME_FORMATTED = "2025-05-20 08:30:00.000+00:00"
 ADVISORY_RUN_END_TIME_FORMATTED = "2025-05-20 08:35:30.500+00:00"
 ADVISORY_RUN_DURATION_FORMATTED = "5 minutes, 30 seconds"

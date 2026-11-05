@@ -5,13 +5,11 @@
 
 from __future__ import annotations
 
-import sys
 from typing import TYPE_CHECKING, Any
 
 import pytest
 from pydantic import ValidationError
 
-from anta.models import AntaTest
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.security import (
     VerifyAPIHttpsSSL,
@@ -31,7 +29,7 @@ from anta.tests.security import (
     VerifySSHStatus,
     VerifyTelnetStatus,
 )
-from tests.units.anta_tests import test
+from tests.units.anta_tests import test  # noqa: F401 - Pytest collects this imported test function.
 
 if TYPE_CHECKING:
     from tests.units.anta_tests import AntaUnitTestData

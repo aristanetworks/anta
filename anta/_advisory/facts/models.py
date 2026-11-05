@@ -10,16 +10,13 @@ from dataclasses import dataclass, field, fields
 from enum import Enum
 from inspect import isabstract
 from types import MappingProxyType
-from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeAlias, TypeVar, cast
-
-from typing_extensions import dataclass_transform
+from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeAlias, TypeVar, cast, dataclass_transform
 
 from anta._eos.version import EOSVersion, parse_eos_version
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
-
-    from typing_extensions import Self
+    from typing import Self
 
     from anta._advisory.base import _AntaAdvisoryTest
     from anta._advisory.eos_versions import VersionRule

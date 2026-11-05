@@ -174,6 +174,7 @@ tox -e py311 -- tests/units/anta_tests/test_system.py::test
 The Python modules in the `tests.units.anta_tests` package define test parameters for AntaTest subclasses unit tests.
 A generic test function is written for all unit tests of the `AntaTest` subclasses.
 In order for your unit tests to be correctly collected, you need to import the generic test function even if not used in the Python module.
+Keep this import on its own line with `# noqa: F401` because pytest collects the imported function. Other imports remain subject to Ruff's unused-import checks.
 
 The `pytest_generate_tests` function definition in `conftest.py` is called during test collection.
 
@@ -241,7 +242,7 @@ Test example for `anta.tests.system.VerifyUptime` AntaTest.
 from anta.tests.system import VerifyUptime
 
 # Import the generic test function
-from tests.units.anta_tests import test
+from tests.units.anta_tests import test  # noqa: F401 - Pytest collects this imported test function.
 
 # Define test parameters
 DATA: AntaUnitTestData = {
@@ -267,7 +268,7 @@ Test example for `anta.tests.connectivity.VerifyReachability` AntaTest that cont
 
 ``` python
 from anta.tests.connectivity import VerifyReachability
-from tests.units.anta_tests import test
+from tests.units.anta_tests import test  # noqa: F401 - Pytest collects this imported test function.
 
 DATA: AntaUnitTestData = {
     (VerifyReachability, "failure-ip"): {

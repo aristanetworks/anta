@@ -21,13 +21,8 @@ from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_item, get_value
 
 if TYPE_CHECKING:
-    import sys
     from ipaddress import IPv4Address
-
-    if sys.version_info >= (3, 11):
-        from typing import Self
-    else:
-        from typing_extensions import Self
+    from typing import Self
 
 CPU_IDLE_THRESHOLD = 25
 MEMORY_THRESHOLD = 0.25

@@ -16,17 +16,10 @@ from anta._eos.version import EOSVersion, parse_eos_version
 from anta.models import AntaTest
 
 if TYPE_CHECKING:
-    import sys
+    from typing import NotRequired, TypeAlias
 
     from anta.device import AntaDevice, DevicePlatform, DeviceVersion
     from anta.result_manager.models import AntaTestStatus
-
-    if sys.version_info >= (3, 11):
-        from typing import NotRequired
-    else:
-        from typing_extensions import NotRequired
-
-    from typing import TypeAlias
 
 
 class AtomicResult(TypedDict):

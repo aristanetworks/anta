@@ -60,7 +60,11 @@ from anta.tests.advisories.sa_142 import (
     _path_applies,
     _version_relation,
 )
-from tests.units.anta_tests import build_eos_platform, build_eos_version, test
+from tests.units.anta_tests import (
+    build_eos_platform,
+    build_eos_version,
+    test,  # noqa: F401 - Pytest collects this imported test function.
+)
 from tests.units.anta_tests.advisories import OfflineAntaDevice, build_expected_advisory_result
 
 MTU_DROP_COMMAND = "ip software forwarding mtu exceed action drop"

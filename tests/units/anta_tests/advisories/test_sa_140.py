@@ -26,7 +26,10 @@ from anta.tests.advisories.sa_140 import (
     SA140,
     _assess_sa140,
 )
-from tests.units.anta_tests import build_eos_version, test
+from tests.units.anta_tests import (
+    build_eos_version,
+    test,  # noqa: F401 - Pytest collects this imported test function.
+)
 from tests.units.anta_tests.advisories import OfflineAntaDevice, build_expected_advisory_result
 
 EXPECTED_REMEDIATION = software_version_plan(
