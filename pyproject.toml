@@ -121,6 +121,14 @@ namespaces = false
 "anta" = ["py.typed"]
 
 ################################
+# Dependency resolution
+################################
+[tool.uv]
+required-version = ">=0.9.25"
+# Match Renovate's minimumReleaseAge, including transitive lock updates.
+exclude-newer = "7 days"
+
+################################
 # Version
 ################################
 [tool.bumpver]
