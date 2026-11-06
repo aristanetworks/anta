@@ -62,7 +62,7 @@ report -> Generate coverage report
 
 ### Locked dependencies
 
-The committed `uv.lock` records exact versions of the root project's runtime dependencies, CLI extra, and dependency groups so GitHub Dependabot can detect known vulnerabilities in the resolved dependencies. Renovate refreshes the lock weekly, including transitive dependencies, and updates it alongside dependency declaration changes.
+The committed `uv.lock` records exact versions of the root project's runtime dependencies, CLI extra, and dependency groups so GitHub Dependabot can detect known vulnerabilities in the resolved dependencies. Renovate refreshes the lock weekly, including transitive dependencies, and updates it alongside dependency declaration changes. Lock maintenance bypasses Renovate's release-age status check because it has no individual release timestamp; uv enforces the seven-day cutoff during resolution.
 
 To reproduce the locked unit-test environment, install [uv](https://docs.astral.sh/uv/getting-started/installation/) 0.9.25 or newer and run from the repository root:
 

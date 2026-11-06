@@ -34,6 +34,12 @@
   },
 
   "packageRules": [
+    {
+      "description": "Let uv enforce release age during lockfile maintenance.",
+      "matchManagers": ["pep621"],
+      "matchUpdateTypes": ["lockFileMaintenance"],
+      "minimumReleaseAge": "0 days"
+    },
     // -------------------------------------------------------------------------
     // PEP621 (pyproject.toml) Rules
     // Inherits global: reviewers, commitMessagePrefix ("ci:"), labels ("dependencies")
