@@ -82,6 +82,15 @@ def expected_result(status: ProductionStatus, message: str, remediation: Remedia
 
 
 _DATA: AntaUnitTestData = {
+    (SA173, "failure-432-patch-above-10"): {
+        "version": build_eos_version("4.32.11M"),
+        "eos_data": eos_data(EMPTY_OSPFV3, LEGACY_OSPFV3, UNAUTHENTICATED_CONFIG),
+        "expected": expected_result(
+            AntaTestStatus.FAILURE,
+            "The device is affected because EOS version '4.32.11M' is affected and the OSPFv3 legacy IPv6 routing process is enabled",
+            expected_remediation("4.32.11M"),
+        ),
+    },
     (SA173, "failure-configured-without-authentication"): {
         "version": build_eos_version("4.35.4M"),
         "eos_data": eos_data(CURRENT_OSPFV3, EMPTY_OSPFV3, UNAUTHENTICATED_CONFIG),
@@ -254,7 +263,9 @@ class TestSA173VersionMatrix(unittest.TestCase):
             ("4.33.8M", AffectedStatus.AFFECTED),
             ("4.33.9M", AffectedStatus.NOT_AFFECTED),
             ("4.32.10M", AffectedStatus.AFFECTED),
-            ("4.32.11M", AffectedStatus.NOT_AFFECTED),
+            ("4.32.11M", AffectedStatus.AFFECTED),
+            ("4.32.12M", AffectedStatus.AFFECTED),
+            ("4.32.99M", AffectedStatus.AFFECTED),
             ("4.31.99M", AffectedStatus.AFFECTED),
             ("4.1.0F", AffectedStatus.AFFECTED),
         ):

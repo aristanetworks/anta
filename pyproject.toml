@@ -67,13 +67,13 @@ dev = [
   "bumpver>=2026.1132",
 ]
 tox = [
-  "tox>=4.67.2,<5.0.0",
+  "tox>=4.67.4,<5.0.0",
 ]
 test = [
   "pytest-asyncio>=1.4.1",
   "pytest-cov>=7.1.0",
   "pytest-httpx>=0.36.2",
-  "pytest>=9.1.1",
+  "pytest>=9.2.0",
   "respx>=0.23.1",
 ]
 benchmark = [
@@ -98,7 +98,7 @@ doc = [
   "griffe >=2.4.1,<2.5",
   "griffe-warnings-deprecated~=1.1.2",
   "mike @ git+https://github.com/squidfunk/mike.git@2d4ad799442f4592db8ad53b179bfb33db8c69ac",
-  "packaging>=24.2",
+  "packaging>=26.3",
   "zensical==0.0.73",
   "mkdocs~=1.6",
   "mkdocs-autorefs~=1.4",
@@ -119,6 +119,14 @@ namespaces = false
 
 [tool.setuptools.package-data]
 "anta" = ["py.typed"]
+
+################################
+# Dependency resolution
+################################
+[tool.uv]
+required-version = ">=0.9.25"
+# Match Renovate's minimumReleaseAge, including transitive lock updates.
+exclude-newer = "7 days"
 
 ################################
 # Version
