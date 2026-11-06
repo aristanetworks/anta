@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 5
 requires-python = ">=3.11"
 resolution-markers = [
     "python_full_version >= '3.12'",
@@ -152,7 +152,7 @@ doc = [
     { name = "mkdocs-autorefs", specifier = "~=1.4" },
     { name = "mkdocstrings", extras = ["python"], specifier = "~=1.0.8" },
     { name = "mkdocstrings-python", specifier = "~=2.0.10" },
-    { name = "packaging", specifier = ">=24.2" },
+    { name = "packaging", specifier = ">=26.3" },
     { name = "zensical", specifier = "==0.0.73" },
 ]
 lint = [
