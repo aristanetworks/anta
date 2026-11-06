@@ -3,7 +3,7 @@
 # Not in pyproject.toml because: 
 # https://github.com/mbarkhau/bumpver/issues/247
 ################################
-requires = ["tox>=4.21"]
+requires = ["tox==4.67.4"]
 env_list = [
   "clean",
   "lint",
@@ -51,7 +51,7 @@ commands =[
 [env.clean]
 skip_install=true
 dependency_groups = []
-deps = ["coverage[toml]"]
+deps = ["coverage[toml]==7.17.0"]
 description = "Clean existing coverage"
 commands =[
   ["coverage", "erase"],
@@ -61,7 +61,7 @@ commands =[
 description = "Generate coverage report"
 skip_install=true
 dependency_groups = []
-deps = ["coverage[toml]"]
+deps = ["coverage[toml]==7.17.0"]
 commands = [
   ["coverage", "--version"],
   ["coverage", "html", "--rcfile=pyproject.toml"],
