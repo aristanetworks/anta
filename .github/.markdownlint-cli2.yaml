@@ -101,6 +101,46 @@ config:
     # Strong style should be consistent
     style: "asterisk"
 
+  # Python object references are resolved by mkdocs-autorefs during the strict
+  # Zensical build. MD052 only supports exact labels; its undefined-reference parser lowercases
+  # these labels and removes underscores.
+  # Keep ordinary undefined reference links checked; register new object IDs here.
+  MD052:
+    ignored_labels:
+      - x  # Preserve the default task-list exemption.
+      - anta.catalog.antacatalog
+      - anta.constants.knowneoserrors
+      - anta.customtypes
+      - anta.device.antadevice
+      - anta.device.antadevice.collect
+      - anta.device.antadevice.copy
+      - anta.device.antadevice.disconnect
+      - anta.device.antadevice.refresh
+      - anta.device.asynceosdevice
+      - anta.device.asynceosdevice.collect
+      - anta.device.asynceosdevice.copy
+      - anta.device.asynceosdevice.refresh
+      - anta.inventory.antainventory
+      - anta.inventory.antainventory.adddevice
+      - anta.inventory.antainventory.connectinventory
+      - anta.inventory.antainventory.disconnectinventory
+      - anta.inventory.antainventory.getinventory
+      - anta.inventory.antainventory.parse
+      - anta.models.antacommand
+      - anta.models.antatemplate
+      - anta.models.antatemplate.render
+      - anta.models.antatest
+      - anta.models.antatest.input
+      - anta.models.antatest.input.resultoverwrite
+      - anta.models.antatest.render
+      - anta.models.antatest.test
+      - anta.reporter.csvreporter.reportcsv
+      - anta.reporter.jinjareporter.reportjinja
+      - anta.reporter.mdreporter.mdreportgenerator
+      - anta.resultmanager.models.antateststatus
+      - anta.resultmanager.models.testresult
+      - anta.tests.hardware.verifytemperature
+
   # MD059/descriptive-link-text
   # Link text should be descriptive - by default this rule flags when a link text is "here"
   MD059: false

@@ -6,13 +6,11 @@
 # pylint: disable=C0302
 from __future__ import annotations
 
-import sys
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
-from anta.models import AntaTest
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.bfd import VerifyBFDPeersHealth, VerifyBFDPeersIntervals, VerifyBFDPeersRegProtocols, VerifyBFDSpecificPeers
-from tests.units.anta_tests import test
+from tests.units.anta_tests import test  # noqa: F401 - Pytest collects this imported test function.
 
 if TYPE_CHECKING:
     from tests.units.anta_tests import AntaUnitTestData

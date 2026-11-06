@@ -13,12 +13,7 @@ from pydantic import BaseModel, ConfigDict, model_validator
 from anta.custom_types import Hostname, Interface, Port, SnmpEncryptionAlgorithm, SnmpHashingAlgorithm, SnmpVersion, SnmpVersionV3AuthType
 
 if TYPE_CHECKING:
-    import sys
-
-    if sys.version_info >= (3, 11):
-        from typing import Self
-    else:
-        from typing_extensions import Self
+    from typing import Self
 
 
 class SnmpHost(BaseModel):

@@ -79,15 +79,17 @@ def _assess_sa154(version: Fact[EosVersionFact], bfd: Fact[BfdAuthenticationFact
 class SA154(OptionalCommandsMixin, _AntaAdvisoryTest):
     """Verify whether the device is impacted by Security Advisory 0154.
 
+    Expected Results
+    ----------------
+    * Not Affected: EOS is outside scope, BFD is shut down, or BFD authentication is not configured.
+    * Affected: An affected EOS release has BFD enabled with authentication configured.
+    * Error: Required EOS or BFD state cannot be determined.
+
+    Notes
+    -----
     BFD is exposed when it is enabled and authentication is configured. Active peers are not
     required because peer state is transient and a configured interface or peer may establish
     a session after the test runs.
-
-    Expected Results
-    ----------------
-    * Success: EOS is outside scope, BFD is shut down, or BFD authentication is not configured.
-    * Failure: An affected EOS release has BFD enabled with authentication configured.
-    * Error: Required EOS or BFD state cannot be determined.
 
     Examples
     --------

@@ -7,12 +7,13 @@
 # pyright: reportAttributeAccessIssue=false
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from ipaddress import IPv4Address
 from typing import TYPE_CHECKING, Any, ClassVar, TypeVar
 
 from pydantic import Field, field_validator
 
+from anta.input_models import bfd as bfd_models
 from anta.input_models.bfd import BFDPeer
 from anta.models import AntaCommand, AntaTest
 from anta.tools import get_value
@@ -81,7 +82,7 @@ class VerifyBFDSpecificPeers(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBFDSpecificPeers test."""
 
-        bfd_peers: list[BFDPeer]
+        bfd_peers: list[bfd_models.BFDPeer]
         """List of BFD peers."""
         BFDPeer: ClassVar[type[BFDPeer]] = BFDPeer
         """To maintain backward compatibility."""
@@ -159,7 +160,7 @@ class VerifyBFDPeersIntervals(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBFDPeersIntervals test."""
 
-        bfd_peers: list[BFDPeer]
+        bfd_peers: list[bfd_models.BFDPeer]
         """List of BFD peers."""
         BFDPeer: ClassVar[type[BFDPeer]] = BFDPeer
         """To maintain backward compatibility."""
@@ -281,9 +282,7 @@ class VerifyBFDPeersHealth(AntaTest):
                     # Check if the last down is within the threshold
                     if self.inputs.down_threshold is not None:
                         last_down = peer_stats["lastDown"]
-                        hours_difference = (
-                            datetime.fromtimestamp(current_timestamp, tz=timezone.utc) - datetime.fromtimestamp(last_down, tz=timezone.utc)
-                        ).total_seconds() / 3600
+                        hours_difference = (datetime.fromtimestamp(current_timestamp, tz=UTC) - datetime.fromtimestamp(last_down, tz=UTC)).total_seconds() / 3600
                         if hours_difference < self.inputs.down_threshold:
                             self.result.is_failure(
                                 f"{identifier} - Session failure detected within the expected uptime threshold ({round(hours_difference)} hours ago)"
@@ -333,7 +332,7 @@ class VerifyBFDPeersRegProtocols(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBFDPeersRegProtocols test."""
 
-        bfd_peers: list[BFDPeer]
+        bfd_peers: list[bfd_models.BFDPeer]
         """List of BFD peers."""
         BFDPeer: ClassVar[type[BFDPeer]] = BFDPeer
         """To maintain backward compatibility."""

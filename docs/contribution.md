@@ -18,6 +18,9 @@ To help development, open your PR as soon as possible even in draft mode. It hel
 
 ## Create a development environment
 
+!!! tip "pip dependency groups"
+    The `--group` option used in this guide requires pip 25.1 or newer.
+
 Run the following commands to create an ANTA development environment:
 
 ```bash
@@ -49,7 +52,6 @@ default environments:
 clean  -> Erase previous coverage reports
 lint   -> Check the code style
 type   -> Check typing
-py310  -> Run pytest with py310
 py311  -> Run pytest with py311
 py312  -> Run pytest with py312
 py313  -> Run pytest with py313
@@ -57,6 +59,44 @@ py314  -> Run pytest with py314
 py315  -> Run pytest with py315
 report -> Generate coverage report
 ```
+
+### Locked dependencies
+
+The committed `uv.lock` records exact versions of the root project's runtime dependencies, CLI extra, and dependency groups so GitHub Dependabot can detect known vulnerabilities in the resolved dependencies. Renovate refreshes the lock weekly, including transitive dependencies, and updates it alongside dependency declaration changes. Lock maintenance bypasses Renovate's release-age status check because it has no individual release timestamp; uv enforces the seven-day cutoff during resolution.
+
+To reproduce the locked unit-test environment, install [uv](https://docs.astral.sh/uv/getting-started/installation/) 0.9.25 or newer and run from the repository root:
+
+```bash
+uv sync --locked --python 3.11 --no-default-groups --group test --extra cli
+COLUMNS=165 uv run --no-sync python -m pytest tests/units --no-cov
+```
+
+CI checks lock freshness and runs this environment in addition to the existing tox checks. Tox continues to resolve dependencies independently across the supported Python versions. Pre-commit continues to manage its own isolated hook environments.
+
+When changing project metadata or dependency declarations in `pyproject.toml`, regenerate and commit the lock together with the manifest:
+
+```bash
+uv lock
+uv lock --check
+```
+
+To deliberately upgrade a selected dependency or refresh the complete graph within the declared requirements:
+
+```bash
+uv lock --upgrade-package <package-name>
+uv lock --upgrade
+```
+
+Routine uv resolution excludes distributions uploaded to package registries within the last seven days for both direct and transitive dependencies, aligning with Renovate's release-age policy. The cutoff uses each wheel or source archive's upload timestamp, not the package version's release date. For an urgent security fix, maintainers can temporarily bypass uv's cooldown for the affected package:
+
+```toml
+[tool.uv.exclude-newer-package]
+affected-package = false
+```
+
+Record the advisory and reason in the PR, update the affected package, and remove the exception once the distributions required by the supported environments are at least seven days old, measured from their registry upload times. Any applicable Renovate approval or release-age restrictions must also be handled when expediting its PRs.
+
+A lock update selects versions for environments that consume it. Ordinary pip installations use ANTA's published dependency ranges. When addressing a relevant vulnerability, also assess whether those ranges must exclude affected versions; updating the lock alone does not change downstream requirements or existing installations.
 
 ### Code linting
 
@@ -112,7 +152,13 @@ Add the unit test to the appropriate submodule test file under `tests/units/anta
 
 ### How to run unit tests
 
-To run the unit test suite from an activated development environment:
+To create an environment for running tests without installing development tools:
+
+```bash
+pip install -e ".[cli]" --group test
+```
+
+To run the unit test suite from that environment or an activated development environment:
 
 ```bash
 pytest tests/units
@@ -128,14 +174,18 @@ pytest tests/units/anta_tests/test_system.py::test
 If you use [`uv`](https://docs.astral.sh/uv/) for your local workflow, it can create or update the environment before running pytest:
 
 ```bash
-uv run --group dev --extra cli pytest tests/units
+uv run --no-default-groups --group test --extra cli pytest tests/units
 ```
+
+`--no-default-groups` excludes uv's default `dev` group from dependency selection. By default, `uv run` retains extra packages already installed in the environment.
+
+The `test` group contains the dependencies needed to run pytest. The `benchmark` group adds the benchmark plugins. The `tox` group installs tox with the version constraints for the active Python interpreter. The `dev` group includes the test, lint, and tox groups plus the release versioning tool.
 
 Use tox when you want to run the unit tests in the same isolated environments used by CI:
 
 ```bash
 tox -e py311 -- tests/units
-tox -e py310,py311,py312,py313,py314,py315 -- tests/units
+tox -e py311,py312,py313,py314,py315 -- tests/units
 ```
 
 The `--` separator passes the remaining arguments to pytest, so the same file or test-node selection works with tox:
@@ -147,12 +197,12 @@ tox -e py311 -- tests/units/anta_tests/test_system.py::test
 ```
 
 !!! note "Python versions and tox"
-    The tox environments are mapped to concrete Python versions (`py310`, `py311`, `py312`, `py313`, `py314`, and `py315`). Running one tox environment requires that matching Python interpreter to be installed and discoverable on your machine; running the full matrix requires all of them.
+    The tox environments are mapped to concrete Python versions (`py311`, `py312`, `py313`, `py314`, and `py315`). Running one tox environment requires that matching Python interpreter to be installed and discoverable on your machine; running the full matrix requires all of them.
 
     `uv` can help install and manage Python interpreters, for example:
 
     ```bash
-    uv python install 3.10 3.11 3.12 3.13 3.14 3.15
+    uv python install 3.11 3.12 3.13 3.14 3.15
     ```
 
     This does not replace tox for matrix testing in this repository. It only makes it easier to provide the Python interpreters that tox needs.
@@ -162,6 +212,7 @@ tox -e py311 -- tests/units/anta_tests/test_system.py::test
 The Python modules in the `tests.units.anta_tests` package define test parameters for AntaTest subclasses unit tests.
 A generic test function is written for all unit tests of the `AntaTest` subclasses.
 In order for your unit tests to be correctly collected, you need to import the generic test function even if not used in the Python module.
+Keep this import on its own line with `# noqa: F401` because pytest collects the imported function. Other imports remain subject to Ruff's unused-import checks.
 
 The `pytest_generate_tests` function definition in `conftest.py` is called during test collection.
 
@@ -229,7 +280,7 @@ Test example for `anta.tests.system.VerifyUptime` AntaTest.
 from anta.tests.system import VerifyUptime
 
 # Import the generic test function
-from tests.units.anta_tests import test
+from tests.units.anta_tests import test  # noqa: F401 - Pytest collects this imported test function.
 
 # Define test parameters
 DATA: AntaUnitTestData = {
@@ -255,7 +306,7 @@ Test example for `anta.tests.connectivity.VerifyReachability` AntaTest that cont
 
 ``` python
 from anta.tests.connectivity import VerifyReachability
-from tests.units.anta_tests import test
+from tests.units.anta_tests import test  # noqa: F401 - Pytest collects this imported test function.
 
 DATA: AntaUnitTestData = {
     (VerifyReachability, "failure-ip"): {
@@ -425,7 +476,7 @@ Create an [AntaInventory][anta.inventory.AntaInventory] and add an
 
 `autorefs` resolves these identifiers to their documented locations without hard-coding the API page path or heading anchor. Keep ordinary Markdown links for guides and other authored pages.
 
-After adding or changing an object reference, run `zensical build --strict` and check that the link opens the intended object in the rendered site.
+Register new object identifiers under `MD052.ignored_labels` in `.github/.markdownlint-cli2.yaml` (lowercase with underscores removed, as reported by MD052). This central list allows autorefs syntax while keeping MD052 enabled for ordinary reference links; it does not validate Python objects. After adding or changing an object reference, run `zensical build --strict` and check that the link opens the intended object in the rendered site.
 
 ### Generated CLI snippets
 

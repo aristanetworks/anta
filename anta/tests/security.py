@@ -7,10 +7,11 @@ from __future__ import annotations
 
 # Pyright does not understand AntaTest.Input typing
 # pyright: reportAttributeAccessIssue=false
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import ClassVar
 
 from anta.custom_types import PositiveInteger
+from anta.input_models import security as security_models
 from anta.input_models.security import ACL, APISSLCertificate, IPSecPeer, IPSecPeers
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.result_manager.models import AntaTestStatus
@@ -392,7 +393,7 @@ class VerifyAPISSLCertificate(AntaTest):
     class Input(AntaTest.Input):
         """Input parameters for the VerifyAPISSLCertificate test."""
 
-        certificates: list[APISSLCertificate]
+        certificates: list[security_models.APISSLCertificate]
         """List of API SSL certificates."""
         APISSLCertificate: ClassVar[type[APISSLCertificate]] = APISSLCertificate
 
@@ -416,7 +417,7 @@ class VerifyAPISSLCertificate(AntaTest):
                 continue
 
             expiry_time = certificate_data["notAfter"]
-            day_difference = (datetime.fromtimestamp(expiry_time, tz=timezone.utc) - datetime.fromtimestamp(current_timestamp, tz=timezone.utc)).days
+            day_difference = (datetime.fromtimestamp(expiry_time, tz=UTC) - datetime.fromtimestamp(current_timestamp, tz=UTC)).days
 
             # Verify certificate expiry
             if 0 < day_difference < certificate.expiry_threshold:

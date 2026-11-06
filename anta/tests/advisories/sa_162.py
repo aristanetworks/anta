@@ -116,12 +116,11 @@ class SA162(OptionalCommandsMixin, _AntaAdvisoryTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if the EOS version is outside the affected releases, or if an affected
-      release older than 4.33.2F has the current Certz path disabled or unsupported.
-    * Failure: The test will fail if an affected EOS version has an enabled gNSI transport and Certz service.
-    * Inconclusive: The test is inconclusive when EOS 4.33.2F or later has the Certz path closed but Bootz
-      certificate use during initial provisioning is unknown.
-    * Error: The test will error if EOS or current Certz-path state needed for the assessment cannot be determined.
+    * Not Affected: The EOS version is outside the affected releases, or an affected release older than 4.33.2F has the current
+      Certz path disabled or unsupported.
+    * Affected: An affected EOS version has an enabled gNSI transport and Certz service.
+    * Inconclusive: EOS 4.33.2F or later has the Certz path closed, but Bootz certificate use during initial provisioning is unknown.
+    * Error: EOS or current Certz-path state needed for the assessment cannot be determined.
 
     Examples
     --------

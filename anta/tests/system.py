@@ -15,18 +15,14 @@ from pydantic import Field, model_validator
 
 from anta.custom_types import Hostname, Percent, PositiveInteger, ReloadCause
 from anta.decorators import skip_on_platforms
+from anta.input_models import system as system_models
 from anta.input_models.system import NTPPool, NTPServer
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_item, get_value
 
 if TYPE_CHECKING:
-    import sys
     from ipaddress import IPv4Address
-
-    if sys.version_info >= (3, 11):
-        from typing import Self
-    else:
-        from typing_extensions import Self
+    from typing import Self
 
 CPU_IDLE_THRESHOLD = 25
 MEMORY_THRESHOLD = 0.25
@@ -393,7 +389,7 @@ class VerifyNTPAssociations(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyNTPAssociations test."""
 
-        ntp_servers: list[NTPServer] | None = None
+        ntp_servers: list[system_models.NTPServer] | None = None
         """List of NTP servers."""
         ntp_pool: NTPPool | None = None
         """NTP servers pool."""

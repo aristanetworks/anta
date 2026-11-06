@@ -184,10 +184,13 @@ class SA157(_AntaAdvisoryTest):
 
     Expected Results
     ----------------
-    * Success: EOS is outside scope or the configuration prerequisite for an issue is absent; replay also requires anti-replay after updating.
-    * Failure: An affected release has the issue's VRRP prerequisite, or a conditionally fixed release lacks anti-replay for the replay issue.
+    * Not Affected: EOS is outside scope, the configuration prerequisite for an issue is absent, or a conditionally fixed release has anti-replay
+      enabled for the replay issue.
+    * Affected: An affected release has the issue's VRRP prerequisite, or a conditionally fixed release lacks anti-replay for the replay issue.
     * Error: Required EOS or VRRP state cannot be determined.
 
+    Notes
+    -----
     Replay protection is disabled by default after updating, so CVE-2026-73443 requires both fixed software and the global anti-replay setting.
     Assessment uses persistent VRRP configuration rather than transient operational state. CVE-2026-73444 and CVE-2026-73443 require VRRPv2
     with IP-AH authentication, while CVE-2026-73442 applies when either VRRPv2 or VRRPv3 is configured.

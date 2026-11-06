@@ -8,7 +8,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -48,7 +48,7 @@ def clear_counters(inventory: AntaInventory, tags: set[str] | None) -> None:
     show_envvar=True,
     type=click.Path(file_okay=False, dir_okay=True, exists=False, writable=True, path_type=Path),
     help="Directory to save commands output.",
-    default=f"anta_snapshot_{datetime.now(tz=timezone.utc).astimezone().strftime('%Y-%m-%d_%H_%M_%S')}",
+    default=f"anta_snapshot_{datetime.now(tz=UTC).astimezone().strftime('%Y-%m-%d_%H_%M_%S')}",
     show_default=True,
 )
 def snapshot(inventory: AntaInventory, tags: set[str] | None, commands_list: Path, output: Path) -> None:

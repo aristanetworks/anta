@@ -127,9 +127,9 @@ class SA153(OptionalCommandsMixin, _AntaAdvisoryTest):
 
     Expected Results
     ----------------
-    * Success: Each issue passes when the EOS version is outside its affected scope or its risky trace level is disabled.
-    * Failure: An issue fails when an affected EOS release has its risky trace level enabled.
-    * Error: An issue errors when required EOS version or trace state cannot be determined.
+    * Not Affected: For each issue, the EOS version is outside its affected scope or its risky trace level is disabled.
+    * Affected: An affected EOS release has an issue's risky trace level enabled.
+    * Error: Required EOS version or trace state for an issue cannot be determined.
 
     Examples
     --------

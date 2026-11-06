@@ -27,7 +27,10 @@ from anta._advisory.remediation import FixedRelease, software_version_plan
 from anta._eos.version import EOSVersion, parse_eos_version
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_174 import ADVISORY, AFFECTED_VERSION_MATRIX, SA174, _assess_sa174
-from tests.units.anta_tests import build_eos_version, test
+from tests.units.anta_tests import (
+    build_eos_version,
+    test,  # noqa: F401 - Pytest collects this imported test function.
+)
 from tests.units.anta_tests.advisories import build_expected_advisory_result
 
 if TYPE_CHECKING:
@@ -109,7 +112,16 @@ _DATA: AntaUnitTestData = {
     (SA174, "not-affected-unsupported-acctz"): {
         "version": build_eos_version("4.31.10M"),
         "eos_data": eos_data(p4(), TRUSTED_PROFILE, {}),
-        "expected": expected(AntaTestStatus.SUCCESS, "the P4Runtime accounting is disabled and the gNSI Acctz service is not supported", None),
+        "expected": expected(AntaTestStatus.SUCCESS, "the P4Runtime accounting is not supported and the gNSI Acctz service is not supported", None),
+    },
+    (SA174, "not-affected-legacy-accounting-schema"): {
+        "version": build_eos_version("4.33.0F"),
+        "eos_data": eos_data(
+            {"enabled": True, "transport": {"sslProfile": "campus"}},
+            TRUSTED_PROFILE,
+            {"transports": {}, "authzEnabled": False, "acctzEnabled": False, "pathzEnabled": False},
+        ),
+        "expected": expected(AntaTestStatus.SUCCESS, "the P4Runtime accounting is not supported and the gNSI Acctz service is not supported", None),
     },
     (SA174, "not-affected-fixed-version"): {
         "version": build_eos_version("4.35.6M"),

@@ -187,11 +187,13 @@ class SA156(OptionalCommandsMixin, _AntaAdvisoryTest):
 
     Expected Results
     ----------------
-    * Success: DHCP relay is inactive, EOS is outside scope, or a conditionally fixed release has reply validation enabled.
-    * Failure: Active DHCP relay is neither fully resolved nor covered by operational enforcement-disabled IP locking.
+    * Not Affected: DHCP relay is inactive, EOS is outside scope, or a conditionally fixed release has reply validation enabled.
+    * Affected: Active DHCP relay is neither fully resolved nor covered by operational enforcement-disabled IP locking.
     * Mitigated: Enforcement-disabled IP locking operationally covers every active relay interface and address family.
     * Error: Required EOS, DHCP relay, reply-validation, or IP-locking scope cannot be determined.
 
+    Notes
+    -----
     A software update alone is insufficient. The advisory requires reply source-address validation on every fixed release.
     Its alternative IP-locking mitigation is accepted only from operational state whose interface or VLAN and IPv4/IPv6
     coverage can be correlated with every active DHCP relay path. Unsupported IP locking proves that mitigation is absent.

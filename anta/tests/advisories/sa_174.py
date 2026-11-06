@@ -149,8 +149,8 @@ class SA174(OptionalCommandsMixin, _AntaAdvisoryTest):
 
     Expected Results
     ----------------
-    * Success: EOS is outside scope, P4Runtime is disabled, or mTLS is used without request accounting or gNSI Acctz.
-    * Failure: P4Runtime lacks mTLS, or accounting is active while gNSI Authz is disabled or unsupported.
+    * Not Affected: EOS is outside scope, P4Runtime is disabled, or mTLS is used without request accounting or gNSI Acctz.
+    * Affected: P4Runtime lacks mTLS, or accounting is active while gNSI Authz is disabled or unsupported.
     * Inconclusive: Accounting and gNSI Authz are enabled, but the installed Authz policy cannot be verified.
     * Error: Required EOS, P4Runtime, TLS, accounting, or gNSI Authz state cannot be determined.
 

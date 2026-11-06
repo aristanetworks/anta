@@ -81,10 +81,12 @@ class SA161(OptionalCommandsMixin, _AntaAdvisoryTest):
 
     Expected Results
     ----------------
-    * Success: EOS is outside scope or the local vulnerable MLAG dual-primary configuration is absent.
-    * Failure: An affected EOS release has MLAG dual-primary heartbeat configured with the errdisable-all action.
+    * Not Affected: EOS is outside scope or the local vulnerable MLAG dual-primary configuration is absent.
+    * Affected: An affected EOS release has MLAG dual-primary heartbeat configured with the errdisable-all action.
     * Error: Required EOS or local MLAG state cannot be determined.
 
+    Notes
+    -----
     Transient MLAG, peer-link, heartbeat, and dual-primary operational states do not remove exposure from a device with the vulnerable configuration.
 
     Examples

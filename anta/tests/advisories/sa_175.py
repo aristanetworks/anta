@@ -80,9 +80,9 @@ class SA175(OptionalCommandsMixin, _AntaAdvisoryTest):
 
     Expected Results
     ----------------
-    * Success: The test passes when the EOS version is outside scope or no PIM sparse-mode interface is configured.
-    * Failure: The test fails when an affected EOS version has an IPv4 or IPv6 PIM sparse-mode interface.
-    * Error: The test errors when required EOS version or PIM sparse-mode state cannot be determined.
+    * Not Affected: The EOS version is outside scope or no PIM sparse-mode interface is configured.
+    * Affected: An affected EOS version has an IPv4 or IPv6 PIM sparse-mode interface.
+    * Error: Required EOS version or PIM sparse-mode state cannot be determined.
 
     Examples
     --------

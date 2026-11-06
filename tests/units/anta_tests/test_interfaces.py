@@ -6,11 +6,9 @@
 # pylint: disable=C0302
 from __future__ import annotations
 
-import sys
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING, Any
 
-from anta.models import AntaTest
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.interfaces import (
     VerifyIllegalLACP,
@@ -40,7 +38,7 @@ from anta.tests.interfaces import (
     VerifyStormControlDrops,
     VerifySVI,
 )
-from tests.units.anta_tests import test
+from tests.units.anta_tests import test  # noqa: F401 - Pytest collects this imported test function.
 
 if TYPE_CHECKING:
     from tests.units.anta_tests import AntaUnitTestData
@@ -71,7 +69,7 @@ def create_status_data(*interfaces_with_status: tuple[str, str, float]) -> dict[
 
 
 # Mock current time to maintain test VerifyInterfacesCounterDetails stability
-now = datetime.now(timezone.utc)
+now = datetime.now(UTC)
 one_day_ago = now - timedelta(days=1)
 timestamp_one_day_ago = one_day_ago.timestamp()
 

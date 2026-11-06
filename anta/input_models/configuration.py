@@ -13,12 +13,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from anta.custom_types import RegexString
 
 if TYPE_CHECKING:
-    import sys
-
-    if sys.version_info >= (3, 11):
-        from typing import Self
-    else:
-        from typing_extensions import Self
+    from typing import Self
 
 
 class Threshold(BaseModel):

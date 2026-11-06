@@ -28,7 +28,10 @@ from anta._advisory.remediation import FixedRelease, RemediationPlan, RunCommand
 from anta._eos.version import EOSVersion, parse_eos_version
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_178 import ADVISORY, AFFECTED_VERSION_MATRIX, SA178, _assess_sa178
-from tests.units.anta_tests import build_eos_version, test
+from tests.units.anta_tests import (
+    build_eos_version,
+    test,  # noqa: F401 - Pytest collects this imported test function.
+)
 from tests.units.anta_tests.advisories import build_expected_advisory_result
 
 if TYPE_CHECKING:

@@ -105,8 +105,8 @@ class SA163(OptionalCommandsMixin, _AntaAdvisoryTest):
 
     Expected Results
     ----------------
-    * Success: EOS is outside scope or no enabled gNMI transport combines mutual TLS with request authorization.
-    * Failure: An affected release has an exposed transport without the documented AAA mitigation.
+    * Not Affected: EOS is outside scope or no enabled gNMI transport combines mutual TLS with request authorization.
+    * Affected: An affected release has an exposed transport without the documented AAA mitigation.
     * Mitigated: The exposed transport is covered by explicit privilege-level-zero AAA authorization.
     * Error: Required EOS, transport, SSL-profile, or AAA state cannot be determined.
 

@@ -25,13 +25,8 @@ from anta.logger import anta_log_exception
 from anta.models import AntaTest
 
 if TYPE_CHECKING:
-    import sys
     from types import ModuleType
-
-    if sys.version_info >= (3, 11):
-        from typing import Self
-    else:
-        from typing_extensions import Self
+    from typing import Self
 
 logger = logging.getLogger(__name__)
 

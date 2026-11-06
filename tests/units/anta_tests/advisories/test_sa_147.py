@@ -53,7 +53,10 @@ from anta.tests.advisories.sa_147 import (
     _assess_server_issue,
     _is_openssh_before_10_4,
 )
-from tests.units.anta_tests import build_eos_version, test
+from tests.units.anta_tests import (
+    build_eos_version,
+    test,  # noqa: F401 - Pytest collects this imported test function.
+)
 from tests.units.anta_tests.advisories import OfflineAntaDevice
 
 EXPECTED_CURRENT_EOS = EOSVersion(4, 35, 5, suffix="M")

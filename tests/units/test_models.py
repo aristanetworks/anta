@@ -565,6 +565,16 @@ class TestAntaTest:
         assert f"<{command}> is blocked for security reason" in test.result.messages
         assert test.instance_commands[0].collected is False
 
+    @pytest.mark.parametrize("result_overwrite", [None, {}, {"description": None, "categories": None, "custom_field": None}, AntaTest.Input.ResultOverwrite()])
+    def test_empty_result_overwrite(self, result_overwrite: dict[str, None] | AntaTest.Input.ResultOverwrite | None) -> None:
+        """Empty and omitted result overrides must produce equivalent, equally hashed inputs."""
+        omitted = FakeTest.Input()
+        explicit = FakeTest.Input.model_validate({"result_overwrite": result_overwrite})
+
+        assert explicit.result_overwrite is None
+        assert explicit == omitted
+        assert hash(explicit) == hash(omitted)
+
     @pytest.mark.parametrize(
         ("categories", "description", "custom_field"),
         [

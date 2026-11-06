@@ -76,7 +76,7 @@ anta nrfu --device dc1-spine1 --catalog docs/snippets/atomic-results-catalog.yml
 !!! warning
 
     If the command collection fails for any reason, the results for that test will not be expanded.
-    This includes command collection failures based on [known EOS errors](../api/commands.md#anta.constants.KNOWN_EOS_ERRORS) tracked by ANTA.
+    This includes command collection failures based on [known EOS errors][anta.constants.KNOWN_EOS_ERRORS] tracked by ANTA.
 
 !!! info
 

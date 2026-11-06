@@ -194,6 +194,34 @@ class TestAntaRunner:
         with pytest.raises(ValidationError, match="1 validation error for AntaRunFilters"):
             await runner.run(inventory, catalog, filters=AntaRunFilters(devices="invalid"), dry_run=True)  # type: ignore[arg-type]
 
+    @pytest.mark.parametrize(
+        ("result_overwrite", "expected_tests"),
+        [
+            pytest.param({}, 1, id="empty"),
+            pytest.param({"description": None, "categories": None, "custom_field": None}, 1, id="all-none"),
+            pytest.param({"description": "Another description"}, 2, id="description"),
+            pytest.param({"categories": ["hardware"]}, 2, id="categories"),
+            pytest.param({"custom_field": "Another custom field"}, 2, id="custom-field"),
+        ],
+    )
+    async def test_run_result_overwrite_deduplication(self, result_overwrite: dict[str, str | list[str] | None], expected_tests: int) -> None:
+        """An empty override must not cause the same test to execute twice on one device."""
+        device = AsyncEOSDevice(host="device.example.com", username="admin", password="password", name="device", disable_cache=True)
+        inventory = AntaInventory()
+        inventory.add_device(device)
+        catalog = AntaCatalog.from_list([(FakeTest, None), (FakeTest, {"result_overwrite": result_overwrite})])
+
+        async def refresh() -> None:
+            device.is_online = True
+            device.established = True
+
+        with patch.object(device, "refresh", new=AsyncMock(side_effect=refresh)):
+            ctx = await AntaRunner().run(inventory, catalog, disconnect=True)
+
+        assert ctx.total_tests_scheduled == expected_tests
+        assert len(ctx.manager.results) == expected_tests
+        assert all(result.result == "success" for result in ctx.manager.results)
+
     async def test_run_provided_manager(self) -> None:
         """Test AntaRunner.run() with a provided ResultManager instance."""
         inventory = AntaInventory.parse(filename=DATA_DIR / "test_inventory_with_tags.yml", username="anta", password="anta")

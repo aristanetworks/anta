@@ -9,6 +9,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, ClassVar
 
+from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.models import (
     CommandsFactDefinition,
     Fact,
@@ -67,12 +68,16 @@ class P4RuntimeFact(FeatureFact, CommandsFactDefinition["P4RuntimeFact"]):
 
 @dataclass(frozen=True, slots=True)
 class P4RuntimeAccountingFact(FeatureFact, CommandsFactDefinition["P4RuntimeAccountingFact"]):
-    """P4Runtime request-accounting state."""
+    """P4Runtime request-accounting state, exposed by EOS starting in release 4.33.1."""
 
     feature: ClassVar[FeatureRef] = SubFeature(FeatureName.P4_RUNTIME, "accounting")
     key: ClassVar[str] = "feature.p4_runtime.accounting"
     label: ClassVar[str] = "P4Runtime accounting state"
     commands: ClassVar[tuple[AntaCommand, ...]] = (P4_RUNTIME_COMMAND,)
+    supported_versions: ClassVar[tuple[VersionRule, ...]] = (
+        VersionRule(major=4, minor=33, patch_gte=1),
+        VersionRule(major=4, minor_gt=33),
+    )
 
     @classmethod
     def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[P4RuntimeAccountingFact]:

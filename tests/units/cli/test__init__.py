@@ -12,8 +12,6 @@ from unittest.mock import patch
 import pytest
 
 
-# https://github.com/python/cpython/issues/88852
-@pytest.mark.skipif(sys.version_info <= (3, 11), reason="Unreliable behavior patching sys.modules before 3.11")
 def test_cli_error_missing_click(capsys: pytest.CaptureFixture[Any]) -> None:
     """Test ANTA errors out when anta[cli] was not installed."""
     with patch.dict(sys.modules, {"click": None}) as sys_modules:
@@ -41,8 +39,6 @@ def test_cli_error_missing_click(capsys: pytest.CaptureFixture[Any]) -> None:
         assert e_info.value.code == 1
 
 
-# https://github.com/python/cpython/issues/88852
-@pytest.mark.skipif(sys.version_info <= (3, 11), reason="Unreliable behavior patching sys.modules before 3.11")
 def test_cli_error_missing_other() -> None:
     """Test ANTA errors out when anta[cli] was not installed."""
     with patch.dict(sys.modules, {"httpx": None}) as sys_modules:

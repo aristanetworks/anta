@@ -134,11 +134,13 @@ class SA160(OptionalCommandsMixin, _AntaAdvisoryTest):
 
     Expected Results
     ----------------
-    * Success: An issue's EOS version is outside scope; no IS-IS instance is enabled; or the issue-specific prerequisite is absent.
-    * Failure: An affected EOS release reports the issue-specific IS-IS prerequisite.
+    * Not Affected: An issue's EOS version is outside scope; no IS-IS instance is enabled; or the issue-specific prerequisite is absent.
+    * Affected: An affected EOS release reports the issue-specific IS-IS prerequisite.
     * Inconclusive: For CVE-2026-73446, an affected EOS release has IS-IS enabled, but no qualifying active interface is currently observable.
     * Error: Required EOS or IS-IS state cannot be determined.
 
+    Notes
+    -----
     Each vulnerability has an independent version matrix and prerequisite: a reported non-passive broadcast interface, any enabled IS-IS instance,
     or graceful restart.
 

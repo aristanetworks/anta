@@ -431,17 +431,12 @@ def _assess_sa142(  # noqa: C901, PLR0911, PLR0912, PLR0915
 class SA142(OptionalCommandsMixin, _AntaAdvisoryTest):
     """Verify whether the device is impacted by Security Advisory 0142.
 
-    Notes
-    -----
-    This test currently requires the structured EOS platform identity supplied by `AsyncEOSDevice`.
-    Incomplete modular identities remain inconclusive when the installed modules cannot establish the affected family.
-
     Expected Results
     ----------------
-    * Success: The test will pass if no affected redirect path is active or a conditional fix is complete.
-    * Failure: The test will fail if a vulnerable redirect path is active or a conditional fix is incomplete.
-    * Inconclusive: The test is inconclusive for a conservatively matched chassis.
-    * Error: The test will error if a required redirect, platform, EOS release, or MTU control state cannot be determined.
+    * Not Affected: No affected redirect path is active or a conditional fix is complete.
+    * Affected: A vulnerable redirect path is active or a conditional fix is incomplete.
+    * Inconclusive: A conservatively matched chassis cannot be confirmed as an affected switch generation from its installed modules.
+    * Error: A required redirect, platform, EOS release, or MTU control state cannot be determined.
 
     Examples
     --------
