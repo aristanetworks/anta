@@ -73,6 +73,8 @@ COLUMNS=165 uv run --no-sync python -m pytest tests/units --no-cov
 
 CI checks lock freshness and runs this environment in addition to the existing tox checks. Tox continues to resolve dependencies independently across the supported Python versions. Pre-commit continues to manage its own isolated hook environments.
 
+Development tools in the dependency groups use exact version pins so pip and tox use the same direct tool versions as the lockfile. The Git-based `mike` dependency is pinned to a commit. Runtime dependencies, including `typing-extensions` shared with the lint group, retain compatibility ranges. Update the declared pins when upgrading development tools; `uv lock --upgrade` alone does not advance an exact pin.
+
 When changing project metadata or dependency declarations in `pyproject.toml`, regenerate and commit the lock together with the manifest:
 
 ```bash
