@@ -19,8 +19,8 @@ from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.models import AvailableFact, Fact, FactProblemKind, FactSource, FactSourceKind, FeatureState
 from anta._advisory.facts.software import TerminAttrVersionFact
-from anta._advisory.facts.terminattr import TerminAttrTlsClientFact, TerminAttrTlsConnection
-from anta._advisory.findings.models import AffectedResult, ComponentVersionAssessment, ErrorResult, InconclusiveResult, VersionRelation
+from anta._advisory.facts.terminattr import TerminAttrDefaultCaTlsFact, TerminAttrTlsConnection
+from anta._advisory.findings.models import AffectedResult, ComponentVersionAssessment, ErrorResult, InconclusiveResult, NotAffectedResult, VersionRelation
 from anta._advisory.models import _AdvisoryVulnerabilitySeverity
 from anta._advisory.remediation import (
     AllOf,
@@ -146,7 +146,7 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.FAILURE,
             "The device is affected because EOS version '4.36.3M' is affected, "
-            "TerminAttr 'v1.46.2' is affected, and the TerminAttr CloudVision TLS client is enabled.",
+            "TerminAttr 'v1.46.2' is affected, and the TerminAttr TLS client using the default CA trust store is enabled.",
             EXPECTED_COMBINED_PLAN,
         ),
     },
@@ -160,15 +160,14 @@ _DATA: AntaUnitTestData = {
             EXPECTED_EOS_PLAN,
         ),
     },
-    (SA201, "explicit-ca-does-not-clear-affected-component"): {
+    (SA201, "explicit-ca-closes-client-but-not-custom-program-path"): {
         "version": build_eos_version("4.36.3M"),
         "platform": build_eos_platform("cEOSLab"),
         "eos_data": [CUSTOM_CA_CONFIG, PACKAGE],
         "expected": expected_result(
             AntaTestStatus.FAILURE,
-            "The device is affected because EOS version '4.36.3M' is affected, "
-            "TerminAttr 'v1.46.2' is affected, and the TerminAttr CloudVision TLS client is enabled.",
-            EXPECTED_COMBINED_PLAN,
+            INCONCLUSIVE_PREFIX + "EOS version '4.36.3M' is affected. Unresolved: " + CUSTOM_UNRESOLVED,
+            EXPECTED_EOS_PLAN,
         ),
     },
     (SA201, "absent-terminattr-does-not-prove-custom-program-absence"): {
@@ -188,7 +187,7 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.FAILURE,
             "The device is affected because EOS version '4.36.3.2M' is outside the affected releases, TerminAttr 'v1.46.2' is affected, "
-            "and the TerminAttr CloudVision TLS client is enabled.",
+            "and the TerminAttr TLS client using the default CA trust store is enabled.",
             EXPECTED_COMPONENT_ONLY_PLAN,
         ),
     },
@@ -206,18 +205,21 @@ _DATA: AntaUnitTestData = {
         "eos_data": ["", {}],
         "expected": expected_result(
             AntaTestStatus.SUCCESS,
-            "The device is not affected because EOS version '4.36.3.2M' is outside the affected releases and the TerminAttr CloudVision TLS client is disabled.",
+            (
+                "The device is not affected because EOS version '4.36.3.2M' is outside the affected releases "
+                "and the TerminAttr TLS client using the default CA trust store is disabled."
+            ),
             None,
         ),
     },
-    (SA201, "fixed-eos-and-explicit-ca-do-not-clear-affected-component"): {
+    (SA201, "fixed-eos-and-explicit-ca-close-both-paths"): {
         "version": build_eos_version("4.36.3.2M"),
         "eos_data": [CUSTOM_CA_CONFIG, PACKAGE],
         "expected": expected_result(
-            AntaTestStatus.FAILURE,
-            "The device is affected because EOS version '4.36.3.2M' is outside the affected releases, TerminAttr 'v1.46.2' is affected, "
-            "and the TerminAttr CloudVision TLS client is enabled.",
-            EXPECTED_COMPONENT_ONLY_PLAN,
+            AntaTestStatus.SUCCESS,
+            "The device is not affected because EOS version '4.36.3.2M' is outside the affected releases "
+            "and the TerminAttr TLS client using the default CA trust store is disabled.",
+            None,
         ),
     },
     (SA201, "unknown-destination-is-not-assumed-cvaas"): {
@@ -227,8 +229,8 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.FAILURE,
             INCONCLUSIVE_PREFIX + "EOS version '4.36.3.2M' is outside the affected releases, "
-            "TerminAttr 'v1.46.2' is affected, and the TerminAttr CloudVision TLS client is enabled. "
-            "Unresolved: whether the configured TLS destination is CVaaS is external state.",
+            "TerminAttr 'v1.46.2' is affected, and the TerminAttr TLS client using the default CA trust store is enabled. "
+            "Unresolved: whether the configured default-CA TLS destination is CVaaS is external state.",
             EXPECTED_COMPONENT_ONLY_PLAN,
         ),
     },
@@ -248,7 +250,10 @@ _DATA: AntaUnitTestData = {
         "eos_data": ["invalid", PACKAGE],
         "expected": expected_result(
             AntaTestStatus.ERROR,
-            "The test could not determine the TerminAttr TLS client configuration because the 'show running-configuration | section TerminAttr' output is invalid.",
+            (
+                "The test could not determine the TerminAttr default-CA TLS client configuration because "
+                "the 'show running-configuration | section TerminAttr' output is invalid."
+            ),
             None,
         ),
     },
@@ -272,9 +277,10 @@ def version_fact(version: str | None = "4.36.3M") -> Fact[EosVersionFact]:
     return EosVersionFact.from_version(parse_eos_version(version).unwrap()).available(SOURCE)
 
 
-def tls_fact(*, ca_file: str | None = None, address: str = "apiserver.arista.io:443") -> AvailableFact[TerminAttrTlsClientFact]:
-    """Construct an enabled TLS client, retaining an explicit CA as context only."""
-    return TerminAttrTlsClientFact(FeatureState.ENABLED, (TerminAttrTlsConnection("primary", (address,), ca_file),)).available(CONFIG_SOURCE)
+def tls_fact(*, ca_file: str | None = None, address: str = "apiserver.arista.io:443") -> AvailableFact[TerminAttrDefaultCaTlsFact]:
+    """Construct the advisory's default-CA feature state for one TLS client."""
+    state = FeatureState.ENABLED if ca_file is None else FeatureState.DISABLED
+    return TerminAttrDefaultCaTlsFact(state, (TerminAttrTlsConnection("primary", (address,), ca_file),)).available(CONFIG_SOURCE)
 
 
 @pytest.mark.parametrize(
@@ -423,7 +429,7 @@ def test_component_fix_eos_compatibility(version: str, expected: tuple[str, ...]
 
 def test_all_required_unavailable_facts_are_retained() -> None:
     """One missing prerequisite must not hide the other needed observations."""
-    tls = TerminAttrTlsClientFact.unavailable(FactProblemKind.MALFORMED, CONFIG_SOURCE)
+    tls = TerminAttrDefaultCaTlsFact.unavailable(FactProblemKind.MALFORMED, CONFIG_SOURCE)
     component = TerminAttrVersionFact.unavailable(FactProblemKind.MISSING, PACKAGE_SOURCE)
     result = _assess_sa201(version_fact(None), tls, component)
     assert isinstance(result, ErrorResult)
@@ -441,7 +447,7 @@ def test_invalid_required_component_version_is_error(version: str) -> None:
 def test_disabled_component_ignores_unneeded_package_and_retains_eos_uncertainty() -> None:
     """An absent client removes the package dependency but cannot prove custom-program safety."""
     missing = TerminAttrVersionFact.unavailable(FactProblemKind.MISSING, PACKAGE_SOURCE)
-    absent = TerminAttrTlsClientFact(FeatureState.DISABLED).available(CONFIG_SOURCE)
+    absent = TerminAttrDefaultCaTlsFact(FeatureState.DISABLED).available(CONFIG_SOURCE)
     result = _assess_sa201(version_fact(), absent, missing)
     assert isinstance(result, InconclusiveResult)
     assert len(result.unresolved) == 1
@@ -456,28 +462,30 @@ def test_two_independent_unobservable_properties_are_retained() -> None:
 
 
 @pytest.mark.parametrize(
-    ("cloud_ca", "other_ca"),
+    ("cloud_ca", "other_ca", "result_type"),
     [
-        (None, "private-ca.pem"),
-        ("cloud-ca.pem", None),
-        ("cloud-ca.pem", "private-ca.pem"),
-        (None, None),
+        (None, "private-ca.pem", AffectedResult),
+        ("cloud-ca.pem", None, InconclusiveResult),
+        ("cloud-ca.pem", "private-ca.pem", NotAffectedResult),
+        (None, None, AffectedResult),
     ],
 )
-def test_cluster_ca_paths_do_not_clear_affected_client(
+def test_cluster_ca_coverage_is_not_transferred(
     cloud_ca: str | None,
     other_ca: str | None,
+    result_type: type[AffectedResult | InconclusiveResult | NotAffectedResult],
 ) -> None:
-    """Explicit CA paths on either cluster cannot prove an affected client's effective trust is safe."""
-    tls = TerminAttrTlsClientFact(
-        FeatureState.ENABLED,
+    """An explicit CA closes only its own cluster's default-trust exposure path."""
+    state = FeatureState.ENABLED if cloud_ca is None or other_ca is None else FeatureState.DISABLED
+    tls = TerminAttrDefaultCaTlsFact(
+        state,
         (
             TerminAttrTlsConnection("cloud", ("apiserver.arista.io:443",), cloud_ca),
             TerminAttrTlsConnection("other", ("onprem.example:443",), other_ca),
         ),
     ).available(CONFIG_SOURCE)
     result = _assess_sa201(version_fact("4.36.3.2M"), tls, TerminAttrVersionFact("v1.46.2").available(PACKAGE_SOURCE))
-    assert isinstance(result, AffectedResult)
+    assert isinstance(result, result_type)
 
 
 @pytest.mark.parametrize("case", list(_DATA.values()), ids=[name for _, name in _DATA])
@@ -512,7 +520,7 @@ async def test_exact_end_to_end_finding(case: AntaUnitTest) -> None:
                 "-cvaddr=apiserver.arista.io:443 -cvauth=token-secure,token,private-ca.pem "
                 "-cvopt primary.addr=apiserver.arista.io:443 -cvopt primary.auth=token-secure,token"
             ),
-            AdvisoryStatus.AFFECTED,
+            AdvisoryStatus.NOT_AFFECTED,
         ),
         ("-cvaddr=apiserver.arista.io:443 -cvopt primary.auth=token-secure,token", AdvisoryStatus.AFFECTED),
         ("-cvaddr=apiserver.arista.io:443 -cvauth=token-secure,token -cvconfig", AdvisoryStatus.AFFECTED),
@@ -537,12 +545,20 @@ async def test_effective_client_configuration_status(arguments: str, semantic_st
 
 @pytest.mark.parametrize("eos_version", ["4.37.0F", "4.36.3.2M", "4.35.7.2M", "4.34.9.2M", "4.33.11.2M"])
 @pytest.mark.parametrize(
-    "authentication",
-    ["token-secure,token", "token-secure,token,private-ca.pem", "certs,cert,key", "certs,cert,key,private-ca.pem"],
+    ("authentication", "explicit_ca"),
+    [
+        ("token-secure,token", False),
+        ("token-secure,token,private-ca.pem", True),
+        ("certs,cert,key", False),
+        ("certs,cert,key,private-ca.pem", True),
+    ],
 )
-@pytest.mark.parametrize(("package", "expected"), [(PACKAGE, AdvisoryStatus.AFFECTED), (FIXED_PACKAGE, AdvisoryStatus.NOT_AFFECTED)])
-async def test_fixed_eos_does_not_clear_affected_client(eos_version: str, authentication: str, package: dict[str, object], expected: AdvisoryStatus) -> None:
-    """Every published EOS fix still requires a fixed client; an explicit CA does not prove cached trust is safe."""
+@pytest.mark.parametrize(("package", "component_affected"), [(PACKAGE, True), (FIXED_PACKAGE, False)])
+async def test_fixed_eos_and_client_ca_assessment(
+    eos_version: str, authentication: str, explicit_ca: bool, package: dict[str, object], component_affected: bool
+) -> None:
+    """Fixed EOS plus a fixed agent or explicit client CA closes both advisory paths."""
+    expected = AdvisoryStatus.AFFECTED if component_affected and not explicit_ca else AdvisoryStatus.NOT_AFFECTED
     device = OfflineAntaDevice("test")
     device.version = parse_eos_version(eos_version).unwrap()
     await device.refresh()
@@ -581,7 +597,7 @@ async def test_unsupported_configuration_does_not_pass() -> None:
     assert instance.result.result is AntaTestStatus.ERROR
     assert instance.result.messages == [
         (
-            "Verify CVE-2026-111943. - The test could not determine the TerminAttr TLS client configuration because "
+            "Verify CVE-2026-111943. - The test could not determine the TerminAttr default-CA TLS client configuration because "
             "'show running-configuration | section TerminAttr' is not supported."
         )
     ]
@@ -594,8 +610,8 @@ async def test_unsupported_configuration_does_not_pass() -> None:
     [
         ("4.36.3.2M", CONFIG, FIXED_PACKAGE, 0, AdvisoryStatus.NOT_AFFECTED),
         ("4.36.3.2M", "", PACKAGE, 1, AdvisoryStatus.NOT_AFFECTED),
-        ("4.36.3.2M", CUSTOM_CA_CONFIG, PACKAGE, 1, AdvisoryStatus.ERROR),
-        ("4.36.3M", CUSTOM_CA_CONFIG, PACKAGE, 1, AdvisoryStatus.ERROR),
+        ("4.36.3.2M", CUSTOM_CA_CONFIG, PACKAGE, 1, AdvisoryStatus.NOT_AFFECTED),
+        ("4.36.3M", CUSTOM_CA_CONFIG, PACKAGE, 1, AdvisoryStatus.INCONCLUSIVE),
         ("4.36.3M", CONFIG, PACKAGE, 0, AdvisoryStatus.ERROR),
         ("4.36.3M", CONFIG, PACKAGE, 1, AdvisoryStatus.ERROR),
     ],
@@ -624,7 +640,7 @@ async def test_deferred_collection_failure_reaches_assessment(
     assert atomic.advisory_status is semantic_status
     if semantic_status is AdvisoryStatus.ERROR:
         label, command = (
-            ("TerminAttr TLS client configuration", "show running-configuration | section TerminAttr")
+            ("TerminAttr default-CA TLS client configuration", "show running-configuration | section TerminAttr")
             if failed_command == 0
             else ("TerminAttr version", "show version detail")
         )

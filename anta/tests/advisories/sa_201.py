@@ -15,7 +15,7 @@ from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.models import AvailableFact, Fact, FactProblemKind, FactsBase, FeatureState, UnavailableFact, fact_field, facts_dataclass
 from anta._advisory.facts.software import TerminAttrVersionFact
-from anta._advisory.facts.terminattr import TerminAttrTlsClientFact
+from anta._advisory.facts.terminattr import TerminAttrDefaultCaTlsFact
 from anta._advisory.findings.assessment import assess_eos_version
 from anta._advisory.findings.models import (
     AffectedComponentVersion,
@@ -256,7 +256,7 @@ def _remediation(eos: EosReleaseAssessment, component: ComponentVersionAssessmen
 
 def _required_fact_errors(
     eos: EosReleaseAssessment | UnavailableFact[EosVersionFact],
-    tls: Fact[TerminAttrTlsClientFact],
+    tls: Fact[TerminAttrDefaultCaTlsFact],
     component: ComponentVersionAssessment | UnavailableFact[TerminAttrVersionFact],
 ) -> ErrorResult | None:
     """Collect every required input problem, ignoring evidence for a closed client path."""
@@ -276,7 +276,7 @@ def _required_fact_errors(
 
 def _assess_sa201_exposure(
     eos: EosReleaseAssessment,
-    tls: Fact[TerminAttrTlsClientFact],
+    tls: Fact[TerminAttrDefaultCaTlsFact],
     component: ComponentVersionAssessment | UnavailableFact[TerminAttrVersionFact],
 ) -> AffectedResult | InconclusiveResult:
     """Resolve observable TerminAttr exposure and retain uncertainty about other TLS clients."""
@@ -295,7 +295,8 @@ def _assess_sa201_exposure(
         # Only the endpoint explicitly identified by this advisory is a decisive
         # CVaaS destination. DNS aliases and other endpoints need external identification.
         documented_destination = any(
-            any(address.rsplit(":", 1)[0].lower().rstrip(".") == "apiserver.arista.io" for address in connection.addresses) for connection in tls.value.connections
+            connection.ca_file is None and any(address.rsplit(":", 1)[0].lower().rstrip(".") == "apiserver.arista.io" for address in connection.addresses)
+            for connection in tls.value.connections
         )
         if documented_destination:
             assert isinstance(applicable_component, ComponentVersionAssessment)  # noqa: S101
@@ -306,7 +307,7 @@ def _assess_sa201_exposure(
                 remediation=remediation,
             )
         if not documented_destination:
-            unresolved.append(Unobservable(UnobservableKind.EXTERNAL_STATE, "whether the configured TLS destination is CVaaS"))
+            unresolved.append(Unobservable(UnobservableKind.EXTERNAL_STATE, "whether the configured default-CA TLS destination is CVaaS"))
     if eos.relation is VersionRelation.AFFECTED:
         unresolved.append(Unobservable(UnobservableKind.DEVICE_STATE_NOT_EXPOSED, "custom programs' outbound TLS behavior and trust-store selection"))
     return InconclusiveResult(vulnerability_id=VULNERABILITY_ID, indications=tuple(indications), unresolved=tuple(unresolved), remediation=remediation)
@@ -314,7 +315,7 @@ def _assess_sa201_exposure(
 
 def _assess_sa201(
     version: Fact[EosVersionFact],
-    tls: Fact[TerminAttrTlsClientFact],
+    tls: Fact[TerminAttrDefaultCaTlsFact],
     terminattr: Fact[TerminAttrVersionFact],
 ) -> VulnerabilityResult:
     """Apply software exclusions before required inputs and exposure assessment on every EOS platform."""
@@ -341,22 +342,22 @@ class SA201(OptionalCommandsMixin, _AntaAdvisoryTest):
     Expected Results
     ----------------
     * Not Affected: Both software/exposure paths are outside scope.
-    * Affected: Affected TerminAttr has a configured secure TLS client to the documented CVaaS endpoint, including clients with an explicit CA.
+    * Affected: Affected TerminAttr has a configured default-CA TLS client to the documented CVaaS endpoint.
     * Inconclusive: An unidentified destination or custom-program behavior on affected EOS prevents a complete assessment.
     * Error: Required EOS version, TerminAttr configuration, or applicable component version is unavailable or invalid.
 
     Notes
     -----
-    EOS and TerminAttr releases are assessed independently. Enabled, persistently configured TerminAttr clients are evaluated even when no
-    session is currently established. A fixed EOS release or an explicit CA path cannot clear an affected TerminAttr client: cached trust and
-    fallback behavior are not established by running configuration. A new enrollment with clean trust cannot be distinguished from a prior
-    enrollment with cached trust, so affected configured clients are assessed conservatively and require a fixed TerminAttr release.
+    EOS and TerminAttr releases are assessed independently. Fixed EOS clears the EOS trust-store path; fixed TerminAttr clears the agent path.
+    An explicit CA selection, or an absent or disabled client, also closes that client's TerminAttr exposure path. Fixed EOS with a closed
+    TerminAttr path returns Not Affected. An affected EOS release remains Inconclusive after the TerminAttr path is closed because custom
+    programs may still use the affected EOS trust store.
 
-    Revision 1.3 removes the earlier non-impacted explicit-CA examples. CA paths are retained as configuration context, not as proof of safety.
-    A TerminAttr upgrade does not close the separate custom-program path on affected EOS. Arbitrary programs' TLS behavior and CA selection
-    cannot be established by this test.
+    Enabled, persistently configured TerminAttr clients are evaluated even when no session is currently established. Explicit CA selection
+    follows the advisory's condition that TerminAttr is impacted when no CA root of trust is specified. Arbitrary programs' TLS behavior and
+    CA selection cannot be established by this test.
 
-    Only the advisory's explicitly identified CVaaS endpoint, apiserver.arista.io, proves a CVaaS destination; other secure TLS destinations
+    Only the advisory's explicitly identified CVaaS endpoint, apiserver.arista.io, proves a CVaaS destination; other default-CA TLS destinations
     remain inconclusive. Secure certs and token-secure authentication, including per-cluster options, are supported. Other authentication
     modes require additional evidence and produce an error when needed. All EOS platforms, including CVX, are assessed without platform-family
     exclusions. Other Arista products covered by the advisory are outside this test.
@@ -377,7 +378,7 @@ class SA201(OptionalCommandsMixin, _AntaAdvisoryTest):
         """Collected facts required to assess the advisory."""
 
         version: Fact[EosVersionFact] = fact_field(EosVersionFact)
-        tls: Fact[TerminAttrTlsClientFact] = fact_field(TerminAttrTlsClientFact)
+        tls: Fact[TerminAttrDefaultCaTlsFact] = fact_field(TerminAttrDefaultCaTlsFact)
         terminattr: Fact[TerminAttrVersionFact] = fact_field(TerminAttrVersionFact)
 
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
