@@ -18,6 +18,7 @@ from anta.tests.routing.generic import (
     VerifyIPv4RoutePresencePerPrefix,
     VerifyIPv4RoutePresencePerVRF,
     VerifyIPv4RouteType,
+    VerifyRouteMapSanity,
     VerifyRoutingProtocolModel,
     VerifyRoutingStatus,
     VerifyRoutingTableEntry,
@@ -1123,6 +1124,281 @@ DATA: AntaUnitTestData = {
                     "description": "VRF: MISSING Route Source: BGP",
                     "result": AntaTestStatus.FAILURE,
                     "messages": ["VRF not configured"],
+                },
+            ],
+        },
+    },
+    (VerifyRouteMapSanity, "success-empty"): {
+        "eos_data": [{}],
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [],
+        },
+    },
+    (VerifyRouteMapSanity, "success-no-route-maps"): {
+        "eos_data": [{"routeMaps": {}}],
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [],
+        },
+    },
+    (VerifyRouteMapSanity, "success-no-entries"): {
+        "eos_data": [{"routeMaps": {"RM-BGP-EXPORT": {"entries": {}}}}],
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Route-Map: RM-BGP-EXPORT",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
+    },
+    (VerifyRouteMapSanity, "success-no-reference-findings"): {
+        "eos_data": [
+            {
+                "routeMaps": {
+                    "RM-BGP-EXPORT": {
+                        "entries": {
+                            "10": {
+                                "filterType": "permit",
+                                "matchRules": {"debugInfo": {}},
+                                "setRules": {"debugInfo": {}},
+                                "description": [],
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Route-Map: RM-BGP-EXPORT",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
+    },
+    (VerifyRouteMapSanity, "success-ignored-and-configured-lists"): {
+        "eos_data": [
+            {
+                "routeMaps": {
+                    "RM-BGP-IMPORT": {
+                        "entries": {
+                            "10": {
+                                "filterType": "permit",
+                                "description": [],
+                                "matchRules": {"debugInfo": {}},
+                                "setRules": {
+                                    "communityAddOrReplace": {
+                                        "operationType": "default",
+                                        "communityLists": ["CL-BGP-IMPORT", "CL-BGP-IMPORT-REGEXP"],
+                                    },
+                                    "debugInfo": {"communityAddOrReplace": {"ignored": "CL-BGP-IMPORT-REGEXP"}},
+                                },
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "description": "Route-Map: RM-BGP-IMPORT",
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
+    },
+    (VerifyRouteMapSanity, "failure-match-and-set-same-sequence"): {
+        "eos_data": [
+            {
+                "routeMaps": {
+                    "RM-BGP-EXPORT": {
+                        "entries": {
+                            "10": {
+                                "filterType": "permit",
+                                "matchRules": {
+                                    "community": "CL-BGP-EXPORT",
+                                    "prefixList": "PL-IPV4-EXPORT",
+                                    "debugInfo": {"community": {"undefined": "CL-BGP-EXPORT"}},
+                                },
+                                "setRules": {
+                                    "communityAddOrReplace": {"operationType": "default", "communityLists": ["CL-BGP-EXPORT-SET"]},
+                                    "debugInfo": {"communityAddOrReplace": {"undefined": "CL-BGP-EXPORT-SET"}},
+                                },
+                                "description": [],
+                            }
+                        }
+                    },
+                    "RM-BGP-IMPORT": {
+                        "entries": {
+                            "10": {
+                                "filterType": "permit",
+                                "matchRules": {"community": "CL-BGP-IMPORT", "debugInfo": {"community": {"undefined": "CL-BGP-IMPORT"}}},
+                                "setRules": {"debugInfo": {}},
+                                "description": [],
+                            }
+                        }
+                    },
+                }
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Route-Map: RM-BGP-EXPORT - Sequence: 10 - Community CL-BGP-EXPORT is undefined",
+                "Route-Map: RM-BGP-EXPORT - Sequence: 10 - Community CL-BGP-EXPORT-SET is undefined",
+                "Route-Map: RM-BGP-EXPORT - Sequence: 10 - Prefix-list PL-IPV4-EXPORT is undefined",
+                "Route-Map: RM-BGP-IMPORT - Sequence: 10 - Community CL-BGP-IMPORT is undefined",
+            ],
+            "atomic_results": [
+                {
+                    "description": "Route-Map: RM-BGP-EXPORT",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": [
+                        "Sequence: 10 - Community CL-BGP-EXPORT is undefined",
+                        "Sequence: 10 - Community CL-BGP-EXPORT-SET is undefined",
+                        "Sequence: 10 - Prefix-list PL-IPV4-EXPORT is undefined",
+                    ],
+                },
+                {
+                    "description": "Route-Map: RM-BGP-IMPORT",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": [
+                        "Sequence: 10 - Community CL-BGP-IMPORT is undefined",
+                    ],
+                },
+            ],
+        },
+    },
+    (VerifyRouteMapSanity, "failure-continue-next"): {
+        "eos_data": [
+            {
+                "routeMaps": {
+                    "RM-BGP-EXPORT": {
+                        "entries": {
+                            "10": {
+                                "filterType": "permit",
+                                "matchRules": {"debugInfo": {}},
+                                "setRules": {"debugInfo": {}},
+                                "continueClause": True,
+                                "description": [],
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Route-Map: RM-BGP-EXPORT - Sequence: 10 - continue target next sequence is undefined",
+            ],
+            "atomic_results": [
+                {
+                    "description": "Route-Map: RM-BGP-EXPORT",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": [
+                        "Sequence: 10 - continue target next sequence is undefined",
+                    ],
+                },
+            ],
+        },
+    },
+    (VerifyRouteMapSanity, "failure-filtered-diagnostic-example"): {
+        "eos_data": [
+            {
+                "routeMaps": {
+                    "RM-BGP-EXPORT": {
+                        "entries": {
+                            "10": {
+                                "filterType": "permit",
+                                "matchRules": {
+                                    "accessList": "ACL-BGP-EXPORT",
+                                    "asPathList": "AS-PATH-BGP-EXPORT",
+                                    "aggregation": {"aggregateRole": "contributor", "aggregateAttributes": "RM-BGP-AGGREGATE-ATTRIBUTES"},
+                                    "community": "CL-BGP-EXPORT",
+                                    "extCommunity": "ECL-BGP-EXPORT",
+                                    "largeCommunity": "LCL-BGP-EXPORT",
+                                    "routeTagSet": "TAG-SET-BGP-EXPORT",
+                                    "ipv6PrefixList": "PL-IPV6-EXPORT",
+                                    "routerIdPrefixList": "PL-ROUTER-ID",
+                                    "debugInfo": {
+                                        "community": {"undefined": "CL-BGP-EXPORT"},
+                                        "largeCommunity": {"undefined": "LCL-BGP-EXPORT"},
+                                        "extCommunity": {"undefined": "ECL-BGP-EXPORT"},
+                                    },
+                                },
+                                "subRouteMap": {
+                                    "name": "RM-BGP-EXPORT-CHILD",
+                                    "invert": False,
+                                    "debugInfo": {"name": {"undefined": "RM-BGP-EXPORT-CHILD"}},
+                                },
+                                "setRules": {
+                                    "communityAddOrReplace": {"operationType": "default", "communityLists": ["CL-BGP-EXPORT"]},
+                                    "extCommunity": {"operationType": "default", "communityLists": ["ECL-BGP-EXPORT"]},
+                                    "debugInfo": {"communityAddOrReplace": {"undefined": "CL-BGP-EXPORT"}, "extCommunity": {"undefined": "ECL-BGP-EXPORT"}},
+                                },
+                                "continueClause": True,
+                                "continueSeqno": 9999,
+                                "description": [],
+                            },
+                            "20": {
+                                "filterType": "permit",
+                                "matchRules": {"prefixList": "PL-IPV4-EXPORT", "ipAddrDynamicPrefixList": "DPL-IPV4-EXPORT", "debugInfo": {}},
+                                "setRules": {"debugInfo": {}},
+                                "description": [],
+                            },
+                        }
+                    }
+                }
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Route-Map: RM-BGP-EXPORT - Sequence: 10 - Community CL-BGP-EXPORT is undefined",
+                "Route-Map: RM-BGP-EXPORT - Sequence: 10 - Large community LCL-BGP-EXPORT is undefined",
+                "Route-Map: RM-BGP-EXPORT - Sequence: 10 - Extended community ECL-BGP-EXPORT is undefined",
+                "Route-Map: RM-BGP-EXPORT - Sequence: 10 - Community CL-BGP-EXPORT is undefined",
+                "Route-Map: RM-BGP-EXPORT - Sequence: 10 - Extended community ECL-BGP-EXPORT is undefined",
+                "Route-Map: RM-BGP-EXPORT - Sequence: 10 - Sub-route-map RM-BGP-EXPORT-CHILD is undefined",
+                "Route-Map: RM-BGP-EXPORT - Sequence: 10 - AccessList ACL-BGP-EXPORT is undefined",
+                "Route-Map: RM-BGP-EXPORT - Sequence: 10 - AS-path list AS-PATH-BGP-EXPORT is undefined",
+                "Route-Map: RM-BGP-EXPORT - Sequence: 10 - IPv6 prefix-list PL-IPV6-EXPORT is undefined",
+                "Route-Map: RM-BGP-EXPORT - Sequence: 10 - Router-ID prefix-list PL-ROUTER-ID is undefined",
+                "Route-Map: RM-BGP-EXPORT - Sequence: 10 - Tag set TAG-SET-BGP-EXPORT is undefined",
+                "Route-Map: RM-BGP-EXPORT - Sequence: 10 - Aggregate-attributes route-map RM-BGP-AGGREGATE-ATTRIBUTES is undefined",
+                "Route-Map: RM-BGP-EXPORT - Sequence: 10 - continue target 9999 is undefined",
+                "Route-Map: RM-BGP-EXPORT - Sequence: 20 - Prefix-list PL-IPV4-EXPORT is undefined",
+                "Route-Map: RM-BGP-EXPORT - Sequence: 20 - Dynamic prefix-list DPL-IPV4-EXPORT is undefined",
+            ],
+            "atomic_results": [
+                {
+                    "description": "Route-Map: RM-BGP-EXPORT",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": [
+                        "Sequence: 10 - Community CL-BGP-EXPORT is undefined",
+                        "Sequence: 10 - Large community LCL-BGP-EXPORT is undefined",
+                        "Sequence: 10 - Extended community ECL-BGP-EXPORT is undefined",
+                        "Sequence: 10 - Community CL-BGP-EXPORT is undefined",
+                        "Sequence: 10 - Extended community ECL-BGP-EXPORT is undefined",
+                        "Sequence: 10 - Sub-route-map RM-BGP-EXPORT-CHILD is undefined",
+                        "Sequence: 10 - AccessList ACL-BGP-EXPORT is undefined",
+                        "Sequence: 10 - AS-path list AS-PATH-BGP-EXPORT is undefined",
+                        "Sequence: 10 - IPv6 prefix-list PL-IPV6-EXPORT is undefined",
+                        "Sequence: 10 - Router-ID prefix-list PL-ROUTER-ID is undefined",
+                        "Sequence: 10 - Tag set TAG-SET-BGP-EXPORT is undefined",
+                        "Sequence: 10 - Aggregate-attributes route-map RM-BGP-AGGREGATE-ATTRIBUTES is undefined",
+                        "Sequence: 10 - continue target 9999 is undefined",
+                        "Sequence: 20 - Prefix-list PL-IPV4-EXPORT is undefined",
+                        "Sequence: 20 - Dynamic prefix-list DPL-IPV4-EXPORT is undefined",
+                    ],
                 },
             ],
         },
