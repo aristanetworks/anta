@@ -20,6 +20,7 @@ COMMANDS = [
     "anta nrfu --help",
     "anta nrfu csv --help",
     "anta nrfu json --help",
+    "anta nrfu junit --help",
     "anta nrfu table --help",
     "anta nrfu text --help",
     "anta nrfu tpl-report --help",

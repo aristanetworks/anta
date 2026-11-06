@@ -144,7 +144,7 @@ repos:
           sh -c "docs/scripts/generate_doc_snippets.py"
         language: python
         types: [python]
-        files: anta/cli/
+        files: ^anta/(cli|experimental/cli)/
         verbose: true
         pass_filenames: false
         additional_dependencies:

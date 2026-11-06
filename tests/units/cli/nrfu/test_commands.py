@@ -87,6 +87,7 @@ def test_anta_nrfu_table(click_runner: CliRunner) -> None:
     """Test anta nrfu, catalog is given via env."""
     result = click_runner.invoke(anta, ["nrfu", "table"])
     assert result.exit_code == ExitCode.OK
+    assert "WARNING: You are using an experimental ANTA feature:" not in result.output
     assert "leaf1  │ VerifyEOSVersion │ Verifies the EOS version of the device." in result.output
 
 
