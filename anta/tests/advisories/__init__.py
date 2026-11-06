@@ -43,6 +43,7 @@ from anta.tests.advisories.sa_175 import SA175
 from anta.tests.advisories.sa_176 import SA176
 from anta.tests.advisories.sa_177 import SA177
 from anta.tests.advisories.sa_178 import SA178
+from anta.tests.advisories.sa_201 import SA201
 
 if TYPE_CHECKING:
     from anta._advisory.base import _AntaAdvisoryTest
@@ -87,6 +88,7 @@ _ADVISORY_TESTS: tuple[type[_AntaAdvisoryTest], ...] = tuple(
         SA176,
         SA177,
         SA178,
+        SA201,
     )
 )
 
@@ -134,5 +136,6 @@ __all__ = [
     "SA176",
     "SA177",
     "SA178",
+    "SA201",
     "get_catalog",
 ]
