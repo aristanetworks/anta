@@ -67,7 +67,7 @@ ADVISORY = _AdvisoryMetadata(
 VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
-def _assess_sa178(  # pylint: disable=too-many-return-statements
+def _assess_sa178(
     version: Fact[EosVersionFact],
     authentication: Fact[SnmpV3AuthenticationFact],
     credential_syntax: Fact[SnmpV3CredentialSyntaxFact],

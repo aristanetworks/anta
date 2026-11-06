@@ -37,7 +37,6 @@ class PackageVersionFact(ComponentSoftwareFact, CommandsFactDefinition[PackageFa
     component: ClassVar[str]
 
     @classmethod
-    # pylint: disable-next=too-many-return-statements
     def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[PackageFactT]:  # noqa: PLR0911
         """Extract and normalize the declared package version."""
         (command,) = commands

@@ -61,7 +61,6 @@ def test_deprecated_root_import() -> None:
     """The legacy from-import remains available with a warning."""
     namespace: dict[str, Any] = {}
     with pytest.warns(DeprecationWarning, match=r"`ReportTable` has been moved\. Import it from `anta\.reporter\.table_reporter`"):
-        # pylint: disable-next=exec-used
         exec("from anta.reporter import ReportTable as LegacyReportTable", namespace)  # noqa: S102
 
     assert namespace["LegacyReportTable"] is ReportTable
@@ -107,7 +106,6 @@ def test_deprecated_root_exports_are_discoverable() -> None:
     namespace: dict[str, Any] = {}
     with warnings.catch_warnings(record=True) as caught:
         warnings.simplefilter("always", DeprecationWarning)
-        # pylint: disable-next=exec-used
         exec("from anta.reporter import *", namespace)  # noqa: S102
 
     assert len(caught) == 2

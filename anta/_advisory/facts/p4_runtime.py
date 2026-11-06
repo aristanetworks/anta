@@ -110,7 +110,6 @@ class P4RuntimeMtlsFact(FeatureFact, CommandsFactDefinition["P4RuntimeMtlsFact"]
     commands: ClassVar[tuple[AntaCommand, ...]] = (P4_RUNTIME_COMMAND, SSL_PROFILE_COMMAND)
 
     @classmethod
-    # pylint: disable-next=too-many-return-statements
     def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[P4RuntimeMtlsFact]:  # noqa: C901, PLR0911
         """Normalize whether P4Runtime uses an SSL profile with trusted certificates."""
         p4, ssl = commands
