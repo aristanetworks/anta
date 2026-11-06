@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 import pytest
 
 from anta._advisory.facts.models import AvailableFact, FactProblemKind, FeatureState, UnavailableFact
-from anta._advisory.facts.terminattr import TerminAttrDefaultCaTlsFact, TerminAttrTlsConnection
+from anta._advisory.facts.terminattr import TerminAttrTlsClientFact, TerminAttrTlsConnection
 from tests.units.anta_tests.advisories import OfflineAntaDevice
 
 if TYPE_CHECKING:
@@ -24,7 +24,7 @@ def config(arguments: str, lifecycle: str = "no shutdown") -> str:
 
 def command(output: str | dict[str, object] | None, errors: list[str] | None = None) -> AntaCommand:
     """Populate the fact-owned command without changing its declaration."""
-    collected = TerminAttrDefaultCaTlsFact.commands[0].model_copy()
+    collected = TerminAttrTlsClientFact.commands[0].model_copy()
     collected.output = output
     collected.errors = errors or []
     return collected
@@ -40,13 +40,13 @@ def command(output: str | dict[str, object] | None, errors: list[str] | None = N
     ],
 )
 @pytest.mark.parametrize("separator", ["=", " "])
-def test_published_tls_configurations(authentication: str, ca_file: str | None, separator: str) -> None:
-    """Cover both impacted and non-impacted configurations without retaining credentials."""
+def test_tls_authentication_and_ca_context(authentication: str, ca_file: str | None, separator: str) -> None:
+    """Retain configured CA context without treating it as proof of safe effective trust or retaining credentials."""
     output = config(f"-cvaddr{separator}apiserver.arista.io:443 -cvcompression=gzip -cvvrf=management -taillogs -cvauth{separator}{authentication}")
-    fact = TerminAttrDefaultCaTlsFact.derive(OfflineAntaDevice("test"), (command(output),))
+    fact = TerminAttrTlsClientFact.derive(OfflineAntaDevice("test"), (command(output),))
 
     assert isinstance(fact, AvailableFact)
-    assert fact.value.state is (FeatureState.ENABLED if ca_file is None else FeatureState.DISABLED)
+    assert fact.value.state is FeatureState.ENABLED
     assert fact.value.connections == (TerminAttrTlsConnection("primary", ("apiserver.arista.io:443",), ca_file),)
     assert fact.source.name == "show running-configuration | section TerminAttr"
     assert "token.json" not in repr(fact.value)
@@ -59,7 +59,7 @@ def test_published_tls_configurations(authentication: str, ca_file: str | None, 
 )
 def test_decisively_absent_client(output: str) -> None:
     """Daemon absence, explicit shutdown, and server-only configuration close the client path."""
-    fact = TerminAttrDefaultCaTlsFact.parse((command(output),))
+    fact = TerminAttrTlsClientFact.parse((command(output),))
 
     assert isinstance(fact, AvailableFact)
     assert fact.value.state is FeatureState.DISABLED
@@ -73,7 +73,7 @@ def test_scoped_ca_correlation() -> None:
         "-cvopt=cloud.addr=apiserver.arista.io:443 -cvopt=cloud.auth=token-secure,token.json "
         "-cvopt cloud.vrf=management"
     )
-    fact = TerminAttrDefaultCaTlsFact.parse((command(output),))
+    fact = TerminAttrTlsClientFact.parse((command(output),))
 
     assert isinstance(fact, AvailableFact)
     assert fact.value.state is FeatureState.ENABLED
@@ -89,7 +89,7 @@ def test_flat_and_scoped_connections_are_both_retained() -> None:
         '-cvaddr=apiserver.arista.io:443 -cvauth="token-secure,token.json,ca with spaces.pem" '
         "-cvopt backup.addr=backup.example:443 -cvopt backup.auth=certs,cert,key"
     )
-    fact = TerminAttrDefaultCaTlsFact.parse((command(output),))
+    fact = TerminAttrTlsClientFact.parse((command(output),))
 
     assert isinstance(fact, AvailableFact)
     assert fact.value.connections == (
@@ -120,18 +120,18 @@ def test_flat_and_scoped_connections_are_both_retained() -> None:
 def test_primary_options_merge_with_global_precedence(global_arguments: str, scoped_arguments: str, ca_file: str | None, *, global_first: bool) -> None:
     """Global flags override only nonempty primary fields, independently of argument order."""
     arguments = (global_arguments, scoped_arguments) if global_first else (scoped_arguments, global_arguments)
-    fact = TerminAttrDefaultCaTlsFact.parse((command(config(" ".join(arguments))),))
+    fact = TerminAttrTlsClientFact.parse((command(config(" ".join(arguments))),))
 
     assert isinstance(fact, AvailableFact)
     assert fact.value.connections == (TerminAttrTlsConnection("primary", ("apiserver.arista.io:443",), ca_file),)
-    assert fact.value.state is (FeatureState.ENABLED if ca_file is None else FeatureState.DISABLED)
+    assert fact.value.state is FeatureState.ENABLED
 
 
 @pytest.mark.parametrize("scoped_argument", ["backup.addr=backup.example:443", "backup.auth=token-secure,token"])
 def test_secondary_cluster_does_not_inherit_global_options(scoped_argument: str) -> None:
     """Globals complete primary only; a secondary cluster still needs its own address and authentication."""
     output = config(f"-cvaddr=apiserver.arista.io:443 -cvauth=token-secure,token -cvopt {scoped_argument}")
-    fact = TerminAttrDefaultCaTlsFact.parse((command(output),))
+    fact = TerminAttrTlsClientFact.parse((command(output),))
 
     assert isinstance(fact, UnavailableFact)
     assert fact.problem is FactProblemKind.MISSING
@@ -143,11 +143,11 @@ def test_cvconfig_preserves_tls_client_selection(option: str, ca_file: str | Non
     """Dynamic segmentation subscriptions leave the client's destination and CA selection unchanged."""
     authentication = "token-secure,token" if ca_file is None else f"token-secure,token,{ca_file}"
     output = config(f"-cvaddr=apiserver.arista.io:443 {option} -cvauth={authentication}")
-    fact = TerminAttrDefaultCaTlsFact.parse((command(output),))
+    fact = TerminAttrTlsClientFact.parse((command(output),))
 
     assert isinstance(fact, AvailableFact)
     assert fact.value.connections == (TerminAttrTlsConnection("primary", ("apiserver.arista.io:443",), ca_file),)
-    assert fact.value.state is (FeatureState.ENABLED if ca_file is None else FeatureState.DISABLED)
+    assert fact.value.state is FeatureState.ENABLED
 
 
 @pytest.mark.parametrize(
@@ -189,7 +189,7 @@ def test_cvconfig_preserves_tls_client_selection(option: str, ca_file: str | Non
 )
 def test_invalid_or_incomplete_configuration(output: str | dict[str, object] | None, problem: FactProblemKind) -> None:
     """Malformed, unsupported, contradictory, and incomplete inputs must never prove absence."""
-    fact = TerminAttrDefaultCaTlsFact.parse((command(output),))
+    fact = TerminAttrTlsClientFact.parse((command(output),))
 
     assert isinstance(fact, UnavailableFact)
     assert fact.problem is problem
@@ -206,7 +206,7 @@ def test_invalid_or_incomplete_configuration(output: str | dict[str, object] | N
 )
 def test_command_failures(errors: list[str], problem: FactProblemKind) -> None:
     """Preserve the actual command failure even if stale output resembles absence."""
-    fact = TerminAttrDefaultCaTlsFact.parse((command("", errors),))
+    fact = TerminAttrTlsClientFact.parse((command("", errors),))
 
     assert isinstance(fact, UnavailableFact)
     assert fact.problem is problem

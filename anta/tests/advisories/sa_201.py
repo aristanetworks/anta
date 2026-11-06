@@ -2,7 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 # pylint: disable=duplicate-code  # Keep advisory-specific scope constants local to each test.
-"""ANTA test for Arista Security Advisory 201, revision 1.2."""
+"""ANTA test for Arista Security Advisory 201, revision 1.3."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.models import AvailableFact, Fact, FactProblemKind, FactsBase, FeatureState, UnavailableFact, fact_field, facts_dataclass
 from anta._advisory.facts.software import TerminAttrVersionFact
-from anta._advisory.facts.terminattr import TerminAttrDefaultCaTlsFact
+from anta._advisory.facts.terminattr import TerminAttrTlsClientFact
 from anta._advisory.findings.assessment import assess_eos_version
 from anta._advisory.findings.models import (
     AffectedComponentVersion,
@@ -35,26 +35,31 @@ from anta._advisory.findings.projection import project_vulnerability_result
 from anta._advisory.models import _AdvisoryMetadata, _AdvisoryVulnerability, _AdvisoryVulnerabilitySeverity
 from anta._advisory.optional_commands import OptionalCommandsMixin
 from anta._advisory.remediation import (
+    AllOf,
     AnyOf,
     ApplyConfiguration,
     ConditionalAction,
     FixedRelease,
+    OperationalAction,
     RemediationPlan,
     RunCommand,
     Sequence,
     SoftwareTarget,
     software_version_action,
-    software_version_plan,
 )
 from anta._advisory.version import SemanticVersion
 from anta._eos.version import EOSVersion
 from anta.decorators import preview_test_class
 
 AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
-    VersionRule(major=4, minor=36, patch_lte=3),
-    VersionRule(major=4, minor=35, patch_lte=7),
-    VersionRule(major=4, minor=34, patch_lte=9),
-    VersionRule(major=4, minor=33, patch_lte=11),
+    VersionRule(major=4, minor=36, patch_lt=3),
+    VersionRule(major=4, minor=36, patch_eq=3, hotfix_lt=2),
+    VersionRule(major=4, minor=35, patch_lt=7),
+    VersionRule(major=4, minor=35, patch_eq=7, hotfix_lt=2),
+    VersionRule(major=4, minor=34, patch_lt=9),
+    VersionRule(major=4, minor=34, patch_eq=9, hotfix_lt=2),
+    VersionRule(major=4, minor=33, patch_lt=11),
+    VersionRule(major=4, minor=33, patch_eq=11, hotfix_lt=2),
     VersionRule(major=4, minor=32),
     VersionRule(major=4, minor=31),
     VersionRule(major=4, minor=30),
@@ -62,8 +67,13 @@ AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
     VersionRule(major=4, minor=28, patch_lte=14),
     VersionRule(major=4, minor_lt=28),
 )
-# Revision 1.2 does not identify a fixed EOS release. Outside scope is not a claim of a published fix.
-FIXED_RELEASES: tuple[FixedRelease, ...] = ()
+FIXED_RELEASES: tuple[FixedRelease, ...] = (
+    FixedRelease(EOSVersion(4, 37, 0, suffix="F")),
+    FixedRelease(EOSVersion(4, 36, 3, hotfix=2, suffix="M")),
+    FixedRelease(EOSVersion(4, 35, 7, hotfix=2, suffix="M")),
+    FixedRelease(EOSVersion(4, 34, 9, hotfix=2, suffix="M")),
+    FixedRelease(EOSVersion(4, 33, 11, hotfix=2, suffix="M")),
+)
 # Each key is a v1.x minor release. None means every patch is affected;
 # otherwise the last affected patch is inclusive. Unlisted minors are outside scope.
 TERMINATTR_LAST_AFFECTED_PATCH: dict[int, int | None] = {
@@ -158,7 +168,7 @@ CUSTOM_PROGRAM_CONDITION = "custom scripts or programs use the default EOS trust
 
 ADVISORY = _AdvisoryMetadata(
     sa_number="0201",
-    last_updated=date(2026, 10, 29),
+    last_updated=date(2026, 11, 4),
     title="Security Advisory 0201",
     vulnerabilities=(
         _AdvisoryVulnerability(
@@ -208,26 +218,35 @@ def _compatible_terminattr_fixes(version: EOSVersion) -> tuple[FixedRelease, ...
 
 
 def _remediation(eos: EosReleaseAssessment, component: ComponentVersionAssessment | None) -> RemediationPlan:
-    """Resolve both software paths while retaining the source's conditional boot-script alternative."""
+    """Require a component fix independently of the EOS fix or custom-program workaround."""
     eos_action = software_version_action(FIXED_RELEASES, current_version=eos.fact.value)
     if component is None or component.relation is not VersionRelation.AFFECTED:
         return RemediationPlan(eos_action)
     version = _parse_terminattr_version(component.fact.value.version)
     assert version is not None  # noqa: S101
     fixes = _compatible_terminattr_fixes(eos.fact.value)
+    component_action = (
+        software_version_action(fixes, current_version=version, software=SoftwareTarget.TERMINATTR)
+        if fixes
+        else OperationalAction(
+            f"Upgrade TerminAttr to a fixed release supported on EOS {eos.fact.value}; confirm compatibility with Arista before selecting the release."
+        )
+    )
     if eos.relation is VersionRelation.OUTSIDE_SCOPE:
-        return software_version_plan(fixes, current_version=version, software=SoftwareTarget.TERMINATTR)
-    if not fixes:
-        return RemediationPlan(eos_action)
+        return RemediationPlan(component_action)
     return RemediationPlan(
-        AnyOf(
+        AllOf(
             (
-                eos_action,
-                Sequence(
+                component_action,
+                AnyOf(
                     (
-                        software_version_action(fixes, current_version=version, software=SoftwareTarget.TERMINATTR),
-                        ConditionalAction(CUSTOM_PROGRAM_CONDITION, ApplyConfiguration(CA_DISTRUST_CONFIGURATION)),
-                        ConditionalAction(CUSTOM_PROGRAM_CONDITION, RunCommand(("reload",))),
+                        eos_action,
+                        Sequence(
+                            (
+                                ConditionalAction(CUSTOM_PROGRAM_CONDITION, ApplyConfiguration(CA_DISTRUST_CONFIGURATION)),
+                                ConditionalAction(CUSTOM_PROGRAM_CONDITION, RunCommand(("reload",))),
+                            )
+                        ),
                     )
                 ),
             )
@@ -237,7 +256,7 @@ def _remediation(eos: EosReleaseAssessment, component: ComponentVersionAssessmen
 
 def _required_fact_errors(
     eos: EosReleaseAssessment | UnavailableFact[EosVersionFact],
-    tls: Fact[TerminAttrDefaultCaTlsFact],
+    tls: Fact[TerminAttrTlsClientFact],
     component: ComponentVersionAssessment | UnavailableFact[TerminAttrVersionFact],
 ) -> ErrorResult | None:
     """Collect every required input problem, ignoring evidence for a closed client path."""
@@ -257,7 +276,7 @@ def _required_fact_errors(
 
 def _assess_sa201_exposure(
     eos: EosReleaseAssessment,
-    tls: Fact[TerminAttrDefaultCaTlsFact],
+    tls: Fact[TerminAttrTlsClientFact],
     component: ComponentVersionAssessment | UnavailableFact[TerminAttrVersionFact],
 ) -> AffectedResult | InconclusiveResult:
     """Resolve observable TerminAttr exposure and retain uncertainty about other TLS clients."""
@@ -276,8 +295,7 @@ def _assess_sa201_exposure(
         # Only the endpoint explicitly identified by this advisory is a decisive
         # CVaaS destination. DNS aliases and other endpoints need external identification.
         documented_destination = any(
-            connection.ca_file is None and any(address.rsplit(":", 1)[0].lower().rstrip(".") == "apiserver.arista.io" for address in connection.addresses)
-            for connection in tls.value.connections
+            any(address.rsplit(":", 1)[0].lower().rstrip(".") == "apiserver.arista.io" for address in connection.addresses) for connection in tls.value.connections
         )
         if documented_destination:
             assert isinstance(applicable_component, ComponentVersionAssessment)  # noqa: S101
@@ -288,7 +306,7 @@ def _assess_sa201_exposure(
                 remediation=remediation,
             )
         if not documented_destination:
-            unresolved.append(Unobservable(UnobservableKind.EXTERNAL_STATE, "whether the configured default-CA TLS destination is CVaaS"))
+            unresolved.append(Unobservable(UnobservableKind.EXTERNAL_STATE, "whether the configured TLS destination is CVaaS"))
     if eos.relation is VersionRelation.AFFECTED:
         unresolved.append(Unobservable(UnobservableKind.DEVICE_STATE_NOT_EXPOSED, "custom programs' outbound TLS behavior and trust-store selection"))
     return InconclusiveResult(vulnerability_id=VULNERABILITY_ID, indications=tuple(indications), unresolved=tuple(unresolved), remediation=remediation)
@@ -296,7 +314,7 @@ def _assess_sa201_exposure(
 
 def _assess_sa201(
     version: Fact[EosVersionFact],
-    tls: Fact[TerminAttrDefaultCaTlsFact],
+    tls: Fact[TerminAttrTlsClientFact],
     terminattr: Fact[TerminAttrVersionFact],
 ) -> VulnerabilityResult:
     """Apply software exclusions before required inputs and exposure assessment on every EOS platform."""
@@ -323,20 +341,22 @@ class SA201(OptionalCommandsMixin, _AntaAdvisoryTest):
     Expected Results
     ----------------
     * Not Affected: Both software/exposure paths are outside scope.
-    * Affected: Affected TerminAttr has a configured default-CA TLS client to the documented CVaaS endpoint.
+    * Affected: Affected TerminAttr has a configured secure TLS client to the documented CVaaS endpoint, including clients with an explicit CA.
     * Inconclusive: An unidentified destination or custom-program behavior on affected EOS prevents a complete assessment.
     * Error: Required EOS version, TerminAttr configuration, or applicable component version is unavailable or invalid.
 
     Notes
     -----
     EOS and TerminAttr releases are assessed independently. Enabled, persistently configured TerminAttr clients are evaluated even when no
-    session is currently established. Explicit CA selection closes only that client path; a TerminAttr upgrade does not close the separate
-    custom-program path on affected EOS. Arbitrary programs' TLS behavior and CA selection cannot be established by this test.
+    session is currently established. A fixed EOS release or an explicit CA path cannot clear an affected TerminAttr client: cached trust and
+    fallback behavior are not established by running configuration. A new enrollment with clean trust cannot be distinguished from a prior
+    enrollment with cached trust, so affected configured clients are assessed conservatively and require a fixed TerminAttr release.
 
-    CA argument placement follows the advisory's explicit impacted and non-impacted examples: after the token file for token-secure, or
-    after the certificate and key for certs. The prose's reference to a second argument is not used to reinterpret those examples.
+    Revision 1.3 removes the earlier non-impacted explicit-CA examples. CA paths are retained as configuration context, not as proof of safety.
+    A TerminAttr upgrade does not close the separate custom-program path on affected EOS. Arbitrary programs' TLS behavior and CA selection
+    cannot be established by this test.
 
-    Only the advisory's explicitly identified CVaaS endpoint, apiserver.arista.io, proves a CVaaS destination; other default-CA destinations
+    Only the advisory's explicitly identified CVaaS endpoint, apiserver.arista.io, proves a CVaaS destination; other secure TLS destinations
     remain inconclusive. Secure certs and token-secure authentication, including per-cluster options, are supported. Other authentication
     modes require additional evidence and produce an error when needed. All EOS platforms, including CVX, are assessed without platform-family
     exclusions. Other Arista products covered by the advisory are outside this test.
@@ -357,7 +377,7 @@ class SA201(OptionalCommandsMixin, _AntaAdvisoryTest):
         """Collected facts required to assess the advisory."""
 
         version: Fact[EosVersionFact] = fact_field(EosVersionFact)
-        tls: Fact[TerminAttrDefaultCaTlsFact] = fact_field(TerminAttrDefaultCaTlsFact)
+        tls: Fact[TerminAttrTlsClientFact] = fact_field(TerminAttrTlsClientFact)
         terminattr: Fact[TerminAttrVersionFact] = fact_field(TerminAttrVersionFact)
 
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY

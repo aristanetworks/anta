@@ -30,7 +30,7 @@ ANTA** identifies the first release aligned with that revision.
 
 | Security advisory | Last updated | Introduced in ANTA | Last updated in ANTA | Comment |
 | --- | --- | --- | --- | --- |
-| Security Advisory 0201 | 2026-10-29 | v1.11 | | EOS and TerminAttr; custom-program exposure may remain inconclusive |
+| Security Advisory 0201 | 2026-11-04 | v1.11 | | EOS and TerminAttr need independent fixes; custom-program exposure may remain inconclusive on affected EOS |
 | Security Advisory 0182 | | N/A | | VeloCloud; not covered by ANTA |
 | Security Advisory 0181 | | N/A | | VeloCloud; not covered by ANTA |
 | Security Advisory 0180 | | N/A | | VeloCloud; not covered by ANTA |

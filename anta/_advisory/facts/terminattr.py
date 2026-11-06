@@ -115,7 +115,8 @@ class TerminAttrTlsConnection:
     """One configured secure CloudVision client and its explicit CA selection.
 
     Authentication credentials are deliberately not retained in the fact.
-    An absent ``ca_file`` denotes selection of the default CA trust store.
+    ``ca_file`` records configured intent only; it does not establish effective
+    trust because cached roots and fallback behavior are not observable here.
     """
 
     cluster: str
@@ -187,19 +188,20 @@ def _tls_connections(options: Mapping[str, Mapping[str, str]]) -> tuple[TerminAt
 
 
 @dataclass(frozen=True, slots=True)
-class TerminAttrDefaultCaTlsFact(FeatureFact, CommandsFactDefinition["TerminAttrDefaultCaTlsFact"]):
-    """Persistent secure CloudVision clients selecting the default CA trust store.
+class TerminAttrTlsClientFact(FeatureFact, CommandsFactDefinition["TerminAttrTlsClientFact"]):
+    """Persistent secure CloudVision clients, including explicit-CA configurations.
 
     Only ``certs`` and ``token-secure`` authentication are supported. Other
     authentication modes are unavailable, rather than being interpreted as
-    absence of TLS. Dynamic segmentation subscriptions (``cvconfig``) do not
-    change client trust selection. Daemon running state and current sessions
-    are intentionally not used to classify configured clients.
+    absence of TLS. An explicit CA path cannot prove that cached trust and
+    system-bundle fallback exclude compromised roots. Dynamic segmentation
+    subscriptions (``cvconfig``) do not change client selection. Daemon running
+    state and current sessions are intentionally not used to classify clients.
     """
 
-    feature: ClassVar[SubFeature] = SubFeature(FeatureName.TERMINATTR, "TLS client using the default CA trust store")
-    key: ClassVar[str] = "feature.terminattr.default_ca_tls"
-    label: ClassVar[str] = "TerminAttr default-CA TLS client configuration"
+    feature: ClassVar[SubFeature] = SubFeature(FeatureName.TERMINATTR, "CloudVision TLS client")
+    key: ClassVar[str] = "feature.terminattr.tls_client"
+    label: ClassVar[str] = "TerminAttr TLS client configuration"
     # A fixed component makes this observation unnecessary. Retain every failure
     # for the assessment rather than letting collection preempt that decision.
     commands: ClassVar[tuple[AntaCommand, ...]] = (OptionalAntaCommand(command="show running-configuration | section TerminAttr", ofmt="text", defer_errors=True),)
@@ -208,7 +210,7 @@ class TerminAttrDefaultCaTlsFact(FeatureFact, CommandsFactDefinition["TerminAttr
     @classmethod
     # Keep the parser's validation stages explicit so each unavailable reason stays distinct.
     # pylint: disable-next=too-many-return-statements,too-many-branches
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[TerminAttrDefaultCaTlsFact]:  # noqa: C901, PLR0911
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[TerminAttrTlsClientFact]:  # noqa: C901, PLR0911
         """Parse the configured daemon, including per-cluster CA boundaries."""
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
@@ -244,5 +246,5 @@ class TerminAttrDefaultCaTlsFact(FeatureFact, CommandsFactDefinition["TerminAttr
         connections = _tls_connections(options)
         if isinstance(connections, FactProblemKind):
             return cls.unavailable(connections, source)
-        state = FeatureState.ENABLED if any(connection.ca_file is None for connection in connections) else FeatureState.DISABLED
+        state = FeatureState.ENABLED if connections else FeatureState.DISABLED
         return cls(state, connections).available(source)
