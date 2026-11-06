@@ -788,7 +788,7 @@ class VerifyIPSecTunnelHealth(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["security"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command=IPSEC_CONNECTION_COMMAND)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command=IPSEC_CONNECTION_COMMAND, revision=1)]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -835,7 +835,7 @@ class VerifySpecificIPSecTunnel(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["security"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command=IPSEC_CONNECTION_COMMAND)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command=IPSEC_CONNECTION_COMMAND, revision=1)]
     _atomic_support: ClassVar[bool] = True
 
     class Input(AntaTest.Input):
