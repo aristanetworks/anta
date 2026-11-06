@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+inheritance: true
+
+knowledge_base:
+  code_guidelines:
+    enabled: true
+    filePatterns:
+      - files: "docs/security-advisory/decisions/*.md"
+        applyTo: >-
+          anta/tests/advisories/**, anta/_advisory/**, anta/cli/psirt.py,
+          tests/units/anta_tests/advisories/**, tests/units/_advisory/**,
+          tests/units/test_advisories.py, tests/units/cli/test_psirt.py,
+          tests/data/test_security_advisory_*, docs/security-advisory/**
