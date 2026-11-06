@@ -175,7 +175,7 @@ class JUnitReporter:
             element=ET.SubElement(testsuites, "testsuite"),
             name=f"ANTA Tests on {device_name}",
             hostname=device_name,
-            timestamp=dt.datetime.now(tz=dt.timezone.utc).isoformat(),
+            timestamp=dt.datetime.now(tz=dt.UTC).isoformat(),
             filename=str(catalog_path) if catalog_path else None,
             suite_tests=len(results),
         )
