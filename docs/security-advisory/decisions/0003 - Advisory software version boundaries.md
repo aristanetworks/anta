@@ -21,6 +21,6 @@ An advisory may list “4.32.11M and below” as affected without naming a fixed
 
 ## Decision
 
-When an advisory identifies affected releases in a train but publishes no fixed release in that train, conservatively treat the whole train as affected for software-version assessment. Do not return `NOT_AFFECTED` for a later patch solely because it exceeds the listed affected upper limit. A generic “unlisted releases are not vulnerable” notice does not override this rule.
+When an advisory identifies affected releases in a train but publishes no fixed release in that train, conservatively keep the affected range open-ended for software-version assessment, while preserving any documented lower boundary. Do not return `NOT_AFFECTED` for a later patch solely because it exceeds the listed affected upper limit. A generic “unlisted releases are not vulnerable” notice does not override this rule.
 
-Once a fixed release is published for that train, use it as the upper boundary of affected software scope. Until then, keeping the train affected is a conservative assessment policy, not proof that every later patch contains the vulnerability.
+Once a fixed release is published for that train, use it as the upper boundary of affected software scope. Until then, keeping that range affected is a conservative assessment policy, not proof that every later patch contains the vulnerability.
