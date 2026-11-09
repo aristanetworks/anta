@@ -43,7 +43,7 @@ from tests.units.anta_tests import (
 from tests.units.anta_tests.advisories import OfflineAntaDevice, build_expected_advisory_result
 
 if TYPE_CHECKING:
-    from tests.units.anta_tests import AntaUnitTest, AntaUnitTestData
+    from tests.units.anta_tests import AntaUnitTestData
 
 SOURCE = FactSource("device metadata", FactSourceKind.DEVICE_METADATA)
 PACKAGE_SOURCE = FactSource("show version detail", FactSourceKind.COMMAND)
@@ -128,6 +128,63 @@ _DATA: AntaUnitTestData = {
     },
 }
 
+# Reduced version/package pairs observed through native eAPI collection in the lab.
+# Suffixed TerminAttr builds remain unclassified; affected EOS is still decisive.
+for _name, _eos, _terminattr, _message, _component_action in (
+    (
+        "lab-affected-cloudeos",
+        "4.36.0.1F-cloud",
+        "v1.44.0",
+        "The device is affected because EOS version '4.36.0.1F-cloud' is affected and TerminAttr 'v1.44.0' is affected.",
+        EXPECTED_UPGRADE_TERMINATTR,
+    ),
+    (
+        "lab-affected-eos-with-devel-terminattr",
+        "4.32.1F",
+        "v1.32.99_devel",
+        "The device is affected because EOS version '4.32.1F' is affected.",
+        EXPECTED_VERIFY_TERMINATTR,
+    ),
+    (
+        "lab-affected-eos-with-rel-terminattr",
+        "4.35.0.2F",
+        "v1.41.0_quinn.1_rel",
+        "The device is affected because EOS version '4.35.0.2F' is affected.",
+        EXPECTED_VERIFY_TERMINATTR,
+    ),
+    (
+        "lab-fixed-veos",
+        "4.37.0F",
+        "v1.47.0",
+        "The device is not affected because EOS version '4.37.0F' is outside the affected releases and TerminAttr 'v1.47.0' is outside the affected releases.",
+        None,
+    ),
+    (
+        "lab-fixed-cloudeos",
+        "4.37.0F-cloud",
+        "v1.47.0",
+        "The device is not affected because EOS version '4.37.0F-cloud' is outside the affected releases and TerminAttr 'v1.47.0' is outside the affected releases.",
+        None,
+    ),
+):
+    _plan = (
+        RemediationPlan(
+            AllOf(
+                (
+                    ChangeSoftwareVersion(SoftwareTarget.EOS, parse_eos_version(_eos).unwrap(), KnownFixedReleases(EXPECTED_EOS_FIXED_RELEASES)),
+                    _component_action,
+                )
+            )
+        )
+        if _component_action is not None
+        else None
+    )
+    _DATA[SA201, _name] = {
+        "version": build_eos_version(_eos),
+        "eos_data": [{"details": {"packages": {"TerminAttr-core": {"version": _terminattr}}}}],
+        "expected": expected_result(AntaTestStatus.FAILURE if _plan is not None else AntaTestStatus.SUCCESS, _message, _plan),
+    }
+
 
 def version_fact(version: str | None = "4.36.3.2M") -> Fact[EosVersionFact]:
     """Construct EOS metadata independently of collection."""
@@ -185,7 +242,6 @@ def test_eos_source_boundaries(version: str, affected: bool) -> None:
     """Check affected trains and the newly published fixed hotfix boundaries."""
     expected = AffectedStatus.AFFECTED if affected else AffectedStatus.NOT_AFFECTED
     assert evaluate_version(parse_eos_version(version).unwrap(), AFFECTED_VERSION_MATRIX).affected_status is expected
-    assert FIXED_RELEASES == EXPECTED_EOS_FIXED_RELEASES
 
 
 @pytest.mark.parametrize(
@@ -371,15 +427,24 @@ def test_source_metadata_and_command_contract() -> None:
     assert ADVISORY.last_updated == date(2026, 11, 4)
     assert tuple(vulnerability.id for vulnerability in ADVISORY.vulnerabilities) == ("CVE-2026-111943",)
     assert ADVISORY.vulnerabilities[0].severity is _AdvisoryVulnerabilitySeverity.CRITICAL
+    assert FIXED_RELEASES == EXPECTED_EOS_FIXED_RELEASES
     assert len(SA201.commands) == 1
     command = SA201.commands[0]
     assert isinstance(command, AntaCommand)
     assert (command.command, command.ofmt, command.revision) == ("show version detail", "json", 1)
 
 
-@pytest.mark.parametrize("case", list(_DATA.values()), ids=[name for _, name in _DATA])
-async def test_exact_end_to_end_finding(case: AntaUnitTest) -> None:
-    """Verify exact reporter prose, structured remediation, and single-CVE atomic attribution."""
+@pytest.mark.parametrize(
+    ("name", "status"),
+    [
+        ("both-versions-affected", AdvisoryStatus.AFFECTED),
+        ("both-versions-outside-affected-releases", AdvisoryStatus.NOT_AFFECTED),
+        ("fixed-eos-with-missing-terminattr", AdvisoryStatus.ERROR),
+    ],
+)
+async def test_exact_end_to_end_finding(name: str, status: AdvisoryStatus) -> None:
+    """Check exact reporter prose and private semantic fields omitted by the generic harness."""
+    case = _DATA[SA201, name]
     device = OfflineAntaDevice("test")
     device.version = case.get("version")
     device.platform = case.get("platform")
@@ -387,7 +452,6 @@ async def test_exact_end_to_end_finding(case: AntaUnitTest) -> None:
     instance = SA201(device=device, eos_data=case["eos_data"])
     await instance.test()
 
-    assert instance.result.result is case["expected"]["result"]
     expected_messages = case["expected"].get("messages", [])
     assert instance.result.messages == [f"Verify CVE-2026-111943. - {message}" for message in expected_messages]
     assert len(instance.result.atomic_results) == 1
@@ -395,7 +459,4 @@ async def test_exact_end_to_end_finding(case: AntaUnitTest) -> None:
     assert isinstance(atomic, _AdvisoryAtomicTestResult)
     assert _get_atomic_vulnerability_ids(atomic) == ("CVE-2026-111943",)
     assert atomic.messages == expected_messages
-    expected_atomics = case["expected"].get("atomic_results", [])
-    assert len(expected_atomics) == 1
-    assert atomic.remediation == expected_atomics[0].get("remediation")
-    assert atomic.advisory_status in {AdvisoryStatus.AFFECTED, AdvisoryStatus.NOT_AFFECTED, AdvisoryStatus.ERROR}
+    assert atomic.advisory_status is status
