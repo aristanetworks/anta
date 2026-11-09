@@ -67,17 +67,17 @@ dev = [
   "bumpver>=2026.1132",
 ]
 tox = [
-  "tox>=4.67.4,<5.0.0",
+  "tox>=4.67.5,<5.0.0",
 ]
 test = [
-  "pytest-asyncio>=1.4.1",
+  "pytest-asyncio>=1.4.1.post1",
   "pytest-cov>=7.1.0",
   "pytest-httpx>=0.36.2",
   "pytest>=9.2.0",
   "respx>=0.23.1",
 ]
 benchmark = [
-  "pytest-codspeed>=5.0.3",
+  "pytest-codspeed>=5.0.4",
   "pytest-dependency>=0.6.1",
 ]
 lint = [
@@ -99,7 +99,7 @@ doc = [
   "griffe-warnings-deprecated~=1.1.2",
   "mike @ git+https://github.com/squidfunk/mike.git@2d4ad799442f4592db8ad53b179bfb33db8c69ac",
   "packaging>=26.3",
-  "zensical==0.0.73",
+  "zensical==0.0.74",
   "mkdocs~=1.6",
   "mkdocs-autorefs~=1.4",
   "mkdocstrings[python]~=1.0.8",
