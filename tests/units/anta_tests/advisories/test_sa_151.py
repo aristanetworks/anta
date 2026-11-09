@@ -116,7 +116,7 @@ class TestSA151Assessment(unittest.TestCase):
     """Validate pure assessment branches."""
 
     def test_version_boundaries(self) -> None:
-        """Validate every affected and adjacent release boundary."""
+        """Validate affected endpoints, fixed releases, and distant patches in unfixed trains."""
         for version, state in (
             ("4.36.0F", AffectedStatus.AFFECTED),
             ("4.36.1F", AffectedStatus.NOT_AFFECTED),
@@ -127,11 +127,11 @@ class TestSA151Assessment(unittest.TestCase):
             ("4.33.8M", AffectedStatus.AFFECTED),
             ("4.33.9M", AffectedStatus.NOT_AFFECTED),
             ("4.32.11M", AffectedStatus.AFFECTED),
-            ("4.32.12M", AffectedStatus.AFFECTED),
+            ("4.32.99M", AffectedStatus.AFFECTED),
             ("4.31.0F", AffectedStatus.NOT_AFFECTED),
             ("4.31.1F", AffectedStatus.AFFECTED),
             ("4.31.10M", AffectedStatus.AFFECTED),
-            ("4.31.11M", AffectedStatus.AFFECTED),
+            ("4.31.99M", AffectedStatus.AFFECTED),
             ("4.30.99M", AffectedStatus.NOT_AFFECTED),
         ):
             parsed = parse_eos_version(version).unwrap()
