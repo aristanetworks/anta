@@ -47,7 +47,9 @@ class PackageVersionFact(ComponentSoftwareFact, CommandsFactDefinition[PackageFa
             return cls.unavailable(FactProblemKind.UNSUPPORTED, source)
         if command.errors:
             return cls.unavailable(FactProblemKind.COLLECTION_FAILED, source)
-        details = command.json_output.get("details")
+        if not isinstance(command.output, Mapping):
+            return cls.unavailable(FactProblemKind.MISSING if command.output is None else FactProblemKind.MALFORMED, source)
+        details = command.output.get("details")
         if details is None:
             return cls.unavailable(FactProblemKind.MISSING, source)
         if not isinstance(details, Mapping):
@@ -77,8 +79,8 @@ class TerminAttrVersionFact(PackageVersionFact["TerminAttrVersionFact"]):
     component: ClassVar[str] = "TerminAttr"
     key: ClassVar[str] = "software.terminattr.version"
     label: ClassVar[str] = "TerminAttr version"
-    # Advisories can close the component path from configuration alone. Defer
-    # collection failures so the assessment can decide whether version is needed.
+    # An affected EOS version can establish impact without the component version.
+    # Defer collection failures so the assessment can decide whether it is needed.
     commands: ClassVar[tuple[AntaCommand, ...]] = (OptionalAntaCommand(command="show version detail", revision=1, defer_errors=True),)
     package_name: ClassVar[str] = "TerminAttr-core"
 

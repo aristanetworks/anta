@@ -37,6 +37,17 @@ def test_terminattr_version_collection_failures(errors: list[str], problem: Fact
     assert result.source.name == "show version detail"
 
 
+@pytest.mark.parametrize(("output", "problem"), [(None, FactProblemKind.MISSING), ("unexpected text", FactProblemKind.MALFORMED)])
+def test_terminattr_version_invalid_output_is_a_fact_problem(output: str | None, problem: FactProblemKind) -> None:
+    """Invalid command data must reach the assessment rather than preempt known affected EOS."""
+    command = TerminAttrVersionFact.commands[0].model_copy()
+    command.output = output
+    result = TerminAttrVersionFact.derive(OfflineAntaDevice("test"), (command,))
+
+    assert isinstance(result, UnavailableFact)
+    assert result.problem is problem
+
+
 @pytest.fixture(name="device")
 def fact_device_fixture() -> OfflineAntaDevice:
     """Return an offline device suitable for fact derivation."""
