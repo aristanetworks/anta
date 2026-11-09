@@ -128,7 +128,7 @@ dev = [
     { name = "bumpver", specifier = ">=2026.1132" },
     { name = "codespell", specifier = ">=2.4.3,<2.5.0" },
     { name = "pre-commit", specifier = ">=4.7.0" },
-    { name = "pylint", specifier = ">=4.1.3" },
+    { name = "pylint", specifier = ">=4.1.3,<4.1.4" },
     { name = "pylint-pydantic", specifier = ">=0.4.1" },
     { name = "pyright" },
     { name = "pytest", specifier = ">=9.2.0" },
@@ -158,7 +158,7 @@ doc = [
 lint = [
     { name = "codespell", specifier = ">=2.4.3,<2.5.0" },
     { name = "pre-commit", specifier = ">=4.7.0" },
-    { name = "pylint", specifier = ">=4.1.3" },
+    { name = "pylint", specifier = ">=4.1.3,<4.1.4" },
     { name = "pylint-pydantic", specifier = ">=0.4.1" },
     { name = "pyright" },
     { name = "ruff", specifier = ">=0.17.3,<0.17.4" },

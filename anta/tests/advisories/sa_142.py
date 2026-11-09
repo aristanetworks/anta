@@ -316,7 +316,7 @@ def _configuration_remediation_plan() -> RemediationPlan:
     return RemediationPlan(ApplyConfiguration((MTU_DROP_COMMAND,)))
 
 
-# pylint: disable-next=too-many-branches,too-many-locals,too-many-return-statements,too-many-statements
+# pylint: disable-next=too-many-locals
 def _assess_sa142(  # noqa: C901, PLR0911, PLR0912, PLR0915
     path_facts: tuple[Fact[ConfigurationFact], ...],
     version: Fact[EosVersionFact],
