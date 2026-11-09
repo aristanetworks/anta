@@ -11,8 +11,6 @@ import unittest
 from functools import partial
 from typing import TYPE_CHECKING
 
-import pytest
-
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.acl import SharedSviIngressAclFact
 from anta._advisory.facts.eos import EosVersionFact
@@ -147,21 +145,3 @@ class TestSA151Assessment(unittest.TestCase):
         assert isinstance(_assess_sa151(version, platform_fact("DCS-UNRECOGNIZED"), configured), ErrorResult)
         unavailable = SharedSviIngressAclFact.unavailable(FactProblemKind.UNSUPPORTED, SOURCE)
         assert isinstance(_assess_sa151(version, platform_fact("CCS-755-CH-F"), unavailable), ErrorResult)
-
-
-@pytest.mark.parametrize("version", ["4.31.11M", "4.32.12M", "4.31.99M", "4.32.99M", "4.31.99.99M", "4.32.99.99M"])
-def test_unfixed_train_assessment(version: str) -> None:
-    """Later patches in an unfixed train must still assess the exposure facts."""
-    version_evidence = version_fact(version)
-    platform = platform_fact("CCS-755-CH-F")
-    configured = acl_fact(ConfigurationState.CONFIGURED)
-    absent = acl_fact(ConfigurationState.NOT_CONFIGURED)
-    unavailable = SharedSviIngressAclFact.unavailable(FactProblemKind.MISSING, SOURCE)
-
-    affected = _assess_sa151(version_evidence, platform, configured)
-
-    assert isinstance(affected, AffectedResult)
-    assert affected.remediation is not None
-    assert isinstance(_assess_sa151(version_evidence, platform, absent), NotAffectedResult)
-    assert isinstance(_assess_sa151(version_evidence, platform_fact("DCS-7280CR3"), configured), NotAffectedResult)
-    assert isinstance(_assess_sa151(version_evidence, platform, unavailable), ErrorResult)

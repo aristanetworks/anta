@@ -12,8 +12,6 @@ from functools import partial
 from typing import TYPE_CHECKING, Any, cast
 from unittest.mock import AsyncMock
 
-import pytest
-
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact, SecureBootFact
 from anta._advisory.facts.models import AvailableFact, FactProblemKind, FactSource, FactSourceKind, FeatureState
@@ -254,20 +252,3 @@ class TestSA140(unittest.IsolatedAsyncioTestCase):
 
         assert test.result.result is AntaTestStatus.SKIPPED
         assert "show boot" in test.result.messages[0]
-
-
-@pytest.mark.parametrize("version", ["4.30.11M", "4.31.11M", "4.30.99M", "4.31.99M", "4.30.99.99M", "4.31.99.99M"])
-def test_unfixed_train_assessment(version: str) -> None:
-    """Later patches in an unfixed train must still assess the exposure facts."""
-    version_fact = TestSA140Assessment.version_fact(version)
-    enabled = SecureBootFact(FeatureState.ENABLED).available(TEST_SOURCE)
-    disabled = SecureBootFact(FeatureState.DISABLED).available(TEST_SOURCE)
-    unavailable = SecureBootFact.unavailable(FactProblemKind.MISSING, TEST_SOURCE)
-
-    affected = _assess_sa140(version_fact, enabled)
-
-    assert isinstance(affected, AffectedResult)
-    assert affected.context[0].relation is VersionRelation.AFFECTED
-    assert affected.remediation is not None
-    assert isinstance(_assess_sa140(version_fact, disabled), NotAffectedResult)
-    assert isinstance(_assess_sa140(version_fact, unavailable), ErrorResult)

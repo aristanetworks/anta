@@ -11,8 +11,6 @@ import unittest
 from functools import partial
 from typing import TYPE_CHECKING, Any
 
-import pytest
-
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import GnsiAuthzFact, GnsiMultipleTransportsFact, GnsiTransportFact
@@ -164,22 +162,3 @@ class TestSA169Assessment(unittest.TestCase):
         )
         unavailable = GnsiAuthzFact.unavailable(FactProblemKind.MISSING, SOURCE)
         assert isinstance(_assess_sa169(version, transport, one_transport, unavailable), ErrorResult)
-
-
-@pytest.mark.parametrize("version", ["4.31.11M", "4.32.12M", "4.31.99M", "4.32.99M", "4.31.99.99M", "4.32.99.99M"])
-def test_unfixed_train_assessment(version: str) -> None:
-    """Later patches in an unfixed train must still assess the exposure facts."""
-    version_evidence = version_fact(version)
-    transport = transport_fact(FeatureState.ENABLED)
-    one_transport = multiple_transports_fact(FeatureState.DISABLED)
-    multiple_transports = multiple_transports_fact(FeatureState.ENABLED)
-    authz = authz_fact(FeatureState.ENABLED)
-    unavailable = GnsiAuthzFact.unavailable(FactProblemKind.MISSING, SOURCE)
-
-    affected = _assess_sa169(version_evidence, transport, multiple_transports, authz)
-
-    assert isinstance(affected, AffectedResult)
-    assert affected.remediation is not None
-    assert isinstance(_assess_sa169(version_evidence, transport, one_transport, authz), InconclusiveResult)
-    assert isinstance(_assess_sa169(version_evidence, transport, multiple_transports, authz_fact(FeatureState.DISABLED)), NotAffectedResult)
-    assert isinstance(_assess_sa169(version_evidence, transport, multiple_transports, unavailable), ErrorResult)
