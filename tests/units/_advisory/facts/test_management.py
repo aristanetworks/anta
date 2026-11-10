@@ -10,8 +10,6 @@ from typing import TYPE_CHECKING
 import pytest
 
 from anta._advisory.facts.management import (
-    Dot1xControlledAuthenticatorFact,
-    Dot1xDynamicAuthorizationFact,
     GnmiAuthorizationFact,
     GnmiMtlsAuthorizationFact,
     GnmiTransportFact,
@@ -32,10 +30,8 @@ from anta._advisory.facts.management import (
     SnmpAgentFact,
     SnmpV3AuthenticationFact,
     SnmpV3CredentialSyntaxFact,
-    _parse_dot1x_controlled_authenticator,
 )
 from anta._advisory.facts.models import AvailableFact, CredentialSyntaxState, FactProblemKind, FeatureState, MitigationState, UnavailableFact
-from anta._eos.parsing import ParseFail, ParseFailureReason, ParseSuccessful
 from anta._eos.version import EOSVersion
 from tests.units.anta_tests.advisories import OfflineAntaDevice
 
@@ -94,7 +90,6 @@ def text_command(definition: type, output: str) -> AntaCommand:
 @pytest.mark.parametrize(
     "definition",
     [
-        Dot1xDynamicAuthorizationFact,
         RestconfTransportFact,
         NetconfTransportFact,
         GnpsiTransportFact,
@@ -111,58 +106,6 @@ def test_optional_feature_command_unsupported(device: OfflineAntaDevice, definit
 
     assert isinstance(fact, AvailableFact)
     assert fact.value.state is FeatureState.UNSUPPORTED
-
-
-@pytest.mark.parametrize(
-    ("output", "state"),
-    [
-        ({"systemAuthControl": False, "dynAuth": False, "interfaces": {}}, FeatureState.DISABLED),
-        (
-            {"systemAuthControl": True, "dynAuth": True, "interfaces": {"Ethernet1": {"portControl": "controlled"}}},
-            FeatureState.ENABLED,
-        ),
-        ({"systemAuthControl": True, "dynAuth": False, "interfaces": {"Ethernet1": {"portControl": "controlled"}}}, FeatureState.DISABLED),
-        ({"systemAuthControl": True, "dynAuth": True, "interfaces": {"Ethernet1": {"portControl": "forceAuth"}}}, FeatureState.DISABLED),
-    ],
-)
-def test_dot1x_dynamic_authorization_states(device: OfflineAntaDevice, output: dict[str, object], state: FeatureState) -> None:
-    """Require effective global dynamic authorization and a controlled authenticator interface."""
-    fact = Dot1xDynamicAuthorizationFact.derive(device, (json_command(Dot1xDynamicAuthorizationFact, output),))
-    assert isinstance(fact, AvailableFact)
-    assert fact.value.state is state
-
-
-def test_dot1x_dynamic_authorization_rejects_malformed_interface(device: OfflineAntaDevice) -> None:
-    """Reject enabled 802.1X output without effective interface state."""
-    output = {"systemAuthControl": True, "dynAuth": True, "interfaces": {"Ethernet1": {}}}
-    fact = Dot1xDynamicAuthorizationFact.derive(device, (json_command(Dot1xDynamicAuthorizationFact, output),))
-    assert isinstance(fact, UnavailableFact)
-    assert fact.problem is FactProblemKind.MALFORMED
-
-
-@pytest.mark.parametrize(
-    ("output", "controlled"),
-    [
-        ({"systemAuthControl": False, "interfaces": {}}, False),
-        ({"systemAuthControl": True, "interfaces": {"Ethernet1": {"portControl": "forceAuth"}}}, False),
-        ({"systemAuthControl": True, "interfaces": {"Ethernet1": {"portControl": "controlled"}}}, True),
-    ],
-)
-def test_parse_dot1x_controlled_authenticator(output: dict[str, object], controlled: bool) -> None:
-    """Return a typed successful result for observed EOS controlled-authenticator states."""
-    parsed = _parse_dot1x_controlled_authenticator(output)
-
-    assert isinstance(parsed, ParseSuccessful)
-    assert parsed.value is controlled
-
-
-def test_parse_dot1x_controlled_authenticator_failure() -> None:
-    """Return a typed parsing failure for malformed EOS interface state."""
-    parsed = _parse_dot1x_controlled_authenticator({"systemAuthControl": True, "interfaces": {"Ethernet1": {}}})
-
-    assert isinstance(parsed, ParseFail)
-    assert parsed.reason is ParseFailureReason.MALFORMED
-    assert parsed.detail == "show dot1x all interface 'Ethernet1' portControl is not a string"
 
 
 @pytest.mark.parametrize(
@@ -1031,45 +974,3 @@ def test_gnmi_mtls_authorization_ignores_unsupported_ssl_for_unauthorized_transp
     assert isinstance(fact, AvailableFact)
     assert fact.value.state is FeatureState.DISABLED
     assert fact.source.name == GnmiMtlsAuthorizationFact.commands[0].command
-
-
-@pytest.mark.parametrize(
-    ("output", "state"),
-    [
-        ({"systemAuthControl": False, "interfaces": {}}, FeatureState.DISABLED),
-        ({"systemAuthControl": True, "interfaces": {"Ethernet1": {"portControl": "forceAuth"}}}, FeatureState.DISABLED),
-        ({"systemAuthControl": True, "interfaces": {"Ethernet1": {"portControl": "controlled"}}}, FeatureState.ENABLED),
-    ],
-)
-def test_dot1x_controlled_authenticator_states(device: OfflineAntaDevice, output: dict[str, object], state: FeatureState) -> None:
-    """Normalize effective controlled 802.1X state."""
-    command = Dot1xControlledAuthenticatorFact.commands[0].model_copy()
-    command.output = output
-
-    fact = Dot1xControlledAuthenticatorFact.derive(device, (command,))
-
-    assert isinstance(fact, AvailableFact)
-    assert fact.value.state is state
-
-
-def test_dot1x_controlled_authenticator_malformed(device: OfflineAntaDevice) -> None:
-    """Reject incomplete effective 802.1X state."""
-    command = Dot1xControlledAuthenticatorFact.commands[0].model_copy()
-    command.output = {"systemAuthControl": True, "interfaces": {"Ethernet1": {}}}
-
-    fact = Dot1xControlledAuthenticatorFact.derive(device, (command,))
-
-    assert isinstance(fact, UnavailableFact)
-    assert fact.problem is FactProblemKind.MALFORMED
-
-
-def test_dot1x_controlled_authenticator_unsupported(device: OfflineAntaDevice) -> None:
-    """Treat feature-specific unsupported output as 802.1X absence."""
-    command = Dot1xControlledAuthenticatorFact.commands[0].model_copy()
-    command.output = None
-    command.errors = ["This command is not supported on this hardware platform"]
-
-    fact = Dot1xControlledAuthenticatorFact.derive(device, (command,))
-
-    assert isinstance(fact, AvailableFact)
-    assert fact.value.state is FeatureState.UNSUPPORTED
