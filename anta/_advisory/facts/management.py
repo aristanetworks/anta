@@ -15,8 +15,6 @@ from typing import ClassVar
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.models import (
     CommandsFactDefinition,
-    ConfigurationFact,
-    ConfigurationState,
     CredentialSyntaxFact,
     CredentialSyntaxState,
     Fact,
@@ -35,7 +33,6 @@ from anta._advisory.optional_commands import OptionalAntaCommand, is_unsupported
 from anta._eos.parsing import ParseFail, ParseFailureReason, ParseResult, ParseSuccessful
 from anta.models import AntaCommand
 
-RISKY_TRACE_SELECTORS = ("service/9", "interceptor/9", "transport_socketcli/9")
 GNMI_COMMAND = OptionalAntaCommand(command="show management api gnmi", revision=1)
 DOT1X_COMMAND = OptionalAntaCommand(command="show dot1x all", revision=1)
 RADIUS_PROXY_CONFIG_COMMAND = AntaCommand(command="show running-config section radius proxy", ofmt="text")
@@ -47,7 +44,6 @@ PATHZ_POLICY_COMMAND = OptionalAntaCommand(
     ofmt="text",
 )
 GRIBI_COMMAND = OptionalAntaCommand(command="show management api gribi", revision=1)
-TRACE_COMMAND = OptionalAntaCommand(command="show running-config section trace", ofmt="text")
 RESTCONF_COMMAND = OptionalAntaCommand(command="show management api restconf", revision=1)
 NETCONF_COMMAND = OptionalAntaCommand(command="show management api netconf", revision=1)
 SSL_PROFILE_COMMAND = OptionalAntaCommand(command="show management security ssl profile", revision=1)
@@ -745,53 +741,6 @@ class GnmiTransportFact(FeatureFact, CommandsFactDefinition["GnmiTransportFact"]
 
 
 @dataclass(frozen=True, slots=True)
-class GnmiAccountingFact(FeatureFact, CommandsFactDefinition["GnmiAccountingFact"]):
-    """Accounting state across enabled gNMI transports."""
-
-    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.GNMI, "transport accounting")
-    key: ClassVar[str] = "feature.gnmi.accounting"
-    label: ClassVar[str] = "gNMI transport accounting state"
-    commands: ClassVar[tuple[AntaCommand, ...]] = (GNMI_COMMAND,)
-
-    @staticmethod
-    def _state(config: _GnmiConfig) -> FeatureState | FactProblemKind:
-        """Interpret accounting state from neutral gNMI configuration."""
-        if config.service_enabled is False and any(isinstance(transport, Mapping) and transport.get("enabled") is True for transport in config.transports):
-            return FactProblemKind.MALFORMED
-        unknown = False
-        for transport in config.transports:
-            if not isinstance(transport, Mapping):
-                unknown = True
-                continue
-            enabled = transport.get("enabled")
-            if enabled is False:
-                continue
-            if enabled is not True:
-                unknown = True
-                continue
-            accounting = transport.get("accounting")
-            if accounting is True:
-                return FeatureState.ENABLED
-            if accounting is not False:
-                unknown = True
-        return FactProblemKind.MISSING if unknown else FeatureState.DISABLED
-
-    @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[GnmiAccountingFact]:
-        (command,) = commands
-        source = _feature_source(command)
-        if is_unsupported_optional_command(command):
-            return cls(FeatureState.UNSUPPORTED).available(source)
-        config = _deserialize_gnmi_config(command.json_output)
-        if config is None:
-            return cls.unavailable(FactProblemKind.MALFORMED, source)
-        state = cls._state(config)
-        if isinstance(state, FactProblemKind):
-            return cls.unavailable(state, source)
-        return cls(state).available(source)
-
-
-@dataclass(frozen=True, slots=True)
 class GnmiAuthorizationFact(FeatureFact, CommandsFactDefinition["GnmiAuthorizationFact"]):
     """Request authorization on at least one enabled gNMI transport."""
 
@@ -1078,34 +1027,6 @@ class GnmiMtlsAuthorizationFact(FeatureFact, CommandsFactDefinition["GnmiMtlsAut
         if not isinstance(candidates, _GnmiAuthorizationCandidates):
             return candidates
         return cls._evaluate_candidates(candidates, ssl, gnmi)
-
-
-@dataclass(frozen=True, slots=True)
-class RiskyOpenConfigTraceFact(ConfigurationFact, CommandsFactDefinition["RiskyOpenConfigTraceFact"]):
-    """Presence of an advisory-identified OpenConfig trace selector."""
-
-    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.TRACE, "advisory-identified selector")
-    key: ClassVar[str] = "configuration.openconfig.risky_trace_selector"
-    label: ClassVar[str] = "OpenConfig trace selector configuration"
-    commands: ClassVar[tuple[AntaCommand, ...]] = (TRACE_COMMAND,)
-
-    @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[RiskyOpenConfigTraceFact]:
-        (command,) = commands
-        source = _feature_source(command)
-        if is_unsupported_optional_command(command):
-            return cls.unavailable(FactProblemKind.UNSUPPORTED, source)
-        prefix = "trace OpenConfig setting "
-        configured = False
-        for line in command.text_output.splitlines():
-            candidate = line.lstrip()
-            if candidate.startswith(prefix):
-                selectors = {selector.strip() for selector in candidate.removeprefix(prefix).split(",")}
-                configured = any(selector in selectors for selector in RISKY_TRACE_SELECTORS)
-                if configured:
-                    break
-        state = ConfigurationState.CONFIGURED if configured else ConfigurationState.NOT_CONFIGURED
-        return cls(state).available(source)
 
 
 @dataclass(frozen=True, slots=True)

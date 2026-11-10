@@ -341,7 +341,6 @@ class FeatureName(str, Enum):
 
     AAA = "AAA"
     ACL = "ACL"
-    AGENT_TRACING = "agent tracing"
     BFD = "BFD"
     DHCP = "DHCP"
     DOT1X = "802.1X"
@@ -364,7 +363,6 @@ class FeatureName(str, Enum):
     SNMPV3 = "SNMPv3"
     SSH = "SSH"
     TERMINATTR = "TerminAttr"
-    TRACE = "OpenConfig tracing"
     URPF = "uRPF"
     VRRP = "VRRP"
 
