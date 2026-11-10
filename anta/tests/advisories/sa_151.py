@@ -36,8 +36,8 @@ AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
     VersionRule(major=4, minor=35, patch_lte=4),
     VersionRule(major=4, minor=34, patch_lte=6),
     VersionRule(major=4, minor=33, patch_lte=8),
-    VersionRule(major=4, minor=32, patch_lte=11),
-    VersionRule(major=4, minor=31, patch_gte=1, patch_lte=10),
+    VersionRule(major=4, minor=32),
+    VersionRule(major=4, minor=31, patch_gte=1),
 )
 AFFECTED_PLATFORM_FAMILIES = frozenset({PlatformFamily.SERIES_750})
 FIXED_RELEASES = (

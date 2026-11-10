@@ -10,11 +10,15 @@ from typing import TYPE_CHECKING
 import pytest
 
 from anta._advisory.facts.models import AvailableFact, FactProblemKind, MitigationState, UnavailableFact
-from anta._advisory.facts.software import SA171HotfixFact, SA173HotfixFact, TerminAttrVersionFact
+from anta._advisory.facts.software import SA171HotfixFact, SA173HotfixFact, SA178HotfixFact, TerminAttrVersionFact
 from tests.units.anta_tests.advisories import OfflineAntaDevice
 
 if TYPE_CHECKING:
+    from typing import TypeAlias
+
     from anta.models import AntaCommand
+
+    HotfixDefinition: TypeAlias = type[SA171HotfixFact | SA173HotfixFact | SA178HotfixFact]
 
 
 @pytest.mark.parametrize(
@@ -54,7 +58,7 @@ def fact_device_fixture() -> OfflineAntaDevice:
     return OfflineAntaDevice("unit-test")
 
 
-def commands(definition: type[SA171HotfixFact | SA173HotfixFact], extensions: object, boot_extensions: object) -> tuple[AntaCommand, AntaCommand]:
+def commands(definition: HotfixDefinition, extensions: object, boot_extensions: object) -> tuple[AntaCommand, AntaCommand]:
     """Return populated extension commands."""
     extension_command, boot_command = (command.model_copy() for command in definition.commands)
     extension_command.output = {"extensions": extensions}
@@ -65,6 +69,7 @@ def commands(definition: type[SA171HotfixFact | SA173HotfixFact], extensions: ob
 HOTFIX_FACTS = (
     (SA173HotfixFact, "sa173-SecurityAdvisory173_CVE-2026-73455.swix"),
     (SA171HotfixFact, "sa171-SecurityAdvisory171_CVE-2026-73435.swix"),
+    (SA178HotfixFact, "sa178-SecurityAdvisory178_CVE-2026-73440.swix"),
 )
 
 
@@ -79,7 +84,7 @@ HOTFIX_FACTS = (
 @pytest.mark.parametrize(("definition", "extension_name"), HOTFIX_FACTS)
 def test_persistent_hotfix_state(
     device: OfflineAntaDevice,
-    definition: type[SA171HotfixFact | SA173HotfixFact],
+    definition: HotfixDefinition,
     extension_name: str,
     status: str,
     persistent: bool,
@@ -115,7 +120,7 @@ def test_persistent_hotfix_shared_device_output(device: OfflineAntaDevice) -> No
 
 
 @pytest.mark.parametrize(("definition", "extension_name"), HOTFIX_FACTS)
-def test_persistent_hotfix_absent(device: OfflineAntaDevice, definition: type[SA171HotfixFact | SA173HotfixFact], extension_name: str) -> None:
+def test_persistent_hotfix_absent(device: OfflineAntaDevice, definition: HotfixDefinition, extension_name: str) -> None:
     """Treat an absent SWIX as an ineffective mitigation."""
     assert definition.extension_name == extension_name
     fact = definition.derive(device, commands(definition, {}, []))
@@ -137,7 +142,7 @@ def test_persistent_hotfix_absent(device: OfflineAntaDevice, definition: type[SA
 @pytest.mark.parametrize(("definition", "extension_name"), HOTFIX_FACTS)
 def test_persistent_hotfix_invalid(
     device: OfflineAntaDevice,
-    definition: type[SA171HotfixFact | SA173HotfixFact],
+    definition: HotfixDefinition,
     extension_name: str,
     extensions: object,
     boot_extensions: object,
@@ -159,7 +164,7 @@ def test_persistent_hotfix_invalid(
 
 
 @pytest.mark.parametrize(("definition", "extension_name"), HOTFIX_FACTS)
-def test_persistent_hotfix_unsupported(device: OfflineAntaDevice, definition: type[SA171HotfixFact | SA173HotfixFact], extension_name: str) -> None:
+def test_persistent_hotfix_unsupported(device: OfflineAntaDevice, definition: HotfixDefinition, extension_name: str) -> None:
     """Retain unsupported extension collection as unavailable."""
     assert definition.extension_name == extension_name
     extension_command, boot_command = commands(definition, {}, [])
@@ -171,3 +176,53 @@ def test_persistent_hotfix_unsupported(device: OfflineAntaDevice, definition: ty
     assert isinstance(fact, UnavailableFact)
     assert fact.problem is FactProblemKind.UNSUPPORTED
     assert fact.source.name == definition.commands[0].command
+
+
+@pytest.mark.parametrize(("definition", "extension_name"), HOTFIX_FACTS)
+@pytest.mark.parametrize("command_index", [0, 1])
+@pytest.mark.parametrize("stale_output", [False, True])
+@pytest.mark.parametrize(
+    "errors",
+    [["Permission denied"], ["This command is not supported on this hardware platform", "Permission denied"]],
+)
+def test_persistent_hotfix_collection_failures(
+    device: OfflineAntaDevice,
+    definition: HotfixDefinition,
+    extension_name: str,
+    command_index: int,
+    stale_output: bool,
+    errors: list[str],
+) -> None:
+    """Keep collection failures unavailable even when stale output would claim an effective hotfix."""
+    collected = commands(definition, {extension_name: {"status": "installed"}}, [extension_name])
+    collected[command_index].errors = errors
+    if not stale_output:
+        collected[command_index].output = None
+
+    fact = definition.derive(device, collected)
+
+    assert isinstance(fact, UnavailableFact)
+    assert fact.problem is FactProblemKind.COLLECTION_FAILED
+    assert fact.source.name == definition.commands[command_index].command
+
+
+@pytest.mark.parametrize(("definition", "extension_name"), HOTFIX_FACTS)
+@pytest.mark.parametrize("command_index", [0, 1])
+@pytest.mark.parametrize(("output", "problem"), [(None, FactProblemKind.MISSING), ("invalid", FactProblemKind.MALFORMED)])
+def test_persistent_hotfix_invalid_command_output(
+    device: OfflineAntaDevice,
+    definition: HotfixDefinition,
+    extension_name: str,
+    command_index: int,
+    output: str | None,
+    problem: FactProblemKind,
+) -> None:
+    """Convert missing or malformed command output into an unavailable hotfix fact."""
+    collected = commands(definition, {extension_name: {"status": "installed"}}, [extension_name])
+    collected[command_index].output = output
+
+    fact = definition.derive(device, collected)
+
+    assert isinstance(fact, UnavailableFact)
+    assert fact.problem is problem
+    assert fact.source.name == definition.commands[command_index].command

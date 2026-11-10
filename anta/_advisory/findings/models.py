@@ -177,11 +177,16 @@ class NotAffectedResult(VulnerabilityResultBase):
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class AffectedResult(VulnerabilityResultBase):
-    """At least one confirmed affected condition is not mitigated."""
+    """At least one confirmed affected condition is not mitigated.
+
+    ``mitigated_conditions`` records affected conditions already covered by an effective mitigation, so the result explains why its remediation
+    omits them.
+    """
 
     conditions: tuple[AffectedCondition, ...]
     remediation: RemediationPlan
     context: tuple[EosReleaseAssessment | ComponentVersionAssessment | PlatformAssessment, ...] = ()
+    mitigated_conditions: tuple[MitigatedCondition, ...] = ()
 
     def __post_init__(self) -> None:
         VulnerabilityResultBase.__post_init__(self)
@@ -195,11 +200,14 @@ class AffectedResult(VulnerabilityResultBase):
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class MitigatedResult(VulnerabilityResultBase):
-    """Every confirmed affected condition is paired with an effective mitigation."""
+    """Every confirmed affected condition is paired with an effective mitigation.
+
+    ``context`` retains supporting evidence for the overall mitigated conclusion.
+    """
 
     mitigated_conditions: tuple[MitigatedCondition, ...]
     remediation: RemediationPlan
-    context: tuple[EosReleaseAssessment | ComponentVersionAssessment | PlatformAssessment, ...] = ()
+    context: tuple[FindingEvidence, ...] = ()
 
     def __post_init__(self) -> None:
         VulnerabilityResultBase.__post_init__(self)

@@ -46,8 +46,8 @@ AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
     VersionRule(major=4, minor=34, patch_lte=5),
     VersionRule(major=4, minor=33, patch_lte=7),
     VersionRule(major=4, minor=32, patch_lte=9),
-    VersionRule(major=4, minor=31, patch_lte=10),
-    VersionRule(major=4, minor=30, patch_lte=10),
+    VersionRule(major=4, minor=31),
+    VersionRule(major=4, minor=30),
 )
 
 FIXED_RELEASES = (
