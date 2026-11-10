@@ -56,7 +56,8 @@ AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
     VersionRule(major=4, minor=31),
     VersionRule(major=4, minor=30),
     VersionRule(major=4, minor=29),
-    VersionRule(major=4, minor=28, patch_lte=14),
+    # ADR-0003: no fixed release is published for this train.
+    VersionRule(major=4, minor=28),
     VersionRule(major=4, minor_lt=28),
 )
 FIXED_RELEASES: tuple[FixedRelease, ...] = (
@@ -152,8 +153,8 @@ VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
 def _parse_terminattr_version(value: str) -> SemanticVersion | None:
-    """Parse the component's stable package-version representation."""
-    match = re.fullmatch(r"v(\d+)\.(\d+)\.(\d+)", value)
+    """Parse the numeric release, accepting TerminAttr's underscore build labels."""
+    match = re.fullmatch(r"v([0-9]+)\.([0-9]+)\.([0-9]+)(?:_[A-Za-z0-9][A-Za-z0-9_.-]*)?", value)
     return SemanticVersion(*(int(part) for part in match.groups()), prefix="v") if match else None
 
 
@@ -166,7 +167,11 @@ def _terminattr_version_assessment(fact: Fact[TerminAttrVersionFact]) -> Compone
         return TerminAttrVersionFact.unavailable(FactProblemKind.INVALID, fact.source)
     if version.major == 1:
         last_patch = TERMINATTR_LAST_AFFECTED_PATCH.get(version.minor)
-        affected = version.minor in TERMINATTR_LAST_AFFECTED_PATCH and (last_patch is None or version.patch <= last_patch)
+        # A build label does not establish that the corresponding final release's
+        # fix is present. In particular, _devel precedes the same numeric final tag.
+        affected = version.minor in TERMINATTR_LAST_AFFECTED_PATCH and (
+            last_patch is None or version.patch <= last_patch or (version.patch == last_patch + 1 and "_" in fact.value.version)
+        )
     else:
         affected = version.major < 1
     return ComponentVersionAssessment(fact, VersionRelation.AFFECTED if affected else VersionRelation.OUTSIDE_SCOPE)
@@ -270,6 +275,10 @@ class SA201(OptionalCommandsMixin, _AntaAdvisoryTest):
     examples and recommends a fixed TerminAttr release. The advisory retains a CA condition in its exposure discussion; this version-based
     assessment does not use client configuration to exempt affected software. Explicit CA paths, disabled clients, destinations, and runtime
     sessions do not change the result. No trust-store workaround is assessed or recommended by this test.
+
+    TerminAttr package versions with underscore build labels retain their original spelling in findings. Numeric release components determine
+    the affected train and patch; a build at the first fixed patch is conservatively affected until it is the final release. For example,
+    ``v1.46.3_devel`` does not establish the fix published in final ``v1.46.3``.
 
     EOS and TerminAttr upgrades must be compatible. When EOS must also change, select TerminAttr for the target EOS release rather than the
     currently installed EOS. All EOS platforms, including CVX, are assessed without platform-family exclusions. Other Arista products covered

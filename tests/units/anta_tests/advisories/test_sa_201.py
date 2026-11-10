@@ -129,7 +129,7 @@ _DATA: AntaUnitTestData = {
 }
 
 # Reduced version/package pairs observed through native eAPI collection in the lab.
-# Suffixed TerminAttr builds remain unclassified; affected EOS is still decisive.
+# Keep original build labels in findings while assessing their numeric releases.
 for _name, _eos, _terminattr, _message, _component_action in (
     (
         "lab-affected-cloudeos",
@@ -142,15 +142,15 @@ for _name, _eos, _terminattr, _message, _component_action in (
         "lab-affected-eos-with-devel-terminattr",
         "4.32.1F",
         "v1.32.99_devel",
-        "The device is affected because EOS version '4.32.1F' is affected.",
-        EXPECTED_VERIFY_TERMINATTR,
+        "The device is affected because EOS version '4.32.1F' is affected and TerminAttr 'v1.32.99_devel' is affected.",
+        EXPECTED_UPGRADE_TERMINATTR,
     ),
     (
         "lab-affected-eos-with-rel-terminattr",
         "4.35.0.2F",
         "v1.41.0_quinn.1_rel",
-        "The device is affected because EOS version '4.35.0.2F' is affected.",
-        EXPECTED_VERIFY_TERMINATTR,
+        "The device is affected because EOS version '4.35.0.2F' is affected and TerminAttr 'v1.41.0_quinn.1_rel' is affected.",
+        EXPECTED_UPGRADE_TERMINATTR,
     ),
     (
         "lab-fixed-veos",
@@ -201,7 +201,8 @@ def version_fact(version: str | None = "4.36.3.2M") -> Fact[EosVersionFact]:
         ("4.28.0F", True),
         ("4.28.14M", True),
         ("4.28.14.1M", True),
-        ("4.28.15M", False),
+        ("4.28.15M", True),
+        ("4.28.99M", True),
         ("4.29.0F", True),
         ("4.29.99M", True),
         ("4.30.0F", True),
@@ -289,6 +290,64 @@ def test_component_source_boundaries(version: str, affected: bool) -> None:
     assert result.relation is (VersionRelation.AFFECTED if affected else VersionRelation.OUTSIDE_SCOPE)
 
 
+@pytest.mark.parametrize("suffix", ["_devel", "_quinn.1_rel"])
+@pytest.mark.parametrize(
+    ("version", "affected"),
+    [
+        ("v1.31.17", True),
+        ("v1.31.18", True),
+        ("v1.31.19", False),
+        ("v1.34.14", True),
+        ("v1.34.15", True),
+        ("v1.34.16", False),
+        ("v1.37.14", True),
+        ("v1.37.15", True),
+        ("v1.37.16", False),
+        ("v1.40.14", True),
+        ("v1.40.15", True),
+        ("v1.40.16", False),
+        ("v1.43.10", True),
+        ("v1.43.11", True),
+        ("v1.43.12", False),
+        ("v1.46.2", True),
+        ("v1.46.3", True),
+        ("v1.46.4", False),
+    ],
+)
+def test_component_build_labels_preserve_numeric_boundaries(version: str, suffix: str, affected: bool) -> None:
+    """A labelled build at the first fixed patch cannot claim the final release's fix."""
+    fact = TerminAttrVersionFact(version + suffix).available(PACKAGE_SOURCE)
+    result = _terminattr_version_assessment(fact)
+    assert isinstance(result, ComponentVersionAssessment)
+    assert result.relation is (VersionRelation.AFFECTED if affected else VersionRelation.OUTSIDE_SCOPE)
+    assert result.fact == fact
+
+
+@pytest.mark.parametrize(
+    ("version", "status"),
+    [
+        ("v1.32.99_devel", AdvisoryStatus.AFFECTED),
+        ("v1.41.0_quinn.1_rel", AdvisoryStatus.AFFECTED),
+        ("v1.46.2_devel", AdvisoryStatus.AFFECTED),
+        ("v1.46.3_devel", AdvisoryStatus.AFFECTED),
+        ("v1.46.4_devel", AdvisoryStatus.NOT_AFFECTED),
+    ],
+)
+async def test_suffixed_component_on_fixed_eos(version: str, status: AdvisoryStatus) -> None:
+    """Exercise suffix parsing where affected EOS cannot mask a component parsing error."""
+    device = OfflineAntaDevice("test")
+    device.version = parse_eos_version("4.36.3.2M").unwrap()
+    await device.refresh()
+    instance = SA201(device=device, eos_data=[{"details": {"packages": {"TerminAttr-core": {"version": version}}}}])
+    await instance.test()
+
+    atomic = instance.result.atomic_results[0]
+    assert isinstance(atomic, _AdvisoryAtomicTestResult)
+    assert atomic.advisory_status is status
+    assert version in atomic.messages[0]
+    assert atomic.remediation == (EXPECTED_COMPONENT_ONLY_PLAN if status is AdvisoryStatus.AFFECTED else None)
+
+
 @pytest.mark.parametrize(
     ("version", "expected"),
     [
@@ -340,6 +399,7 @@ async def test_platform_identity_does_not_limit_software_assessment(model: str |
     ("eos_version", "component_version", "result_type"),
     [
         ("4.36.3M", "v1.46.2", AffectedResult),
+        ("4.28.15M", "v1.31.18", AffectedResult),
         ("4.36.3M", "v1.46.3", AffectedResult),
         ("4.36.3.2M", "v1.46.2", AffectedResult),
         ("4.36.3.2M", "v1.46.3", NotAffectedResult),
@@ -369,7 +429,7 @@ def test_all_required_unavailable_facts_are_retained() -> None:
     assert result.problems == (version_fact(None), component)
 
 
-@pytest.mark.parametrize("version", ["1.46.2", "v1.46", "v1.46.2-dev", "invalid"])
+@pytest.mark.parametrize("version", ["1.46.2", "v1.46", "v1.46.2-dev", "v1.46.2_", "v1.46.2_bad label", "v1.46.2_bad/label", "v1.46.2_rel\n", "invalid"])
 @pytest.mark.parametrize(("eos_version", "result_type"), [("4.36.3M", AffectedResult), ("4.36.3.2M", ErrorResult)])
 def test_invalid_component_version_cannot_clear_affected_eos(version: str, eos_version: str, result_type: type) -> None:
     """Malformed component metadata is an error only when needed to decide impact."""
