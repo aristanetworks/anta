@@ -120,11 +120,16 @@ class PersistentHotfixFact(MitigationFact, CommandsFactDefinition[HotfixFactT], 
     )
 
     @classmethod
-    def _installed_extension(cls, command: AntaCommand) -> Fact[HotfixFactT] | Mapping[str, object]:
+    # pylint: disable-next=too-many-return-statements
+    def _installed_extension(cls, command: AntaCommand) -> Fact[HotfixFactT] | Mapping[str, object]:  # noqa: PLR0911
         """Return installed extension data or a result decided by extension state alone."""
         source = FactSource(command.command, FactSourceKind.COMMAND)
         if is_unsupported_optional_command(command):
             return cls.unavailable(FactProblemKind.UNSUPPORTED, source)
+        if command.errors:
+            return cls.unavailable(FactProblemKind.COLLECTION_FAILED, source)
+        if not isinstance(command.output, Mapping):
+            return cls.unavailable(FactProblemKind.MISSING if command.output is None else FactProblemKind.MALFORMED, source)
         extensions = command.json_output.get("extensions")
         if extensions is None:
             return cls.unavailable(FactProblemKind.MISSING, source)
@@ -144,6 +149,10 @@ class PersistentHotfixFact(MitigationFact, CommandsFactDefinition[HotfixFactT], 
         source = FactSource(command.command, FactSourceKind.COMMAND)
         if is_unsupported_optional_command(command):
             return cls.unavailable(FactProblemKind.UNSUPPORTED, source)
+        if command.errors:
+            return cls.unavailable(FactProblemKind.COLLECTION_FAILED, source)
+        if not isinstance(command.output, Mapping):
+            return cls.unavailable(FactProblemKind.MISSING if command.output is None else FactProblemKind.MALFORMED, source)
         boot_extensions = command.json_output.get("extensions")
         if boot_extensions is None:
             return cls.unavailable(FactProblemKind.MISSING, source)
@@ -181,8 +190,9 @@ class SA178HotfixFact(PersistentHotfixFact["SA178HotfixFact"]):
 
     key: ClassVar[str] = "mitigation.hotfix.sa178"
     label: ClassVar[str] = "SA178 SWIX hotfix"
-    commands: ClassVar[tuple[AntaCommand, ...]] = PersistentHotfixFact.commands
-    extension_name: ClassVar[str] = "SecurityAdvisory178_CVE-2026-73440_Hotfix.swix"
+    # The assessment only requires hotfix evidence on the advisory's eligible releases.
+    commands: ClassVar[tuple[AntaCommand, ...]] = tuple(command.model_copy(update={"defer_errors": True}) for command in PersistentHotfixFact.commands)
+    extension_name: ClassVar[str] = "sa178-SecurityAdvisory178_CVE-2026-73440.swix"
 
 
 @dataclass(frozen=True, slots=True)

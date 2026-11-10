@@ -12,6 +12,8 @@ import unittest
 from functools import partial
 from typing import TYPE_CHECKING, Any
 
+import pytest
+
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.management import SnmpV3AuthenticationFact, SnmpV3CredentialSyntaxFact
@@ -46,10 +48,11 @@ from tests.units.anta_tests import (
     build_eos_version,
     test,  # noqa: F401 - Pytest collects this imported test function.
 )
-from tests.units.anta_tests.advisories import build_expected_advisory_result
+from tests.units.anta_tests.advisories import OfflineAntaDevice, build_expected_advisory_result
 
 if TYPE_CHECKING:
     from anta.device import AntaDevice
+    from anta.models import AntaCommand
     from tests.units.anta_tests import AntaUnitTestData
 
 SOURCE = FactSource("unit test", FactSourceKind.DEVICE_METADATA)
@@ -64,7 +67,7 @@ REMOTE_UDP_PORT_LEGACY_USER = (
     "863e9b56ccbfd7d764cf718cb7cc5c5dff575871b59df84e98c21b0c049b1ed5"
 )
 NO_AUTHENTICATION_USERS = "snmp-server user bob noauthgrp v3\nsnmp-server user v2user noauthgrp v2c\nsnmp-server user remotenoauth noauthgrp remote 192.0.2.1 v3"
-HOTFIX = "SecurityAdvisory178_CVE-2026-73440_Hotfix.swix"
+HOTFIX = "sa178-SecurityAdvisory178_CVE-2026-73440.swix"
 PERSISTENT_HOTFIX: tuple[dict[str, Any], list[str]] = ({HOTFIX: {"status": "installed", "boot": True}}, [HOTFIX])
 NON_PERSISTENT_HOTFIX: tuple[dict[str, Any], list[str]] = ({HOTFIX: {"status": "installed", "boot": False}}, [])
 
@@ -533,3 +536,44 @@ def test_hotfixed_encrypted_credentials_project_as_mitigated(device: AntaDevice)
         )
     ]
     assert atomic_result.remediation == software_version_plan(EXPECTED_FIXED_RELEASES, current_version=EOSVersion(4, 35, 6, suffix="M"))
+
+
+@pytest.mark.parametrize("failed_command", ["show extensions", "show boot-extensions"])
+@pytest.mark.parametrize(
+    ("version", "config", "expected_status"),
+    [
+        ("4.35.7M", ENCRYPTED_USER, AdvisoryStatus.NOT_AFFECTED),
+        ("4.35.6M", "", AdvisoryStatus.NOT_AFFECTED),
+        ("4.35.5M", LEGACY_USER, AdvisoryStatus.AFFECTED),
+        ("4.35.6M", LEGACY_USER, AdvisoryStatus.ERROR),
+        ("4.35.6M", ENCRYPTED_USER, AdvisoryStatus.ERROR),
+    ],
+)
+def test_hotfix_collection_errors_are_assessed_only_when_required(failed_command: str, version: str, config: str, expected_status: AdvisoryStatus) -> None:
+    """Exercise real command collection so terminal framework errors cannot bypass the advisory assessment."""
+
+    class HotfixErrorDevice(OfflineAntaDevice):
+        """Collect valid SNMP output while one hotfix command fails."""
+
+        async def _collect(self, command: AntaCommand, *, collection_id: str | None = None) -> None:
+            if command.command == failed_command:
+                command.errors = ["Permission denied"]
+            elif command.command == "show extensions":
+                command.output = {"extensions": {HOTFIX: {"status": "installed"}}}
+            elif command.command == "show boot-extensions":
+                command.output = {"extensions": [HOTFIX]}
+            else:
+                command.output = config
+
+    device = HotfixErrorDevice("hotfix-error", disable_cache=True)
+    device.version = build_eos_version(version)
+    advisory_test = SA178(device)
+
+    asyncio.run(advisory_test.test())
+
+    assert len(advisory_test.result.atomic_results) == 1
+    atomic = advisory_test.result.atomic_results[0]
+    assert isinstance(atomic, _AdvisoryAtomicTestResult)
+    assert atomic.advisory_status is expected_status
+    if expected_status is AdvisoryStatus.ERROR:
+        assert any("could not be collected" in message for message in atomic.messages)
