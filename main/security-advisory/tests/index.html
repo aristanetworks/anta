@@ -8328,10 +8328,17 @@ a session after the test runs.</p>
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Not Affected: For each issue, the EOS version is outside its affected scope or its risky trace level is disabled.</li>
-<li>Affected: An affected EOS release has an issue&rsquo;s risky trace level enabled.</li>
-<li>Error: Required EOS version or trace state for an issue cannot be determined.</li>
+<li>Not Affected: EOS is outside the affected releases.</li>
+<li>Affected: EOS is within the affected releases.</li>
+<li>Error: The EOS version cannot be determined.</li>
 </ul>
+</details>
+
+<details class="note" open>
+  <summary>Notes</summary>
+  <p>Each issue requires an advisory-identified agent trace level, which this test does not use. An operator can enable
+the trace at any time with <code>start trace</code>, which leaves no running-config record and disappears from <code>show trace</code>
+once the timer expires, so trace state cannot rule out exposure.</p>
 </details>
 
 
@@ -8975,18 +8982,22 @@ classified as mitigated.</p>
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Not Affected: EOS is outside scope, no gNMI transport is enabled, or neither gNMI accounting nor risky OpenConfig tracing is configured.</li>
-<li>Inconclusive: An affected EOS release has gNMI enabled with accounting or risky OpenConfig tracing, but the gNOI File service and
-  effective gNSI Authz controls cannot be evaluated.</li>
-<li>Error: Required EOS, gNMI, accounting, or trace state cannot be determined.</li>
+<li>Not Affected: EOS is outside scope or no gNMI transport is enabled.</li>
+<li>Inconclusive: An affected EOS release has gNMI enabled, but the gNOI File service and effective gNSI Authz controls cannot be
+  evaluated.</li>
+<li>Error: Required EOS or gNMI state cannot be determined.</li>
 </ul>
 </details>
 
 <details class="note" open>
   <summary>Notes</summary>
-  <p>Exposure signals remain inconclusive because disabling the gNOI File service and an
+  <p>Exposure remains inconclusive because disabling the gNOI File service and an
 effective gNSI Authz policy that blocks TransferToRemote cannot currently be evaluated
 with trusted narrow EOS evidence.</p>
+<p>The advisory requires gNMI accounting or an advisory-identified OpenConfig trace selector. This test does not
+use OpenConfig trace state: an operator can enable the trace at any time with <code>start trace</code>, which leaves no
+running-config record and disappears from <code>show trace OpenConfig</code> once the timer expires, so trace state cannot
+rule out exposure. Because the trace branch cannot be excluded, accounting state cannot change the result either.</p>
 </details>
 
 
