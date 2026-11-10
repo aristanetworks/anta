@@ -137,7 +137,7 @@ dev = [
     { name = "pytest-httpx", specifier = ">=0.36.2" },
     { name = "respx", specifier = ">=0.23.1" },
     { name = "ruff", specifier = ">=0.17.3,<0.17.4" },
-    { name = "tox", specifier = ">=4.67.7,<5.0.0" },
+    { name = "tox", specifier = ">=4.67.8,<5.0.0" },
     { name = "types-pyopenssl" },
     { name = "types-pyyaml" },
     { name = "types-requests" },
@@ -175,7 +175,7 @@ test = [
     { name = "pytest-httpx", specifier = ">=0.36.2" },
     { name = "respx", specifier = ">=0.23.1" },
 ]
-tox = [{ name = "tox", specifier = ">=4.67.7,<5.0.0" }]
+tox = [{ name = "tox", specifier = ">=4.67.8,<5.0.0" }]
 
 [[package]]
 name = "anyio"
@@ -1988,7 +1988,7 @@ wheels = [
 
 [[package]]
 name = "tox"
-version = "4.67.7"
+version = "4.67.8"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "cachetools" },
@@ -2003,9 +2003,9 @@ dependencies = [
     { name = "typing-extensions", marker = "python_full_version < '3.13'" },
     { name = "virtualenv" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/5f/bf/845a53f1e8e5d3f556056144e799fe0dafb4f6c566eee2c631a51d7b20ea/tox-4.67.7.tar.gz", hash = "sha256:a153a70dc7d31560e3b365b6ad945a6868ee9b3785295bc6385d960ac4308840", size = 419038, upload-time = "2026-11-02T22:39:56.805Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/a9/22/67230af2f6d13c4fada0c3bea05b31bfa813b24dbec9632c000908a1ed2e/tox-4.67.8.tar.gz", hash = "sha256:fcfa4d2e168ae37b30ed443b69e39a81736c6ee16389e6ece853ffb1eaa64bcc", size = 421307, upload-time = "2026-11-03T17:34:50.751Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/41/9b/adbc64051d376204f50ab034835f34410f5cc3c2396f5ee2b6247ed63815/tox-4.67.7-py3-none-any.whl", hash = "sha256:35e450ff098d1f3f815dd47145208c4bf29d86ea3bee10dd57ce9d2ea378253d", size = 259873, upload-time = "2026-11-02T22:39:54.988Z" },
+    { url = "https://files.pythonhosted.org/packages/e2/22/0bca2009fec9e5cbdb4a62b760b4824f1ed0feae2ff404330f621bbb380d/tox-4.67.8-py3-none-any.whl", hash = "sha256:287a4d96fb06fbfddba4e1729aa8088a90c6eaf3da6707f58bc98a35cb875a5e", size = 261000, upload-time = "2026-11-03T17:34:48.671Z" },
 ]
 
 [[package]]
