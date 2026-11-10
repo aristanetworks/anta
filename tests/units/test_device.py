@@ -22,6 +22,7 @@ from rich import print as rprint
 from anta._eos.platform import PlatformComponentRole, PlatformFamily, PlatformIdentity, PlatformType, parse_eos_platform_or_none
 from anta._eos.version import EOSVersion
 from anta.device import AntaDevice, AntaDeviceCapabilities, AsyncEOSDevice, SSLParameters
+from anta.inventory import AntaInventory
 from anta.models import AntaCommand
 from anta.settings import get_ssl_settings
 from asynceapi import EapiCommandError
@@ -31,6 +32,7 @@ from tests.units.conftest import COMMAND_OUTPUT
 
 if TYPE_CHECKING:
     from _pytest.mark.structures import ParameterSet
+    from pytest_httpx import HTTPXMock
 
 INIT_PARAMS: list[ParameterSet] = [
     pytest.param({"host": "42.42.42.42", "username": "anta", "password": "anta"}, {"name": "42.42.42.42"}, does_not_raise(), id="no name, no port"),
@@ -1262,3 +1264,40 @@ class TestAsyncEOSDeviceOperations:
         assert "device1" in device.tags
         assert "tag1" in device.tags
         assert len(device.tags) == 2
+
+
+@pytest.mark.parametrize("from_inventory", [False, True], ids=["direct-device", "parsed-inventory"])
+@pytest.mark.parametrize(
+    ("timeout_kwargs", "expected_timeout"),
+    [
+        pytest.param({}, 30.0, id="omitted-default"),
+        pytest.param({"timeout": 12.0}, 12.0, id="explicit-timeout"),
+        pytest.param({"timeout": None}, None, id="explicit-unlimited"),
+    ],
+)
+async def test_default_eapi_request_timeout(
+    tmp_path: Path,
+    httpx_mock: HTTPXMock,
+    from_inventory: bool,
+    timeout_kwargs: dict[str, Any],
+    expected_timeout: float | None,
+) -> None:
+    """Require a finite API default while preserving explicit timeout choices."""
+    if from_inventory:
+        inventory_file = tmp_path / "inventory.yml"
+        inventory_file.write_text("anta_inventory:\n  hosts:\n    - host: 192.0.2.1\n", encoding="utf-8")
+        inventory = AntaInventory.parse(inventory_file, username="anta", password="anta", **timeout_kwargs)
+        device = next(iter(inventory.values()))
+    else:
+        device = AsyncEOSDevice(host="192.0.2.1", username="anta", password="anta", **timeout_kwargs)
+
+    httpx_mock.add_response(method="POST", json={"jsonrpc": "2.0", "id": "offline", "result": [{"modelName": "pytest"}]})
+    command = AntaCommand(command="show version")
+    try:
+        await device.collect(command)
+        assert command.json_output == {"modelName": "pytest"}
+        request = httpx_mock.get_request()
+        assert request is not None
+        assert request.extensions["timeout"] == dict.fromkeys(("connect", "read", "write", "pool"), expected_timeout)
+    finally:
+        await device.disconnect()
