@@ -32,6 +32,8 @@ from anta._advisory.facts.routing import (
 from tests.units.anta_tests.advisories import OfflineAntaDevice
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from anta.models import AntaCommand
 
 
@@ -1312,3 +1314,32 @@ def test_rip_dhcp_facts_missing_interfaces_key(device: OfflineAntaDevice, defini
     assert isinstance(fact, UnavailableFact)
     assert fact.problem is FactProblemKind.MISSING
     assert fact.source.name == "show ip interface"
+
+
+@pytest.mark.parametrize(
+    ("definition", "commands", "index"),
+    [
+        pytest.param(RipEnabledFact, lambda: (text_command(RipEnabledFact, RIP_VRF_ENABLED),), 0, id="enabled-rip-config"),
+        *(
+            pytest.param(definition, factory, index, id=f"{name}-{source}")
+            for definition, factory, name, sources in (
+                (RipMd5AuthenticationFact, rip_md5_commands, "md5", ("rip-config", "authentication-config", "ip-interface")),
+                (RipDhcpMd5InterfaceFact, dhcp_md5_commands, "dhcp-md5", ("rip-config", "authentication-config", "ip-interface")),
+                (RipManagementInterfaceFact, rip_management_commands, "management", ("rip-config", "ip-interface")),
+                (RipDhcpManagementInterfaceFact, dhcp_management_commands, "dhcp-management", ("rip-config", "ip-interface")),
+            )
+            for index, source in enumerate(sources)
+        ),
+    ],
+)
+def test_rip_facts_failed_collection(device: OfflineAntaDevice, definition: type, commands: Callable[[], tuple[AntaCommand, ...]], index: int) -> None:
+    """Report a deferred collection failure against the failing command without reading its output."""
+    collected = commands()
+    collected[index].output = None
+    collected[index].errors = ["permission denied"]
+
+    fact = definition.derive(device, collected)
+
+    assert isinstance(fact, UnavailableFact)
+    assert fact.problem is FactProblemKind.COLLECTION_FAILED
+    assert fact.source.name == definition.commands[index].command

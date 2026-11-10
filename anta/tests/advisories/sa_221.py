@@ -33,6 +33,7 @@ from anta._advisory.findings.models import (
 )
 from anta._advisory.findings.projection import project_vulnerability_result
 from anta._advisory.models import _AdvisoryMetadata, _AdvisoryVulnerability, _AdvisoryVulnerabilitySeverity
+from anta._advisory.optional_commands import OptionalCommandsMixin
 from anta._advisory.remediation import (
     AnyOf,
     ConditionalAction,
@@ -137,7 +138,7 @@ def _assess_rip_md5_issue(
 
 
 @preview_test_class(warning_message=_PREVIEW_WARNING)
-class SA221(_AntaAdvisoryTest):
+class SA221(OptionalCommandsMixin, _AntaAdvisoryTest):
     """Verify whether the device is impacted by Security Advisory 0221.
 
     Expected Results

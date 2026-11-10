@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from datetime import date
 from typing import TYPE_CHECKING, Any, Literal, TypeAlias
+from unittest.mock import AsyncMock
 
 from anta._advisory.eos_versions import AffectedStatus
 from anta._advisory.facts.eos import EosVersionFact
@@ -39,6 +40,7 @@ from tests.units.anta_tests import (
     build_eos_version,
     test,  # noqa: F401 - Pytest collects this imported test function.
 )
+from tests.units.anta_tests.advisories import OfflineAntaDevice
 from tests.units.anta_tests.advisories.fact_builders import SOURCE, assert_version_statuses, eos_version_fact
 
 if TYPE_CHECKING:
@@ -535,3 +537,48 @@ def test_sa221_aggregates_every_unavailable_required_fact() -> None:
     assert _assess_rip_md5_issue(BYPASS_ID, eos_version_fact("4.36.2F"), malformed_rip, md5_fact(FeatureState.ENABLED), malformed_dhcp) == ErrorResult(
         vulnerability_id=BYPASS_ID, problems=(malformed_rip,)
     )
+
+
+async def test_sa221_fixed_release_excludes_failed_rip_collection() -> None:
+    """A failed RIP, authentication, or interface command cannot hide an independently fixed release."""
+    device = OfflineAntaDevice("unit-test")
+    device.version = build_eos_version("4.36.3M")
+    await device.refresh()
+    instance = SA221(device=device, eos_data=eos_data())
+    for command in instance.instance_commands:
+        command.output = None
+        command.errors = ["permission denied"]
+    instance.collect = AsyncMock()
+
+    await instance.test()
+
+    assert instance.result.result is AntaTestStatus.SUCCESS
+    assert [atomic.messages for atomic in instance.result.atomic_results] == [
+        ["The device is not affected because EOS version '4.36.3M' is outside the affected releases."]
+    ] * 2
+
+
+async def test_sa221_failed_authentication_collection_is_structured_error() -> None:
+    """Attribute a failed RIP authentication collection to the exposure facts on an affected release."""
+    device = OfflineAntaDevice("unit-test")
+    device.version = build_eos_version("4.36.2F")
+    await device.refresh()
+    instance = SA221(device=device, eos_data=eos_data())
+    for command in instance.instance_commands:
+        if command.command == RIP_AUTHENTICATION_COMMAND:
+            command.output = None
+            command.errors = ["permission denied"]
+    instance.collect = AsyncMock()
+
+    await instance.test()
+
+    assert instance.result.result is AntaTestStatus.ERROR
+    assert [atomic.messages for atomic in instance.result.atomic_results] == [
+        [
+            (
+                f"The test could not determine the RIP MD5 authentication state because '{RIP_AUTHENTICATION_COMMAND}' could not be collected. "
+                f"The test could not determine the RIP DHCP MD5 authentication interface configuration state because '{RIP_AUTHENTICATION_COMMAND}' "
+                "could not be collected."
+            )
+        ]
+    ] * 2

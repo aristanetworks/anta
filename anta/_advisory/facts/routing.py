@@ -42,9 +42,9 @@ ISIS_GRACEFUL_RESTART_COMMAND = OptionalAntaCommand(command="show isis graceful-
 OSPFV3_CONFIG_COMMAND = OptionalAntaCommand(command="show running-config section ospfv3", ofmt="text")
 PIM_SPARSE_MODE_COMMAND = OptionalAntaCommand(command="show running-config | include pim.*sparse-mode", ofmt="text")
 LOOSE_URPF_COMMAND = AntaCommand(command="show running-config | include verify unicast source reachable-via any", ofmt="text")
-RIP_CONFIG_COMMAND = AntaCommand(command=r"show running-config all section ^router\srip", ofmt="text")
-RIP_AUTHENTICATION_CONFIG_COMMAND = AntaCommand(command=r"show running-config sanitized section ^\s+rip\sauthentication", ofmt="text")
-IP_INTERFACE_COMMAND = AntaCommand(command="show ip interface", revision=2)
+RIP_CONFIG_COMMAND = OptionalAntaCommand(command=r"show running-config all section ^router\srip", ofmt="text", defer_errors=True)
+RIP_AUTHENTICATION_CONFIG_COMMAND = OptionalAntaCommand(command=r"show running-config sanitized section ^\s+rip\sauthentication", ofmt="text", defer_errors=True)
+IP_INTERFACE_COMMAND = OptionalAntaCommand(command="show ip interface", revision=2, defer_errors=True)
 AREA_AUTHENTICATION_PATTERN = re.compile(r"^area (?P<area>\S+) (?:authentication|encryption) ipsec\b")
 INTERFACE_AUTHENTICATION_PATTERN = re.compile(r"^ospfv3 (?:authentication|encryption) ipsec\b")
 OSPFV3_INTERFACE_AREA_PATTERN = re.compile(r"^ospfv3 (?P<family>ipv[46]) area (?P<area>\S+)\b")
@@ -898,6 +898,8 @@ class RipEnabledFact(FeatureFact, CommandsFactDefinition["RipEnabledFact"]):
         """Normalize the explicitly rendered administrative state of every RIP instance."""
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
+        if command.errors:
+            return cls.unavailable(FactProblemKind.COLLECTION_FAILED, source)
         instances = _rip_instances(command.text_output)
         if instances is None:
             return cls.unavailable(FactProblemKind.MALFORMED, source)
@@ -928,9 +930,13 @@ class RipMd5AuthenticationFact(FeatureFact, CommandsFactDefinition["RipMd5Authen
         authentication_source = FactSource(authentication_command.command, FactSourceKind.COMMAND)
         interface_source = FactSource(interface_command.command, FactSourceKind.COMMAND)
 
+        if authentication_command.errors:
+            return cls.unavailable(FactProblemKind.COLLECTION_FAILED, authentication_source)
         md5_interfaces = _rip_md5_interfaces(authentication_command.text_output)
         if md5_interfaces == ():
             return cls(FeatureState.DISABLED).available(authentication_source)
+        if rip_command.errors:
+            return cls.unavailable(FactProblemKind.COLLECTION_FAILED, rip_source)
         enabled_networks = _enabled_rip_networks(rip_command.text_output)
         if enabled_networks == {}:
             return cls(FeatureState.DISABLED).available(rip_source)
@@ -939,6 +945,8 @@ class RipMd5AuthenticationFact(FeatureFact, CommandsFactDefinition["RipMd5Authen
         if enabled_networks is None:
             return cls.unavailable(FactProblemKind.MALFORMED, rip_source)
 
+        if interface_command.errors:
+            return cls.unavailable(FactProblemKind.COLLECTION_FAILED, interface_source)
         interfaces = interface_command.json_output.get("interfaces")
         if not isinstance(interfaces, Mapping):
             return cls.unavailable(FactProblemKind.MISSING if interfaces is None else FactProblemKind.MALFORMED, interface_source)
@@ -969,9 +977,13 @@ class RipDhcpMd5InterfaceFact(ConfigurationFact, CommandsFactDefinition["RipDhcp
         authentication_source = FactSource(authentication_command.command, FactSourceKind.COMMAND)
         interface_source = FactSource(interface_command.command, FactSourceKind.COMMAND)
 
+        if authentication_command.errors:
+            return cls.unavailable(FactProblemKind.COLLECTION_FAILED, authentication_source)
         md5_interfaces = _rip_md5_interfaces(authentication_command.text_output)
         if md5_interfaces == ():
             return cls(ConfigurationState.NOT_CONFIGURED).available(authentication_source)
+        if rip_command.errors:
+            return cls.unavailable(FactProblemKind.COLLECTION_FAILED, rip_source)
         enabled_networks = _enabled_rip_networks(rip_command.text_output)
         if enabled_networks == {}:
             return cls(ConfigurationState.NOT_CONFIGURED).available(rip_source)
@@ -980,6 +992,8 @@ class RipDhcpMd5InterfaceFact(ConfigurationFact, CommandsFactDefinition["RipDhcp
         if enabled_networks is None:
             return cls.unavailable(FactProblemKind.MALFORMED, rip_source)
 
+        if interface_command.errors:
+            return cls.unavailable(FactProblemKind.COLLECTION_FAILED, interface_source)
         interfaces = interface_command.json_output.get("interfaces")
         if not isinstance(interfaces, Mapping):
             return cls.unavailable(FactProblemKind.MISSING if interfaces is None else FactProblemKind.MALFORMED, interface_source)
@@ -1004,18 +1018,23 @@ class RipManagementInterfaceFact(FeatureFact, CommandsFactDefinition["RipManagem
     commands: ClassVar[tuple[AntaCommand, ...]] = (RIP_CONFIG_COMMAND, IP_INTERFACE_COMMAND)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[RipManagementInterfaceFact]:
+    # pylint: disable-next=too-many-return-statements
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[RipManagementInterfaceFact]:  # noqa: PLR0911
         """Correlate management interface addresses with enabled RIP network prefixes in the interface VRF."""
         rip_command, interface_command = commands
         rip_source = FactSource(rip_command.command, FactSourceKind.COMMAND)
         interface_source = FactSource(interface_command.command, FactSourceKind.COMMAND)
 
+        if rip_command.errors:
+            return cls.unavailable(FactProblemKind.COLLECTION_FAILED, rip_source)
         enabled_networks = _enabled_rip_networks(rip_command.text_output)
         if enabled_networks is None:
             return cls.unavailable(FactProblemKind.MALFORMED, rip_source)
         if not enabled_networks:
             return cls(FeatureState.DISABLED).available(rip_source)
 
+        if interface_command.errors:
+            return cls.unavailable(FactProblemKind.COLLECTION_FAILED, interface_source)
         interfaces = interface_command.json_output.get("interfaces")
         if not isinstance(interfaces, Mapping):
             return cls.unavailable(FactProblemKind.MISSING if interfaces is None else FactProblemKind.MALFORMED, interface_source)
@@ -1039,18 +1058,23 @@ class RipDhcpManagementInterfaceFact(ConfigurationFact, CommandsFactDefinition["
     commands: ClassVar[tuple[AntaCommand, ...]] = (RIP_CONFIG_COMMAND, IP_INTERFACE_COMMAND)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[RipDhcpManagementInterfaceFact]:
+    # pylint: disable-next=too-many-return-statements
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[RipDhcpManagementInterfaceFact]:  # noqa: PLR0911
         """Correlate DHCP addressing of management interfaces with enabled RIP instances in the interface VRF."""
         rip_command, interface_command = commands
         rip_source = FactSource(rip_command.command, FactSourceKind.COMMAND)
         interface_source = FactSource(interface_command.command, FactSourceKind.COMMAND)
 
+        if rip_command.errors:
+            return cls.unavailable(FactProblemKind.COLLECTION_FAILED, rip_source)
         enabled_networks = _enabled_rip_networks(rip_command.text_output)
         if enabled_networks is None:
             return cls.unavailable(FactProblemKind.MALFORMED, rip_source)
         if not enabled_networks:
             return cls(ConfigurationState.NOT_CONFIGURED).available(rip_source)
 
+        if interface_command.errors:
+            return cls.unavailable(FactProblemKind.COLLECTION_FAILED, interface_source)
         interfaces = interface_command.json_output.get("interfaces")
         if not isinstance(interfaces, Mapping):
             return cls.unavailable(FactProblemKind.MISSING if interfaces is None else FactProblemKind.MALFORMED, interface_source)

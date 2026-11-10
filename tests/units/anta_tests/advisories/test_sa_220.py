@@ -9,6 +9,7 @@ from __future__ import annotations
 from datetime import date
 from functools import partial
 from typing import TYPE_CHECKING, Any
+from unittest.mock import AsyncMock
 
 from anta._advisory.eos_versions import AffectedStatus
 from anta._advisory.facts.eos import EosVersionFact
@@ -40,7 +41,7 @@ from tests.units.anta_tests import (
     build_eos_version,
     test,  # noqa: F401 - Pytest collects this imported test function.
 )
-from tests.units.anta_tests.advisories import build_expected_advisory_result
+from tests.units.anta_tests.advisories import OfflineAntaDevice, build_expected_advisory_result
 from tests.units.anta_tests.advisories.fact_builders import SOURCE, assert_version_statuses, eos_version_fact
 
 if TYPE_CHECKING:
@@ -466,3 +467,43 @@ def test_sa220_aggregates_every_unavailable_required_fact() -> None:
     assert _assess_management_rip(eos_version_fact("4.36.2F"), malformed_rip, management_fact(FeatureState.ENABLED), malformed_dhcp) == ErrorResult(
         vulnerability_id=VULNERABILITY_ID, problems=(malformed_rip,)
     )
+
+
+async def test_sa220_fixed_release_excludes_failed_rip_collection() -> None:
+    """A failed RIP or interface command cannot hide an independently fixed release."""
+    device = OfflineAntaDevice("unit-test")
+    device.version = build_eos_version("4.36.3M")
+    await device.refresh()
+    instance = SA220(device=device, eos_data=eos_data())
+    for command in instance.instance_commands:
+        command.output = None
+        command.errors = ["permission denied"]
+    instance.collect = AsyncMock()
+
+    await instance.test()
+
+    assert instance.result.result is AntaTestStatus.SUCCESS
+    assert instance.result.atomic_results[0].messages == ["The device is not affected because EOS version '4.36.3M' is outside the affected releases."]
+
+
+async def test_sa220_failed_interface_collection_is_structured_error() -> None:
+    """Attribute a failed interface collection to the exposure facts on an affected release."""
+    device = OfflineAntaDevice("unit-test")
+    device.version = build_eos_version("4.36.2F")
+    await device.refresh()
+    instance = SA220(device=device, eos_data=eos_data())
+    for command in instance.instance_commands:
+        if command.command == "show ip interface":
+            command.output = None
+            command.errors = ["permission denied"]
+    instance.collect = AsyncMock()
+
+    await instance.test()
+
+    assert instance.result.result is AntaTestStatus.ERROR
+    assert instance.result.atomic_results[0].messages == [
+        (
+            "The test could not determine the RIP management interface state because 'show ip interface' could not be collected. "
+            "The test could not determine the RIP DHCP management interface configuration state because 'show ip interface' could not be collected."
+        )
+    ]
