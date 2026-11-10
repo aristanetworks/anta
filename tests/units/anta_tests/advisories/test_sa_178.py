@@ -38,7 +38,7 @@ from anta._advisory.findings.models import (
     NotAffectedResult,
     VersionRelation,
 )
-from anta._advisory.remediation import FixedRelease, RemediationPlan, RunCommand, Sequence, software_version_action, software_version_plan
+from anta._advisory.remediation import FixedRelease, RemediationPlan, RunCommand, Sequence, software_version_action
 from anta._advisory.results import _AdvisoryAtomicTestResult
 from anta._advisory.status import AdvisoryStatus
 from anta._eos.version import EOSVersion, parse_eos_version
@@ -177,7 +177,7 @@ _DATA: AntaUnitTestData = {
             AntaTestStatus.SUCCESS,
             "The device is affected but mitigated because the SNMPv3 credential syntax is encrypted and EOS version '4.34.8M' is affected and SA178 "
             "SWIX hotfix is effective",
-            software_version_plan(EXPECTED_FIXED_RELEASES, current_version=EOSVersion(4, 34, 8, suffix="M")),
+            expected_affected_remediation("4.34.8M"),
         ),
     },
     (SA178, "failure-fixed-version-with-legacy-syntax"): {
@@ -248,7 +248,7 @@ _DATA: AntaUnitTestData = {
     },
     (SA178, "error-hotfix-release-with-unavailable-hotfix-state"): {
         "version": build_eos_version("4.36.2F"),
-        "eos_data": [LEGACY_USER, LEGACY_USER, {}, {"extensions": []}],
+        "eos_data": [ENCRYPTED_USER, ENCRYPTED_USER, {}, {"extensions": []}],
         "expected": expected_result(
             AntaTestStatus.ERROR,
             "The test could not determine the SA178 SWIX hotfix because the 'show extensions' output is incomplete",
@@ -387,7 +387,7 @@ class TestSA178Assessment(unittest.TestCase):
                 assert isinstance(finding, MitigatedResult)
                 assert finding.context == (encrypted,)
                 assert finding.mitigated_conditions == (MitigatedCondition(AffectedEosRelease(observed_version), (effective_hotfix,)),)
-                assert finding.remediation == software_version_plan(EXPECTED_FIXED_RELEASES, current_version=observed_version.value)
+                assert finding.remediation == expected_affected_remediation(version)
 
     def test_encrypted_credentials_without_effective_applicable_hotfix_are_affected(self) -> None:
         encrypted = syntax_fact(CredentialSyntaxState.ENCRYPTED)
@@ -488,23 +488,26 @@ class TestSA178Assessment(unittest.TestCase):
         assert len(finding.problems) == 3
 
     def test_unavailable_hotfix_is_aggregated_on_listed_releases(self) -> None:
-        unavailable_syntax = SnmpV3CredentialSyntaxFact.unavailable(FactProblemKind.MALFORMED, SOURCE)
+        unavailable_authentication = SnmpV3AuthenticationFact.unavailable(FactProblemKind.MALFORMED, SOURCE)
         unavailable_hotfix = SA178HotfixFact.unavailable(FactProblemKind.MISSING, SOURCE)
-        finding = _assess_sa178(version_fact("4.34.8M"), authentication_fact(FeatureState.ENABLED), unavailable_syntax, unavailable_hotfix)
+        finding = _assess_sa178(version_fact("4.34.8M"), unavailable_authentication, syntax_fact(CredentialSyntaxState.ENCRYPTED), unavailable_hotfix)
 
         assert isinstance(finding, ErrorResult)
-        assert finding.problems == (unavailable_syntax, unavailable_hotfix)
+        assert finding.problems == (unavailable_authentication, unavailable_hotfix)
 
     def test_affected_version_with_unavailable_syntax_is_error(self) -> None:
-        finding = _assess_sa178(
-            version_fact("4.36.1F"),
-            authentication_fact(FeatureState.ENABLED),
-            SnmpV3CredentialSyntaxFact.unavailable(FactProblemKind.MALFORMED, SOURCE),
-            hotfix_fact(MitigationState.INEFFECTIVE),
-        )
+        unavailable_syntax = SnmpV3CredentialSyntaxFact.unavailable(FactProblemKind.MALFORMED, SOURCE)
+        for version in ("4.36.1F", "4.35.6M"):
+            with self.subTest(version=version):
+                finding = _assess_sa178(
+                    version_fact(version),
+                    authentication_fact(FeatureState.ENABLED),
+                    unavailable_syntax,
+                    SA178HotfixFact.unavailable(FactProblemKind.COLLECTION_FAILED, SOURCE),
+                )
 
-        assert isinstance(finding, ErrorResult)
-        assert finding.problems == (SnmpV3CredentialSyntaxFact.unavailable(FactProblemKind.MALFORMED, SOURCE),)
+                assert isinstance(finding, ErrorResult)
+                assert finding.problems == (unavailable_syntax,)
 
 
 class TestSA178(unittest.TestCase):
@@ -535,7 +538,7 @@ def test_hotfixed_encrypted_credentials_project_as_mitigated(device: AntaDevice)
             "SWIX hotfix is effective."
         )
     ]
-    assert atomic_result.remediation == software_version_plan(EXPECTED_FIXED_RELEASES, current_version=EOSVersion(4, 35, 6, suffix="M"))
+    assert atomic_result.remediation == expected_affected_remediation("4.35.6M")
 
 
 @pytest.mark.parametrize("failed_command", ["show extensions", "show boot-extensions"])
@@ -545,7 +548,8 @@ def test_hotfixed_encrypted_credentials_project_as_mitigated(device: AntaDevice)
         ("4.35.7M", ENCRYPTED_USER, AdvisoryStatus.NOT_AFFECTED),
         ("4.35.6M", "", AdvisoryStatus.NOT_AFFECTED),
         ("4.35.5M", LEGACY_USER, AdvisoryStatus.AFFECTED),
-        ("4.35.6M", LEGACY_USER, AdvisoryStatus.ERROR),
+        ("4.35.6M", LEGACY_USER, AdvisoryStatus.AFFECTED),
+        ("4.35.6M", MIXED_USER, AdvisoryStatus.AFFECTED),
         ("4.35.6M", ENCRYPTED_USER, AdvisoryStatus.ERROR),
     ],
 )
@@ -577,3 +581,20 @@ def test_hotfix_collection_errors_are_assessed_only_when_required(failed_command
     assert atomic.advisory_status is expected_status
     if expected_status is AdvisoryStatus.ERROR:
         assert any("could not be collected" in message for message in atomic.messages)
+    elif expected_status is AdvisoryStatus.AFFECTED:
+        assert atomic.remediation == expected_affected_remediation(version)
+
+
+@pytest.mark.parametrize("version", sorted(HOTFIX_RELEASES))
+@pytest.mark.parametrize("syntax", [CredentialSyntaxState.LEGACY, CredentialSyntaxState.MIXED])
+@pytest.mark.parametrize("problem", [FactProblemKind.COLLECTION_FAILED, FactProblemKind.UNSUPPORTED, FactProblemKind.MALFORMED])
+def test_legacy_credentials_with_unavailable_hotfix_remain_affected(version: str, syntax: CredentialSyntaxState, problem: FactProblemKind) -> None:
+    """Known exposure remains actionable even when hotfix evidence cannot narrow the remediation."""
+    authentication = authentication_fact(FeatureState.ENABLED)
+    credentials = syntax_fact(syntax)
+    finding = _assess_sa178(version_fact(version), authentication, credentials, SA178HotfixFact.unavailable(problem, SOURCE))
+
+    assert isinstance(finding, AffectedResult)
+    assert finding.conditions == (authentication, credentials)
+    assert not finding.mitigated_conditions
+    assert finding.remediation == expected_affected_remediation(version)

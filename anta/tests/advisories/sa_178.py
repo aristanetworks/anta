@@ -40,7 +40,7 @@ from anta._advisory.findings.models import (
 from anta._advisory.findings.projection import project_vulnerability_result
 from anta._advisory.models import _AdvisoryMetadata, _AdvisoryVulnerability, _AdvisoryVulnerabilitySeverity
 from anta._advisory.optional_commands import OptionalCommandsMixin
-from anta._advisory.remediation import FixedRelease, RemediationPlan, RunCommand, Sequence, software_version_action, software_version_plan
+from anta._advisory.remediation import FixedRelease, RemediationPlan, RunCommand, Sequence, software_version_action
 from anta._eos.version import EOSVersion
 from anta.decorators import preview_test_class
 
@@ -114,7 +114,9 @@ def _assess_sa178(
     )
     applicable_hotfix = hotfix if version_eligible_for_hotfix and isinstance(hotfix, AvailableFact) else None
     required = (
-        (software_context, authentication, credential_syntax, hotfix) if version_eligible_for_hotfix else (software_context, authentication, credential_syntax)
+        (software_context, authentication, credential_syntax, hotfix)
+        if version_eligible_for_hotfix and encrypted is not None
+        else (software_context, authentication, credential_syntax)
     )
     problems = tuple(fact for fact in required if isinstance(fact, UnavailableFact))
     if problems:
@@ -128,7 +130,7 @@ def _assess_sa178(
             vulnerability_id=VULNERABILITY_ID,
             context=(credential_syntax,),
             mitigated_conditions=(MitigatedCondition(AffectedEosRelease(software_context.fact), (applicable_hotfix,)),),
-            remediation=software_version_plan(FIXED_RELEASES, current_version=software_context.fact.value),
+            remediation=RemediationPlan(Sequence((software_version_action(FIXED_RELEASES, current_version=software_context.fact.value), CONVERT_CREDENTIALS))),
         )
     conditions: tuple[AffectedCondition, ...] = (authentication, credential_syntax)
     context: tuple[EosReleaseAssessment, ...]
@@ -166,15 +168,20 @@ class SA178(OptionalCommandsMixin, _AntaAdvisoryTest):
     * Affected: A local or remote SNMPv3 authentication key uses legacy syntax, or an authentication key is configured on an affected EOS release
       without an effective applicable hotfix.
     * Mitigated: Every authentication key uses encrypted syntax on an affected EOS release with its applicable hotfix installed and boot-persistent.
-    * Error: The required EOS version, authentication-key state, credential syntax, or applicable hotfix state cannot be determined.
+    * Error: The required EOS version, authentication-key state, or credential syntax cannot be determined, or encrypted credentials on a
+      hotfix-eligible affected release require hotfix evidence that cannot be determined.
 
     Notes
     -----
     SNMPv3 users are read from the running configuration because `show snmp user` does not list remote users. Neither upgrading EOS nor installing
     the hotfix rewrites existing credentials. With legacy credentials, fixed releases and releases with an effective persistent hotfix require only
-    credential conversion. Other affected releases need an upgrade followed by credential conversion.
+    credential conversion. When legacy or mixed credentials are known but hotfix evidence is unavailable, the device remains Affected with upgrade
+    followed by conversion as the fallback remediation. Mitigated devices also receive upgrade followed by conversion guidance.
 
-    The assessment does not validate the origin of encrypted credentials copied between releases.
+    Advisory revision 1.3 describes malformed encrypted credentials on affected software. Encrypted syntax alone therefore does not establish
+    that an affected release is protected: the assessment also requires an effective applicable hotfix to classify it as Mitigated.
+    The assessment does not validate cryptographic correctness, establish whether conversion occurred before or after hotfix installation or
+    upgrade, or validate the origin of encrypted credentials copied between releases.
 
     Examples
     --------
