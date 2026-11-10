@@ -341,7 +341,6 @@ class FeatureName(str, Enum):
 
     AAA = "AAA"
     ACL = "ACL"
-    AGENT_TRACING = "agent tracing"
     AUTO_CERTIFICATE = "automatic certificate management"
     BFD = "BFD"
     BGP = "BGP"
@@ -377,7 +376,6 @@ class FeatureName(str, Enum):
     SNMPV3 = "SNMPv3"
     SSH = "SSH"
     TERMINATTR = "TerminAttr"
-    TRACE = "OpenConfig tracing"
     URPF = "uRPF"
     VRRP = "VRRP"
 
