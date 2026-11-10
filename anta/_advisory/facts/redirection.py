@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import re
+from abc import ABC
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeVar, cast
@@ -211,8 +212,7 @@ def _has_segment_security_redirect(output: object) -> bool | None:
 RedirectFactT = TypeVar("RedirectFactT", bound="RedirectConfigurationFact[Any]")
 
 
-# Intentionally abstract: each redirection path implements parse().
-class RedirectConfigurationFact(CommandsFactDefinition[RedirectFactT], Generic[RedirectFactT]):  # pylint: disable=abstract-method
+class RedirectConfigurationFact(CommandsFactDefinition[RedirectFactT], ABC, Generic[RedirectFactT]):
     """Base fact for one next-hop redirection path."""
 
     @classmethod
