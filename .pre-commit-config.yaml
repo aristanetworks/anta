@@ -67,7 +67,7 @@ repos:
           - --rcfile=pyproject.toml # Link to config file
         additional_dependencies:
           - anta[cli]
-          - types-PyYAML==6.0.12.20261030
+          - types-PyYAML==6.0.12.20261103
           - types-requests==2.33.0.20261030
           - types-pyOpenSSL==24.1.0.20240722
           - pylint_pydantic==0.4.1
@@ -100,7 +100,7 @@ repos:
           - respx==0.23.1
           - pytest-httpx>=0.36.2
           - pytest-codspeed>=5.0.4
-          - types-PyYAML==6.0.12.20261030
+          - types-PyYAML==6.0.12.20261103
           - types-requests==2.33.0.20261030
           - types-pyOpenSSL==24.1.0.20240722
           - zensical==0.0.74
@@ -116,7 +116,7 @@ repos:
           - .github/.markdownlint-cli2.yaml
 
   - repo: https://github.com/zizmorcore/zizmor-pre-commit
-    rev: c92afdf2c6ca336aaa8f39e2bd8d48f62dbd8e1f  # frozen: v1.31.1
+    rev: 06a39750ec31860bb44f2acf67182c40016cd1e7  # frozen: v1.32.0
     hooks:
       - id: zizmor
         name: Check GitHub Actions with zizmor

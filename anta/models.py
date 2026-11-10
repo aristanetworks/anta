@@ -193,8 +193,7 @@ class AntaCommand(BaseModel):
     def uid(self) -> str:
         """Generate a unique identifier for this command."""
         uid_str = f"{self.command}_{self.version}_{self.revision or 'NA'}_{self.ofmt}"
-        # Ignoring S324 probable use of insecure hash function - sha1 is enough for our needs.
-        return hashlib.sha1(uid_str.encode()).hexdigest()  # noqa: S324
+        return hashlib.sha1(uid_str.encode(), usedforsecurity=False).hexdigest()
 
     @property
     def json_output(self) -> dict[str, Any]:

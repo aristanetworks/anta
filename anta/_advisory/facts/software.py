@@ -37,12 +37,19 @@ class PackageVersionFact(ComponentSoftwareFact, CommandsFactDefinition[PackageFa
     component: ClassVar[str]
 
     @classmethod
+    # Keep each failure classification explicit so collection failures stay distinct from missing data.
     # pylint: disable-next=too-many-return-statements
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[PackageFactT]:  # noqa: PLR0911
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[PackageFactT]:  # noqa: C901, PLR0911
         """Extract and normalize the declared package version."""
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
-        details = command.json_output.get("details")
+        if is_unsupported_optional_command(command):
+            return cls.unavailable(FactProblemKind.UNSUPPORTED, source)
+        if command.errors:
+            return cls.unavailable(FactProblemKind.COLLECTION_FAILED, source)
+        if not isinstance(command.output, Mapping):
+            return cls.unavailable(FactProblemKind.MISSING if command.output is None else FactProblemKind.MALFORMED, source)
+        details = command.output.get("details")
         if details is None:
             return cls.unavailable(FactProblemKind.MISSING, source)
         if not isinstance(details, Mapping):
@@ -72,7 +79,9 @@ class TerminAttrVersionFact(PackageVersionFact["TerminAttrVersionFact"]):
     component: ClassVar[str] = "TerminAttr"
     key: ClassVar[str] = "software.terminattr.version"
     label: ClassVar[str] = "TerminAttr version"
-    commands: ClassVar[tuple[AntaCommand, ...]] = PackageVersionFact.commands
+    # An affected EOS version can establish impact without the component version.
+    # Defer collection failures so the assessment can decide whether it is needed.
+    commands: ClassVar[tuple[AntaCommand, ...]] = (OptionalAntaCommand(command="show version detail", revision=1, defer_errors=True),)
     package_name: ClassVar[str] = "TerminAttr-core"
 
 
