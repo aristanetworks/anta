@@ -320,6 +320,7 @@ for _role in ("edge", "zone transit", "region transit", "unknown"):
 
 
 for _scenario, _config in (
+    ("malformed-sibling-vrf", BGP_CONFIG + "   vrf RED\n      neighbor Q shutdown extra\n"),
     (
         "dynamic-group-no-runtime-neighbors",
         (

@@ -258,3 +258,40 @@ def test_collection_failure_preserves_source(error: str, problem: FactProblemKin
     assert isinstance(fact, UnavailableFact)
     assert fact.problem is problem
     assert fact.source.name == "show running-config | section router bgp"
+
+
+@pytest.mark.parametrize("reverse", [False, True])
+@pytest.mark.parametrize("setting", ["      neighbor Q shutdown extra\n", "      address-family link-state\n         neighbor Q activate extra\n"])
+def test_activation_survives_malformed_sibling_vrf(setting: str, *, reverse: bool) -> None:
+    """A trustworthy activation survives a setting error within another identified VRF."""
+    blocks = ["   vrf BLUE\n      address-family link-state\n         neighbor P activate\n", "   vrf RED\n" + setting]
+    fact = derive("router bgp 65000\n" + "".join(reversed(blocks) if reverse else blocks))
+    assert isinstance(fact, AvailableFact)
+    assert fact.value.state is ConfigurationState.CONFIGURED
+    assert fact.value.scopes == (BgpLinkStatePeeringScope("65000", "BLUE", ("P",)),)
+    assert fact.value.uncertain_scopes == (("65000", "RED"),)
+
+
+@pytest.mark.parametrize(
+    "suffix",
+    [
+        "      neighbor P activate extra\n",
+        "      no shutdown extra\n",
+        "   neighbor P shutdown extra\n",
+        "   vrf BAD extra\n",
+        "  vrf BAD\n",
+        "   address-family link-state extra\n",
+    ],
+)
+def test_positive_cannot_override_its_own_uncertainty_or_malformed_boundaries(suffix: str) -> None:
+    """The positive must remain trustworthy and its scope must be interpretable."""
+    fact = derive(CONFIG + suffix)
+    assert isinstance(fact, UnavailableFact)
+    assert fact.problem is FactProblemKind.MALFORMED
+
+
+def test_global_peer_group_uncertainty_cannot_be_used_for_inherited_activation() -> None:
+    """Bad default-VRF settings can affect groups inherited by named VRFs."""
+    fact = derive("router bgp 65000\n   neighbor G shutdown extra\n   vrf BLUE\n      address-family link-state\n         neighbor G activate\n")
+    assert isinstance(fact, UnavailableFact)
+    assert fact.problem is FactProblemKind.MALFORMED

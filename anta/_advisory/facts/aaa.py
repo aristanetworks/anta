@@ -156,7 +156,7 @@ def _dot1x_accounting_groups(output: object) -> tuple[str, ...] | FactProblemKin
     return tuple(method.strip().removeprefix("group ").strip() for method in methods)
 
 
-def _radius_server_groups(output: object) -> tuple[frozenset[str], frozenset[str]] | FactProblemKind:
+def _radius_server_groups(output: object) -> tuple[frozenset[str], frozenset[str], bool] | FactProblemKind:
     """Return the names of configured RADIUS server groups and of groups whose type cannot be read."""
     radius = _required_mapping(output)
     if isinstance(radius, FactProblemKind):
@@ -166,14 +166,16 @@ def _radius_server_groups(output: object) -> tuple[frozenset[str], frozenset[str
         return groups
     radius_groups: set[str] = set()
     unresolved: set[str] = set()
+    unknown_names = False
     for name, group in groups.items():
-        if not isinstance(name, str) or not name:
-            return FactProblemKind.MALFORMED
+        if not isinstance(name, str) or not name.strip():
+            unknown_names = True
+            continue
         if not isinstance(group, Mapping) or not isinstance(server_group := group.get("serverGroup"), str):
             unresolved.add(name)
         elif server_group == "RADIUS":
             radius_groups.add(name)
-    return frozenset(radius_groups), frozenset(unresolved)
+    return frozenset(radius_groups), frozenset(unresolved), unknown_names
 
 
 @dataclass(frozen=True, slots=True)
@@ -222,9 +224,9 @@ class Dot1xRadiusAccountingFact(FeatureFact, CommandsFactDefinition["Dot1xRadius
         groups = _radius_server_groups(radius.output)
         if isinstance(groups, FactProblemKind):
             return cls.unavailable(groups, radius_source)
-        radius_groups, unresolved = groups
+        radius_groups, unresolved, unknown_names = groups
         if radius_groups.intersection(methods):
             return cls(FeatureState.ENABLED).available(radius_source)
-        if unresolved.intersection(methods):
+        if unresolved.intersection(methods) or unknown_names:
             return cls.unavailable(FactProblemKind.MALFORMED, radius_source)
         return cls(FeatureState.DISABLED).available(radius_source)

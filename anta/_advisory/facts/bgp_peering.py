@@ -46,6 +46,7 @@ class BgpLinkStatePeeringScope:
 class _Scope:
     """Administrative settings and Link-State activation in one BGP VRF."""
 
+    malformed: bool = False
     shutdown: bool = False
     af_shutdown: bool = False
     activations: dict[str, bool] = field(default_factory=dict)
@@ -59,6 +60,7 @@ class _Instance:
     """One persistent BGP hierarchy with its default and named VRF settings."""
 
     name: str
+    malformed: bool = False
     shutdown: bool = False
     scopes: dict[str, _Scope] = field(default_factory=lambda: {"default": _Scope()})
 
@@ -135,9 +137,15 @@ def _consume(instance: _Instance, parents: tuple[str, ...], text: str) -> bool:
         else:
             scope.shutdown = disabled
         return True
-    if text.startswith(("shutdown ", "no shutdown ")):
-        return False
-    return _neighbor_setting(scope, text, address_family=af)
+    valid = not text.startswith(("shutdown ", "no shutdown ")) and _neighbor_setting(scope, text, address_family=af)
+    if not valid:
+        # Default-VRF settings can govern the whole instance or inherited groups.
+        # Other settings are confined to the identified VRF/AF scope.
+        if not parents:
+            instance.malformed = True
+        else:
+            scope.malformed = True
+    return True
 
 
 def _configuration(config: str) -> tuple[_Instance, ...] | None:
@@ -217,12 +225,15 @@ class BgpLinkStatePeeringFact(ConfigurationFact, CommandsFactDefinition["BgpLink
     """Conservative persistent Link-State AF activation, with no runtime peer gate.
 
     Scopes contain configured names, not runtime peer/ASN/router-ID observations.
+    Uncertain scopes are retained separately so correlated consumers cannot infer
+    absence from an incomplete activation inventory.
     """
 
     feature: ClassVar[FeatureRef] = SubFeature(FeatureName.BGP_LS, "peering")
     key: ClassVar[str] = "configuration.bgp_ls.peering"
     label: ClassVar[str] = "BGP-LS peering"
     scopes: tuple[BgpLinkStatePeeringScope, ...] = ()
+    uncertain_scopes: tuple[tuple[str, str], ...] = ()
     commands: ClassVar[tuple[AntaCommand, ...]] = (
         OptionalAntaCommand(command="show running-config | section router bgp", ofmt="text", revision=1, defer_errors=True),
     )
@@ -246,7 +257,10 @@ class BgpLinkStatePeeringFact(ConfigurationFact, CommandsFactDefinition["BgpLink
             BgpLinkStatePeeringScope(instance.name, vrf, names)
             for instance in instances
             for vrf, scope in instance.scopes.items()
-            if (names := _activations(instance, scope))
+            if not instance.malformed and not scope.malformed and (names := _activations(instance, scope))
         )
+        uncertain_scopes = tuple((instance.name, vrf) for instance in instances for vrf, scope in instance.scopes.items() if instance.malformed or scope.malformed)
+        if uncertain_scopes and not scopes:
+            return cls.unavailable(FactProblemKind.MALFORMED, source)
         state = ConfigurationState.CONFIGURED if scopes else ConfigurationState.NOT_CONFIGURED
-        return cls(state, scopes).available(source)
+        return cls(state, scopes, uncertain_scopes).available(source)

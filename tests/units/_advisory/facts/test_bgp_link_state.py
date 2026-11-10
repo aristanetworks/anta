@@ -251,3 +251,62 @@ def test_missing_role_output_is_not_absence() -> None:
     assert isinstance(fact, UnavailableFact)
     assert fact.problem is FactProblemKind.MISSING
     assert fact.source.name == "show bgp instance vrf all"
+
+
+@pytest.mark.parametrize("reverse", [False, True])
+@pytest.mark.parametrize("problem", ["missing-vrf", "missing-role", "malformed-role", "wrong-asn", "contradictory-role"])
+def test_qualified_consumer_survives_independent_vrf_problem(problem: str, *, reverse: bool) -> None:
+    """Missing, malformed, and contradictory siblings cannot erase a proven consumer."""
+    instance = deepcopy(INSTANCE)
+    other = deepcopy(instance["vrfs"]["default"])
+    if problem == "missing-role":
+        other["afiSafiConfig"]["linkState"] = {"unknown": []}
+    elif problem == "malformed-role":
+        other["afiSafiConfig"]["linkState"] = {"bgpLsProtoRoles": "consumer"}
+    elif problem == "wrong-asn":
+        other["localAs"] = 65213
+    elif problem == "contradictory-role":
+        other["afiSafiConfig"]["linkState"]["bgpLsProtoRoles"] = []
+    if problem != "missing-vrf":
+        instance["vrfs"]["RED"] = other
+    blocks = [
+        CONFIG.removeprefix("router bgp 65211\n"),
+        "   vrf RED\n      address-family link-state\n         neighbor Q activate\n         path-selection role consumer\n",
+    ]
+    fact = derive("router bgp 65211\n" + "".join(reversed(blocks) if reverse else blocks), instance)
+    assert isinstance(fact, AvailableFact)
+    assert fact.value.state is ConfigurationState.CONFIGURED
+    assert [(scope.instance, scope.vrf, scope.consumer_dps) for scope in fact.value.scopes] == [("65211", "default", True)]
+
+
+@pytest.mark.parametrize("reverse", [False, True])
+def test_role_problem_selection_is_stable(reverse: bool) -> None:
+    """With no witness, malformed evidence consistently takes precedence over missing evidence."""
+    blocks = [
+        "   vrf BLUE\n      address-family link-state\n         neighbor P activate\n",
+        "   vrf RED\n      address-family link-state\n         neighbor Q activate\n",
+    ]
+    items = [("BLUE", {}), ("RED", {"localAs": 65211, "afiSafiConfig": {"linkState": {"bgpLsProtoRoles": "consumer"}}})]
+    instance = {"vrfs": dict(reversed(items) if reverse else items)}
+    fact = derive("router bgp 65211\n" + "".join(reversed(blocks) if reverse else blocks), instance)
+    assert isinstance(fact, UnavailableFact)
+    assert fact.problem is FactProblemKind.MALFORMED
+    assert fact.source.name == "show bgp instance vrf all"
+
+
+@pytest.mark.parametrize("consumer", [False, True])
+def test_partial_activation_coverage_is_not_complete_absence(consumer: bool) -> None:
+    """A valid nonconsumer scope cannot prove safety while another activation scope is unreadable."""
+    config = CONFIG + "   vrf RED\n      neighbor Q shutdown extra\n"
+    instance = deepcopy(INSTANCE)
+    if not consumer:
+        instance["vrfs"]["default"]["afiSafiConfig"]["linkState"]["bgpLsProtoRoles"] = []
+        config = config.replace("      path-selection role consumer propagator\n", "")
+    fact = derive(config, instance)
+    if consumer:
+        assert isinstance(fact, AvailableFact)
+        assert fact.value.state is ConfigurationState.CONFIGURED
+    else:
+        assert isinstance(fact, UnavailableFact)
+        assert fact.problem is FactProblemKind.MALFORMED
+        assert fact.source.name == "show running-config | section router bgp"

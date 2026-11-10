@@ -123,7 +123,6 @@ def test_positive_policy_survives_unrelated_bad_policy(incomplete: object, witne
         ({"ipsecSecurityAssociations": {"bad": {"replayWindowSize": 0.5}}}, FactProblemKind.MALFORMED),
         ({"ipsecSecurityAssociations": {"bad": {"replayWindowSize": -1}}}, FactProblemKind.MALFORMED),
         ({"ipsecSecurityAssociations": {"bad": {"replayWindowSize": "0"}}}, FactProblemKind.MALFORMED),
-        ({"ipsecSecurityAssociations": {"": SA_POLICY, "valid": SA_POLICY}}, FactProblemKind.MALFORMED),
     ],
 )
 def test_no_positive_requires_complete_negative_evidence(output: dict[str, object], problem: FactProblemKind) -> None:
@@ -166,3 +165,20 @@ def test_command_identity_is_checked() -> None:
     fact = IpsecKeyControllerFact.derive(OfflineAntaDevice("test"), (command(IpsecSaAntiReplayFact, {}),))
     assert isinstance(fact, UnavailableFact)
     assert fact.problem is FactProblemKind.COLLECTION_FAILED
+
+
+@pytest.mark.parametrize("name", ["", " ", 7])
+@pytest.mark.parametrize("reverse", [False, True])
+@pytest.mark.parametrize("enabled", [False, True])
+def test_invalid_policy_identity_preserves_independent_evidence(name: object, *, reverse: bool, enabled: bool) -> None:
+    """An invalid-name policy neither hides a valid positive nor proves presence itself."""
+    policies = [(name, SA_POLICY), ("valid", {"replayWindowSize": 1 if enabled else 0})]
+    output = {"ipsecSecurityAssociations": dict(reversed(policies) if reverse else policies)}
+    fact = IpsecSaAntiReplayFact.derive(OfflineAntaDevice("test"), (command(IpsecSaAntiReplayFact, output),))
+    if enabled:
+        assert isinstance(fact, AvailableFact)
+        assert fact.value.state is FeatureState.ENABLED
+    else:
+        assert isinstance(fact, UnavailableFact)
+        assert fact.problem is FactProblemKind.MALFORMED
+    assert fact.source.name == "show ip security security-association"

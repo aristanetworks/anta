@@ -291,3 +291,20 @@ def test_dot1x_radius_accounting_unsupported_radius() -> None:
     disabled = radius_accounting_fact(accounting_methods([], None), None, radius_errors=[UNSUPPORTED])
     assert isinstance(disabled, AvailableFact)
     assert disabled.value.state is FeatureState.DISABLED
+
+
+@pytest.mark.parametrize("name", ["", " ", 7])
+@pytest.mark.parametrize("reverse", [False, True])
+@pytest.mark.parametrize("referenced_radius", [False, True])
+def test_dot1x_radius_accounting_invalid_group_identity(name: object, *, reverse: bool, referenced_radius: bool) -> None:
+    """Unknown group scope cannot erase a witness or establish absence, in either order."""
+    groups = [(name, {"serverGroup": "RADIUS"}), ("ACCT", {"serverGroup": "RADIUS" if referenced_radius else "TACACS+"})]
+    radius = {"groups": dict(reversed(groups) if reverse else groups)}
+    fact = radius_accounting_fact(accounting_methods(["group ACCT"]), radius)
+    if referenced_radius:
+        assert isinstance(fact, AvailableFact)
+        assert fact.value.state is FeatureState.ENABLED
+    else:
+        assert isinstance(fact, UnavailableFact)
+        assert fact.problem is FactProblemKind.MALFORMED
+    assert fact.source.name == "show radius"

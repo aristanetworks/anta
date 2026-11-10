@@ -99,6 +99,8 @@ _DATA[(SA211, "no-consumer-is-decisive-without-software")] = {
 }
 
 for _name, _config in {
+    "qualified-consumer-with-malformed-sibling-config": CONFIG + "   vrf RED\n      neighbor Q shutdown extra\n",
+    "qualified-consumer-with-missing-sibling-role": CONFIG + "   vrf RED\n      address-family link-state\n         neighbor Q activate\n",
     "unused-activated-group": CONFIG.replace("   neighbor 192.0.2.212 peer group BGP_LS_PEERS\n", ""),
     "dynamic-listener-without-runtime-peer": CONFIG.replace(
         "   neighbor 192.0.2.212 peer group BGP_LS_PEERS\n", "   bgp listen range 198.51.100.0/24 peer-group BGP_LS_PEERS remote-as 65212\n"

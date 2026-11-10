@@ -129,30 +129,24 @@ def _consumer_scope(vrf: str, output: object) -> _ConsumerScope | FactProblemKin
     return role if isinstance(role, FactProblemKind) else _ConsumerScope(str(asn), vrf, role)
 
 
-def _consumer_scopes(output: object, required_vrfs: set[str]) -> dict[str, _ConsumerScope] | FactProblemKind:
-    """Require complete role coverage only for persistently activated scopes."""
+def _consumer_scopes(output: object, required_vrfs: set[str]) -> dict[str, _ConsumerScope | FactProblemKind] | FactProblemKind:
+    """Retain independent role observations and problems for every activated VRF."""
     if not isinstance(output, Mapping):
         return FactProblemKind.MISSING if output is None else FactProblemKind.MALFORMED
     vrfs = output.get("vrfs")
     if not isinstance(vrfs, Mapping):
         return FactProblemKind.MISSING if vrfs is None else FactProblemKind.MALFORMED
-    if not required_vrfs.issubset(vrfs):
-        return FactProblemKind.MISSING
-    scopes: dict[str, _ConsumerScope] = {}
-    for vrf in required_vrfs:
-        scope = _consumer_scope(vrf, vrfs[vrf])
-        if isinstance(scope, FactProblemKind):
-            return scope
-        scopes[vrf] = scope
-    return scopes
+    return {vrf: _consumer_scope(vrf, vrfs[vrf]) if vrf in vrfs else FactProblemKind.MISSING for vrf in sorted(required_vrfs)}
 
 
-def _correlate(activations: tuple[BgpLinkStatePeeringScope, ...], roles: dict[str, _ConsumerScope], *, role_identity: bool = False) -> tuple[BgpLinkStateScope, ...]:
-    """Retain the configured and structured observations of the same scopes."""
-    return tuple(
-        BgpLinkStateScope(roles[scope.vrf].instance if role_identity else scope.instance, scope.vrf, roles[scope.vrf].enabled, scope.activated_neighbors)
-        for scope in activations
-    )
+def _scope_observations(scope: BgpLinkStatePeeringScope, role: _ConsumerScope, explicit: set[tuple[str, str]]) -> tuple[BgpLinkStateScope, ...]:
+    """Keep identity and role contradictions local to the activation they challenge."""
+    observed = BgpLinkStateScope(scope.instance, scope.vrf, role.enabled, scope.activated_neighbors)
+    if _as_number(scope.instance) != _as_number(role.instance):
+        return observed, BgpLinkStateScope(role.instance, scope.vrf, role.enabled, scope.activated_neighbors)
+    if (scope.instance, scope.vrf) in explicit and not role.enabled:
+        return observed, BgpLinkStateScope(scope.instance, scope.vrf, consumer_dps=True, activated_neighbors=scope.activated_neighbors)
+    return (observed,)
 
 
 @dataclass(frozen=True, slots=True)
@@ -175,7 +169,7 @@ class BgpLinkStateDpsConsumerFact(ConfigurationFact, CommandsFactDefinition["Bgp
         return cls(state, scopes)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[BgpLinkStateDpsConsumerFact]:  # noqa: PLR0911
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[BgpLinkStateDpsConsumerFact]:
         """Correlate persistent AF activation with typed configured consumer roles."""
         config, instance = commands
         peering = BgpLinkStatePeeringFact.parse((config,))
@@ -190,15 +184,39 @@ class BgpLinkStateDpsConsumerFact(ConfigurationFact, CommandsFactDefinition["Bgp
         roles = _consumer_scopes(instance.output, {scope.vrf for scope in peering.value.scopes})
         if isinstance(roles, FactProblemKind):
             return cls.unavailable(roles, source)
-        scopes = _correlate(peering.value.scopes, roles)
-        if any(_as_number(scope.instance) != _as_number(roles[scope.vrf].instance) for scope in peering.value.scopes):
-            observed_scopes = _correlate(peering.value.scopes, roles, role_identity=True)
-            return cls.unavailable(FactProblemKind.CONTRADICTORY, source, observations=(cls._scoped_value(scopes), cls._scoped_value(observed_scopes)))
-        explicit = _configured_consumers(config.text_output)
-        if any((scope.instance, scope.vrf) in explicit and not scope.consumer_dps for scope in scopes):
-            configured_scopes = tuple(
-                BgpLinkStateScope(scope.instance, scope.vrf, scope.consumer_dps or (scope.instance, scope.vrf) in explicit, scope.activated_neighbors)
-                for scope in scopes
-            )
-            return cls.unavailable(FactProblemKind.CONTRADICTORY, source, observations=(cls._scoped_value(scopes), cls._scoped_value(configured_scopes)))
-        return cls._scoped_value(scopes).available(source)
+        result = cls._correlated_value(peering.value.scopes, roles, _configured_consumers(config.text_output), source)
+        if not isinstance(result, UnavailableFact) and result.value.state is ConfigurationState.NOT_CONFIGURED and peering.value.uncertain_scopes:
+            return cls.unavailable(FactProblemKind.MALFORMED, peering.source)
+        return result
+
+    @classmethod
+    def _correlated_value(
+        cls,
+        activations: tuple[BgpLinkStatePeeringScope, ...],
+        roles: dict[str, _ConsumerScope | FactProblemKind],
+        explicit: set[tuple[str, str]],
+        source: FactSource,
+    ) -> Fact[BgpLinkStateDpsConsumerFact]:
+        """Let a consistent consumer win; otherwise report a stable required problem."""
+        scopes: list[BgpLinkStateScope] = []
+        problems: set[FactProblemKind] = set()
+        contradictions: list[tuple[BgpLinkStateScope, ...]] = []
+        for activation in sorted(activations, key=lambda scope: (scope.instance, scope.vrf)):
+            role = roles[activation.vrf]
+            if isinstance(role, FactProblemKind):
+                problems.add(role)
+                continue
+            observations = _scope_observations(activation, role, explicit)
+            if len(observations) > 1:
+                contradictions.append(observations)
+            else:
+                scopes.extend(observations)
+        value = cls._scoped_value(tuple(scopes))
+        if value.state is ConfigurationState.CONFIGURED:
+            return value.available(source)
+        if contradictions:
+            return cls.unavailable(FactProblemKind.CONTRADICTORY, source, observations=tuple(cls._scoped_value((scope,)) for scope in contradictions[0]))
+        if problems:
+            problem = FactProblemKind.MALFORMED if FactProblemKind.MALFORMED in problems else FactProblemKind.MISSING
+            return cls.unavailable(problem, source)
+        return value.available(source)

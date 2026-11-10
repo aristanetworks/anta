@@ -103,9 +103,7 @@ class IpsecSaAntiReplayFact(FeatureFact, CommandsFactDefinition["IpsecSaAntiRepl
         policies = command.json_output.get("ipsecSecurityAssociations")
         if not isinstance(policies, Mapping):
             return cls.unavailable(FactProblemKind.MISSING if policies is None else FactProblemKind.MALFORMED, source)
-        if any(not isinstance(name, str) or not name.strip() for name in policies):
-            return cls.unavailable(FactProblemKind.MALFORMED, source)
-        windows = tuple(_replay_window(policy) for policy in policies.values())
+        windows = tuple(_replay_window(policy) if isinstance(name, str) and name.strip() else FactProblemKind.MALFORMED for name, policy in policies.items())
         if any(isinstance(window, int) and window > 0 for window in windows):
             return cls(FeatureState.ENABLED).available(source)
         problems = {window for window in windows if isinstance(window, FactProblemKind)}
