@@ -134,6 +134,7 @@ def test_7010tx_resolves_to_overlapping_advisory_series() -> None:
         pytest.param("CCS-720DF-48Y", {PlatformFamily.SERIES_720_D, PlatformFamily.SERIES_720_DF}, id="720df"),
         pytest.param("CCS-720DP-24S", {PlatformFamily.SERIES_720_D, PlatformFamily.SERIES_720_DP}, id="720dp"),
         pytest.param("CCS-720DT-24S", {PlatformFamily.SERIES_720_D, PlatformFamily.SERIES_720_DT}, id="720dt"),
+        pytest.param("CCS-720XDM-48ZC2-F", {PlatformFamily.SERIES_720_D, PlatformFamily.SERIES_720_XDM}, id="720xdm"),
         pytest.param("DCS-7280SE-64", {PlatformFamily.SERIES_7280_E, PlatformFamily.SERIES_7280_SE}, id="7280se"),
         pytest.param("CCS-755-CH", {PlatformFamily.SERIES_750, PlatformFamily.SERIES_750_X}, id="750x"),
     ],
@@ -210,7 +211,6 @@ def test_parse_fixed_platform_from_show_version() -> None:
     [
         pytest.param("CCS-720XPM-48TH-6SY-F", PlatformType.FIXED, PlatformFamily.SERIES_722_XPM, id="720xpm"),
         pytest.param("CCS-722XPM-48TH-6SY-F", PlatformType.FIXED, PlatformFamily.SERIES_722_XPM, id="722xpm"),
-        pytest.param("CCS-720XDM-48ZC2-F", PlatformType.FIXED, PlatformFamily.SERIES_720_XDM, id="720xdm"),
         pytest.param("DCS-7020R4-10QC-4DF", PlatformType.FIXED, PlatformFamily.SERIES_7020_R4, id="7020r4"),
         pytest.param("DCS-7020R4M-24Y-6QDF", PlatformType.FIXED, PlatformFamily.SERIES_7020_R4, id="7020r4m"),
         pytest.param("DCS-7020HR4-48Y-8QC", PlatformType.FIXED, PlatformFamily.SERIES_7020_R4, id="7020hr4"),
@@ -236,10 +236,10 @@ def test_released_system_model_variants_resolve(model: str, platform_type: Platf
 @pytest.mark.parametrize(
     "model",
     [
+        "ZTX-7230S-4TX-4S",
         "ZTX-7230S-4TX-4S-F",
+        "ZTX-7250S-16S",
         "ZTX-7250S-16S-F",
-        " ztx-7230s-4tx-4s-f ",
-        " ztx-7250s-16s-f ",
     ],
 )
 def test_ztx_platform_identity(model: str) -> None:
@@ -248,8 +248,10 @@ def test_ztx_platform_identity(model: str) -> None:
 
     assert platform.model == model.strip()
     assert platform.type is PlatformType.APPLIANCE
-    assert platform.platform_families == {PlatformFamily.ZTX_7200}
+    assert platform.platform_families == {PlatformFamily.ZTX_7000, PlatformFamily.ZTX_7200}
+    assert platform.to_dict()["platform_families"] == ["ZTX-7000 Series", "ZTX-7200 Series"]
     assert not platform.modules
+    assert platform_matches_families(platform, [PlatformFamily.ZTX_7000]) is True
     assert platform_matches_families(platform, [PlatformFamily.ZTX_7200]) is True
     assert platform_matches_families(platform, [PlatformFamily.AWE_7200_R]) is False
     assert platform_matches_families(platform, [PlatformFamily.SERIES_750_X]) is False
@@ -259,6 +261,7 @@ def test_ztx_platform_identity(model: str) -> None:
     "model",
     [
         "AWE-7230R-4TX-4S-F",
+        "ZTX-7000",
         "ZTK-7200",
         "ZTX-7100",
         "ZTX-7300",
@@ -272,11 +275,12 @@ def test_ztx_platform_identity(model: str) -> None:
         "ZTX-7230S-16S-F",
         "ZTX-7250S-4TX-4S-F",
         "ZTX-7230S-4TX-4S-R",
+        "ZTX-7250S-16S-F-INVALID",
     ],
 )
 def test_ztx_family_rejects_other_model_identifiers(model: str) -> None:
-    """Keep the ZTX family restricted to the two confirmed appliance SKUs."""
-    assert PlatformFamily.ZTX_7200 not in resolve_platform_families(model)
+    """Keep both ZTX families restricted to the four confirmed model identifiers."""
+    assert resolve_platform_families(model).isdisjoint({PlatformFamily.ZTX_7000, PlatformFamily.ZTX_7200})
 
 
 def test_ztx_live_model_identity() -> None:
@@ -284,7 +288,7 @@ def test_ztx_live_model_identity() -> None:
     platform = _parse_platform("ZTX-7250S-16S-F")
 
     assert platform.type is PlatformType.APPLIANCE
-    assert platform.platform_families == {PlatformFamily.ZTX_7200}
+    assert platform.platform_families == {PlatformFamily.ZTX_7000, PlatformFamily.ZTX_7200}
     assert platform_matches_families(platform, [PlatformFamily.SERIES_750_X]) is False
 
 
