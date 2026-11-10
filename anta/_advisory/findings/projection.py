@@ -19,6 +19,7 @@ from anta._advisory.facts.models import (
 from anta._advisory.findings.models import (
     AffectedResult,
     ComponentVersionAssessment,
+    ConfigurationAssessment,
     EosReleaseAssessment,
     ErrorResult,
     FindingEvidence,
@@ -26,6 +27,7 @@ from anta._advisory.findings.models import (
     MitigatedResult,
     NotAffectedResult,
     PlatformAssessment,
+    PlatformRelation,
     VulnerabilityResult,
 )
 from anta._advisory.results import _AdvisoryAtomicTestResult, _get_atomic_vulnerability_ids
@@ -48,11 +50,17 @@ def _render_evidence(evidence: FindingEvidence) -> str:
         else:
             rendered = f"{evidence.fact.definition.label} '{value}' is {evidence.relation.value}"
     elif isinstance(evidence, PlatformAssessment):
-        if isinstance(evidence.fact.value, PlatformComponentIdentity):
+        if evidence.relation is PlatformRelation.COMPONENTS_OUTSIDE_SCOPE:
+            rendered = f"the installed components of platform '{evidence.fact.value.model}' are {evidence.relation.value}"
+        elif isinstance(evidence.fact.value, PlatformComponentIdentity):
             component = evidence.fact.value
             rendered = f"{component.role.value.replace('_', ' ')} '{component.model}' is {evidence.relation.value}"
         else:
             rendered = f"platform '{evidence.fact.value.model}' is {evidence.relation.value}"
+    elif isinstance(evidence, ConfigurationAssessment):
+        feature = evidence.feature
+        feature_name = f"{feature.parent.value} {feature.name}" if isinstance(feature, SubFeature) else feature.value
+        rendered = f"the {feature_name} configuration is {evidence.state.value}"
     elif isinstance(evidence.value, MitigationFact):
         rendered = f"{evidence.definition.label} is {evidence.value.state.value}"
     else:
