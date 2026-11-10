@@ -29,6 +29,7 @@ Affected and Inconclusive are failure, and Error is error.
       extra:
           anta_hide_test_module_description: true
       members:
+        - SA201
         - SA178
         - SA177
         - SA176
