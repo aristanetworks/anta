@@ -17,6 +17,7 @@ from anta._advisory.facts.models import (
     CredentialSyntaxFact,
     CredentialSyntaxState,
     FeatureFact,
+    FeatureRef,
     FeatureState,
     MitigationFact,
     MitigationState,
@@ -80,6 +81,7 @@ class PlatformRelation(str, Enum):
 
     AFFECTED = "within the affected platform scope"
     OUTSIDE_SCOPE = "outside the affected platform scope"
+    COMPONENTS_OUTSIDE_SCOPE = "outside the affected component scope"
 
 
 @dataclass(frozen=True, slots=True)
@@ -90,7 +92,16 @@ class PlatformAssessment:
     relation: PlatformRelation
 
 
-ExposureFact: TypeAlias = AvailableFact[FeatureFact] | AvailableFact[ConfigurationFact] | AvailableFact[CredentialSyntaxFact]
+@dataclass(frozen=True, slots=True)
+class ConfigurationAssessment:
+    """Advisory-specific configuration conclusion from scoped device observations."""
+
+    fact: AvailableFact[object]
+    feature: FeatureRef
+    state: ConfigurationState
+
+
+ExposureFact: TypeAlias = AvailableFact[FeatureFact] | AvailableFact[ConfigurationFact] | AvailableFact[CredentialSyntaxFact] | ConfigurationAssessment
 MitigationEvidence: TypeAlias = AvailableFact[MitigationFact]
 MitigatableCondition: TypeAlias = AffectedEosRelease | AffectedComponentVersion | AffectedFeatureState[FeatureFact] | ExposureFact
 AffectedCondition: TypeAlias = MitigatableCondition | MitigationEvidence
@@ -109,15 +120,15 @@ def _is_mitigatable_condition(value: object) -> bool:
     """Return whether a runtime value is an exposure that a mitigation can cover."""
     if isinstance(value, (AffectedEosRelease, AffectedComponentVersion, AffectedFeatureState)):
         return True
+    if isinstance(value, ConfigurationAssessment):
+        return value.state is ConfigurationState.CONFIGURED
     if not isinstance(value, AvailableFact):
         return False
     if isinstance(value.value, FeatureFact):
         return value.value.state is FeatureState.ENABLED
     if isinstance(value.value, ConfigurationFact):
         return value.value.state is ConfigurationState.CONFIGURED
-    if isinstance(value.value, CredentialSyntaxFact):
-        return value.value.state in {CredentialSyntaxState.LEGACY, CredentialSyntaxState.MIXED}
-    return False
+    return isinstance(value.value, CredentialSyntaxFact) and value.value.state in {CredentialSyntaxState.LEGACY, CredentialSyntaxState.MIXED}
 
 
 @dataclass(frozen=True, slots=True)

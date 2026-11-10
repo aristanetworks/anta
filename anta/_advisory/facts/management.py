@@ -32,12 +32,10 @@ from anta._advisory.facts.models import (
     SubFeature,
 )
 from anta._advisory.optional_commands import OptionalAntaCommand, is_unsupported_optional_command
-from anta._eos.parsing import ParseFail, ParseFailureReason, ParseResult, ParseSuccessful
 from anta.models import AntaCommand
 
 RISKY_TRACE_SELECTORS = ("service/9", "interceptor/9", "transport_socketcli/9")
 GNMI_COMMAND = OptionalAntaCommand(command="show management api gnmi", revision=1)
-DOT1X_COMMAND = OptionalAntaCommand(command="show dot1x all", revision=1)
 RADIUS_PROXY_CONFIG_COMMAND = AntaCommand(command="show running-config section radius proxy", ofmt="text")
 GNSI_COMMAND = OptionalAntaCommand(command="show management api gnsi", revision=1)
 GNPSI_COMMAND = OptionalAntaCommand(command="show management api gnpsi", revision=1)
@@ -258,78 +256,6 @@ def _classify_snmpv3_credential_syntax(observed: set[CredentialSyntaxState]) -> 
     if observed == {CredentialSyntaxState.LEGACY}:
         return CredentialSyntaxState.LEGACY
     return CredentialSyntaxState.MIXED
-
-
-def _parse_dot1x_controlled_authenticator(output: Mapping[str, object]) -> ParseResult[bool]:  # noqa: PLR0911
-    """Parse whether system control and a controlled authenticator interface are present."""
-    system_control = output.get("systemAuthControl")
-    interfaces = output.get("interfaces")
-    if not isinstance(system_control, bool):
-        return ParseFail(ParseFailureReason.MALFORMED, "show dot1x all systemAuthControl is not a boolean")
-    if not isinstance(interfaces, Mapping):
-        return ParseFail(ParseFailureReason.MALFORMED, "show dot1x all interfaces is not a mapping")
-    if not system_control:
-        return ParseSuccessful(value=False)
-    for name, interface in interfaces.items():
-        if not isinstance(interface, Mapping):
-            return ParseFail(ParseFailureReason.MALFORMED, f"show dot1x all interface {name!r} is not a mapping")
-        port_control = interface.get("portControl")
-        if not isinstance(port_control, str):
-            return ParseFail(ParseFailureReason.MALFORMED, f"show dot1x all interface {name!r} portControl is not a string")
-        if port_control == "controlled":
-            return ParseSuccessful(value=True)
-    return ParseSuccessful(value=False)
-
-
-@dataclass(frozen=True, slots=True)
-class Dot1xControlledAuthenticatorFact(FeatureFact, CommandsFactDefinition["Dot1xControlledAuthenticatorFact"]):
-    """Effective 802.1X authenticator with controlled port state."""
-
-    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.DOT1X, "controlled authenticator")
-    key: ClassVar[str] = "feature.dot1x.controlled_authenticator"
-    label: ClassVar[str] = "802.1X controlled authenticator state"
-    commands: ClassVar[tuple[AntaCommand, ...]] = (DOT1X_COMMAND,)
-
-    @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[Dot1xControlledAuthenticatorFact]:
-        """Normalize system control and effective interface port-control state."""
-        (command,) = commands
-        source = _feature_source(command)
-        if is_unsupported_optional_command(command):
-            return cls(FeatureState.UNSUPPORTED).available(source)
-        parsed = _parse_dot1x_controlled_authenticator(command.json_output)
-        if isinstance(parsed, ParseFail):
-            return cls.unavailable(FactProblemKind(parsed.reason.value), source)
-        state = FeatureState.ENABLED if parsed.value else FeatureState.DISABLED
-        return cls(state).available(source)
-
-
-@dataclass(frozen=True, slots=True)
-class Dot1xDynamicAuthorizationFact(FeatureFact, CommandsFactDefinition["Dot1xDynamicAuthorizationFact"]):
-    """Effective 802.1X dynamic authorization with an authenticator interface."""
-
-    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.DOT1X, "dynamic authorization authenticator")
-    key: ClassVar[str] = "feature.dot1x.dynamic_authorization"
-    label: ClassVar[str] = "802.1X dynamic-authorization state"
-    commands: ClassVar[tuple[AntaCommand, ...]] = (DOT1X_COMMAND,)
-
-    @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[Dot1xDynamicAuthorizationFact]:
-        """Normalize the structured global and interface prerequisites."""
-        (command,) = commands
-        source = _feature_source(command)
-        if is_unsupported_optional_command(command):
-            return cls(FeatureState.UNSUPPORTED).available(source)
-        dynamic_authorization = command.json_output.get("dynAuth")
-        if not isinstance(dynamic_authorization, bool):
-            return cls.unavailable(FactProblemKind.MALFORMED, source)
-        if not dynamic_authorization:
-            return cls(FeatureState.DISABLED).available(source)
-        parsed = _parse_dot1x_controlled_authenticator(command.json_output)
-        if isinstance(parsed, ParseFail):
-            return cls.unavailable(FactProblemKind(parsed.reason.value), source)
-        state = FeatureState.ENABLED if parsed.value else FeatureState.DISABLED
-        return cls(state).available(source)
 
 
 @dataclass(frozen=True, slots=True)

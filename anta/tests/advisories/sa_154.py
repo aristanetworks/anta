@@ -10,9 +10,9 @@ from typing import ClassVar
 
 from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
+from anta._advisory.facts.bfd import BfdAuthenticationFact, BfdAuthenticationUnavailableFact
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.models import Fact, FactsBase, FeatureState, UnavailableFact, fact_field, facts_dataclass
-from anta._advisory.facts.routing import BfdAuthenticationFact
 from anta._advisory.findings.assessment import assess_eos_scope
 from anta._advisory.findings.models import AffectedResult, EosReleaseAssessment, ErrorResult, NotAffectedResult, VulnerabilityResult
 from anta._advisory.findings.projection import project_vulnerability_result
@@ -66,7 +66,7 @@ def _assess_sa154(version: Fact[EosVersionFact], bfd: Fact[BfdAuthenticationFact
     if not isinstance(eos_release, EosReleaseAssessment):
         return eos_release
     if isinstance(bfd, UnavailableFact):
-        return ErrorResult(vulnerability_id=VULNERABILITY_ID, problems=(bfd,))
+        return ErrorResult(vulnerability_id=VULNERABILITY_ID, problems=bfd.problems if isinstance(bfd, BfdAuthenticationUnavailableFact) else (bfd,))
     return AffectedResult(
         vulnerability_id=VULNERABILITY_ID,
         context=(eos_release,),
