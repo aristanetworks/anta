@@ -30,12 +30,56 @@ ANTA** identifies the first release aligned with that revision.
 
 | Security advisory | Last updated | Introduced in ANTA | Last updated in ANTA | Comment |
 | --- | --- | --- | --- | --- |
-| Security Advisory 0201 | 2026-11-04 | v1.11 | | EOS and TerminAttr software versions; upgrade affected releases |
+| Security Advisory 0227 | | N/A | | Wi-Fi Access Points; not covered by ANTA |
+| Security Advisory 0226 | | N/A | | CloudVision Appliance, DMF and AGNI server hardware; not covered by ANTA |
+| Security Advisory 0225 | 2026-11-10 | v1.11 | | |
+| Security Advisory 0224 | 2026-11-10 | v1.11 | | |
+| Security Advisory 0223 | 2026-11-10 | v1.11 | | |
+| Security Advisory 0222 | 2026-11-10 | v1.11 | | |
+| Security Advisory 0221 | 2026-11-10 | v1.11 | | |
+| Security Advisory 0220 | 2026-11-10 | v1.11 | | |
+| Security Advisory 0219 | 2026-11-10 | v1.11 | | |
+| Security Advisory 0218 | 2026-11-10 | v1.11 | | |
+| Security Advisory 0217 | 2026-11-10 | v1.11 | | |
+| Security Advisory 0216 | 2026-11-10 | v1.11 | | |
+| Security Advisory 0215 | 2026-11-10 | v1.11 | | |
+| Security Advisory 0214 | 2026-11-10 | v1.11 | | |
+| Security Advisory 0213 | 2026-11-10 | v1.11 | | |
+| Security Advisory 0212 | 2026-11-10 | v1.11 | | |
+| Security Advisory 0211 | 2026-11-10 | v1.11 | | |
+| Security Advisory 0210 | 2026-11-10 | v1.11 | | |
+| Security Advisory 0209 | 2026-11-10 | v1.11 | | |
+| Security Advisory 0208 | 2026-11-10 | v1.11 | | |
+| Security Advisory 0207 | 2026-11-10 | v1.11 | | |
+| Security Advisory 0206 | 2026-11-10 | v1.11 | | |
+| Security Advisory 0205 | 2026-11-10 | v1.11 | | |
+| Security Advisory 0204 | | N/A | | Advance Notice |
+| Security Advisory 0203 | | N/A | | Arista NDR; not covered by ANTA |
+| Security Advisory 0202 | | N/A | | VeloCloud; not covered by ANTA |
+| Security Advisory 0201 | 2026-11-04 | v1.11 | | |
+| Security Advisory 0200 | | N/A | | PHP in Arista cloud services; not covered by ANTA |
+| Security Advisory 0199 | | N/A | | VeloCloud; not covered by ANTA |
+| Security Advisory 0198 | | N/A | | Wi-Fi Access Points; not covered by ANTA |
+| Security Advisory 0197 | | N/A | | Wi-Fi Access Points; not covered by ANTA |
+| Security Advisory 0196 | | N/A | | Wi-Fi Access Points; not covered by ANTA |
+| Security Advisory 0195 | | N/A | | Wi-Fi Access Points; not covered by ANTA |
+| Security Advisory 0194 | | N/A | | Wi-Fi Access Points; not covered by ANTA |
+| Security Advisory 0193 | | N/A | | Wi-Fi Access Points; not covered by ANTA |
+| Security Advisory 0192 | | N/A | | CloudVision CUE; not covered by ANTA |
+| Security Advisory 0191 | | N/A | | CloudVision CUE; not covered by ANTA |
+| Security Advisory 0190 | | N/A | | CloudVision CUE; not covered by ANTA |
+| Security Advisory 0189 | | N/A | | CloudVision Portal; not covered by ANTA |
+| Security Advisory 0188 | | N/A | | CloudVision Portal and CloudVision Sensor; not covered by ANTA |
+| Security Advisory 0187 | | N/A | | CloudVision Portal; not covered by ANTA |
+| Security Advisory 0186 | | N/A | | CloudVision Portal; not covered by ANTA |
+| Security Advisory 0185 | | N/A | | CloudVision Portal; not covered by ANTA |
+| Security Advisory 0184 | | N/A | | Advance Notice |
+| Security Advisory 0183 | | N/A | | VeloCloud; not covered by ANTA |
 | Security Advisory 0182 | | N/A | | VeloCloud; not covered by ANTA |
 | Security Advisory 0181 | | N/A | | VeloCloud; not covered by ANTA |
 | Security Advisory 0180 | | N/A | | VeloCloud; not covered by ANTA |
 | Security Advisory 0179 | | N/A | | VeloCloud; not covered by ANTA |
-| Security Advisory 0178 | 2026-09-09 | v1.10 | | |
+| Security Advisory 0178 | 2026-10-28 | v1.10 | v1.11 | |
 | Security Advisory 0177 | 2026-09-17 | v1.10 | v1.11 | |
 | Security Advisory 0176 | 2026-09-09 | v1.10 | | |
 | Security Advisory 0175 | 2026-09-09 | v1.10 | | |

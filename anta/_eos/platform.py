@@ -117,6 +117,7 @@ class PlatformFamily(str, Enum):
     SERIES_7800_R4 = "7800R4 Series"
     AWE_5000 = "AWE 5000 Series"
     AWE_7200_R = "AWE 7200R Series"
+    ZTX_7000 = "ZTX-7000 Series"
     ZTX_7200 = "ZTX-7200 Series"
     CLOUDEOS = "CloudEOS"
     CEOS_LAB = "cEOS-lab"
@@ -224,7 +225,7 @@ SYSTEM_PLATFORM_RULES: tuple[_SystemPlatformRule, ...] = (
     _system_rule(PlatformType.FIXED, r"^CCS-720DP-.*$", families=(PlatformFamily.SERIES_720_D, PlatformFamily.SERIES_720_DP)),
     _system_rule(PlatformType.FIXED, r"^CCS-720DT-.*$", families=(PlatformFamily.SERIES_720_D, PlatformFamily.SERIES_720_DT)),
     _system_rule(PlatformType.FIXED, r"^CCS-720XP-.*$", families=(PlatformFamily.SERIES_720_XP,)),
-    _system_rule(PlatformType.FIXED, r"^CCS-720XDM-.*$", families=(PlatformFamily.SERIES_720_XDM,)),
+    _system_rule(PlatformType.FIXED, r"^CCS-720XDM-.*$", families=(PlatformFamily.SERIES_720_D, PlatformFamily.SERIES_720_XDM)),
     _system_rule(PlatformType.FIXED, r"^CCS-72[02]XPM-.*$", families=(PlatformFamily.SERIES_722_XPM,)),
     _system_rule(PlatformType.CHASSIS, r"^CCS-75[58]-CH.*$", families=(PlatformFamily.SERIES_750, PlatformFamily.SERIES_750_X)),
     _system_rule(PlatformType.FIXED, r"^CCS-710[A-Z0-9]*-.*$", families=(PlatformFamily.SERIES_710,)),
@@ -266,9 +267,9 @@ SYSTEM_PLATFORM_RULES: tuple[_SystemPlatformRule, ...] = (
     _system_rule(PlatformType.APPLIANCE, r"^AWE-72[0-9]{2}R[A-Z0-9]*(?:-.*)?$", families=(PlatformFamily.AWE_7200_R,)),
     _system_rule(
         PlatformType.APPLIANCE,
-        r"^ZTX-7230S-4TX-4S-F$",
-        r"^ZTX-7250S-16S-F$",
-        families=(PlatformFamily.ZTX_7200,),
+        r"^ZTX-7230S-4TX-4S(?:-F)?$",
+        r"^ZTX-7250S-16S(?:-F)?$",
+        families=(PlatformFamily.ZTX_7000, PlatformFamily.ZTX_7200),
     ),
     _system_rule(PlatformType.VIRTUAL, r"^CLOUDEOS$", families=(PlatformFamily.CLOUDEOS,)),
     _system_rule(PlatformType.VIRTUAL, r"^(?:CEOS-LAB|CEOSLAB)(?:-.+)?$", families=(PlatformFamily.CEOS_LAB,)),

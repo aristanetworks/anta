@@ -10,8 +10,9 @@ from typing import ClassVar, cast
 
 from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
+from anta._advisory.facts.dot1x import Dot1xDynamicAuthorizationFact
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.management import Dot1xDynamicAuthorizationFact, RadiusProxyDynamicAuthorizationFact
+from anta._advisory.facts.management import RadiusProxyDynamicAuthorizationFact
 from anta._advisory.facts.models import AvailableFact, Fact, FactsBase, FeatureState, UnavailableFact, fact_field, facts_dataclass
 from anta._advisory.facts.platform import PlatformIdentityFact
 from anta._advisory.findings.assessment import assess_eos_scope, assess_platform_scope

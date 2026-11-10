@@ -44,6 +44,27 @@ from anta.tests.advisories.sa_176 import SA176
 from anta.tests.advisories.sa_177 import SA177
 from anta.tests.advisories.sa_178 import SA178
 from anta.tests.advisories.sa_201 import SA201
+from anta.tests.advisories.sa_205 import SA205
+from anta.tests.advisories.sa_206 import SA206
+from anta.tests.advisories.sa_207 import SA207
+from anta.tests.advisories.sa_208 import SA208
+from anta.tests.advisories.sa_209 import SA209
+from anta.tests.advisories.sa_210 import SA210
+from anta.tests.advisories.sa_211 import SA211
+from anta.tests.advisories.sa_212 import SA212
+from anta.tests.advisories.sa_213 import SA213
+from anta.tests.advisories.sa_214 import SA214
+from anta.tests.advisories.sa_215 import SA215
+from anta.tests.advisories.sa_216 import SA216
+from anta.tests.advisories.sa_217 import SA217
+from anta.tests.advisories.sa_218 import SA218
+from anta.tests.advisories.sa_219 import SA219
+from anta.tests.advisories.sa_220 import SA220
+from anta.tests.advisories.sa_221 import SA221
+from anta.tests.advisories.sa_222 import SA222
+from anta.tests.advisories.sa_223 import SA223
+from anta.tests.advisories.sa_224 import SA224
+from anta.tests.advisories.sa_225 import SA225
 
 if TYPE_CHECKING:
     from anta._advisory.base import _AntaAdvisoryTest
@@ -89,6 +110,27 @@ _ADVISORY_TESTS: tuple[type[_AntaAdvisoryTest], ...] = tuple(
         SA177,
         SA178,
         SA201,
+        SA205,
+        SA206,
+        SA207,
+        SA208,
+        SA209,
+        SA210,
+        SA211,
+        SA212,
+        SA213,
+        SA214,
+        SA215,
+        SA216,
+        SA217,
+        SA218,
+        SA219,
+        SA220,
+        SA221,
+        SA222,
+        SA223,
+        SA224,
+        SA225,
     )
 )
 
@@ -137,5 +179,26 @@ __all__ = [
     "SA177",
     "SA178",
     "SA201",
+    "SA205",
+    "SA206",
+    "SA207",
+    "SA208",
+    "SA209",
+    "SA210",
+    "SA211",
+    "SA212",
+    "SA213",
+    "SA214",
+    "SA215",
+    "SA216",
+    "SA217",
+    "SA218",
+    "SA219",
+    "SA220",
+    "SA221",
+    "SA222",
+    "SA223",
+    "SA224",
+    "SA225",
     "get_catalog",
 ]

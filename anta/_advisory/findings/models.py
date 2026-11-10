@@ -17,6 +17,7 @@ from anta._advisory.facts.models import (
     CredentialSyntaxFact,
     CredentialSyntaxState,
     FeatureFact,
+    FeatureRef,
     FeatureState,
     MitigationFact,
     MitigationState,
@@ -80,6 +81,7 @@ class PlatformRelation(str, Enum):
 
     AFFECTED = "within the affected platform scope"
     OUTSIDE_SCOPE = "outside the affected platform scope"
+    COMPONENTS_OUTSIDE_SCOPE = "outside the affected component scope"
 
 
 @dataclass(frozen=True, slots=True)
@@ -90,7 +92,16 @@ class PlatformAssessment:
     relation: PlatformRelation
 
 
-ExposureFact: TypeAlias = AvailableFact[FeatureFact] | AvailableFact[ConfigurationFact] | AvailableFact[CredentialSyntaxFact]
+@dataclass(frozen=True, slots=True)
+class ConfigurationAssessment:
+    """Advisory-specific configuration conclusion from scoped device observations."""
+
+    fact: AvailableFact[object]
+    feature: FeatureRef
+    state: ConfigurationState
+
+
+ExposureFact: TypeAlias = AvailableFact[FeatureFact] | AvailableFact[ConfigurationFact] | AvailableFact[CredentialSyntaxFact] | ConfigurationAssessment
 MitigationEvidence: TypeAlias = AvailableFact[MitigationFact]
 MitigatableCondition: TypeAlias = AffectedEosRelease | AffectedComponentVersion | AffectedFeatureState[FeatureFact] | ExposureFact
 AffectedCondition: TypeAlias = MitigatableCondition | MitigationEvidence
@@ -109,15 +120,15 @@ def _is_mitigatable_condition(value: object) -> bool:
     """Return whether a runtime value is an exposure that a mitigation can cover."""
     if isinstance(value, (AffectedEosRelease, AffectedComponentVersion, AffectedFeatureState)):
         return True
+    if isinstance(value, ConfigurationAssessment):
+        return value.state is ConfigurationState.CONFIGURED
     if not isinstance(value, AvailableFact):
         return False
     if isinstance(value.value, FeatureFact):
         return value.value.state is FeatureState.ENABLED
     if isinstance(value.value, ConfigurationFact):
         return value.value.state is ConfigurationState.CONFIGURED
-    if isinstance(value.value, CredentialSyntaxFact):
-        return value.value.state in {CredentialSyntaxState.LEGACY, CredentialSyntaxState.MIXED}
-    return False
+    return isinstance(value.value, CredentialSyntaxFact) and value.value.state in {CredentialSyntaxState.LEGACY, CredentialSyntaxState.MIXED}
 
 
 @dataclass(frozen=True, slots=True)
@@ -166,11 +177,16 @@ class NotAffectedResult(VulnerabilityResultBase):
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class AffectedResult(VulnerabilityResultBase):
-    """At least one confirmed affected condition is not mitigated."""
+    """At least one confirmed affected condition is not mitigated.
+
+    ``mitigated_conditions`` records affected conditions already covered by an effective mitigation, so the result explains why its remediation
+    omits them.
+    """
 
     conditions: tuple[AffectedCondition, ...]
     remediation: RemediationPlan
     context: tuple[EosReleaseAssessment | ComponentVersionAssessment | PlatformAssessment, ...] = ()
+    mitigated_conditions: tuple[MitigatedCondition, ...] = ()
 
     def __post_init__(self) -> None:
         VulnerabilityResultBase.__post_init__(self)
@@ -184,11 +200,14 @@ class AffectedResult(VulnerabilityResultBase):
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class MitigatedResult(VulnerabilityResultBase):
-    """Every confirmed affected condition is paired with an effective mitigation."""
+    """Every confirmed affected condition is paired with an effective mitigation.
+
+    ``context`` retains supporting evidence for the overall mitigated conclusion.
+    """
 
     mitigated_conditions: tuple[MitigatedCondition, ...]
     remediation: RemediationPlan
-    context: tuple[EosReleaseAssessment | ComponentVersionAssessment | PlatformAssessment, ...] = ()
+    context: tuple[FindingEvidence, ...] = ()
 
     def __post_init__(self) -> None:
         VulnerabilityResultBase.__post_init__(self)

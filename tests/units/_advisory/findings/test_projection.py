@@ -11,8 +11,10 @@ from typing import TYPE_CHECKING, Any, ClassVar, cast
 
 import pytest
 
+from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.models import (
     ComponentSoftwareFact,
+    ConfigurationState,
     Fact,
     FactDefinition,
     FactProblemKind,
@@ -24,10 +26,13 @@ from anta._advisory.facts.models import (
     FeatureState,
     MitigationFact,
     MitigationState,
+    SubFeature,
 )
 from anta._advisory.findings.models import (
+    AffectedEosRelease,
     AffectedResult,
     ComponentVersionAssessment,
+    ConfigurationAssessment,
     ErrorResult,
     MitigatedCondition,
     MitigatedResult,
@@ -146,6 +151,34 @@ def test_project_affected_result_with_ineffective_control() -> None:
     assert atomic.messages == ["The device is affected because the Secure Boot feature is enabled and Example mitigation is ineffective."]
 
 
+def test_project_affected_result_with_mitigated_condition() -> None:
+    """Render conditions already covered by an effective mitigation after the unmitigated conditions."""
+    exposure = ExampleFeatureFact(FeatureState.ENABLED).available(SOURCE)
+    covered = AffectedEosRelease(EosVersionFact.from_version(EOSVersion(4, 35, 1, suffix="F")).available(SOURCE))
+    mitigation = ExampleMitigationFact(MitigationState.EFFECTIVE).available(SOURCE)
+    parent = _parent()
+    atomic = parent.add("Verify vulnerability.", vulnerability_ids=(VULNERABILITY_ID,))
+
+    project_vulnerability_result(
+        atomic,
+        AffectedResult(
+            vulnerability_id=VULNERABILITY_ID,
+            conditions=(exposure,),
+            mitigated_conditions=(MitigatedCondition(covered, (mitigation,)),),
+            remediation=REMEDIATION,
+        ),
+    )
+
+    assert atomic.result is AntaTestStatus.FAILURE
+    assert atomic.messages == [
+        (
+            "The device is affected because the Secure Boot feature is enabled. Mitigated conditions: EOS version '4.35.1F' is affected and Example "
+            "mitigation is effective."
+        )
+    ]
+    assert atomic.remediation == REMEDIATION
+
+
 def test_affected_result_rejects_effective_control_as_a_condition() -> None:
     """Prevent an effective control from explaining an affected result."""
     effective = ExampleMitigationFact(MitigationState.EFFECTIVE).available(SOURCE)
@@ -261,3 +294,37 @@ def test_projection_rejects_mismatched_vulnerability() -> None:
 
     with pytest.raises(ValueError, match="must match"):
         project_vulnerability_result(atomic, finding)
+
+
+@pytest.mark.parametrize("feature", [FeatureName.INTERFACE, SubFeature(FeatureName.INTERFACE, "explicit speed")])
+@pytest.mark.parametrize("state", [ConfigurationState.CONFIGURED, ConfigurationState.NOT_CONFIGURED])
+def test_project_configuration_assessment(feature: FeatureRef, state: ConfigurationState) -> None:
+    """Project an assessment-owned conclusion while retaining its original evidence."""
+    fact = ExampleFeatureFact(FeatureState.ENABLED).available(SOURCE)
+    assessment = ConfigurationAssessment(fact=fact, feature=feature, state=state)
+    parent = _parent()
+    atomic = parent.add("Verify vulnerability.", vulnerability_ids=(VULNERABILITY_ID,))
+    if state is ConfigurationState.CONFIGURED:
+        result = AffectedResult(vulnerability_id=VULNERABILITY_ID, conditions=(assessment,), remediation=REMEDIATION)
+    else:
+        result = NotAffectedResult(vulnerability_id=VULNERABILITY_ID, decisive=(assessment,))
+    project_vulnerability_result(atomic, result)
+    name = "interface explicit speed" if isinstance(feature, SubFeature) else "interface"
+    conclusion = "affected" if state is ConfigurationState.CONFIGURED else "not affected"
+    assert atomic.messages == [f"The device is {conclusion} because the {name} configuration is {state.value}."]
+    assert atomic.result is (AntaTestStatus.FAILURE if state is ConfigurationState.CONFIGURED else AntaTestStatus.SUCCESS)
+    assert assessment.fact is fact
+    assert assessment.fact.source == SOURCE
+
+
+def test_absent_configuration_assessment_cannot_establish_exposure() -> None:
+    """Do not allow an absence conclusion to explain an affected or mitigated device."""
+    assessment = ConfigurationAssessment(
+        fact=ExampleFeatureFact(FeatureState.ENABLED).available(SOURCE),
+        feature=FeatureName.INTERFACE,
+        state=ConfigurationState.NOT_CONFIGURED,
+    )
+    with pytest.raises(ValueError, match="confirmed affected conditions"):
+        AffectedResult(vulnerability_id=VULNERABILITY_ID, conditions=(assessment,), remediation=REMEDIATION)
+    with pytest.raises(ValueError, match="confirmed affected condition"):
+        MitigatedCondition(condition=assessment, mitigations=(ExampleMitigationFact(MitigationState.EFFECTIVE).available(SOURCE),))
