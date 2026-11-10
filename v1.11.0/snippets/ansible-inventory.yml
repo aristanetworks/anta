@@ -1,0 +1,11 @@
+---
+all:
+  children:
+    endpoints:
+      hosts:
+        srv-pod01:
+          ansible_host: 192.0.2.11
+        srv-pod02:
+          ansible_host: 192.0.2.12
+        srv-pod03:
+          ansible_host: 192.0.2.13

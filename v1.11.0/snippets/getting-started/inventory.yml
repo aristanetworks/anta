@@ -1,0 +1,27 @@
+---
+anta_inventory:
+  hosts:
+    - name: dc1-leaf1a
+      host: 172.16.1.101
+      tags: [dc1, leaf]
+    - name: dc1-leaf1b
+      host: 172.16.1.102
+      tags: [dc1, leaf]
+    - name: dc1-leaf1c
+      host: 172.16.1.151
+      tags: [dc1, leaf]
+    - name: dc1-leaf2a
+      host: 172.16.1.103
+      tags: [dc1, leaf]
+    - name: dc1-leaf2b
+      host: 172.16.1.104
+      tags: [dc1, leaf]
+    - name: dc1-leaf2c
+      host: 172.16.1.152
+      tags: [dc1, leaf]
+    - name: dc1-spine1
+      host: 172.16.1.11
+      tags: [dc1, spine]
+    - name: dc1-spine2
+      host: 172.16.1.12
+      tags: [dc1, spine]
