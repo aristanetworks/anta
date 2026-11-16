@@ -8,6 +8,7 @@ from __future__ import annotations
 import re
 from collections.abc import Mapping
 from dataclasses import dataclass
+from ipaddress import IPv4Address, IPv4Network
 from typing import ClassVar
 
 from anta._advisory.facts.models import (
@@ -38,12 +39,12 @@ OSPFV2_SEGMENT_ROUTING_COMMAND = OptionalAntaCommand(command="show ip ospf segme
 ISIS_INTERFACE_COMMAND = OptionalAntaCommand(command="show isis interface detail vrf all", revision=1)
 ISIS_SUMMARY_COMMAND = OptionalAntaCommand(command="show isis summary vrf all", revision=1)
 ISIS_GRACEFUL_RESTART_COMMAND = OptionalAntaCommand(command="show isis graceful-restart vrf all", revision=1)
-BFD_SUMMARY_COMMAND = OptionalAntaCommand(command="show bfd peers summary")
-BFD_GLOBAL_CONFIG_COMMAND = OptionalAntaCommand(command="show running-config section router bfd", ofmt="text")
-BFD_INTERFACE_AUTH_CONFIG_COMMAND = OptionalAntaCommand(command="show running-config | include bfd authentication", ofmt="text")
 OSPFV3_CONFIG_COMMAND = OptionalAntaCommand(command="show running-config section ospfv3", ofmt="text")
 PIM_SPARSE_MODE_COMMAND = OptionalAntaCommand(command="show running-config | include pim.*sparse-mode", ofmt="text")
 LOOSE_URPF_COMMAND = AntaCommand(command="show running-config | include verify unicast source reachable-via any", ofmt="text")
+RIP_CONFIG_COMMAND = OptionalAntaCommand(command=r"show running-config all section ^router\srip", ofmt="text", defer_errors=True)
+RIP_AUTHENTICATION_CONFIG_COMMAND = OptionalAntaCommand(command=r"show running-config sanitized section ^\s+rip\sauthentication", ofmt="text", defer_errors=True)
+IP_INTERFACE_COMMAND = OptionalAntaCommand(command="show ip interface", revision=2, defer_errors=True)
 AREA_AUTHENTICATION_PATTERN = re.compile(r"^area (?P<area>\S+) (?:authentication|encryption) ipsec\b")
 INTERFACE_AUTHENTICATION_PATTERN = re.compile(r"^ospfv3 (?:authentication|encryption) ipsec\b")
 OSPFV3_INTERFACE_AREA_PATTERN = re.compile(r"^ospfv3 (?P<family>ipv[46]) area (?P<area>\S+)\b")
@@ -55,27 +56,9 @@ PIM_SPARSE_MODE_COMMANDS = {
     "ipv6 pim sparse-mode",
 }
 LOOSE_URPF_PATTERN = re.compile(r"^(?:ip|ipv6) verify unicast source reachable-via any(?:\s+.*)?$")
-_BFD_GLOBAL_AUTHENTICATION = re.compile(r"^authentication mode (?P<mode>\S+)(?:\s+.*)?$", flags=re.IGNORECASE)
-_BFD_INTERFACE_AUTHENTICATION = re.compile(r"^bfd authentication mode (?P<mode>\S+)(?:\s+.*)?$", flags=re.IGNORECASE)
-
-
-def _bfd_global_authentication_configured(config: str) -> bool | None:
-    """Return whether global or peer-specific BFD authentication is configured."""
-    global_lines = tuple(line.strip() for line in config.splitlines() if line.strip())
-    if global_lines and global_lines[0] != "router bfd":
-        return None
-    global_modes = tuple(match.group("mode") for line in global_lines[1:] if (match := _BFD_GLOBAL_AUTHENTICATION.fullmatch(line)) is not None)
-    return any(mode.casefold() != "disabled" for mode in global_modes)
-
-
-def _bfd_interface_authentication_configured(config: str) -> bool | None:
-    """Return whether interface-specific BFD authentication is configured."""
-    interface_modes: list[str] = []
-    for line in (line.strip() for line in config.splitlines() if line.strip()):
-        if (match := _BFD_INTERFACE_AUTHENTICATION.fullmatch(line)) is None:
-            return None
-        interface_modes.append(match.group("mode"))
-    return any(mode.casefold() != "disabled" for mode in interface_modes)
+_RIP_ROUTER = re.compile(r"^router rip(?: vrf (?P<vrf>\S+))?$")
+_RIP_NETWORK = re.compile(r"^network (?P<prefix>\d{1,3}(?:\.\d{1,3}){3}/\d{1,2})$")
+_RIP_MD5_AUTHENTICATION = re.compile(r"^rip authentication algorithm md5\s")
 
 
 def _isis_instance_values(vrf: object) -> tuple[Mapping[str, object], ...] | FactProblemKind:
@@ -715,40 +698,387 @@ class LooseUrpfFact(FeatureFact, CommandsFactDefinition["LooseUrpfFact"]):
         return cls(state).available(source)
 
 
-@dataclass(frozen=True, slots=True)
-class BfdAuthenticationFact(FeatureFact, CommandsFactDefinition["BfdAuthenticationFact"]):
-    """Presence of configured BFD authentication while BFD is enabled."""
+def _config_blocks(config: str) -> tuple[tuple[str, tuple[str, ...]], ...] | None:
+    """Split section output into top-level lines and their stripped child lines."""
+    blocks: list[tuple[str, list[str]]] = []
+    for raw_line in config.splitlines():
+        line = raw_line.strip()
+        if not line or line == "!":
+            continue
+        if raw_line == raw_line.lstrip():
+            blocks.append((line, []))
+        elif blocks:
+            blocks[-1][1].append(line)
+        else:
+            return None
+    return tuple((parent, tuple(children)) for parent, children in blocks)
 
-    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.BFD, "authentication")
-    key: ClassVar[str] = "feature.bfd.authentication"
-    label: ClassVar[str] = "BFD authentication state"
-    commands: ClassVar[tuple[AntaCommand, ...]] = (BFD_SUMMARY_COMMAND, BFD_GLOBAL_CONFIG_COMMAND, BFD_INTERFACE_AUTH_CONFIG_COMMAND)
+
+@dataclass(frozen=True, slots=True)
+class _RipInstance:
+    """One configured RIP instance and the network prefixes that select its interfaces."""
+
+    vrf: str
+    enabled: bool
+    networks: tuple[IPv4Network, ...]
+
+
+def _rip_instance(parent: str, children: tuple[str, ...]) -> _RipInstance | None:
+    """Return one RIP instance whose administrative state must be explicitly rendered."""
+    if (match := _RIP_ROUTER.fullmatch(parent)) is None:
+        return None
+    states = tuple(line == "no shutdown" for line in children if line in {"shutdown", "no shutdown"})
+    if len(states) != 1:
+        return None
+    networks: list[IPv4Network] = []
+    for line in children:
+        if not line.startswith("network "):
+            continue
+        if (network := _RIP_NETWORK.fullmatch(line)) is None:
+            return None
+        try:
+            networks.append(IPv4Network(network.group("prefix"), strict=False))
+        except ValueError:
+            return None
+    return _RipInstance(match.group("vrf") or "default", states[0], tuple(networks))
+
+
+def _rip_instances(config: str) -> tuple[_RipInstance, ...] | None:
+    """Return every RIP instance from ``running-config all`` section output."""
+    blocks = _config_blocks(config)
+    if blocks is None:
+        return None
+    instances: list[_RipInstance] = []
+    for parent, children in blocks:
+        instance = _rip_instance(parent, children)
+        if instance is None or any(existing.vrf == instance.vrf for existing in instances):
+            return None
+        instances.append(instance)
+    return tuple(instances)
+
+
+def _rip_md5_interfaces(config: str) -> tuple[str, ...] | None:
+    """Return interfaces with any RIP MD5 authentication statement."""
+    blocks = _config_blocks(config)
+    if blocks is None:
+        return None
+    interfaces: list[str] = []
+    for parent, children in blocks:
+        interface = parent.removeprefix("interface ").strip()
+        if not parent.startswith("interface ") or not interface or not children or any(not line.startswith("rip authentication ") for line in children):
+            return None
+        if any(_RIP_MD5_AUTHENTICATION.match(line) is not None for line in children):
+            interfaces.append(interface)
+    return tuple(interfaces)
+
+
+@dataclass(frozen=True, slots=True)
+class _Ipv4InterfaceAddressing:
+    """IPv4 addressing that a routing protocol can match against its network statements."""
+
+    vrf: str
+    addresses: tuple[IPv4Address, ...]
+
+
+def _ipv4_address(value: object) -> IPv4Address | FactProblemKind | None:
+    """Return one structured interface address, where ``0.0.0.0`` means that no address is assigned."""
+    if not isinstance(value, Mapping):
+        return FactProblemKind.MISSING if value is None else FactProblemKind.MALFORMED
+    address = value.get("address")
+    if not isinstance(address, str):
+        return FactProblemKind.MISSING if address is None else FactProblemKind.MALFORMED
+    try:
+        parsed = IPv4Address(address)
+    except ValueError:
+        return FactProblemKind.MALFORMED
+    return None if parsed.is_unspecified else parsed
+
+
+def _ipv4_interface_addressing(interface: object) -> _Ipv4InterfaceAddressing | FactProblemKind:
+    """Return the VRF and current primary and secondary addresses of one structured interface."""
+    if not isinstance(interface, Mapping):
+        return FactProblemKind.MALFORMED
+    addressing = interface.get("interfaceAddress")
+    if not isinstance(addressing, Mapping):
+        return FactProblemKind.MISSING if addressing is None else FactProblemKind.MALFORMED
+    vrf, secondaries = interface.get("vrf"), addressing.get("secondaryIpsOrderedList")
+    if vrf is None or secondaries is None:
+        return FactProblemKind.MISSING
+    if not isinstance(vrf, str) or not vrf or not isinstance(secondaries, list):
+        return FactProblemKind.MALFORMED
+    addresses: list[IPv4Address] = []
+    for value in (addressing.get("primaryIp"), *secondaries):
+        address = _ipv4_address(value)
+        if isinstance(address, FactProblemKind):
+            return address
+        if address is not None:
+            addresses.append(address)
+    return _Ipv4InterfaceAddressing(vrf, tuple(addresses))
+
+
+def _enabled_rip_networks(config: str) -> dict[str, tuple[IPv4Network, ...]] | None:
+    """Return the network prefixes of every enabled RIP instance with at least one network, keyed by VRF."""
+    instances = _rip_instances(config)
+    if instances is None:
+        return None
+    return {instance.vrf: instance.networks for instance in instances if instance.enabled and instance.networks}
+
+
+def _rip_selects_interface(
+    names: tuple[str, ...],
+    enabled_networks: Mapping[str, tuple[IPv4Network, ...]],
+    interfaces: Mapping[object, object],
+) -> bool | FactProblemKind:
+    """Return whether an enabled RIP instance selects one of the named interfaces in its own VRF."""
+    problem: FactProblemKind | None = None
+    for name in names:
+        if name not in interfaces:
+            continue
+        addressing = _ipv4_interface_addressing(interfaces[name])
+        if isinstance(addressing, FactProblemKind):
+            problem = addressing if addressing is FactProblemKind.MALFORMED else problem or addressing
+            continue
+        networks = enabled_networks.get(addressing.vrf, ())
+        if any(address in network for address in addressing.addresses for network in networks):
+            return True
+    return problem or False
+
+
+def _ipv4_dhcp_addressing(interface: object) -> tuple[str, bool] | FactProblemKind:
+    """Return the VRF of one structured interface and whether DHCP assigns its IPv4 address."""
+    if not isinstance(interface, Mapping):
+        return FactProblemKind.MALFORMED
+    addressing = interface.get("interfaceAddress")
+    if not isinstance(addressing, Mapping):
+        return FactProblemKind.MISSING if addressing is None else FactProblemKind.MALFORMED
+    vrf, dhcp = interface.get("vrf"), addressing.get("dhcp")
+    if vrf is None or dhcp is None:
+        return FactProblemKind.MISSING
+    if not isinstance(vrf, str) or not vrf or not isinstance(dhcp, bool):
+        return FactProblemKind.MALFORMED
+    return vrf, dhcp
+
+
+def _rip_vrf_has_dhcp_interface(
+    names: tuple[str, ...],
+    enabled_networks: Mapping[str, tuple[IPv4Network, ...]],
+    interfaces: Mapping[object, object],
+) -> bool | FactProblemKind:
+    """Return whether one of the named interfaces uses DHCP addressing in a VRF with an enabled RIP network."""
+    problem: FactProblemKind | None = None
+    for name in names:
+        if name not in interfaces:
+            continue
+        addressing = _ipv4_dhcp_addressing(interfaces[name])
+        if isinstance(addressing, FactProblemKind):
+            problem = addressing if addressing is FactProblemKind.MALFORMED else problem or addressing
+            continue
+        vrf, dhcp = addressing
+        if dhcp and vrf in enabled_networks:
+            return True
+    return problem or False
+
+
+def _management_interface_names(interfaces: Mapping[object, object]) -> tuple[str, ...]:
+    """Return the interfaces whose names start with ``Management``."""
+    return tuple(name for name in interfaces if isinstance(name, str) and name.startswith("Management"))
+
+
+@dataclass(frozen=True, slots=True)
+class RipEnabledFact(FeatureFact, CommandsFactDefinition["RipEnabledFact"]):
+    """Presence of a RIP instance that is not administratively shut down in any VRF."""
+
+    feature: ClassVar[FeatureRef] = FeatureName.RIP
+    key: ClassVar[str] = "feature.rip"
+    label: ClassVar[str] = "RIP feature state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (RIP_CONFIG_COMMAND,)
 
     @classmethod
-    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[BfdAuthenticationFact]:
-        """Combine BFD administrative state with global, peer-specific, and interface authentication configuration."""
-        summary, global_config, interface_config = commands
-        summary_source = FactSource(summary.command, FactSourceKind.COMMAND)
-        if is_unsupported_optional_command(summary):
-            state = FeatureState.UNSUPPORTED
-            source_command = summary
-        else:
-            admin_down = summary.json_output.get("adminDown")
-            if not isinstance(admin_down, bool):
-                return cls.unavailable(FactProblemKind.MISSING if admin_down is None else FactProblemKind.MALFORMED, summary_source)
-            if admin_down:
-                return cls(FeatureState.DISABLED).available(summary_source)
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[RipEnabledFact]:
+        """Normalize the explicitly rendered administrative state of every RIP instance."""
+        (command,) = commands
+        source = FactSource(command.command, FactSourceKind.COMMAND)
+        if command.errors:
+            return cls.unavailable(FactProblemKind.COLLECTION_FAILED, source)
+        instances = _rip_instances(command.text_output)
+        if instances is None:
+            return cls.unavailable(FactProblemKind.MALFORMED, source)
+        state = FeatureState.ENABLED if any(instance.enabled for instance in instances) else FeatureState.DISABLED
+        return cls(state).available(source)
 
-            for command in (global_config, interface_config):
-                source = FactSource(command.command, FactSourceKind.COMMAND)
-                if is_unsupported_optional_command(command):
-                    return cls.unavailable(FactProblemKind.UNSUPPORTED, source)
-            global_configured = _bfd_global_authentication_configured(global_config.text_output)
-            if global_configured is None:
-                return cls.unavailable(FactProblemKind.MALFORMED, FactSource(global_config.command, FactSourceKind.COMMAND))
-            interface_configured = _bfd_interface_authentication_configured(interface_config.text_output)
-            if interface_configured is None:
-                return cls.unavailable(FactProblemKind.MALFORMED, FactSource(interface_config.command, FactSourceKind.COMMAND))
-            state = FeatureState.ENABLED if global_configured or interface_configured else FeatureState.DISABLED
-            source_command = global_config if global_configured else interface_config if interface_configured else summary
-        return cls(state).available(FactSource(source_command.command, FactSourceKind.COMMAND))
+
+@dataclass(frozen=True, slots=True)
+class RipMd5AuthenticationFact(FeatureFact, CommandsFactDefinition["RipMd5AuthenticationFact"]):
+    """Presence of RIP MD5 authentication on an interface selected by an enabled RIP instance in the same VRF.
+
+    An instance selects an interface when one of its ``network`` prefixes contains a current primary or secondary interface address,
+    including an address leased by DHCP. Any MD5 authentication statement counts, including a key definition without a transmit key and a
+    transmit key with ``rx-disabled``.
+    """
+
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.RIP, "MD5 authentication")
+    key: ClassVar[str] = "feature.rip.md5_authentication"
+    label: ClassVar[str] = "RIP MD5 authentication state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (RIP_CONFIG_COMMAND, RIP_AUTHENTICATION_CONFIG_COMMAND, IP_INTERFACE_COMMAND)
+
+    @classmethod
+    # pylint: disable-next=too-many-return-statements
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[RipMd5AuthenticationFact]:  # noqa: PLR0911
+        """Correlate interface MD5 authentication with enabled RIP network prefixes in the interface VRF."""
+        rip_command, authentication_command, interface_command = commands
+        rip_source = FactSource(rip_command.command, FactSourceKind.COMMAND)
+        authentication_source = FactSource(authentication_command.command, FactSourceKind.COMMAND)
+        interface_source = FactSource(interface_command.command, FactSourceKind.COMMAND)
+
+        if authentication_command.errors:
+            return cls.unavailable(FactProblemKind.COLLECTION_FAILED, authentication_source)
+        md5_interfaces = _rip_md5_interfaces(authentication_command.text_output)
+        if md5_interfaces == ():
+            return cls(FeatureState.DISABLED).available(authentication_source)
+        if rip_command.errors:
+            return cls.unavailable(FactProblemKind.COLLECTION_FAILED, rip_source)
+        enabled_networks = _enabled_rip_networks(rip_command.text_output)
+        if enabled_networks == {}:
+            return cls(FeatureState.DISABLED).available(rip_source)
+        if md5_interfaces is None:
+            return cls.unavailable(FactProblemKind.MALFORMED, authentication_source)
+        if enabled_networks is None:
+            return cls.unavailable(FactProblemKind.MALFORMED, rip_source)
+
+        if interface_command.errors:
+            return cls.unavailable(FactProblemKind.COLLECTION_FAILED, interface_source)
+        interfaces = interface_command.json_output.get("interfaces")
+        if not isinstance(interfaces, Mapping):
+            return cls.unavailable(FactProblemKind.MISSING if interfaces is None else FactProblemKind.MALFORMED, interface_source)
+        selected = _rip_selects_interface(md5_interfaces, enabled_networks, interfaces)
+        if isinstance(selected, FactProblemKind):
+            return cls.unavailable(selected, interface_source)
+        return cls(FeatureState.ENABLED).available(authentication_source) if selected else cls(FeatureState.DISABLED).available(interface_source)
+
+
+@dataclass(frozen=True, slots=True)
+class RipDhcpMd5InterfaceFact(ConfigurationFact, CommandsFactDefinition["RipDhcpMd5InterfaceFact"]):
+    """Presence of a DHCP-addressed interface with RIP MD5 authentication in a VRF with an enabled RIP network.
+
+    The current lease is not considered: a later lease can place the interface address within a RIP network without any configuration change.
+    """
+
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.RIP, "DHCP MD5 authentication interface")
+    key: ClassVar[str] = "configuration.rip.dhcp_md5_authentication_interface"
+    label: ClassVar[str] = "RIP DHCP MD5 authentication interface configuration state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (RIP_CONFIG_COMMAND, RIP_AUTHENTICATION_CONFIG_COMMAND, IP_INTERFACE_COMMAND)
+
+    @classmethod
+    # pylint: disable-next=too-many-return-statements
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[RipDhcpMd5InterfaceFact]:  # noqa: PLR0911
+        """Correlate DHCP addressing of interfaces with RIP MD5 authentication with enabled RIP instances in the interface VRF."""
+        rip_command, authentication_command, interface_command = commands
+        rip_source = FactSource(rip_command.command, FactSourceKind.COMMAND)
+        authentication_source = FactSource(authentication_command.command, FactSourceKind.COMMAND)
+        interface_source = FactSource(interface_command.command, FactSourceKind.COMMAND)
+
+        if authentication_command.errors:
+            return cls.unavailable(FactProblemKind.COLLECTION_FAILED, authentication_source)
+        md5_interfaces = _rip_md5_interfaces(authentication_command.text_output)
+        if md5_interfaces == ():
+            return cls(ConfigurationState.NOT_CONFIGURED).available(authentication_source)
+        if rip_command.errors:
+            return cls.unavailable(FactProblemKind.COLLECTION_FAILED, rip_source)
+        enabled_networks = _enabled_rip_networks(rip_command.text_output)
+        if enabled_networks == {}:
+            return cls(ConfigurationState.NOT_CONFIGURED).available(rip_source)
+        if md5_interfaces is None:
+            return cls.unavailable(FactProblemKind.MALFORMED, authentication_source)
+        if enabled_networks is None:
+            return cls.unavailable(FactProblemKind.MALFORMED, rip_source)
+
+        if interface_command.errors:
+            return cls.unavailable(FactProblemKind.COLLECTION_FAILED, interface_source)
+        interfaces = interface_command.json_output.get("interfaces")
+        if not isinstance(interfaces, Mapping):
+            return cls.unavailable(FactProblemKind.MISSING if interfaces is None else FactProblemKind.MALFORMED, interface_source)
+        configured = _rip_vrf_has_dhcp_interface(md5_interfaces, enabled_networks, interfaces)
+        if isinstance(configured, FactProblemKind):
+            return cls.unavailable(configured, interface_source)
+        return cls(ConfigurationState.CONFIGURED if configured else ConfigurationState.NOT_CONFIGURED).available(interface_source)
+
+
+@dataclass(frozen=True, slots=True)
+class RipManagementInterfaceFact(FeatureFact, CommandsFactDefinition["RipManagementInterfaceFact"]):
+    """Presence of a management interface selected by an enabled RIP instance in the same VRF.
+
+    Management interfaces are the interfaces whose names start with ``Management``. An instance selects one when one of its ``network`` prefixes contains a
+    current primary or secondary interface address, including an address leased by DHCP. EOS does not render RIP processing on a management
+    interface in its configuration, so selection is derived from the RIP networks and the interface addressing.
+    """
+
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.RIP, "management interface")
+    key: ClassVar[str] = "feature.rip.management_interface"
+    label: ClassVar[str] = "RIP management interface state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (RIP_CONFIG_COMMAND, IP_INTERFACE_COMMAND)
+
+    @classmethod
+    # pylint: disable-next=too-many-return-statements
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[RipManagementInterfaceFact]:  # noqa: PLR0911
+        """Correlate management interface addresses with enabled RIP network prefixes in the interface VRF."""
+        rip_command, interface_command = commands
+        rip_source = FactSource(rip_command.command, FactSourceKind.COMMAND)
+        interface_source = FactSource(interface_command.command, FactSourceKind.COMMAND)
+
+        if rip_command.errors:
+            return cls.unavailable(FactProblemKind.COLLECTION_FAILED, rip_source)
+        enabled_networks = _enabled_rip_networks(rip_command.text_output)
+        if enabled_networks is None:
+            return cls.unavailable(FactProblemKind.MALFORMED, rip_source)
+        if not enabled_networks:
+            return cls(FeatureState.DISABLED).available(rip_source)
+
+        if interface_command.errors:
+            return cls.unavailable(FactProblemKind.COLLECTION_FAILED, interface_source)
+        interfaces = interface_command.json_output.get("interfaces")
+        if not isinstance(interfaces, Mapping):
+            return cls.unavailable(FactProblemKind.MISSING if interfaces is None else FactProblemKind.MALFORMED, interface_source)
+        selected = _rip_selects_interface(_management_interface_names(interfaces), enabled_networks, interfaces)
+        if isinstance(selected, FactProblemKind):
+            return cls.unavailable(selected, interface_source)
+        return cls(FeatureState.ENABLED if selected else FeatureState.DISABLED).available(interface_source)
+
+
+@dataclass(frozen=True, slots=True)
+class RipDhcpManagementInterfaceFact(ConfigurationFact, CommandsFactDefinition["RipDhcpManagementInterfaceFact"]):
+    """Presence of a DHCP-addressed management interface in a VRF with an enabled RIP network.
+
+    Management interfaces are the interfaces whose names start with ``Management``. The current lease is not considered: a later lease can
+    place the interface address within a RIP network without any configuration change.
+    """
+
+    feature: ClassVar[FeatureRef] = SubFeature(FeatureName.RIP, "DHCP management interface")
+    key: ClassVar[str] = "configuration.rip.dhcp_management_interface"
+    label: ClassVar[str] = "RIP DHCP management interface configuration state"
+    commands: ClassVar[tuple[AntaCommand, ...]] = (RIP_CONFIG_COMMAND, IP_INTERFACE_COMMAND)
+
+    @classmethod
+    # pylint: disable-next=too-many-return-statements
+    def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[RipDhcpManagementInterfaceFact]:  # noqa: PLR0911
+        """Correlate DHCP addressing of management interfaces with enabled RIP instances in the interface VRF."""
+        rip_command, interface_command = commands
+        rip_source = FactSource(rip_command.command, FactSourceKind.COMMAND)
+        interface_source = FactSource(interface_command.command, FactSourceKind.COMMAND)
+
+        if rip_command.errors:
+            return cls.unavailable(FactProblemKind.COLLECTION_FAILED, rip_source)
+        enabled_networks = _enabled_rip_networks(rip_command.text_output)
+        if enabled_networks is None:
+            return cls.unavailable(FactProblemKind.MALFORMED, rip_source)
+        if not enabled_networks:
+            return cls(ConfigurationState.NOT_CONFIGURED).available(rip_source)
+
+        if interface_command.errors:
+            return cls.unavailable(FactProblemKind.COLLECTION_FAILED, interface_source)
+        interfaces = interface_command.json_output.get("interfaces")
+        if not isinstance(interfaces, Mapping):
+            return cls.unavailable(FactProblemKind.MISSING if interfaces is None else FactProblemKind.MALFORMED, interface_source)
+        configured = _rip_vrf_has_dhcp_interface(_management_interface_names(interfaces), enabled_networks, interfaces)
+        if isinstance(configured, FactProblemKind):
+            return cls.unavailable(configured, interface_source)
+        return cls(ConfigurationState.CONFIGURED if configured else ConfigurationState.NOT_CONFIGURED).available(interface_source)

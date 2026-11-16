@@ -3,8 +3,6 @@
 # that can be found in the LICENSE file.
 """See https://docs.pytest.org/en/stable/reference/fixtures.html#conftest-py-sharing-fixtures-across-multiple-files."""
 
-from typing import Any
-
 import pytest
 
 

@@ -10,16 +10,13 @@ from dataclasses import dataclass, field, fields
 from enum import Enum
 from inspect import isabstract
 from types import MappingProxyType
-from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeAlias, TypeVar, cast
-
-from typing_extensions import dataclass_transform
+from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeAlias, TypeVar, cast, dataclass_transform
 
 from anta._eos.version import EOSVersion, parse_eos_version
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
-
-    from typing_extensions import Self
+    from typing import Self
 
     from anta._advisory.base import _AntaAdvisoryTest
     from anta._advisory.eos_versions import VersionRule
@@ -344,30 +341,41 @@ class FeatureName(str, Enum):
 
     AAA = "AAA"
     ACL = "ACL"
-    AGENT_TRACING = "agent tracing"
+    AUTO_CERTIFICATE = "automatic certificate management"
     BFD = "BFD"
+    BGP = "BGP"
+    BGP_LS = "BGP-LS"
     DHCP = "DHCP"
     DOT1X = "802.1X"
+    EAPI = "eAPI"
     GNMI = "gNMI"
     GNPSI = "gNPSI"
     GNSI = "gNSI"
     GRIBI = "gRIBI"
+    HTTP_SERVER = "management HTTP server"
+    IPSEC = "IPsec"
     ISIS = "IS-IS"
+    INTERFACE = "interface"
     MLAG = "MLAG"
     NETCONF = "NETCONF"
     NEXT_HOP_REDIRECTION = "next-hop redirection"
     OSPFV2 = "OSPFv2"
     OSPFV3 = "OSPFv3"
     P4_RUNTIME = "P4Runtime"
+    PATHFINDER = "Pathfinder"
     PIM = "PIM"
+    PTP = "PTP"
     RADIUS_PROXY = "RADIUS proxy"
     RESTCONF = "RESTCONF"
+    RIP = "RIP"
+    ROUTING_MODEL = "routing protocol model"
+    RPKI = "RPKI"
+    SBFD = "S-BFD"
     SECURE_BOOT = "Secure Boot"
     SNMP = "SNMP"
     SNMPV3 = "SNMPv3"
     SSH = "SSH"
     TERMINATTR = "TerminAttr"
-    TRACE = "OpenConfig tracing"
     URPF = "uRPF"
     VRRP = "VRRP"
 

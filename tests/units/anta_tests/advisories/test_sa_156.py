@@ -26,7 +26,10 @@ from anta._advisory.remediation import ApplyConfiguration, FixedRelease, Remedia
 from anta._eos.version import EOSVersion
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_156 import ADVISORY, AFFECTED_VERSION_MATRIX, SA156, _assess_sa156
-from tests.units.anta_tests import build_eos_version, test
+from tests.units.anta_tests import (
+    build_eos_version,
+    test,  # noqa: F401 - Pytest collects this imported test function.
+)
 from tests.units.anta_tests.advisories import build_expected_advisory_result
 from tests.units.anta_tests.advisories.fact_builders import SOURCE, assert_version_statuses, eos_version_fact
 

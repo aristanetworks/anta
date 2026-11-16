@@ -12,15 +12,18 @@ from functools import partial
 from typing import TYPE_CHECKING
 
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
+from anta._advisory.facts.bfd import BfdAuthenticationFact
 from anta._advisory.facts.eos import EosVersionFact
 from anta._advisory.facts.models import AvailableFact, Fact, FactProblemKind, FactSource, FactSourceKind, FeatureState
-from anta._advisory.facts.routing import BfdAuthenticationFact
 from anta._advisory.findings.models import AffectedResult, ErrorResult, NotAffectedResult
 from anta._advisory.remediation import FixedRelease, software_version_plan
 from anta._eos.version import EOSVersion, parse_eos_version
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_154 import ADVISORY, AFFECTED_VERSION_MATRIX, SA154, _assess_sa154
-from tests.units.anta_tests import build_eos_version, test
+from tests.units.anta_tests import (
+    build_eos_version,
+    test,  # noqa: F401 - Pytest collects this imported test function.
+)
 from tests.units.anta_tests.advisories import build_expected_advisory_result
 
 if TYPE_CHECKING:
@@ -66,7 +69,7 @@ _DATA: AntaUnitTestData = {
     },
     (SA154, "error-malformed-bfd"): {
         "version": build_eos_version("4.36.1F"),
-        "eos_data": eos_data(admin_down=None),
+        "eos_data": eos_data(admin_down=None, global_config="router bfd\n   authentication mode md5 shared-secret profile test"),
         "expected": expected(
             AntaTestStatus.ERROR,
             "The test could not determine the BFD authentication state because the 'show bfd peers summary' output is incomplete",

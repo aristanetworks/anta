@@ -7,7 +7,7 @@
 # pyright: reportAttributeAccessIssue=false
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from ipaddress import IPv4Address
 from typing import TYPE_CHECKING, Any, ClassVar, TypeVar
 
@@ -282,9 +282,7 @@ class VerifyBFDPeersHealth(AntaTest):
                     # Check if the last down is within the threshold
                     if self.inputs.down_threshold is not None:
                         last_down = peer_stats["lastDown"]
-                        hours_difference = (
-                            datetime.fromtimestamp(current_timestamp, tz=timezone.utc) - datetime.fromtimestamp(last_down, tz=timezone.utc)
-                        ).total_seconds() / 3600
+                        hours_difference = (datetime.fromtimestamp(current_timestamp, tz=UTC) - datetime.fromtimestamp(last_down, tz=UTC)).total_seconds() / 3600
                         if hours_difference < self.inputs.down_threshold:
                             self.result.is_failure(
                                 f"{identifier} - Session failure detected within the expected uptime threshold ({round(hours_difference)} hours ago)"

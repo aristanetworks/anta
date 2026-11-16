@@ -60,7 +60,11 @@ from anta.tests.advisories.sa_142 import (
     _path_applies,
     _version_relation,
 )
-from tests.units.anta_tests import build_eos_platform, build_eos_version, test
+from tests.units.anta_tests import (
+    build_eos_platform,
+    build_eos_version,
+    test,  # noqa: F401 - Pytest collects this imported test function.
+)
 from tests.units.anta_tests.advisories import OfflineAntaDevice, build_expected_advisory_result
 
 MTU_DROP_COMMAND = "ip software forwarding mtu exceed action drop"
@@ -605,10 +609,10 @@ class TestSA142PlatformScope(unittest.TestCase):
                 assert status is AffectedStatus.AFFECTED
                 assert not conservative
 
-    def test_published_ccs_scope_excludes_710_and_720xdm(self) -> None:
+    def test_published_ccs_scope_excludes_710(self) -> None:
         """Follow the published affected-product list instead of expanding internal Bug Alert predicates."""
         version = parse_eos_version("4.35.4M").unwrap()
-        for model in ("CCS-710P-16P", "CCS-710XP-12TH-2S", "CCS-710HXP-20TNH-4S", "CCS-720XDM-48T-6SY"):
+        for model in ("CCS-710P-16P", "CCS-710XP-12TH-2S", "CCS-710HXP-20TNH-4S"):
             for path in (TRAFFIC_POLICY_PATH, SEGMENT_SECURITY_PATH):
                 with self.subTest(model=model, path=path.name):
                     assert _path_applies(path, version, platform_identity(model))[0] is AffectedStatus.NOT_AFFECTED
@@ -616,7 +620,7 @@ class TestSA142PlatformScope(unittest.TestCase):
     def test_720d_related_series_match_the_published_aggregate_scope(self) -> None:
         """Keep specific 720D skuSeries values within the published 720D advisory family."""
         version = parse_eos_version("4.35.4M").unwrap()
-        for model in ("CCS-720DF-48Y", "CCS-720DP-24S", "CCS-720DT-24S"):
+        for model in ("CCS-720DF-48Y", "CCS-720DP-24S", "CCS-720DT-24S", "CCS-720XDM-48ZC2-F"):
             for path in (TRAFFIC_POLICY_PATH, SEGMENT_SECURITY_PATH):
                 with self.subTest(model=model, path=path.name):
                     status, conservative, _ = _path_applies(path, version, platform_identity(model))

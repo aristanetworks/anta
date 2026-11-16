@@ -19,13 +19,8 @@ from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.result_manager.models import AntaTestStatus
 
 if TYPE_CHECKING:
-    import sys
     from collections.abc import Callable
-
-    if sys.version_info >= (3, 11):
-        from typing import Self
-    else:
-        from typing_extensions import Self
+    from typing import Self
 
     from anta.result_manager.models import AtomicTestResult
 

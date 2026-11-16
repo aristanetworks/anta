@@ -10,7 +10,7 @@ import os
 import pstats
 import re
 from collections.abc import Callable, Coroutine, Sequence
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from functools import cache, wraps
 from time import perf_counter
 from typing import TYPE_CHECKING, Any, ParamSpec, TypeVar
@@ -20,14 +20,9 @@ from anta.custom_types import REGEXP_PATH_MARKERS
 from anta.logger import format_td
 
 if TYPE_CHECKING:
-    import sys
     from logging import Logger
     from types import TracebackType
-
-    if sys.version_info >= (3, 11):
-        from typing import Self
-    else:
-        from typing_extensions import Self
+    from typing import Self
 
 P = ParamSpec("P")
 T = TypeVar("T")
@@ -585,8 +580,8 @@ def time_ago(timestamp: float) -> str:
     str
         A string describing the elapsed time.
     """
-    now = datetime.now(timezone.utc)
-    then = datetime.fromtimestamp(timestamp, tz=timezone.utc)
+    now = datetime.now(UTC)
+    then = datetime.fromtimestamp(timestamp, tz=UTC)
     delta = now - then
 
     if delta.days > 0:

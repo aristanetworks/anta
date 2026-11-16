@@ -26,7 +26,10 @@ from anta.tests.advisories.sa_140 import (
     SA140,
     _assess_sa140,
 )
-from tests.units.anta_tests import build_eos_version, test
+from tests.units.anta_tests import (
+    build_eos_version,
+    test,  # noqa: F401 - Pytest collects this imported test function.
+)
 from tests.units.anta_tests.advisories import OfflineAntaDevice, build_expected_advisory_result
 
 EXPECTED_REMEDIATION = software_version_plan(
@@ -119,6 +122,7 @@ class TestSA140VersionMatrix(unittest.TestCase):
     """Validate every affected endpoint and fixed-release boundary."""
 
     def test_version_boundaries(self) -> None:
+        """Validate affected endpoints, fixed releases, and distant patches in unfixed trains."""
         cases = (
             ("4.36.0F", AffectedStatus.NOT_AFFECTED),
             ("4.35.1F", AffectedStatus.AFFECTED),
@@ -131,9 +135,9 @@ class TestSA140VersionMatrix(unittest.TestCase):
             ("4.32.9M", AffectedStatus.AFFECTED),
             ("4.32.10M", AffectedStatus.NOT_AFFECTED),
             ("4.31.10M", AffectedStatus.AFFECTED),
-            ("4.31.11M", AffectedStatus.NOT_AFFECTED),
+            ("4.31.99M", AffectedStatus.AFFECTED),
             ("4.30.10M", AffectedStatus.AFFECTED),
-            ("4.30.11M", AffectedStatus.NOT_AFFECTED),
+            ("4.30.99M", AffectedStatus.AFFECTED),
             ("4.29.99M", AffectedStatus.NOT_AFFECTED),
         )
         for version, expected in cases:

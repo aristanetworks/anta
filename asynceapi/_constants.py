@@ -5,21 +5,14 @@
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 
 EAPI_CONNECTIVITY_TIMEOUT = 5
 """Seconds to wait while establishing connectivity during refresh and session login."""
 
 
-class EapiCommandFormat(str, Enum):
-    """Enum for the eAPI command format.
-
-    NOTE: This could be updated to StrEnum when Python 3.11 is the minimum supported version in ANTA.
-    """
+class EapiCommandFormat(StrEnum):
+    """Enum for the eAPI command format."""
 
     JSON = "json"
     TEXT = "text"
-
-    def __str__(self) -> str:
-        """Override the __str__ method to return the value of the Enum, mimicking the behavior of StrEnum."""
-        return self.value

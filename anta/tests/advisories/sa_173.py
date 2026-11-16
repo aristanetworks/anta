@@ -36,8 +36,7 @@ AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
     VersionRule(major=4, minor=35, patch_lte=4),
     VersionRule(major=4, minor=34, patch_lte=6),
     VersionRule(major=4, minor=33, patch_lte=8),
-    VersionRule(major=4, minor=32, patch_lte=10),
-    VersionRule(major=4, minor_lt=32),
+    VersionRule(major=4, minor_lt=33),
 )
 FIXED_RELEASES = (
     FixedRelease(EOSVersion(4, 36, 1, suffix="F")),

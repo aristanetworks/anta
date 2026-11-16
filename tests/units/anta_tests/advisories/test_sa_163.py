@@ -20,17 +20,18 @@ from anta._advisory.facts.models import (
     FactProblemKind,
     FactSource,
     FactSourceKind,
-    FeatureName,
     FeatureState,
     MitigationState,
-    SubFeature,
 )
 from anta._advisory.findings.models import AffectedResult, ErrorResult, MitigatedResult, NotAffectedResult
 from anta._advisory.remediation import FixedRelease, software_version_plan
 from anta._eos.version import EOSVersion, parse_eos_version
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_163 import ADVISORY, AFFECTED_VERSION_MATRIX, SA163, _assess_sa163
-from tests.units.anta_tests import build_eos_version, test
+from tests.units.anta_tests import (
+    build_eos_version,
+    test,  # noqa: F401 - Pytest collects this imported test function.
+)
 from tests.units.anta_tests.advisories import build_expected_advisory_result
 
 if TYPE_CHECKING:

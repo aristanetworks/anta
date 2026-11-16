@@ -45,7 +45,7 @@ repos:
           - "<!--|  ~|  -->"
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: f368fb366ff7f2f808dd324b83a6d32267799e19  # frozen: v0.17.2
+    rev: c0f278f1254ccc8fb09676bcdb8d847e7db493e5  # frozen: v0.17.4
     hooks:
       - id: ruff
         name: Run Ruff linter
@@ -67,15 +67,15 @@ repos:
           - --rcfile=pyproject.toml # Link to config file
         additional_dependencies:
           - anta[cli]
-          - types-PyYAML==6.0.12.20260906
-          - types-requests==2.33.0.20261006
+          - types-PyYAML==6.0.12.20261103
+          - types-requests==2.33.0.20261030
           - types-pyOpenSSL==24.1.0.20240722
           - pylint_pydantic==0.4.1
-          - pytest==9.1.1
+          - pytest==9.2.0
           - pytest-codspeed!=4.1.0
           - respx==0.23.1
-          - pydantic-settings==2.16.1
-          - zensical==0.0.72
+          - pydantic-settings==2.16.2
+          - zensical==0.1.0
 
   - repo: https://github.com/codespell-project/codespell
     rev: 57b21406f092110c18776e39b0bda50d37c945c8  # frozen: v2.4.3
@@ -96,14 +96,14 @@ repos:
         language: python
         additional_dependencies:
           - anta[cli]
-          - pytest>=9.1.1
+          - pytest>=9.2.0
           - respx==0.23.1
           - pytest-httpx>=0.36.2
-          - pytest-codspeed>=5.0.3
-          - types-PyYAML==6.0.12.20260906
-          - types-requests==2.33.0.20261006
+          - pytest-codspeed>=5.0.4
+          - types-PyYAML==6.0.12.20261103
+          - types-requests==2.33.0.20261030
           - types-pyOpenSSL==24.1.0.20240722
-          - zensical==0.0.72
+          - zensical==0.1.0
         files: ^(anta|tests|asynceapi|tools/zensical_extensions)/
 
   - repo: https://github.com/DavidAnson/markdownlint-cli2
@@ -116,7 +116,7 @@ repos:
           - .github/.markdownlint-cli2.yaml
 
   - repo: https://github.com/zizmorcore/zizmor-pre-commit
-    rev: c92afdf2c6ca336aaa8f39e2bd8d48f62dbd8e1f  # frozen: v1.31.1
+    rev: 06a39750ec31860bb44f2acf67182c40016cd1e7  # frozen: v1.32.0
     hooks:
       - id: zizmor
         name: Check GitHub Actions with zizmor
@@ -137,7 +137,7 @@ repos:
         language: python
         additional_dependencies:
           - anta[cli]
-          - pydantic-settings==2.16.1
+          - pydantic-settings==2.16.2
       - id: doc-snippets
         name: Generate doc snippets
         entry: >-
@@ -151,4 +151,4 @@ repos:
           - anta[cli]
           # Keep generated CLI snippets stable with Click's optional subcommand rendering.
           - click~=8.5.0
-          - pydantic-settings==2.16.1
+          - pydantic-settings==2.16.2

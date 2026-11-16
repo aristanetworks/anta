@@ -10,7 +10,10 @@ from typing import TypeAlias
 from anta.models import AntaTest
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.routing.ospf import VerifyOSPFMaxLSA, VerifyOSPFNeighborCount, VerifyOSPFNeighborState, VerifyOSPFSpecificNeighbors
-from tests.units.anta_tests import AntaUnitTest, test
+from tests.units.anta_tests import (
+    AntaUnitTest,
+    test,  # noqa: F401 - Pytest collects this imported test function.
+)
 
 AntaUnitTestData: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
 

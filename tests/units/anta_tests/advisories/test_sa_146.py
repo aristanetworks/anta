@@ -51,7 +51,10 @@ from anta.tests.advisories.sa_146 import (
     _is_affected_terminattr_version,
     _terminattr_version_assessment,
 )
-from tests.units.anta_tests import build_eos_version, test
+from tests.units.anta_tests import (
+    build_eos_version,
+    test,  # noqa: F401 - Pytest collects this imported test function.
+)
 from tests.units.anta_tests.advisories import OfflineAntaDevice, build_expected_advisory_result
 
 if TYPE_CHECKING:

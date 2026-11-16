@@ -23,7 +23,11 @@ from anta._eos.platform import PlatformFamily
 from anta._eos.version import EOSVersion, parse_eos_version
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_177 import ADVISORY, AFFECTED_PLATFORM_FAMILIES, AFFECTED_VERSION_MATRIX, SA177, _assess_sa177
-from tests.units.anta_tests import build_eos_platform, build_eos_version, test
+from tests.units.anta_tests import (
+    build_eos_platform,
+    build_eos_version,
+    test,  # noqa: F401 - Pytest collects this imported test function.
+)
 from tests.units.anta_tests.advisories import build_expected_advisory_result
 
 if TYPE_CHECKING:

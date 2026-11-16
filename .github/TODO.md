@@ -13,38 +13,12 @@ permissions while reacting to pull request activity. This is dangerous if a work
 checks out untrusted PR code, runs PR-controlled scripts, or interpolates PR metadata
 directly into shell commands.
 
-The current ignores are intentional because these workflows operate on PR metadata
-and need write permissions that `pull_request` workflows may not receive for forked
-pull requests.
+Conflict checking and automatic author assignment have been removed. PR title
+validation runs on `pull_request` with read-only permissions.
 
-### `.github/workflows/pr-conflicts.yml`
-
-Current reason to keep `pull_request_target`:
-
-- The workflow labels PRs and posts conflict-resolution comments.
-- It does not check out or execute PR code.
-- It needs `issues: write` and `pull-requests: write` to update PR metadata.
-
-Consider:
-
-- Keep as-is with the documented zizmor ignore.
-- Replacing with `pull_request` would be safer, but may not be able to label or
-  comment on forked PRs reliably.
-
-### `.github/workflows/pr-triage.yml`
-
-Current reason to keep `pull_request_target`:
-
-- The author-assignment job writes PR metadata.
-- It does not check out or execute PR code.
-
-Consider:
-
-- Split this workflow:
-  - Keep author assignment on `pull_request_target`.
-  - Move semantic PR title validation to a separate `pull_request` workflow with
-    read-only permissions.
-- This would reduce the amount of logic running under `pull_request_target`.
+The remaining ignore is intentional because release-note labeling operates on PR
+metadata and needs write permissions that `pull_request` workflows may not receive
+for forked pull requests.
 
 ### `.github/workflows/pull-request-rn-labeler.yml`
 

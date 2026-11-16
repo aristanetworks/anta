@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 import subprocess
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from functools import cache
 from pathlib import Path
 from shutil import which
@@ -187,5 +187,5 @@ def _strip_license_comment(lines: list[str]) -> list[str]:
 
 def _format_date(timestamp: str) -> str:
     """Return a localized-style date without platform-specific strftime flags."""
-    date = datetime.fromtimestamp(int(timestamp), tz=timezone.utc)
+    date = datetime.fromtimestamp(int(timestamp), tz=UTC)
     return f"{date:%B} {date.day}, {date:%Y}"

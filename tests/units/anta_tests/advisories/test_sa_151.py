@@ -24,12 +24,15 @@ from anta._advisory.facts.models import (
 from anta._advisory.facts.platform import PlatformIdentityFact
 from anta._advisory.findings.models import AffectedResult, ErrorResult, NotAffectedResult
 from anta._advisory.remediation import FixedRelease, software_version_plan
-from anta._eos.platform import PlatformIdentity
 from anta._eos.version import EOSVersion, parse_eos_version
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_151 import ADVISORY, AFFECTED_VERSION_MATRIX, SA151, _assess_sa151
 from tests.units._advisory.facts.test_acl import EMPTY_ACL_OUTPUT, SHARED_ACL_OUTPUT
-from tests.units.anta_tests import build_eos_platform, build_eos_version, test
+from tests.units.anta_tests import (
+    build_eos_platform,
+    build_eos_version,
+    test,  # noqa: F401 - Pytest collects this imported test function.
+)
 from tests.units.anta_tests.advisories import build_expected_advisory_result
 
 if TYPE_CHECKING:
@@ -113,7 +116,7 @@ class TestSA151Assessment(unittest.TestCase):
     """Validate pure assessment branches."""
 
     def test_version_boundaries(self) -> None:
-        """Validate every affected and adjacent release boundary."""
+        """Validate affected endpoints, fixed releases, and distant patches in unfixed trains."""
         for version, state in (
             ("4.36.0F", AffectedStatus.AFFECTED),
             ("4.36.1F", AffectedStatus.NOT_AFFECTED),
@@ -124,11 +127,11 @@ class TestSA151Assessment(unittest.TestCase):
             ("4.33.8M", AffectedStatus.AFFECTED),
             ("4.33.9M", AffectedStatus.NOT_AFFECTED),
             ("4.32.11M", AffectedStatus.AFFECTED),
-            ("4.32.12M", AffectedStatus.NOT_AFFECTED),
+            ("4.32.99M", AffectedStatus.AFFECTED),
             ("4.31.0F", AffectedStatus.NOT_AFFECTED),
             ("4.31.1F", AffectedStatus.AFFECTED),
             ("4.31.10M", AffectedStatus.AFFECTED),
-            ("4.31.11M", AffectedStatus.NOT_AFFECTED),
+            ("4.31.99M", AffectedStatus.AFFECTED),
             ("4.30.99M", AffectedStatus.NOT_AFFECTED),
         ):
             parsed = parse_eos_version(version).unwrap()

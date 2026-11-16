@@ -28,7 +28,10 @@ from anta._advisory.remediation import FixedRelease, RemediationPlan, software_v
 from anta._eos.version import EOSVersion, parse_eos_version
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_173 import ADVISORY, AFFECTED_VERSION_MATRIX, HOTFIX_RELEASES, SA173, _assess_sa173
-from tests.units.anta_tests import build_eos_version, test
+from tests.units.anta_tests import (
+    build_eos_version,
+    test,  # noqa: F401 - Pytest collects this imported test function.
+)
 from tests.units.anta_tests.advisories import build_expected_advisory_result
 
 if TYPE_CHECKING:
@@ -79,6 +82,15 @@ def expected_result(status: ProductionStatus, message: str, remediation: Remedia
 
 
 _DATA: AntaUnitTestData = {
+    (SA173, "failure-432-patch-above-10"): {
+        "version": build_eos_version("4.32.11M"),
+        "eos_data": eos_data(EMPTY_OSPFV3, LEGACY_OSPFV3, UNAUTHENTICATED_CONFIG),
+        "expected": expected_result(
+            AntaTestStatus.FAILURE,
+            "The device is affected because EOS version '4.32.11M' is affected and the OSPFv3 legacy IPv6 routing process is enabled",
+            expected_remediation("4.32.11M"),
+        ),
+    },
     (SA173, "failure-configured-without-authentication"): {
         "version": build_eos_version("4.35.4M"),
         "eos_data": eos_data(CURRENT_OSPFV3, EMPTY_OSPFV3, UNAUTHENTICATED_CONFIG),
@@ -251,7 +263,9 @@ class TestSA173VersionMatrix(unittest.TestCase):
             ("4.33.8M", AffectedStatus.AFFECTED),
             ("4.33.9M", AffectedStatus.NOT_AFFECTED),
             ("4.32.10M", AffectedStatus.AFFECTED),
-            ("4.32.11M", AffectedStatus.NOT_AFFECTED),
+            ("4.32.11M", AffectedStatus.AFFECTED),
+            ("4.32.12M", AffectedStatus.AFFECTED),
+            ("4.32.99M", AffectedStatus.AFFECTED),
             ("4.31.99M", AffectedStatus.AFFECTED),
             ("4.1.0F", AffectedStatus.AFFECTED),
         ):

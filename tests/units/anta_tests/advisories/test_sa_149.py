@@ -9,8 +9,9 @@ from functools import partial
 from typing import TYPE_CHECKING
 
 from anta._advisory.eos_versions import AffectedStatus
+from anta._advisory.facts.dot1x import Dot1xDynamicAuthorizationFact
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.management import Dot1xDynamicAuthorizationFact, RadiusProxyDynamicAuthorizationFact
+from anta._advisory.facts.management import RadiusProxyDynamicAuthorizationFact
 from anta._advisory.facts.models import AvailableFact, FactProblemKind, FeatureState
 from anta._advisory.facts.platform import PlatformIdentityFact
 from anta._advisory.findings.models import AffectedResult, ErrorResult, NotAffectedResult
@@ -18,7 +19,11 @@ from anta._advisory.remediation import FixedRelease, software_version_plan
 from anta._eos.version import EOSVersion
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_149 import ADVISORY, AFFECTED_VERSION_MATRIX, SA149, _assess_sa149
-from tests.units.anta_tests import build_eos_platform, build_eos_version, test
+from tests.units.anta_tests import (
+    build_eos_platform,
+    build_eos_version,
+    test,  # noqa: F401 - Pytest collects this imported test function.
+)
 from tests.units.anta_tests.advisories import build_expected_advisory_result
 from tests.units.anta_tests.advisories.fact_builders import SOURCE, assert_version_statuses, eos_version_fact
 
