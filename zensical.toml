@@ -181,6 +181,46 @@ default = ["stable"]
 [project.plugins.exclude]
 glob = ["scripts/**"]
 
+# Export rendered content, including snippets and generated API documentation.
+# Relative export links stay in the selected Mike version even though the
+# HTML canonical URL points to stable.
+[project.plugins.llmstxt]
+base_url = "."
+markdown_description = """
+ANTA is a Python framework and CLI for automating Arista EOS network validation.
+These pages cover installation, inventories and test catalogs, CLI workflows,
+built-in tests, security advisories, and the Python API. Use documentation from
+the same version as the installed ANTA package.
+"""
+
+[project.plugins.llmstxt.sections]
+"Start Here" = [
+  "README.md",
+  "getting-started.md",
+  "requirements-and-installation.md",
+  "usage-inventory-catalog.md",
+  "troubleshooting.md",
+  "faq.md",
+]
+"CLI" = ["cli/overview.md", "cli/*.md"]
+"Reports" = ["reports/index.md", "reports/*.md"]
+"Tests and Input Types" = ["api/tests.md", "api/tests/*.md"]
+"Security Advisories" = ["security-advisory/usage.md", "security-advisory/*.md"]
+"Advanced Usage" = ["advanced_usages/*.md"]
+"API Reference" = [
+  "api/class-diagram.md",
+  "api/device.md",
+  "api/inventory.md",
+  "api/catalog.md",
+  "api/commands.md",
+  "api/tests-documentation.md",
+  "api/result.md",
+  "api/reporter/*.md",
+  "api/runner.md",
+  "api/settings.md",
+]
+"Contributing" = ["contribution.md"]
+
 [project.plugins.mkdocstrings]
 default_handler = "python"
 custom_templates = "docs/templates"

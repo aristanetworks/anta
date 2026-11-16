@@ -6,7 +6,7 @@
 
 # Zensical documentation status
 
-**Baseline:** Zensical `0.0.71`; based on `upstream/main` at `3cfdfe74`. **Updated:** October 29, 2026.
+**Baseline:** Zensical `0.1.0`; based on `upstream/main` at `f7ee7329`. **Updated:** November 16, 2026.
 
 Keep this as a short current-state tracker: what is in place, what was deliberately left out, and outstanding work. Versions refer to ANTA's implementation or verification, not the upstream feature's introduction. Preserve the reason, the condition for reconsidering it, and a PR or compact finding where needed to understand a decision later; a chronological experiment log is unnecessary.
 
@@ -23,8 +23,8 @@ Keep this as a short current-state tracker: what is in place, what was deliberat
 | Python >=3.11 for documentation tooling, independent of library support | 0.0.68 — #1809 | Match Zensical's requirement without changing ANTA's supported Python versions. Keep the doc group and both hook pins aligned. |
 | Authored API object links through autorefs, with centralized MD052 labels | Shipped with 0.0.69 — [#1828](https://github.com/aristanetworks/anta/pull/1828); first validated on 0.0.68 | Resolve object destinations from the API inventory; retain ordinary overview-page links. |
 | Live rebuilds for included snippets and Mermaid | 0.0.69 — #1828 | Explicit README/examples watch paths fix external-source rebuilds. All five edit/restore probes passed. |
-| Markdown export investigation completed | Retested on 0.0.70 | The Python-library guide has 37 object links in HTML and none in any exported variant. Selected exports miss 6 Markdown destinations; exporting all pages fixes those files. Image removal is an accepted, intentional text-export cleanup behavior. |
-| Keep custom API implementation listings marked as source content | Shipped in [#1853](https://github.com/aristanetworks/anta/pull/1853) on 0.0.71; export behavior verified on 0.0.70 | Retain the standard `mkdocstrings-source` class on both custom source wrappers. Export validation reduced BGP implementation listings from 33 to 0 while keeping all 24 examples/expected-results sections and unchanged HTML source content. This marker is retained independently of the decision to leave exports disabled. |
+| Native LLM documentation exports | Enabled on 0.1.0 | Generate `llms.txt` and per-page rendered Markdown for AI ingestion. Export all documentation pages so linked pages remain available. Relative export links preserve the selected Mike version despite `canonical_version = "stable"`. API object reference text survives but those links are still lost on 0.1.0; images and interactive diagrams are omitted. Recheck these limitations when upgrading. |
+| Keep custom API implementation listings marked as source content | Shipped in [#1853](https://github.com/aristanetworks/anta/pull/1853) on 0.0.71; export behavior verified on 0.0.70 | Retain the standard `mkdocstrings-source` class on both custom source wrappers. Export validation reduced BGP implementation listings from 33 to 0 while keeping all 24 examples/expected-results sections and unchanged HTML source content. Keep implementation listings out of the LLM exports while retaining API examples. |
 | Exclude build-only scripts from published output | 0.0.70 — [#1840](https://github.com/aristanetworks/anta/pull/1840), merged | Exclude only `scripts/**`; the output comparison retained all intended documentation and browser assets. |
 | Curated test/input-model API coverage and type links | BGP shipped in [#1853](https://github.com/aristanetworks/anta/pull/1853); remaining modules implemented here on 0.0.71 | Expanded the BGP audit across all 32 curated test modules. Module-qualified annotations restore 21 links in total shadowed by compatibility attributes; add the missing OSPF input-model section and descriptions for three omitted input fields. Preserve runtime schemas, compatibility aliases, and curated pages. |
 
@@ -35,7 +35,8 @@ These are decisions, not an implementation backlog. Revisit only for a concrete 
 | What | Current decision and short rationale |
 | --- | --- |
 | API backlinks | Disabled: repeated “Referenced by” blocks clutter long API pages. Revisit selective/collapsed backlinks if readers need reverse navigation. |
-| Markdown exports / Copy as Markdown | Parked, tested on 0.0.70. Purpose: provide rendered text, generated API content, and expanded snippets for AI ingestion or copying into a chat. Its practical benefit for ANTA is unproven: no concrete workflow needs it. API object links disappear; selected exports have missing destinations unless all pages are exported. Image removal is intentional and accepted. No further work is planned unless a concrete need emerges and relevant upstream improvements warrant another look. |
+| Copy as Markdown | Keep the page action disabled; LLM ingestion uses the native exports above. |
+| Combined LLM export | Leave `full_output` unset: relative links are scoped to each exported page and would resolve incorrectly in a combined file. Revisit when version-specific absolute export URLs can be configured independently of HTML canonical URLs. |
 | Wholesale API page generation | Keep curated pages: pairing, examples, filters, compatibility notes, and stable URLs matter more than removing boilerplate. |
 | GitHub alerts / Obsidian callouts | Keep standard admonitions: no shared-source requirement warrants another syntax. |
 | Replacing custom zoom, Git dates, or Mike helpers | Keep working implementations until native alternatives meet the same requirements. |
