@@ -138,7 +138,7 @@ dev = [
     { name = "pytest-httpx", specifier = ">=0.36.2" },
     { name = "respx", specifier = ">=0.23.1" },
     { name = "ruff", specifier = ">=0.17.4,<0.17.5" },
-    { name = "tox", specifier = ">=4.67.12,<5.0.0" },
+    { name = "tox", specifier = ">=4.67.13,<5.0.0" },
     { name = "types-pyopenssl" },
     { name = "types-pyyaml" },
     { name = "types-requests" },
@@ -176,7 +176,7 @@ test = [
     { name = "pytest-httpx", specifier = ">=0.36.2" },
     { name = "respx", specifier = ">=0.23.1" },
 ]
-tox = [{ name = "tox", specifier = ">=4.67.12,<5.0.0" }]
+tox = [{ name = "tox", specifier = ">=4.67.13,<5.0.0" }]
 
 [[package]]
 name = "anyio"
