@@ -478,6 +478,12 @@ Create an [AntaInventory][anta.inventory.AntaInventory] and add an
 
 Register new object identifiers under `MD052.ignored_labels` in `.github/.markdownlint-cli2.yaml` (lowercase with underscores removed, as reported by MD052). This central list allows autorefs syntax while keeping MD052 enabled for ordinary reference links; it does not validate Python objects. After adding or changing an object reference, run `zensical build --strict` and check that the link opens the intended object in the rendered site.
 
+### Documentation exports for LLMs
+
+Each documentation build generates `llms.txt` at the root of that documentation version (for example, `/main/llms.txt`), linking to rendered Markdown pages. These exports include expanded snippets and generated API documentation. Relative export links stay within the selected documentation version, independently of the HTML canonical URLs. Use the exports from the documentation version matching your installed ANTA package.
+
+The sections under `project.plugins.llmstxt` in `zensical.toml` select the exported pages. When adding a page outside the existing patterns, add it to the appropriate section. After running `zensical build --clean --strict`, check `site/llms.txt` and the affected Markdown output. Verify links, examples, and API content. Zensical 0.1.0 preserves API object reference text but drops those links; images and interactive diagrams are also omitted.
+
 ### Generated CLI snippets
 
 The CLI help blocks published in the documentation are generated from the current Click output. After changing CLI commands, options, or help text, refresh the snippets and verify that the generated files are committed:
