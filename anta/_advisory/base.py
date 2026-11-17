@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import sys
+from abc import ABC
 from typing import ClassVar
 
 from anta._advisory.facts.models import FactsBase
@@ -21,7 +22,7 @@ else:
 _PREVIEW_WARNING = "Security Advisory tests are in preview"
 
 
-class _AntaAdvisoryTest(AntaTest):
+class _AntaAdvisoryTest(AntaTest, ABC):
     """Base class for advisories driven by a nested typed ``Facts`` container.
 
     Every concrete advisory declares ``Facts`` with ``@facts_dataclass``. The

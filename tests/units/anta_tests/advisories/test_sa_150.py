@@ -11,8 +11,8 @@ import unittest
 from typing import TYPE_CHECKING, Literal, TypeAlias
 
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
+from anta._advisory.facts.dot1x import Dot1xControlledAuthenticatorFact
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.management import Dot1xControlledAuthenticatorFact
 from anta._advisory.facts.models import (
     AvailableFact,
     Fact,

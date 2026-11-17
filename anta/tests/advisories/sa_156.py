@@ -120,7 +120,7 @@ def _remediation(version: AvailableFact[EosVersionFact], relation: VersionRelati
     return RemediationPlan(Sequence((software_version_action(FIXED_RELEASES, current_version=version.value), VALIDATION_CONFIGURATION)))
 
 
-def _assess_sa156(  # noqa: C901, PLR0911  # pylint: disable=too-many-return-statements
+def _assess_sa156(  # noqa: C901, PLR0911
     version: Fact[EosVersionFact],
     relay: Fact[DhcpRelayActiveFact],
     validation: Fact[DhcpReplySourceValidationFact],

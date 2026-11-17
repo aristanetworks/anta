@@ -9,8 +9,9 @@ from functools import partial
 from typing import TYPE_CHECKING
 
 from anta._advisory.eos_versions import AffectedStatus
+from anta._advisory.facts.dot1x import Dot1xDynamicAuthorizationFact
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.management import Dot1xDynamicAuthorizationFact, RadiusProxyDynamicAuthorizationFact
+from anta._advisory.facts.management import RadiusProxyDynamicAuthorizationFact
 from anta._advisory.facts.models import AvailableFact, FactProblemKind, FeatureState
 from anta._advisory.facts.platform import PlatformIdentityFact
 from anta._advisory.findings.models import AffectedResult, ErrorResult, NotAffectedResult

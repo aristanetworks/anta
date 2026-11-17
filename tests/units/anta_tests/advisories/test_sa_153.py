@@ -8,37 +8,16 @@
 from __future__ import annotations
 
 import unittest
-from typing import TYPE_CHECKING, Any, Literal, TypeAlias
+from typing import TYPE_CHECKING, Literal, TypeAlias
 
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import (
-    Fact,
-    FactProblemKind,
-    FactSource,
-    FactSourceKind,
-    FeatureState,
-)
-from anta._advisory.facts.tracing import (
-    AaaPasswordTraceFact,
-    AaaTacacsKeyTraceFact,
-    ConfigAgentPrivateKeyTraceFact,
-)
-from anta._advisory.findings.models import AffectedResult, ErrorResult, NotAffectedResult, VersionRelation
-from anta._advisory.remediation import FixedRelease, OperationalAction, RemediationPlan, Sequence, software_version_action
+from anta._advisory.facts.models import Fact, FactProblemKind, FactSource, FactSourceKind
+from anta._advisory.findings.models import AffectedEosRelease, AffectedResult, ErrorResult, NotAffectedResult
+from anta._advisory.remediation import AllOf, ConditionalAction, FixedRelease, OperationalAction, RemediationPlan, software_version_action
 from anta._eos.version import EOSVersion, parse_eos_version
 from anta.result_manager.models import AntaTestStatus
-from anta.tests.advisories.sa_153 import (
-    ADVISORY,
-    AFFECTED_VERSION_MATRIX,
-    PASSWORD_ID,
-    PRIVATE_KEY_ID,
-    SA153,
-    TACACS_KEY_ID,
-    _assess_password,
-    _assess_private_key,
-    _assess_tacacs_key,
-)
+from anta.tests.advisories.sa_153 import ADVISORY, AFFECTED_VERSION_MATRIX, SA153, _assess_sa153_issue
 from tests.units.anta_tests import (
     build_eos_version,
     test,  # noqa: F401 - Pytest collects this imported test function.
@@ -49,30 +28,28 @@ if TYPE_CHECKING:
 
 SOURCE = FactSource("unit test", FactSourceKind.DEVICE_METADATA)
 ProductionStatus: TypeAlias = Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.ERROR]
-IssueExpectation: TypeAlias = tuple[ProductionStatus, str, RemediationPlan | None]
 EXPECTED_FIXED_RELEASES = (
     FixedRelease(EOSVersion(4, 36, 2, suffix="F")),
     FixedRelease(EOSVersion(4, 35, 5, suffix="M")),
     FixedRelease(EOSVersion(4, 34, 8, suffix="M")),
     FixedRelease(EOSVersion(4, 33, 10, suffix="M")),
 )
-EXPECTED_CLEAN_LOGS = OperationalAction("Clean current and rotated agent logs if the affected trace levels were enabled.")
+EXPECTED_CLEAN_LOGS = ConditionalAction(
+    "the affected trace levels were enabled",
+    OperationalAction("Clean up current and rotated agent logs as described in the advisory."),
+)
 EXPECTED_REMEDIATION = RemediationPlan(
-    Sequence((software_version_action(EXPECTED_FIXED_RELEASES, current_version=EOSVersion(4, 36, 1, suffix="F")), EXPECTED_CLEAN_LOGS))
+    AllOf((software_version_action(EXPECTED_FIXED_RELEASES, current_version=EOSVersion(4, 36, 1, suffix="F")), EXPECTED_CLEAN_LOGS))
 )
 
 
-def expected_result(status: ProductionStatus, issues: tuple[IssueExpectation, ...]) -> UnitTestResult:
-    """Build parent and per-vulnerability expectations for one production case."""
-    remediations: list[RemediationPlan] = []
-    for _, _, remediation in issues:
-        if remediation is not None and remediation not in remediations:
-            remediations.append(remediation)
+def expected_result(status: ProductionStatus, message: str, remediation: RemediationPlan | None) -> UnitTestResult:
+    """Build parent and per-vulnerability expectations when every issue shares one outcome."""
     atomic_results: list[AtomicResult] = []
-    for vulnerability, (issue_status, message, remediation) in zip(ADVISORY.vulnerabilities, issues, strict=True):
+    for vulnerability in ADVISORY.vulnerabilities:
         atomic_result: AtomicResult = {
             "description": f"Verify {vulnerability.id}.",
-            "result": issue_status,
+            "result": status,
             "messages": [message],
         }
         if remediation is not None:
@@ -80,110 +57,38 @@ def expected_result(status: ProductionStatus, issues: tuple[IssueExpectation, ..
         atomic_results.append(atomic_result)
     return {
         "result": status,
-        "messages": [message for _, message, _ in issues],
-        "remediations": remediations,
+        "messages": [message] * len(ADVISORY.vulnerabilities),
+        "remediations": [remediation] if remediation is not None else [],
         "atomic_results": atomic_results,
     }
 
 
-EOS_NOT_AFFECTED = "The device is not affected because EOS version '4.36.2F' is outside the affected releases"
-EOS_VERSION_ERROR = "The test could not determine the EOS version because it is missing from device metadata"
-PRIVATE_TRACE_AFFECTED = "The device is affected because EOS version '4.36.1F' is affected and the agent tracing risk for ConfigAgent private keys is enabled"
-PASSWORD_TRACE_AFFECTED = "The device is affected because EOS version '4.36.1F' is affected and the agent tracing risk for Aaa user passwords is enabled"
-TACACS_TRACE_AFFECTED = "The device is affected because EOS version '4.36.1F' is affected and the agent tracing risk for Aaa TACACS+ shared keys is enabled"
-PRIVATE_TRACE_NOT_AFFECTED = "The device is not affected because the agent tracing risk for ConfigAgent private keys is disabled"
-PASSWORD_TRACE_NOT_AFFECTED = "The device is not affected because the agent tracing risk for Aaa user passwords is disabled"
-TACACS_TRACE_NOT_AFFECTED = "The device is not affected because the agent tracing risk for Aaa TACACS+ shared keys is disabled"
-
-
-def eos_data(trace: str) -> list[dict[str, Any] | str]:
-    """Supply shared trace output to each fact-owned command wrapper."""
-    return [trace, trace, trace]
-
-
 _DATA: AntaUnitTestData = {
-    (SA153, "failure-all-risky-traces-enabled"): {
+    (SA153, "failure-affected-version"): {
         "version": build_eos_version("4.36.1F"),
-        "eos_data": eos_data("trace ConfigAgent setting MgmtSecuritySslCertKey/034\ntrace Aaa setting */0-7"),
+        "eos_data": [],
         "expected": expected_result(
             AntaTestStatus.FAILURE,
-            (
-                (AntaTestStatus.FAILURE, PRIVATE_TRACE_AFFECTED, EXPECTED_REMEDIATION),
-                (AntaTestStatus.FAILURE, PASSWORD_TRACE_AFFECTED, EXPECTED_REMEDIATION),
-                (AntaTestStatus.FAILURE, TACACS_TRACE_AFFECTED, EXPECTED_REMEDIATION),
-            ),
+            "The device is affected because EOS version '4.36.1F' is affected",
+            EXPECTED_REMEDIATION,
         ),
     },
-    (SA153, "success-all-risky-traces-disabled"): {
-        "version": build_eos_version("4.36.1F"),
-        "eos_data": eos_data(""),
-        "expected": expected_result(
-            AntaTestStatus.SUCCESS,
-            (
-                (AntaTestStatus.SUCCESS, PRIVATE_TRACE_NOT_AFFECTED, None),
-                (AntaTestStatus.SUCCESS, PASSWORD_TRACE_NOT_AFFECTED, None),
-                (AntaTestStatus.SUCCESS, TACACS_TRACE_NOT_AFFECTED, None),
-            ),
-        ),
-    },
-    (SA153, "failure-one-risky-trace-enabled"): {
-        "version": build_eos_version("4.36.1F"),
-        "eos_data": eos_data("trace Aaa setting Py*/0-5"),
-        "expected": expected_result(
-            AntaTestStatus.FAILURE,
-            (
-                (AntaTestStatus.SUCCESS, PRIVATE_TRACE_NOT_AFFECTED, None),
-                (AntaTestStatus.FAILURE, PASSWORD_TRACE_AFFECTED, EXPECTED_REMEDIATION),
-                (AntaTestStatus.SUCCESS, TACACS_TRACE_NOT_AFFECTED, None),
-            ),
-        ),
-    },
-    (SA153, "success-fixed-version-short-circuits-evidence"): {
+    (SA153, "success-fixed-version"): {
         "version": build_eos_version("4.36.2F"),
-        "eos_data": eos_data("trace ConfigAgent setting MgmtSecuritySslCertKey/034\ntrace Aaa setting */0-7"),
+        "eos_data": [],
         "expected": expected_result(
             AntaTestStatus.SUCCESS,
-            (
-                (AntaTestStatus.SUCCESS, EOS_NOT_AFFECTED, None),
-                (AntaTestStatus.SUCCESS, EOS_NOT_AFFECTED, None),
-                (AntaTestStatus.SUCCESS, EOS_NOT_AFFECTED, None),
-            ),
+            "The device is not affected because EOS version '4.36.2F' is outside the affected releases",
+            None,
         ),
     },
     (SA153, "error-missing-version"): {
         "version": None,
-        "eos_data": eos_data("trace ConfigAgent setting MgmtSecuritySslCertKey/034\ntrace Aaa setting */0-7"),
+        "eos_data": [],
         "expected": expected_result(
             AntaTestStatus.ERROR,
-            (
-                (AntaTestStatus.ERROR, EOS_VERSION_ERROR, None),
-                (AntaTestStatus.ERROR, EOS_VERSION_ERROR, None),
-                (AntaTestStatus.ERROR, EOS_VERSION_ERROR, None),
-            ),
-        ),
-    },
-    (SA153, "error-malformed-trace-state"): {
-        "version": build_eos_version("4.36.1F"),
-        "eos_data": eos_data("trace ConfigAgent enable MgmtSecuritySslCertKey levels 4\ntrace Aaa enable PyServer levels 4"),
-        "expected": expected_result(
-            AntaTestStatus.ERROR,
-            (
-                (
-                    AntaTestStatus.ERROR,
-                    "The test could not determine the ConfigAgent private-key trace state because the 'show running-config section trace' output is invalid",
-                    None,
-                ),
-                (
-                    AntaTestStatus.ERROR,
-                    "The test could not determine the Aaa user-password trace state because the 'show running-config section trace' output is invalid",
-                    None,
-                ),
-                (
-                    AntaTestStatus.ERROR,
-                    "The test could not determine the Aaa TACACS+ shared-key trace state because the 'show running-config section trace' output is invalid",
-                    None,
-                ),
-            ),
+            "The test could not determine the EOS version because it is missing from device metadata",
+            None,
         ),
     },
 }
@@ -223,46 +128,24 @@ class TestSA153VersionMatrix(unittest.TestCase):
 
 
 class TestSA153Assessment(unittest.TestCase):
-    """Validate shared semantics through every vulnerability wrapper."""
+    """Validate shared semantics for every vulnerability."""
 
-    def test_risky_trace_is_affected(self) -> None:
-        version = version_fact("4.36.1F")
-        findings = (
-            (_assess_private_key(version, ConfigAgentPrivateKeyTraceFact(FeatureState.ENABLED).available(SOURCE)), PRIVATE_KEY_ID),
-            (_assess_password(version, AaaPasswordTraceFact(FeatureState.ENABLED).available(SOURCE)), PASSWORD_ID),
-            (_assess_tacacs_key(version, AaaTacacsKeyTraceFact(FeatureState.ENABLED).available(SOURCE)), TACACS_KEY_ID),
-        )
-        for finding, vulnerability_id in findings:
-            with self.subTest(vulnerability_id=vulnerability_id):
+    def test_affected_release_is_affected(self) -> None:
+        for vulnerability in ADVISORY.vulnerabilities:
+            with self.subTest(vulnerability_id=vulnerability.id):
+                finding = _assess_sa153_issue(vulnerability.id, version_fact("4.36.1F"))
                 assert isinstance(finding, AffectedResult)
-                assert finding.vulnerability_id == vulnerability_id
-                assert finding.context[0].relation is VersionRelation.AFFECTED
+                assert finding.vulnerability_id == vulnerability.id
+                assert isinstance(finding.conditions[0], AffectedEosRelease)
+                assert finding.remediation == EXPECTED_REMEDIATION
 
-    def test_disabled_trace_is_not_affected(self) -> None:
-        missing_version = version_fact(None)
-        findings = (
-            (_assess_private_key(missing_version, ConfigAgentPrivateKeyTraceFact(FeatureState.DISABLED).available(SOURCE)), PRIVATE_KEY_ID),
-            (_assess_password(missing_version, AaaPasswordTraceFact(FeatureState.DISABLED).available(SOURCE)), PASSWORD_ID),
-            (_assess_tacacs_key(missing_version, AaaTacacsKeyTraceFact(FeatureState.DISABLED).available(SOURCE)), TACACS_KEY_ID),
-        )
-        for finding, vulnerability_id in findings:
-            with self.subTest(vulnerability_id=vulnerability_id):
-                assert isinstance(finding, NotAffectedResult)
-                assert finding.vulnerability_id == vulnerability_id
-
-    def test_fixed_version_short_circuits_evidence(self) -> None:
-        finding = _assess_password(
-            version_fact("4.36.2F"),
-            AaaPasswordTraceFact.unavailable(FactProblemKind.MALFORMED, SOURCE),
-        )
+    def test_fixed_release_is_not_affected(self) -> None:
+        finding = _assess_sa153_issue(ADVISORY.vulnerabilities[0].id, version_fact("4.36.2F"))
 
         assert isinstance(finding, NotAffectedResult)
 
-    def test_unavailable_required_trace_state_is_error(self) -> None:
-        finding = _assess_password(
-            version_fact("4.36.1F"),
-            AaaPasswordTraceFact.unavailable(FactProblemKind.MISSING, SOURCE),
-        )
+    def test_missing_version_is_error(self) -> None:
+        finding = _assess_sa153_issue(ADVISORY.vulnerabilities[0].id, version_fact(None))
 
         assert isinstance(finding, ErrorResult)
-        assert finding.problems[0].definition is AaaPasswordTraceFact
+        assert finding.problems[0].definition is EosVersionFact
