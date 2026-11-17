@@ -8,6 +8,7 @@
 from __future__ import annotations
 
 import unittest
+from datetime import date
 from typing import TYPE_CHECKING, Any, Literal, TypeAlias, cast
 from unittest.mock import AsyncMock
 
@@ -40,8 +41,8 @@ from anta._advisory.findings.models import (
     UnobservableKind,
     VulnerabilityResult,
 )
-from anta._advisory.remediation import FixedRelease, RemediationPlan, software_version_plan
-from anta._advisory.results import _get_atomic_vulnerability_ids
+from anta._advisory.remediation import FixedRelease, RemediationPlan, render_remediation_plain, software_version_plan
+from anta._advisory.results import _AdvisoryAtomicTestResult, _get_atomic_vulnerability_ids
 from anta._eos.version import EOSVersion, parse_eos_version
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.advisories.sa_147 import (
@@ -61,9 +62,23 @@ from tests.units.anta_tests.advisories import OfflineAntaDevice
 
 EXPECTED_CURRENT_EOS = EOSVersion(4, 35, 5, suffix="M")
 EXPECTED_PENDING_REMEDIATION = software_version_plan((), current_version=EXPECTED_CURRENT_EOS)
-EXPECTED_PENDING_REMEDIATION_4_35_6 = software_version_plan((), current_version=EOSVersion(4, 35, 6, suffix="M"))
+EXPECTED_COMMON_FIXED_RELEASES = (
+    FixedRelease(EOSVersion(4, 37, 0, suffix="F")),
+    FixedRelease(EOSVersion(4, 36, 3, suffix="M")),
+    FixedRelease(EOSVersion(4, 35, 7, suffix="M")),
+    FixedRelease(EOSVersion(4, 34, 9, suffix="M")),
+    FixedRelease(EOSVersion(4, 33, 11, suffix="M")),
+)
+EXPECTED_COMMON_REMEDIATION = software_version_plan(EXPECTED_COMMON_FIXED_RELEASES, current_version=EXPECTED_CURRENT_EOS)
+EXPECTED_COMMON_REMEDIATION_4_35_6 = software_version_plan(EXPECTED_COMMON_FIXED_RELEASES, current_version=EOSVersion(4, 35, 6, suffix="M"))
 EXPECTED_CVE_60002_REMEDIATION = software_version_plan(
-    (FixedRelease(EOSVersion(4, 35, 6, suffix="M")), FixedRelease(EOSVersion(4, 34, 8, suffix="M"))),
+    (
+        FixedRelease(EOSVersion(4, 37, 0, suffix="F")),
+        FixedRelease(EOSVersion(4, 36, 3, suffix="M")),
+        FixedRelease(EOSVersion(4, 35, 6, suffix="M")),
+        FixedRelease(EOSVersion(4, 34, 8, suffix="M")),
+        FixedRelease(EOSVersion(4, 33, 11, suffix="M")),
+    ),
     current_version=EXPECTED_CURRENT_EOS,
 )
 
@@ -174,9 +189,9 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.FAILURE,
             (
-                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, EXPECTED_PENDING_REMEDIATION),
-                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, EXPECTED_PENDING_REMEDIATION),
-                (SERVER_AFFECTED, AntaTestStatus.FAILURE, EXPECTED_PENDING_REMEDIATION),
+                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, EXPECTED_COMMON_REMEDIATION),
+                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, EXPECTED_COMMON_REMEDIATION),
+                (SERVER_AFFECTED, AntaTestStatus.FAILURE, EXPECTED_COMMON_REMEDIATION),
                 (CLIENT_AFFECTED, AntaTestStatus.FAILURE, EXPECTED_CVE_60002_REMEDIATION),
             ),
         ),
@@ -216,8 +231,8 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.FAILURE,
             (
-                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, EXPECTED_PENDING_REMEDIATION),
-                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, EXPECTED_PENDING_REMEDIATION),
+                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, EXPECTED_COMMON_REMEDIATION),
+                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, EXPECTED_COMMON_REMEDIATION),
                 (
                     "The device is not affected because the SSH feature is disabled.",
                     AntaTestStatus.SUCCESS,
@@ -233,9 +248,9 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.FAILURE,
             (
-                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, EXPECTED_PENDING_REMEDIATION),
-                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, EXPECTED_PENDING_REMEDIATION),
-                (SERVER_AFFECTED, AntaTestStatus.FAILURE, EXPECTED_PENDING_REMEDIATION),
+                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, EXPECTED_COMMON_REMEDIATION),
+                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, EXPECTED_COMMON_REMEDIATION),
+                (SERVER_AFFECTED, AntaTestStatus.FAILURE, EXPECTED_COMMON_REMEDIATION),
                 (
                     (
                         "The assessment is inconclusive and the device may be affected. Indications: EOS version '4.35.5M' is affected, "
@@ -257,17 +272,17 @@ _DATA: AntaUnitTestData = {
                 (
                     "The device is affected because EOS version '4.35.6M' is affected and openssh-clients '9.9p1' is affected.",
                     AntaTestStatus.FAILURE,
-                    EXPECTED_PENDING_REMEDIATION_4_35_6,
+                    EXPECTED_COMMON_REMEDIATION_4_35_6,
                 ),
                 (
                     "The device is affected because EOS version '4.35.6M' is affected and openssh-clients '9.9p1' is affected.",
                     AntaTestStatus.FAILURE,
-                    EXPECTED_PENDING_REMEDIATION_4_35_6,
+                    EXPECTED_COMMON_REMEDIATION_4_35_6,
                 ),
                 (
                     "The device is affected because EOS version '4.35.6M' is affected, openssh-server '9.9p1' is affected, and the SSH feature is enabled.",
                     AntaTestStatus.FAILURE,
-                    EXPECTED_PENDING_REMEDIATION_4_35_6,
+                    EXPECTED_COMMON_REMEDIATION_4_35_6,
                 ),
                 (EOS_4_35_6_NOT_AFFECTED, AntaTestStatus.SUCCESS, None),
             ),
@@ -302,7 +317,7 @@ _DATA: AntaUnitTestData = {
                     AntaTestStatus.ERROR,
                     None,
                 ),
-                (SERVER_AFFECTED, AntaTestStatus.FAILURE, EXPECTED_PENDING_REMEDIATION),
+                (SERVER_AFFECTED, AntaTestStatus.FAILURE, EXPECTED_COMMON_REMEDIATION),
                 (
                     CLIENT_PACKAGE_ERROR,
                     AntaTestStatus.ERROR,
@@ -330,8 +345,8 @@ _DATA: AntaUnitTestData = {
         "expected": expected_result(
             AntaTestStatus.ERROR,
             (
-                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, EXPECTED_PENDING_REMEDIATION),
-                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, EXPECTED_PENDING_REMEDIATION),
+                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, EXPECTED_COMMON_REMEDIATION),
+                (CLIENT_AFFECTED, AntaTestStatus.FAILURE, EXPECTED_COMMON_REMEDIATION),
                 (
                     SSH_STATE_ERROR,
                     AntaTestStatus.ERROR,
@@ -605,3 +620,35 @@ class TestSA147(unittest.IsolatedAsyncioTestCase):
             AntaTestStatus.ERROR,
         ]
         assert test.result.result is AntaTestStatus.ERROR
+
+    async def test_published_upgrade_guidance_for_every_cve(self) -> None:
+        """Render published alternatives through all four production assessment paths."""
+        cases = (
+            ("4.36.2F", "Upgrade to EOS 4.37.0F or later in the 4.37 train or EOS 4.36.3M or later in the 4.36 train."),
+            ("4.35.5M", None),
+            ("4.34.7M", None),
+            ("4.33.10M", None),
+            ("4.32.99M", None),
+        )
+        for eos, exact_message in cases:
+            with self.subTest(eos=eos):
+                result = await self.run_test(version=version_output(eos=eos))
+                assert len(result.result.atomic_results) == 4
+                for index, atomic in enumerate(result.result.atomic_results):
+                    assert isinstance(atomic, _AdvisoryAtomicTestResult)
+                    assert atomic.result is AntaTestStatus.FAILURE
+                    assert atomic.remediation is not None
+                    message = render_remediation_plain(atomic.remediation)
+                    assert message.startswith("Upgrade to EOS ")
+                    assert "when one is published" not in message
+                    if exact_message is not None:
+                        assert message == exact_message
+                    if eos in {"4.35.5M", "4.34.7M", "4.33.10M", "4.32.99M"}:
+                        assert ("4.35.6M" in message) is (index == 3)
+                        assert ("4.35.7M" in message) is (index != 3)
+                    if eos in {"4.34.7M", "4.33.10M", "4.32.99M"}:
+                        assert ("4.34.8M" in message) is (index == 3)
+                        assert ("4.34.9M" in message) is (index != 3)
+                    if eos in {"4.33.10M", "4.32.99M"}:
+                        assert "4.33.11M" in message
+        assert ADVISORY.last_updated == date(2026, 10, 16)
