@@ -249,6 +249,7 @@ class ResultManager:
         """Get the results, optionally filtered by status and sorted by TestResult fields.
 
         If no status is provided, all results are returned.
+        List fields are compared lexicographically; None values are treated as empty strings.
 
         Parameters
         ----------
@@ -270,7 +271,7 @@ class ResultManager:
             if not set(sort_by).issubset(set(accepted_fields)):
                 msg = f"Invalid sort_by fields: {sort_by}. Accepted fields are: {list(accepted_fields)}"
                 raise ValueError(msg)
-            results = sorted(results, key=lambda result: [getattr(result, field) or "" for field in sort_by])
+            results = sorted(results, key=lambda result: ["" if (value := getattr(result, field)) is None else value for field in sort_by])
 
         return results
 
@@ -303,6 +304,8 @@ class ResultManager:
     def sort(self, sort_by: list[str]) -> ResultManager:
         """Sort the ResultManager results based on TestResult fields.
 
+        List fields are compared lexicographically; None values are treated as empty strings.
+
         Parameters
         ----------
         sort_by
@@ -312,7 +315,7 @@ class ResultManager:
         if not set(sort_by).issubset(set(accepted_fields)):
             msg = f"Invalid sort_by fields: {sort_by}. Accepted fields are: {list(accepted_fields)}"
             raise ValueError(msg)
-        self._results.sort(key=lambda result: [getattr(result, field) or "" for field in sort_by])
+        self._results.sort(key=lambda result: ["" if (value := getattr(result, field)) is None else value for field in sort_by])
         return self
 
     def filter(self, hide: set[AntaTestStatus]) -> ResultManager:

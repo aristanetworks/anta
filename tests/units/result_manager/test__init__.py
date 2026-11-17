@@ -527,6 +527,57 @@ class TestResultManager:
         assert results[1].categories == ["VXLAN", "networking"]
         assert results[2].categories == ["system", "hardware"]
 
+    @pytest.mark.parametrize("method", ["get_results", "sort"])
+    @pytest.mark.parametrize("field", ["categories", "messages"])
+    @pytest.mark.parametrize("reverse_results", [False, True])
+    def test_sort_empty_lists(self, method: str, field: str, reverse_results: bool) -> None:
+        """Keep list ordering and secondary sort keys when empty and nonempty lists coexist."""
+        manager = ResultManager()
+        results = [
+            models.TestResult(
+                name="leaf1",
+                test=test,
+                categories=values if field == "categories" else [],
+                messages=values if field == "messages" else [],
+                description="",
+            )
+            for test, values in (
+                ("TestSystem", ["system"]),
+                ("TestEmptyZ", []),
+                ("TestBgpRouting", ["bgp", "routing"]),
+                ("TestBgp", ["bgp"]),
+                ("TestEmptyA", []),
+            )
+        ]
+        original = list(reversed(results)) if reverse_results else results.copy()
+        manager.results = original.copy()
+        sort_by = [field, "test"]
+
+        if method == "get_results":
+            sorted_results = manager.get_results(sort_by=sort_by)
+            assert [result.test for result in manager.results] == [result.test for result in original]
+        else:
+            assert manager.sort(sort_by) is manager
+            sorted_results = manager.results
+
+        assert [result.test for result in sorted_results] == ["TestEmptyA", "TestEmptyZ", "TestBgp", "TestBgpRouting", "TestSystem"]
+        assert [getattr(result, field) for result in sorted_results] == [[], [], ["bgp"], ["bgp", "routing"], ["system"]]
+
+    @pytest.mark.parametrize("method", ["get_results", "sort"])
+    def test_sort_optional_strings(self, method: str) -> None:
+        """Continue treating None custom fields like empty strings when sorting."""
+        manager = ResultManager()
+        manager.results = [
+            models.TestResult(name="leaf1", test=test, categories=[], description="", custom_field=value)
+            for test, value in (("TestNone", None), ("TestBeta", "beta"), ("TestEmpty", ""), ("TestAlpha", "alpha"))
+        ]
+        sort_by = ["custom_field", "test"]
+
+        sorted_results = manager.get_results(sort_by=sort_by) if method == "get_results" else manager.sort(sort_by).results
+
+        assert [result.test for result in sorted_results] == ["TestEmpty", "TestNone", "TestAlpha", "TestBeta"]
+        assert [result.custom_field for result in sorted_results] == ["", None, "alpha", "beta"]
+
     def test_sort_multiple_fields(self, test_result_factory: Callable[[], TestResult]) -> None:
         """Test sorting by multiple fields."""
         result_manager = ResultManager()
