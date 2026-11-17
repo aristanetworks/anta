@@ -610,15 +610,12 @@ class VerifyIPv4RoutePresencePerVRF(AntaTest):
 
 
 class VerifyRouteMapSanity(AntaTest):
-    """Verifies that all objects referenced in route-maps are defined.
+    """Verifies there are no route-maps config-sanity inconsistencies.
 
     Expected Results
     ----------------
-    * Success: The test will pass if the command output is empty or no undefined objects or continue targets are reported.
-    * Failure: The test will fail if any route-map references an undefined object or continue target.
-
-    !!! note
-        Ignored set entries alone do not cause a failure.
+    * Success: The test will pass if the command reports no route-map configuration sanity issues.
+    * Failure: The test will fail if any route-map is included in the configuration sanity output.
 
     Examples
     --------
@@ -691,8 +688,12 @@ class VerifyRouteMapSanity(AntaTest):
         """Main test function for VerifyRouteMapSanity."""
         command_output = self.instance_commands[0].json_output
         self.result.is_success()
+        route_maps = command_output.get("routeMaps", {})
+        if not route_maps:
+            self.result.is_success("Route-map configuration sanity check passed")
+            return
 
-        for name, route_map in command_output.get("routeMaps", {}).items():
+        for name, route_map in route_maps.items():
             result = self.result.add(description=f"Route-Map: {name}", status=AntaTestStatus.SUCCESS)
             for sequence, entry in route_map.get("entries", {}).items():
                 for message in self._get_undefined_reference_messages(entry):

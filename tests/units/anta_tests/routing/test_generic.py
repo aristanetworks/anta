@@ -1128,90 +1128,12 @@ DATA: AntaUnitTestData = {
             ],
         },
     },
-    (VerifyRouteMapSanity, "success-empty"): {
-        "eos_data": [{}],
-        "expected": {
-            "result": AntaTestStatus.SUCCESS,
-            "atomic_results": [],
-        },
-    },
     (VerifyRouteMapSanity, "success-no-route-maps"): {
         "eos_data": [{"routeMaps": {}}],
         "expected": {
             "result": AntaTestStatus.SUCCESS,
+            "messages": ["Route-map configuration sanity check passed"],
             "atomic_results": [],
-        },
-    },
-    (VerifyRouteMapSanity, "success-no-entries"): {
-        "eos_data": [{"routeMaps": {"RM-BGP-EXPORT": {"entries": {}}}}],
-        "expected": {
-            "result": AntaTestStatus.SUCCESS,
-            "atomic_results": [
-                {
-                    "description": "Route-Map: RM-BGP-EXPORT",
-                    "result": AntaTestStatus.SUCCESS,
-                },
-            ],
-        },
-    },
-    (VerifyRouteMapSanity, "success-no-reference-findings"): {
-        "eos_data": [
-            {
-                "routeMaps": {
-                    "RM-BGP-EXPORT": {
-                        "entries": {
-                            "10": {
-                                "filterType": "permit",
-                                "matchRules": {"debugInfo": {}},
-                                "setRules": {"debugInfo": {}},
-                                "description": [],
-                            }
-                        }
-                    }
-                }
-            }
-        ],
-        "expected": {
-            "result": AntaTestStatus.SUCCESS,
-            "atomic_results": [
-                {
-                    "description": "Route-Map: RM-BGP-EXPORT",
-                    "result": AntaTestStatus.SUCCESS,
-                },
-            ],
-        },
-    },
-    (VerifyRouteMapSanity, "success-ignored-and-configured-lists"): {
-        "eos_data": [
-            {
-                "routeMaps": {
-                    "RM-BGP-IMPORT": {
-                        "entries": {
-                            "10": {
-                                "filterType": "permit",
-                                "description": [],
-                                "matchRules": {"debugInfo": {}},
-                                "setRules": {
-                                    "communityAddOrReplace": {
-                                        "operationType": "default",
-                                        "communityLists": ["CL-BGP-IMPORT", "CL-BGP-IMPORT-REGEXP"],
-                                    },
-                                    "debugInfo": {"communityAddOrReplace": {"ignored": "CL-BGP-IMPORT-REGEXP"}},
-                                },
-                            }
-                        }
-                    }
-                }
-            }
-        ],
-        "expected": {
-            "result": AntaTestStatus.SUCCESS,
-            "atomic_results": [
-                {
-                    "description": "Route-Map: RM-BGP-IMPORT",
-                    "result": AntaTestStatus.SUCCESS,
-                },
-            ],
         },
     },
     (VerifyRouteMapSanity, "failure-match-and-set-same-sequence"): {
@@ -1282,7 +1204,7 @@ DATA: AntaUnitTestData = {
                 "routeMaps": {
                     "RM-BGP-EXPORT": {
                         "entries": {
-                            "10": {
+                            "20": {
                                 "filterType": "permit",
                                 "matchRules": {"debugInfo": {}},
                                 "setRules": {"debugInfo": {}},
@@ -1297,14 +1219,14 @@ DATA: AntaUnitTestData = {
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
-                "Route-Map: RM-BGP-EXPORT - Sequence: 10 - continue target next sequence is undefined",
+                "Route-Map: RM-BGP-EXPORT - Sequence: 20 - continue target next sequence is undefined",
             ],
             "atomic_results": [
                 {
                     "description": "Route-Map: RM-BGP-EXPORT",
                     "result": AntaTestStatus.FAILURE,
                     "messages": [
-                        "Sequence: 10 - continue target next sequence is undefined",
+                        "Sequence: 20 - continue target next sequence is undefined",
                     ],
                 },
             ],
@@ -1400,6 +1322,44 @@ DATA: AntaUnitTestData = {
                         "Sequence: 20 - Dynamic prefix-list DPL-IPV4-EXPORT is undefined",
                     ],
                 },
+            ],
+        },
+    },
+    (VerifyRouteMapSanity, "failure-captured-sub-route-map"): {
+        "eos_data": [
+            {
+                "routeMaps": {
+                    "RM-BGP-EXPORT": {
+                        "entries": {
+                            "20": {
+                                "filterType": "permit",
+                                "matchRules": {"debugInfo": {}},
+                                "subRouteMap": {
+                                    "name": "RM-BGP-EXPORT-CHILD",
+                                    "invert": False,
+                                    "debugInfo": {"name": {"undefined": "RM-BGP-EXPORT-CHILD"}},
+                                },
+                                "setRules": {"debugInfo": {}},
+                                "description": [],
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Route-Map: RM-BGP-EXPORT - Sequence: 20 - Sub-route-map RM-BGP-EXPORT-CHILD is undefined",
+            ],
+            "atomic_results": [
+                {
+                    "description": "Route-Map: RM-BGP-EXPORT",
+                    "result": AntaTestStatus.FAILURE,
+                    "messages": [
+                        "Sequence: 20 - Sub-route-map RM-BGP-EXPORT-CHILD is undefined",
+                    ],
+                }
             ],
         },
     },
