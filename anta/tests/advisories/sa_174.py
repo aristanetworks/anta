@@ -83,7 +83,6 @@ def _known_feature(fact: Fact[FeatureFact], state: FeatureState) -> bool:
     return not isinstance(fact, UnavailableFact) and fact.value.state is state
 
 
-# pylint: disable-next=too-many-return-statements
 def _assess_sa174(  # noqa: PLR0911
     version: Fact[EosVersionFact],
     p4_runtime: Fact[P4RuntimeFact],

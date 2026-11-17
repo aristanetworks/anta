@@ -6,25 +6,22 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import ClassVar, TypeVar
+from typing import TYPE_CHECKING, ClassVar
 
 from anta._advisory.base import _PREVIEW_WARNING, _AntaAdvisoryTest
 from anta._advisory.eos_versions import VersionRule
 from anta._advisory.facts.eos import EosVersionFact
-from anta._advisory.facts.models import Fact, FactsBase, FeatureFact, FeatureState, UnavailableFact, fact_field, facts_dataclass
-from anta._advisory.facts.tracing import (
-    AaaPasswordTraceFact,
-    AaaTacacsKeyTraceFact,
-    ConfigAgentPrivateKeyTraceFact,
-)
+from anta._advisory.facts.models import FactsBase, fact_field, facts_dataclass
 from anta._advisory.findings.assessment import assess_eos_scope
-from anta._advisory.findings.models import AffectedResult, EosReleaseAssessment, ErrorResult, NotAffectedResult, VulnerabilityResult
+from anta._advisory.findings.models import AffectedEosRelease, AffectedResult, EosReleaseAssessment, VulnerabilityResult
 from anta._advisory.findings.projection import project_vulnerability_result
 from anta._advisory.models import _AdvisoryMetadata, _AdvisoryVulnerability, _AdvisoryVulnerabilitySeverity
-from anta._advisory.optional_commands import OptionalCommandsMixin
-from anta._advisory.remediation import FixedRelease, OperationalAction, RemediationPlan, Sequence, software_version_action
+from anta._advisory.remediation import AllOf, ConditionalAction, FixedRelease, OperationalAction, RemediationPlan, software_version_action
 from anta._eos.version import EOSVersion
 from anta.decorators import preview_test_class
+
+if TYPE_CHECKING:
+    from anta._advisory.facts.models import Fact
 
 AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
     VersionRule(major=4, minor=36, patch_lte=1),
@@ -40,7 +37,10 @@ FIXED_RELEASES = (
     FixedRelease(EOSVersion(4, 34, 8, suffix="M")),
     FixedRelease(EOSVersion(4, 33, 10, suffix="M")),
 )
-CLEAN_LOGS = OperationalAction("Clean current and rotated agent logs if the affected trace levels were enabled.")
+CLEAN_LOGS = ConditionalAction(
+    "the affected trace levels were enabled",
+    OperationalAction("Clean up current and rotated agent logs as described in the advisory."),
+)
 
 ADVISORY = _AdvisoryMetadata(
     sa_number="0153",
@@ -69,67 +69,35 @@ ADVISORY = _AdvisoryMetadata(
         "TACACS+ shared keys to agent logs."
     ),
 )
-PRIVATE_KEY_ID, PASSWORD_ID, TACACS_KEY_ID = (vulnerability.id for vulnerability in ADVISORY.vulnerabilities)
-TraceFactT = TypeVar("TraceFactT", bound=FeatureFact)
 
 
-def _assess_sa153_issue(
-    vulnerability_id: str,
-    version: Fact[EosVersionFact],
-    risky_trace: Fact[TraceFactT],
-) -> VulnerabilityResult:
-    """Assess one independent trace-driven exposure."""
-    if not isinstance(risky_trace, UnavailableFact) and risky_trace.value.state is not FeatureState.ENABLED:
-        return NotAffectedResult(vulnerability_id=vulnerability_id, decisive=(risky_trace,))
-
+def _assess_sa153_issue(vulnerability_id: str, version: Fact[EosVersionFact]) -> VulnerabilityResult:
+    """Assess one trace-driven exposure from the EOS release alone."""
     eos_release = assess_eos_scope(vulnerability_id, version, AFFECTED_VERSION_MATRIX)
     if not isinstance(eos_release, EosReleaseAssessment):
         return eos_release
-    if isinstance(risky_trace, UnavailableFact):
-        return ErrorResult(vulnerability_id=vulnerability_id, problems=(risky_trace,))
-
-    remediation = RemediationPlan(Sequence((software_version_action(FIXED_RELEASES, current_version=eos_release.fact.value), CLEAN_LOGS)))
     return AffectedResult(
         vulnerability_id=vulnerability_id,
-        context=(eos_release,),
-        conditions=(risky_trace,),
-        remediation=remediation,
+        conditions=(AffectedEosRelease(eos_release.fact),),
+        remediation=RemediationPlan(AllOf((software_version_action(FIXED_RELEASES, current_version=eos_release.fact.value), CLEAN_LOGS))),
     )
 
 
-def _assess_private_key(
-    version: Fact[EosVersionFact],
-    risky_trace: Fact[ConfigAgentPrivateKeyTraceFact],
-) -> VulnerabilityResult:
-    """Assess private-key exposure in ConfigAgent logs."""
-    return _assess_sa153_issue(PRIVATE_KEY_ID, version, risky_trace)
-
-
-def _assess_password(
-    version: Fact[EosVersionFact],
-    risky_trace: Fact[AaaPasswordTraceFact],
-) -> VulnerabilityResult:
-    """Assess user-password exposure in Aaa logs."""
-    return _assess_sa153_issue(PASSWORD_ID, version, risky_trace)
-
-
-def _assess_tacacs_key(
-    version: Fact[EosVersionFact],
-    risky_trace: Fact[AaaTacacsKeyTraceFact],
-) -> VulnerabilityResult:
-    """Assess TACACS+ shared-key exposure in Aaa logs."""
-    return _assess_sa153_issue(TACACS_KEY_ID, version, risky_trace)
-
-
 @preview_test_class(warning_message=_PREVIEW_WARNING)
-class SA153(OptionalCommandsMixin, _AntaAdvisoryTest):
+class SA153(_AntaAdvisoryTest):
     """Verify whether the device is impacted by Security Advisory 0153.
 
     Expected Results
     ----------------
-    * Not Affected: For each issue, the EOS version is outside its affected scope or its risky trace level is disabled.
-    * Affected: An affected EOS release has an issue's risky trace level enabled.
-    * Error: Required EOS version or trace state for an issue cannot be determined.
+    * Not Affected: EOS is outside the affected releases.
+    * Affected: EOS is within the affected releases.
+    * Error: The EOS version cannot be determined.
+
+    Notes
+    -----
+    Each issue requires an advisory-identified agent trace level, which this test does not use. An operator can enable
+    the trace at any time with `start trace`, which leaves no running-config record and disappears from `show trace`
+    once the timer expires, so trace state cannot rule out exposure.
 
     Examples
     --------
@@ -144,9 +112,6 @@ class SA153(OptionalCommandsMixin, _AntaAdvisoryTest):
         """Collected facts required to assess the advisory."""
 
         version: Fact[EosVersionFact] = fact_field(EosVersionFact)
-        private_key_trace: Fact[ConfigAgentPrivateKeyTraceFact] = fact_field(ConfigAgentPrivateKeyTraceFact)
-        password_trace: Fact[AaaPasswordTraceFact] = fact_field(AaaPasswordTraceFact)
-        tacacs_key_trace: Fact[AaaTacacsKeyTraceFact] = fact_field(AaaTacacsKeyTraceFact)
 
     advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
     description = "Verify whether the device is impacted by Security Advisory 0153."
@@ -154,13 +119,8 @@ class SA153(OptionalCommandsMixin, _AntaAdvisoryTest):
 
     @_AntaAdvisoryTest.anta_test
     def test(self) -> None:
-        """Derive the declared facts, assess each vulnerability, and project it."""
+        """Derive EOS state, assess each vulnerability, and project it."""
         facts = self.Facts.collect(self)
-        findings = (
-            _assess_private_key(facts.version, facts.private_key_trace),
-            _assess_password(facts.version, facts.password_trace),
-            _assess_tacacs_key(facts.version, facts.tacacs_key_trace),
-        )
-        for vulnerability, finding in zip(ADVISORY.vulnerabilities, findings, strict=True):
+        for vulnerability in ADVISORY.vulnerabilities:
             atomic_result = self.result.add(f"Verify {vulnerability.id}.", vulnerability_ids=(vulnerability.id,))
-            project_vulnerability_result(atomic_result, finding)
+            project_vulnerability_result(atomic_result, _assess_sa153_issue(vulnerability.id, facts.version))

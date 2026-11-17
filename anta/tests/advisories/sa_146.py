@@ -174,7 +174,6 @@ def _append_unique(items: list[VersionAssessment], item: VersionAssessment) -> N
         items.append(item)
 
 
-# pylint: disable-next=too-many-branches
 def _assess_sa146(paths: tuple[_GrpcPath, ...]) -> VulnerabilityResult:  # noqa: C901, PLR0912
     """Assess GHSA-hrxh-6v49-42gf from normalized path facts."""
     vulnerability_id = ADVISORY.vulnerabilities[0].id

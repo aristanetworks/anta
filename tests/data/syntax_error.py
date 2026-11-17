@@ -4,4 +4,4 @@
 """Syntax Error in file."""
 
 # pylint: skip-file
-typo  # type: ignore[name-defined] # noqa: B018
+typo  # type: ignore[name-defined] # noqa: B018, F821

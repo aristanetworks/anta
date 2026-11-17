@@ -130,7 +130,7 @@ def _replay_version_relation(version: AvailableFact[EosVersionFact]) -> VersionR
     return VersionRelation.OUTSIDE_SCOPE
 
 
-def _assess_replay(  # noqa: PLR0911  # pylint: disable=too-many-return-statements
+def _assess_replay(  # noqa: PLR0911
     version: Fact[EosVersionFact], ip_ah: Fact[VrrpV2IpAhFact], anti_replay: Fact[VrrpAntiReplayFact]
 ) -> VulnerabilityResult:
     """Require both fixed software and explicitly enabled VRRP replay protection."""

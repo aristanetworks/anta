@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+from abc import ABC
 from typing import TYPE_CHECKING, ClassVar
 
 from anta._advisory.models import _ADVISORY_VULNERABILITY_SEVERITY_RANK, _AdvisoryVulnerabilitySeverity
@@ -49,7 +50,7 @@ ADVISORY_RESULT_LABELS = {
 """Markdown labels that need a non-breaking space so column headers and cells do not wrap mid-phrase."""
 
 
-class SecurityAdvisoryMDReportBase(MDReportBase):
+class SecurityAdvisoryMDReportBase(MDReportBase, ABC):
     """Base class for security advisory markdown report sections."""
 
     def __init__(

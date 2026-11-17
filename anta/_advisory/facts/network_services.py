@@ -392,7 +392,6 @@ class DhcpOption82Fact(FeatureFact, CommandsFactDefinition["DhcpOption82Fact"]):
     commands: ClassVar[tuple[AntaCommand, ...]] = (DHCP_CONFIG_COMMAND, DHCP_RELAY_COMMAND)
 
     @classmethod
-    # pylint: disable-next=too-many-return-statements
     def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[DhcpOption82Fact]:  # noqa: PLR0911
         """Evaluate the three source-defined exposure alternatives."""
         config_command, relay_command = commands
@@ -425,7 +424,6 @@ class MlagDualPrimaryErrdisableFact(FeatureFact, CommandsFactDefinition["MlagDua
     commands: ClassVar[tuple[AntaCommand, ...]] = (MLAG_COMMAND,)
 
     @classmethod
-    # pylint: disable-next=too-many-return-statements
     def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[MlagDualPrimaryErrdisableFact]:  # noqa: PLR0911
         """Require the stable MLAG and dual-primary configuration prerequisites."""
         (command,) = commands

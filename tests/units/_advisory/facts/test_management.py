@@ -10,8 +10,6 @@ from typing import TYPE_CHECKING
 import pytest
 
 from anta._advisory.facts.management import (
-    Dot1xControlledAuthenticatorFact,
-    Dot1xDynamicAuthorizationFact,
     GnmiAuthorizationFact,
     GnmiMtlsAuthorizationFact,
     GnmiTransportFact,
@@ -32,10 +30,8 @@ from anta._advisory.facts.management import (
     SnmpAgentFact,
     SnmpV3AuthenticationFact,
     SnmpV3CredentialSyntaxFact,
-    _parse_dot1x_controlled_authenticator,
 )
 from anta._advisory.facts.models import AvailableFact, CredentialSyntaxState, FactProblemKind, FeatureState, MitigationState, UnavailableFact
-from anta._eos.parsing import ParseFail, ParseFailureReason, ParseSuccessful
 from anta._eos.version import EOSVersion
 from tests.units.anta_tests.advisories import OfflineAntaDevice
 
@@ -94,8 +90,6 @@ def text_command(definition: type, output: str) -> AntaCommand:
 @pytest.mark.parametrize(
     "definition",
     [
-        Dot1xDynamicAuthorizationFact,
-        SnmpV3AuthenticationFact,
         RestconfTransportFact,
         NetconfTransportFact,
         GnpsiTransportFact,
@@ -112,58 +106,6 @@ def test_optional_feature_command_unsupported(device: OfflineAntaDevice, definit
 
     assert isinstance(fact, AvailableFact)
     assert fact.value.state is FeatureState.UNSUPPORTED
-
-
-@pytest.mark.parametrize(
-    ("output", "state"),
-    [
-        ({"systemAuthControl": False, "dynAuth": False, "interfaces": {}}, FeatureState.DISABLED),
-        (
-            {"systemAuthControl": True, "dynAuth": True, "interfaces": {"Ethernet1": {"portControl": "controlled"}}},
-            FeatureState.ENABLED,
-        ),
-        ({"systemAuthControl": True, "dynAuth": False, "interfaces": {"Ethernet1": {"portControl": "controlled"}}}, FeatureState.DISABLED),
-        ({"systemAuthControl": True, "dynAuth": True, "interfaces": {"Ethernet1": {"portControl": "forceAuth"}}}, FeatureState.DISABLED),
-    ],
-)
-def test_dot1x_dynamic_authorization_states(device: OfflineAntaDevice, output: dict[str, object], state: FeatureState) -> None:
-    """Require effective global dynamic authorization and a controlled authenticator interface."""
-    fact = Dot1xDynamicAuthorizationFact.derive(device, (json_command(Dot1xDynamicAuthorizationFact, output),))
-    assert isinstance(fact, AvailableFact)
-    assert fact.value.state is state
-
-
-def test_dot1x_dynamic_authorization_rejects_malformed_interface(device: OfflineAntaDevice) -> None:
-    """Reject enabled 802.1X output without effective interface state."""
-    output = {"systemAuthControl": True, "dynAuth": True, "interfaces": {"Ethernet1": {}}}
-    fact = Dot1xDynamicAuthorizationFact.derive(device, (json_command(Dot1xDynamicAuthorizationFact, output),))
-    assert isinstance(fact, UnavailableFact)
-    assert fact.problem is FactProblemKind.MALFORMED
-
-
-@pytest.mark.parametrize(
-    ("output", "controlled"),
-    [
-        ({"systemAuthControl": False, "interfaces": {}}, False),
-        ({"systemAuthControl": True, "interfaces": {"Ethernet1": {"portControl": "forceAuth"}}}, False),
-        ({"systemAuthControl": True, "interfaces": {"Ethernet1": {"portControl": "controlled"}}}, True),
-    ],
-)
-def test_parse_dot1x_controlled_authenticator(output: dict[str, object], controlled: bool) -> None:
-    """Return a typed successful result for observed EOS controlled-authenticator states."""
-    parsed = _parse_dot1x_controlled_authenticator(output)
-
-    assert isinstance(parsed, ParseSuccessful)
-    assert parsed.value is controlled
-
-
-def test_parse_dot1x_controlled_authenticator_failure() -> None:
-    """Return a typed parsing failure for malformed EOS interface state."""
-    parsed = _parse_dot1x_controlled_authenticator({"systemAuthControl": True, "interfaces": {"Ethernet1": {}}})
-
-    assert isinstance(parsed, ParseFail)
-    assert parsed.reason is ParseFailureReason.MALFORMED
-    assert parsed.detail == "show dot1x all interface 'Ethernet1' portControl is not a string"
 
 
 @pytest.mark.parametrize(
@@ -517,28 +459,55 @@ def test_gnpsi_effective_transport_rejects_malformed_runtime_fields(device: Offl
     assert mitigation.problem is FactProblemKind.MALFORMED
 
 
+SNMPV3_LOCAL_AUTH_USER = (
+    "snmp-server user alice privgrp v3 localized f5717fe4604a9614e900 auth sha256 b064c0bde9dcc6b5c405ba2c9d8138e11442e52b869df49085ea35a9f2e0c642 "
+    "priv aes 87e9789864bc8fa7f72c0bb57ec4c59b"
+)
+SNMPV3_REMOTE_AUTH_USER = (
+    "snmp-server user remote operators remote 192.0.2.1 v3 localized 800000000301020304 auth sha256 8cbb4157a6094abec416eb3a4731c7ef425f67fde50262ce5273e4dc873e7eaf"
+)
+SNMPV3_REMOTE_UDP_PORT_AUTH_USER = (
+    "snmp-server user remoteport operators remote 192.0.2.2 udp-port 1162 v3 localized 800000000301020305 auth sha256 "
+    "863e9b56ccbfd7d764cf718cb7cc5c5dff575871b59df84e98c21b0c049b1ed5"
+)
+SNMPV3_REMOTE_IPV6_AUTH_USER = "snmp-server user remotev6 operators remote 2001:db8::1 v3 localized 800000000301020306 auth md5 37f3973e9ff70a66492e9434d9d6887c"
+SNMP_NO_AUTH_USERS = "snmp-server user bob noauthgrp v3\nsnmp-server user v2user noauthgrp v2c\nsnmp-server user remotenoauth noauthgrp remote 192.0.2.1 v3"
+
+
 @pytest.mark.parametrize(
     ("output", "state"),
     [
-        ({"usersByVersion": {}}, FeatureState.DISABLED),
-        ({"usersByVersion": {"v3": {}}}, FeatureState.DISABLED),
-        ({"usersByVersion": {"v3": {"users": {"alice": {"v3Params": {"authType": "None"}}}}}}, FeatureState.DISABLED),
-        ({"usersByVersion": {"v3": {"users": {"alice": {"v3Params": {"privType": "AES-128"}}}}}}, FeatureState.DISABLED),
-        ({"usersByVersion": {"v3": {"users": {"alice": {"v3Params": {"authType": "SHA-256"}}}}}}, FeatureState.ENABLED),
+        ("", FeatureState.DISABLED),
+        (SNMP_NO_AUTH_USERS, FeatureState.DISABLED),
+        (SNMPV3_LOCAL_AUTH_USER, FeatureState.ENABLED),
+        (SNMPV3_REMOTE_AUTH_USER, FeatureState.ENABLED),
+        (SNMPV3_REMOTE_UDP_PORT_AUTH_USER, FeatureState.ENABLED),
+        (SNMPV3_REMOTE_IPV6_AUTH_USER, FeatureState.ENABLED),
+        (f"{SNMP_NO_AUTH_USERS}\n{SNMPV3_REMOTE_AUTH_USER}", FeatureState.ENABLED),
+        ("snmp-server user encrypted operators v3 localized 80000001 auth sha256 key 7 A1B2", FeatureState.ENABLED),
     ],
 )
-def test_snmpv3_authentication_key_states(device: OfflineAntaDevice, output: dict[str, object], state: FeatureState) -> None:
-    """Normalize authentication-key presence without reading configured values."""
-    fact = SnmpV3AuthenticationFact.derive(device, (json_command(SnmpV3AuthenticationFact, output),))
+def test_snmpv3_authentication_key_states(device: OfflineAntaDevice, output: str, state: FeatureState) -> None:
+    """Normalize local and remote authentication-key presence without reading configured values."""
+    fact = SnmpV3AuthenticationFact.derive(device, (text_command(SnmpV3AuthenticationFact, output),))
 
     assert isinstance(fact, AvailableFact)
     assert fact.definition is SnmpV3AuthenticationFact
     assert fact.value.state is state
+    assert fact.source.name == "show running-config | include ^snmp-server user"
 
 
-def test_snmpv3_authentication_key_rejects_malformed_output(device: OfflineAntaDevice) -> None:
-    """Reject malformed structured SNMPv3 user output."""
-    fact = SnmpV3AuthenticationFact.derive(device, (json_command(SnmpV3AuthenticationFact, {"usersByVersion": {"v3": {"users": []}}}),))
+@pytest.mark.parametrize(
+    "output",
+    [
+        "snmp-server community public ro",
+        "snmp-server user alice operators v3 auth sha",
+        "snmp-server user alice operators remote 192.0.2.1 vrf MGMT v3 auth sha A1B2",
+    ],
+)
+def test_snmpv3_authentication_key_rejects_malformed_output(device: OfflineAntaDevice, output: str) -> None:
+    """Reject output outside the established SNMP user grammar."""
+    fact = SnmpV3AuthenticationFact.derive(device, (text_command(SnmpV3AuthenticationFact, output),))
 
     assert isinstance(fact, UnavailableFact)
     assert fact.problem is FactProblemKind.MALFORMED
@@ -576,6 +545,13 @@ def test_snmp_agent_invalid_output(device: OfflineAntaDevice, output: dict[str, 
             "snmp-server user remote operators remote 192.0.2.1 v3 localized 80000002 auth sha A1B2",
             CredentialSyntaxState.LEGACY,
         ),
+        (SNMPV3_REMOTE_UDP_PORT_AUTH_USER, CredentialSyntaxState.LEGACY),
+        (SNMPV3_REMOTE_IPV6_AUTH_USER, CredentialSyntaxState.LEGACY),
+        (SNMP_NO_AUTH_USERS, CredentialSyntaxState.NOT_CONFIGURED),
+        (
+            "snmp-server user remoteport operators remote 192.0.2.2 udp-port 1162 v3 localized 80000002 auth sha256 key 7 A1B2",
+            CredentialSyntaxState.ENCRYPTED,
+        ),
         ("snmp-server user encrypted operators v3 localized 80000001 auth sha256 key 7 A1B2", CredentialSyntaxState.ENCRYPTED),
         ("snmp-server user auth priv v3 auth sha256 key 7 A1B2", CredentialSyntaxState.ENCRYPTED),
         (
@@ -608,6 +584,10 @@ def test_snmpv3_credential_syntax_states(device: OfflineAntaDevice, output: str,
         "snmp-server user alice operators v3 auth sha key 5 A1B2",
         "snmp-server user alice operators v3 auth sha key 7",
         "snmp-server user 'alice operators v3 auth sha A1B2",
+        "snmp-server user alice operators",
+        "snmp-server user alice operators remote 192.0.2.1",
+        "snmp-server user alice operators remote 192.0.2.1 vrf MGMT v3 auth sha A1B2",
+        "snmp-server user alice operators udp-port 1162 v3 auth sha A1B2",
     ],
 )
 def test_snmpv3_credential_syntax_rejects_malformed_output(device: OfflineAntaDevice, output: str) -> None:
@@ -994,45 +974,3 @@ def test_gnmi_mtls_authorization_ignores_unsupported_ssl_for_unauthorized_transp
     assert isinstance(fact, AvailableFact)
     assert fact.value.state is FeatureState.DISABLED
     assert fact.source.name == GnmiMtlsAuthorizationFact.commands[0].command
-
-
-@pytest.mark.parametrize(
-    ("output", "state"),
-    [
-        ({"systemAuthControl": False, "interfaces": {}}, FeatureState.DISABLED),
-        ({"systemAuthControl": True, "interfaces": {"Ethernet1": {"portControl": "forceAuth"}}}, FeatureState.DISABLED),
-        ({"systemAuthControl": True, "interfaces": {"Ethernet1": {"portControl": "controlled"}}}, FeatureState.ENABLED),
-    ],
-)
-def test_dot1x_controlled_authenticator_states(device: OfflineAntaDevice, output: dict[str, object], state: FeatureState) -> None:
-    """Normalize effective controlled 802.1X state."""
-    command = Dot1xControlledAuthenticatorFact.commands[0].model_copy()
-    command.output = output
-
-    fact = Dot1xControlledAuthenticatorFact.derive(device, (command,))
-
-    assert isinstance(fact, AvailableFact)
-    assert fact.value.state is state
-
-
-def test_dot1x_controlled_authenticator_malformed(device: OfflineAntaDevice) -> None:
-    """Reject incomplete effective 802.1X state."""
-    command = Dot1xControlledAuthenticatorFact.commands[0].model_copy()
-    command.output = {"systemAuthControl": True, "interfaces": {"Ethernet1": {}}}
-
-    fact = Dot1xControlledAuthenticatorFact.derive(device, (command,))
-
-    assert isinstance(fact, UnavailableFact)
-    assert fact.problem is FactProblemKind.MALFORMED
-
-
-def test_dot1x_controlled_authenticator_unsupported(device: OfflineAntaDevice) -> None:
-    """Treat feature-specific unsupported output as 802.1X absence."""
-    command = Dot1xControlledAuthenticatorFact.commands[0].model_copy()
-    command.output = None
-    command.errors = ["This command is not supported on this hardware platform"]
-
-    fact = Dot1xControlledAuthenticatorFact.derive(device, (command,))
-
-    assert isinstance(fact, AvailableFact)
-    assert fact.value.state is FeatureState.UNSUPPORTED
