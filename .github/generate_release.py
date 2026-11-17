@@ -19,7 +19,7 @@ BASE_SCOPES = [
     "anta.cli",
 ]
 
-# The shared release-note labeler replaces comma-separated PR scopes with "|"
+# The release-note labeler replaces comma-separated PR scopes with "|"
 # before creating the GitHub label.
 SCOPES = [
     *BASE_SCOPES,

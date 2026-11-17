@@ -1,0 +1,27 @@
+---
+name: Request Release Note Labels
+
+on:
+  pull_request:
+    types: [closed, edited]
+
+permissions: {}
+
+jobs:
+  request:
+    name: Request labels for a merged PR
+    if: >-
+      github.event.pull_request.merged == true &&
+      (github.event.action == 'closed' || github.event.changes.title != null)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Record the PR number without checking out PR code
+        run: jq '{number}' "$GITHUB_EVENT_PATH" > "$RUNNER_TEMP/request.json"
+
+      - name: Upload the PR-number hint
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-note-label-request
+          path: ${{ runner.temp }}/request.json
+          if-no-files-found: error
+          retention-days: 7

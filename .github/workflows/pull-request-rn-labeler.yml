@@ -1,26 +1,73 @@
-# This workflow is triggered after a PR is merged or when the title of a PR is
-# changed post merge
-name: "Label for Release Notes"
-
+---
+name: Label for Release Notes
 
 on:
-  pull_request_target: # zizmor: ignore[dangerous-triggers] Runs after merge or title edits and only uses trusted base-branch action code to maintain release-note labels.
-    types:
-      - closed
-      - edited # interested in post merge title changes
+  workflow_run: # zizmor: ignore[dangerous-triggers] Only trusted default-branch code runs; the artifact supplies a numeric hint and labels come from the current PR API response.
+    workflows: [Request Release Note Labels]
+    types: [completed]
 
-permissions:
-  contents: read
-  pull-requests: write
+permissions: {}
 
 jobs:
-  ###################################################
-  # Assign labels on merge to generate Release Notes
-  # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#running-your-workflow-when-a-pull-request-merges
-  ###################################################
-  if_merged:
-    name: "PR was merged"
-    if: (github.event.pull_request.merged == true) && ( github.event.action == 'closed' || (github.event.action == 'edited' && github.event.changes.title != null) )
-    uses: aristanetworks/avd/.github/workflows/release-note-labeler.yml@6867159b26356ca5a03e267bf9f8db01ff862b14 # v6.5.0
-    with:
-      auto_create_label: true
+  read_request:
+    name: Read release-note label request
+    if: >-
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.path == '.github/workflows/pull-request-rn-label-request.yml'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+    outputs:
+      number: ${{ steps.request.outputs.number }}
+    steps:
+      - name: Checkout trusted workflow code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          sparse-checkout: .github/release_note_labels.py
+          sparse-checkout-cone-mode: false
+
+      - name: Download the request from the triggering run
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release-note-label-request
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+          path: ${{ runner.temp }}/release-note-label-request
+
+      - name: Validate the untrusted PR-number hint
+        id: request
+        run: |
+          number="$(python3 .github/release_note_labels.py read-request "$RUNNER_TEMP/release-note-label-request/request.json")"
+          printf 'number=%s\n' "$number" >> "$GITHUB_OUTPUT"
+
+  label:
+    name: Update release-note labels
+    needs: read_request
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    # Serialize updates for one PR. Different PRs must not replace one another's
+    # pending jobs; each job re-reads the current title after acquiring its slot.
+    concurrency:
+      group: release-note-labels-${{ needs.read_request.outputs.number }}
+      cancel-in-progress: false
+    steps:
+      - name: Checkout trusted workflow code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          sparse-checkout: .github/release_note_labels.py
+          sparse-checkout-cone-mode: false
+
+      - name: Label the current merged PR
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ needs.read_request.outputs.number }}
+          PR_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: python3 .github/release_note_labels.py label "$PR_NUMBER"
