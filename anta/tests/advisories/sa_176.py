@@ -68,7 +68,6 @@ ADVISORY = _AdvisoryMetadata(
 VULNERABILITY_ID = ADVISORY.vulnerabilities[0].id
 
 
-# pylint: disable-next=too-many-return-statements
 def _assess_platform(  # noqa: PLR0911
     platform: Fact[PlatformIdentityFact],
     switch_card: Fact[SwitchCardIdentityFact],
