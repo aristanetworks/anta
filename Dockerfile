@@ -1,4 +1,4 @@
-ARG PYTHON_VER=3.11
+ARG PYTHON_VER=3.14
 ARG IMG_OPTION=alpine
 
 ### BUILDER
@@ -25,6 +25,9 @@ RUN pip --no-cache-dir install "." &&\
 
 FROM python:${PYTHON_VER}-${IMG_OPTION} AS BASE
 
+# Apply the zlib security fix available ahead of the base image refresh.
+RUN apk upgrade --no-cache zlib
+
 # Add a system user
 RUN adduser --system anta
 
@@ -49,6 +52,10 @@ LABEL   "org.opencontainers.image.title"="anta" \
 
 # Copy artifacts from builder
 COPY --from=BUILDER /opt/venv /opt/venv
+
+# Packaging tools are only needed while building the image.
+RUN /opt/venv/bin/python -m pip uninstall --yes pip setuptools wheel &&\
+    /usr/local/bin/python -m pip uninstall --yes pip setuptools wheel
 
 # Define PATH and default user
 ENV PATH="/opt/venv/bin:$PATH"
