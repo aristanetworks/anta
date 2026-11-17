@@ -46,6 +46,27 @@ def test_junit_reporter_generate(tmp_path: Path, result_manager: ResultManager) 
     assert testcases[0].find("./properties/property[@name='description']") is not None
 
 
+@pytest.mark.parametrize("reverse_results", [False, True])
+def test_junit_reporter_generate_with_mixed_empty_categories(tmp_path: Path, reverse_results: bool) -> None:
+    """Export categorized and uncategorized tests together regardless of input order."""
+    manager = ResultManager()
+    results = [
+        TestResult(name="leaf1", test="CustomTest", categories=[], description="", result=AntaTestStatus.SUCCESS),
+        TestResult(name="leaf1", test="VerifyUptime", categories=["system"], description="", result=AntaTestStatus.SUCCESS),
+    ]
+    for result in reversed(results) if reverse_results else results:
+        manager.add(result)
+    output_path = tmp_path / "junit.xml"
+
+    JUnitReporter.generate(results=manager, output_path=output_path)
+
+    root = ET.parse(output_path).getroot()  # noqa: S314
+    assert root.get("tests") == "2"
+    cases = root.findall("./testsuite/testcase")
+    assert len(cases) == 2
+    assert {case.get("name") for case in cases} == {"CustomTest", "VerifyUptime"}
+
+
 def test_junit_reporter_generate_failure(
     tmp_path: Path,
     result_manager: ResultManager,
