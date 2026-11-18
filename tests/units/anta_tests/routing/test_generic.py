@@ -1133,10 +1133,6 @@ DATA: AntaUnitTestData = {
 class TestVerifyRoutingTableSizeInputs:
     """Test anta.tests.routing.generic.VerifyRoutingTableSize.Input."""
 
-    # pylint does not narrow Optional Pydantic fields after `assert is not None`.
-    # See: https://github.com/pylint-dev/pylint/issues/9968
-    # pylint: disable=unsubscriptable-object
-
     @pytest.mark.parametrize(
         ("minimum", "maximum"),
         [

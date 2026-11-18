@@ -140,7 +140,7 @@ class AntaTestDefinition(BaseModel):
         return self
 
 
-class AntaCatalogFile(RootModel[dict[ImportString[Any], list[AntaTestDefinition]]]):  # pylint: disable=too-few-public-methods
+class AntaCatalogFile(RootModel[dict[ImportString[Any], list[AntaTestDefinition]]]):
     """Represents an ANTA Test Catalog File.
 
     Example

@@ -44,7 +44,6 @@ class SafeDumper(yaml.SafeDumper):
     https://github.com/yaml/pyyaml/issues/234#issuecomment-765894586.
     """
 
-    # pylint: disable=R0901
 
     def increase_indent(self, flow: bool = False, *_args: object, **_kwargs: object) -> None:  # noqa: FBT001, FBT002
         """Increase indentation for nested lists."""

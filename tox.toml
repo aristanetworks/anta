@@ -34,9 +34,6 @@ dependency_groups = ["lint", "test", "benchmark"]
 commands =[
   ["ruff", "check", "."],
   ["ruff", "format", ".", "--check"],
-  ["pylint", "anta"],
-  ["pylint", "tests"],
-  ["pylint", "asynceapi"],
 ]
 
 [env.type]

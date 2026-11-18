@@ -103,9 +103,9 @@ class AliasedGroup(click.Group):
     From Click documentation.
     """
 
-    # Adding noqa because https://github.com/astral-sh/ruff/issues/5474, same for pylint
+    # Adding noqa because https://github.com/astral-sh/ruff/issues/5474
     @override  # noqa: RET503
-    def get_command(self, ctx: click.Context, cmd_name: str) -> click.Command | click.Group | None:  # pylint: disable=R1710
+    def get_command(self, ctx: click.Context, cmd_name: str) -> click.Command | click.Group | None:
         """Try to find a command name based on a prefix."""
         rv = click.Group.get_command(self, ctx, cmd_name)
         if rv is not None:

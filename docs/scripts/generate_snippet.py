@@ -122,8 +122,7 @@ def custom_progress_bar(spinner_name: str = "anta") -> Progress:
     Caveat: this capture all steps of the progress bar..
     Disabling refresh to only capture beginning and end
     """
-    # The Pylint pre-commit environment resolves this helper from the latest release, which still has the legacy zero-argument signature.
-    progress = anta_progress_bar(spinner_name)  # pylint: disable=too-many-function-args
+    progress = anta_progress_bar(spinner_name)
     progress.live.auto_refresh = False
     progress.live.console = console
     return progress
@@ -155,8 +154,6 @@ def main(args: list[str], output: Literal["svg", "txt"] = "svg", max_results: in
         print("Usage: python generate_svg.py anta <options>")
         sys.exit(1)
 
-    # possibly-used-before-assignment - prog / function_name -> not understanding sys.exit here...
-    # pylint: disable=E0606
     sys.argv = [prog, *args[1:]]
     module = import_module(module_path)
     function = getattr(module, function_name)

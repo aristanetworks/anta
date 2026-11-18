@@ -10,7 +10,6 @@ from enum import Enum
 from typing import TYPE_CHECKING, Generic, TypeAlias, TypeVar
 
 if TYPE_CHECKING:
-    # Pylint misclassifies calls on ParseResult as non-returning with typing.Never.
     from typing_extensions import Never  # noqa: UP035
 
 T = TypeVar("T")
@@ -27,7 +26,7 @@ class ParseFailureReason(str, Enum):
     CONTRADICTORY = "contradictory"
 
 
-class _ParseResult(Generic[T]):  # pylint: disable=too-few-public-methods
+class _ParseResult(Generic[T]):
     """Base class for typed parser results."""
 
     __slots__ = ()

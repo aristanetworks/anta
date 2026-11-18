@@ -3,8 +3,6 @@
 # that can be found in the LICENSE file.
 """Independent version-boundary and end-to-end tests for SA-0201 revision 1.3."""
 
-# pylint: disable=duplicate-code
-
 from __future__ import annotations
 
 from datetime import date

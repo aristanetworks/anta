@@ -22,7 +22,6 @@ if TYPE_CHECKING:
     from anta.result_manager.models import TestResult
 
 
-# pylint: disable=too-many-public-methods
 class TestResultManager:
     """Test ResultManager class."""
 

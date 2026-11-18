@@ -3,7 +3,6 @@
 # that can be found in the LICENSE file.
 """Tests for anta.input_models.interfaces.py."""
 
-# pylint: disable=C0302
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -30,8 +29,6 @@ if TYPE_CHECKING:
 
 class TestInterfaceState:
     """Test anta.input_models.interfaces.InterfaceState."""
-
-    # pylint: disable=too-few-public-methods
 
     @pytest.mark.parametrize(
         ("name", "portchannel", "expected"),

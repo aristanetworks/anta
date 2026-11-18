@@ -288,7 +288,7 @@ def test_advisory_test_requires_description() -> None:
     """Verify advisory tests must declare a description or docstring."""
     with pytest.raises(AttributeError, match="Cannot set the description"):
 
-        class MissingDescriptionAdvisoryTest(_AntaAdvisoryTest):  # pylint: disable=missing-class-docstring
+        class MissingDescriptionAdvisoryTest(_AntaAdvisoryTest):
             Facts = FactAdvisoryTest.Facts
             advisory: ClassVar[_AdvisoryMetadata] = ADVISORY
 
