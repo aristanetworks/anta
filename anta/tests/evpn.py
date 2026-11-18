@@ -195,11 +195,12 @@ class VerifyEVPNSanity(AntaTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if at least one check is returned and all statuses are `ok`,
-      or `warn` when `warning_as_failure` is disabled (the default). Warning details are retained as messages.
-    * Failure: The test will fail if any check reports an unexpected status.
-      Warnings are treated as failures when `warning_as_failure` is enabled.
-    * Skipped: The test will be skipped if no sanity checks are returned.
+    * Success: The test will pass if all EVPN sanity checks report `ok`.
+      When `warning_as_failure: false` (default), checks reporting `warn` also pass,
+      with their details included as messages.
+    * Failure: The test will fail if any EVPN sanity check reports a status other than `ok` or `warn`,
+      or reports `warn` when `warning_as_failure: true`.
+    * Skipped: The test will be skipped if no EVPN sanity checks are detected.
 
     Examples
     --------
