@@ -26,6 +26,12 @@ logger = logging.getLogger(__name__)
 ResultManagerTypeAdapter = TypeAdapter(list[TestResult])
 
 
+def _get_sort_key(result: TestResult, sort_by: list[str]) -> list[Any]:
+    """Build a sort key, replacing only None values with empty strings."""
+    values = (getattr(result, field) for field in sort_by)
+    return ["" if value is None else value for value in values]
+
+
 class ResultManager:
     """Manager of ANTA Results.
 
@@ -271,7 +277,7 @@ class ResultManager:
             if not set(sort_by).issubset(set(accepted_fields)):
                 msg = f"Invalid sort_by fields: {sort_by}. Accepted fields are: {list(accepted_fields)}"
                 raise ValueError(msg)
-            results = sorted(results, key=lambda result: ["" if (value := getattr(result, field)) is None else value for field in sort_by])
+            results = sorted(results, key=lambda result: _get_sort_key(result, sort_by))
 
         return results
 
@@ -315,7 +321,7 @@ class ResultManager:
         if not set(sort_by).issubset(set(accepted_fields)):
             msg = f"Invalid sort_by fields: {sort_by}. Accepted fields are: {list(accepted_fields)}"
             raise ValueError(msg)
-        self._results.sort(key=lambda result: ["" if (value := getattr(result, field)) is None else value for field in sort_by])
+        self._results.sort(key=lambda result: _get_sort_key(result, sort_by))
         return self
 
     def filter(self, hide: set[AntaTestStatus]) -> ResultManager:
