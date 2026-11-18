@@ -224,27 +224,23 @@ class VerifyEVPNSanity(AntaTest):
     def test(self) -> None:
         """Main test function for VerifyEVPNSanity."""
         command_output = self.instance_commands[0].json_output
-        expected_statuses = ["ok"] if self.inputs.warning_as_failure else ["ok", "warn"]
 
         for category_name, category_data in command_output["categories"].items():
             for item in category_data["items"]:
                 result = self.result.add(description=f"Category: {category_name} Item: {item['name']}", status=AntaTestStatus.SUCCESS)
-                self._verify_check(item, result, expected_statuses)
+                self._verify_check(item, result)
 
         if not self.result.atomic_results:
             self.result.is_skipped("No EVPN sanity checks detected")
 
-    def _verify_check(self, item: dict[str, Any], result: AtomicTestResult, expected_statuses: list[str]) -> None:
+    def _verify_check(self, item: dict[str, Any], result: AtomicTestResult) -> None:
         """Evaluate one EVPN sanity check and update its atomic result."""
-        status = item["status"]
-        if status == "ok":
-            return
-
-        warning_allowed = status == "warn" and not self.inputs.warning_as_failure
-        message = f"Status: {status}" if warning_allowed else f"Invalid status - Expected: {', '.join(expected_statuses)} Actual: {status}"
-        if reason := item.get("reasonNotOk"):
-            message += f" - {reason}"
-        if warning_allowed:
-            result.is_success(message)
-        else:
-            result.is_failure(message)
+        reason = f" - {details}" if (details := item.get("reasonNotOk")) else ""
+        match item["status"], self.inputs.warning_as_failure:
+            case "ok", _:
+                return
+            case "warn", False:
+                result.is_success(f"Status: warn{reason}")
+            case status, warning_as_failure:
+                expected = "ok" if warning_as_failure else "ok, warn"
+                result.is_failure(f"Invalid status - Expected: {expected} Actual: {status}{reason}")
