@@ -1,0 +1,99 @@
+---
+name: Scan published container
+
+"on":
+  pull_request:
+    paths:
+      - .github/workflows/container-scan.yml
+  schedule:
+    - cron: "23 4 * * *"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Published ANTA image tag to scan"
+        required: true
+        type: string
+        default: latest
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    name: Trivy / linux/amd64
+    # Scheduled scans belong to upstream; forks can test the workflow manually.
+    if: github.repository == 'aristanetworks/anta' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      IMAGE_TAG: ${{ inputs.tag || 'latest' }}
+      IMAGE_REF: ghcr.io/aristanetworks/anta:${{ inputs.tag || 'latest' }}
+    steps:
+      - name: Validate image tag
+        run: |
+          if [[ ! "$IMAGE_TAG" =~ ^[a-zA-Z0-9_][a-zA-Z0-9_.-]{0,127}$ ]]; then
+            echo '::error::Invalid image tag. Use a published tag such as latest, dev, or 1.0.0.'
+            exit 1
+          fi
+          mkdir -p reports
+
+      - name: Scan published image
+        id: trivy
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        env:
+          TRIVY_IMAGE_SRC: remote
+          TRIVY_PLATFORM: linux/amd64
+        with:
+          version: v0.76.2
+          scan-type: image
+          image-ref: ${{ env.IMAGE_REF }}
+          scanners: vuln
+          vuln-type: os,library
+          severity: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
+          # Reports and the severity gate cover vulnerabilities with available fixes.
+          ignore-unfixed: "true"
+          format: json
+          output: reports/trivy.json
+          # Upload reports before evaluating findings. Scanner errors still fail this step.
+          exit-code: "0"
+          timeout: 15m
+          cache: "true"
+
+      - name: Generate readable report
+        if: ${{ !cancelled() && steps.trivy.outcome == 'success' }}
+        run: trivy convert --format table --scanners vuln --output reports/trivy.txt reports/trivy.json
+
+      - name: Summarize findings
+        if: ${{ !cancelled() && steps.trivy.outcome == 'success' }}
+        run: |
+          {
+            echo '### Published ANTA container scan'
+            echo ""
+            echo "Image: \`$IMAGE_REF\` (\`linux/amd64\`)"
+            echo ""
+            echo 'Reports contain vulnerabilities with available fixes. HIGH/CRITICAL findings fail this scan.'
+            echo ""
+            echo '| Severity | Findings |'
+            echo '| --- | ---: |'
+            jq -r '
+              [.Results[]?.Vulnerabilities[]?] as $findings |
+              ["CRITICAL", "HIGH", "MEDIUM", "LOW", "UNKNOWN"][] as $severity |
+              "| \($severity) | \([$findings[] | select(.Severity == $severity)] | length) |"
+            ' reports/trivy.json
+            echo ""
+            echo 'Download the full JSON and text reports from this run’s artifacts.'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Retain available reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: trivy-container-reports
+          path: reports/
+          if-no-files-found: warn
+          overwrite: true
+          retention-days: 30
+
+      - name: Fail on fixable HIGH or CRITICAL vulnerabilities
+        if: ${{ !cancelled() && steps.trivy.outcome == 'success' }}
+        run: trivy convert --format table --scanners vuln --severity HIGH,CRITICAL --exit-code 1 reports/trivy.json
