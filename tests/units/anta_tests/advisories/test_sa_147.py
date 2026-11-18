@@ -8,9 +8,10 @@
 from __future__ import annotations
 
 import unittest
-from datetime import date
 from typing import TYPE_CHECKING, Any, Literal, TypeAlias, cast
 from unittest.mock import AsyncMock
+
+import pytest
 
 from anta._advisory.eos_versions import AffectedStatus, evaluate_version
 from anta._advisory.facts.eos import EosVersionFact
@@ -621,34 +622,71 @@ class TestSA147(unittest.IsolatedAsyncioTestCase):
         ]
         assert test.result.result is AntaTestStatus.ERROR
 
-    async def test_published_upgrade_guidance_for_every_cve(self) -> None:
-        """Render published alternatives through all four production assessment paths."""
-        cases = (
-            ("4.36.2F", "Upgrade to EOS 4.37.0F or later in the 4.37 train or EOS 4.36.3M or later in the 4.36 train."),
-            ("4.35.5M", None),
-            ("4.34.7M", None),
-            ("4.33.10M", None),
-            ("4.32.99M", None),
-        )
-        for eos, exact_message in cases:
-            with self.subTest(eos=eos):
-                result = await self.run_test(version=version_output(eos=eos))
-                assert len(result.result.atomic_results) == 4
-                for index, atomic in enumerate(result.result.atomic_results):
-                    assert isinstance(atomic, _AdvisoryAtomicTestResult)
-                    assert atomic.result is AntaTestStatus.FAILURE
-                    assert atomic.remediation is not None
-                    message = render_remediation_plain(atomic.remediation)
-                    assert message.startswith("Upgrade to EOS ")
-                    assert "when one is published" not in message
-                    if exact_message is not None:
-                        assert message == exact_message
-                    if eos in {"4.35.5M", "4.34.7M", "4.33.10M", "4.32.99M"}:
-                        assert ("4.35.6M" in message) is (index == 3)
-                        assert ("4.35.7M" in message) is (index != 3)
-                    if eos in {"4.34.7M", "4.33.10M", "4.32.99M"}:
-                        assert ("4.34.8M" in message) is (index == 3)
-                        assert ("4.34.9M" in message) is (index != 3)
-                    if eos in {"4.33.10M", "4.32.99M"}:
-                        assert "4.33.11M" in message
-        assert ADVISORY.last_updated == date(2026, 10, 16)
+
+@pytest.mark.parametrize("vulnerability_id", ["CVE-2026-59995", "CVE-2026-59996", "CVE-2026-60001", "CVE-2026-60002"])
+@pytest.mark.parametrize(
+    ("eos", "common_message", "cve_60002_message"),
+    [
+        (
+            "4.36.2F",
+            "Upgrade to EOS 4.37.0F or later in the 4.37 train or EOS 4.36.3M or later in the 4.36 train.",
+            "Upgrade to EOS 4.37.0F or later in the 4.37 train or EOS 4.36.3M or later in the 4.36 train.",
+        ),
+        (
+            "4.35.5M",
+            "Upgrade to EOS 4.37.0F or later in the 4.37 train, EOS 4.36.3M or later in the 4.36 train, or EOS 4.35.7M or later in the 4.35 train.",
+            "Upgrade to EOS 4.37.0F or later in the 4.37 train, EOS 4.36.3M or later in the 4.36 train, or EOS 4.35.6M or later in the 4.35 train.",
+        ),
+        (
+            "4.34.7M",
+            (
+                "Upgrade to EOS 4.37.0F or later in the 4.37 train, EOS 4.36.3M or later in the 4.36 train, "
+                "EOS 4.35.7M or later in the 4.35 train, or EOS 4.34.9M or later in the 4.34 train."
+            ),
+            (
+                "Upgrade to EOS 4.37.0F or later in the 4.37 train, EOS 4.36.3M or later in the 4.36 train, "
+                "EOS 4.35.6M or later in the 4.35 train, or EOS 4.34.8M or later in the 4.34 train."
+            ),
+        ),
+        (
+            "4.33.10M",
+            (
+                "Upgrade to EOS 4.37.0F or later in the 4.37 train, EOS 4.36.3M or later in the 4.36 train, "
+                "EOS 4.35.7M or later in the 4.35 train, EOS 4.34.9M or later in the 4.34 train, or EOS 4.33.11M or later in the 4.33 train."
+            ),
+            (
+                "Upgrade to EOS 4.37.0F or later in the 4.37 train, EOS 4.36.3M or later in the 4.36 train, "
+                "EOS 4.35.6M or later in the 4.35 train, EOS 4.34.8M or later in the 4.34 train, or EOS 4.33.11M or later in the 4.33 train."
+            ),
+        ),
+        (
+            "4.32.99M",
+            (
+                "Upgrade to EOS 4.37.0F or later in the 4.37 train, EOS 4.36.3M or later in the 4.36 train, "
+                "EOS 4.35.7M or later in the 4.35 train, EOS 4.34.9M or later in the 4.34 train, or EOS 4.33.11M or later in the 4.33 train."
+            ),
+            (
+                "Upgrade to EOS 4.37.0F or later in the 4.37 train, EOS 4.36.3M or later in the 4.36 train, "
+                "EOS 4.35.6M or later in the 4.35 train, EOS 4.34.8M or later in the 4.34 train, or EOS 4.33.11M or later in the 4.33 train."
+            ),
+        ),
+    ],
+    ids=["4.36.2F", "4.35.5M", "4.34.7M", "4.33.10M", "4.32.99M"],
+)
+async def test_published_upgrade_guidance_for_every_cve(eos: str, vulnerability_id: str, common_message: str, cve_60002_message: str) -> None:
+    """Render exact published alternatives for each EOS and vulnerability without relying on result order."""
+    device = OfflineAntaDevice("unit-test")
+    device.version = parse_eos_version(eos).unwrap()
+    await device.refresh()
+    eos_data = sa147_eos_data(version_output(eos=eos), "")
+    instance = cast("Any", SA147)(device=device, eos_data=eos_data)
+    await instance.test(eos_data=eos_data)
+
+    assert len(instance.result.atomic_results) == 4
+    atomic_by_cve = {_get_atomic_vulnerability_ids(result): result for result in instance.result.atomic_results}
+    atomic = atomic_by_cve[(vulnerability_id,)]
+    assert isinstance(atomic, _AdvisoryAtomicTestResult)
+    assert atomic.result is AntaTestStatus.FAILURE
+    assert atomic.remediation is not None
+    expected_message = cve_60002_message if vulnerability_id == "CVE-2026-60002" else common_message
+    assert render_remediation_plain(atomic.remediation) == expected_message

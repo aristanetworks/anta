@@ -179,6 +179,8 @@ def _terminattr_version_assessment(fact: Fact[TerminAttrVersionFact]) -> Compone
 
 def _compatible_terminattr_fixes(version: EOSVersion) -> tuple[FixedRelease, ...]:
     """Select only the component releases explicitly supported on the observed EOS."""
+    # The advisory does not explicitly extend its upper bounds to hotfix builds.
+    # Keep the full version comparison until that compatibility is confirmed.
     return tuple(
         release
         for release in TERMINATTR_FIXED_RELEASES
@@ -276,13 +278,19 @@ class SA201(OptionalCommandsMixin, _AntaAdvisoryTest):
     assessment does not use client configuration to exempt affected software. Explicit CA paths, disabled clients, destinations, and runtime
     sessions do not change the result. No trust-store workaround is assessed or recommended by this test.
 
+    Revision 1.4 lists EOS ``4.36.3.1M``, ``4.35.7.1M``, ``4.34.9.1M``, and ``4.33.11.1M`` as fixed releases.
+
     TerminAttr package versions with underscore build labels retain their original spelling in findings. Numeric release components determine
     the affected train and patch; a build at the first fixed patch is conservatively affected until it is the final release. For example,
     ``v1.46.3_devel`` does not establish the fix published in final ``v1.46.3``.
 
     EOS and TerminAttr upgrades must be compatible. When EOS must also change, select TerminAttr for the target EOS release rather than the
-    currently installed EOS. All EOS platforms, including CVX, are assessed without platform-family exclusions. Other Arista products covered
-    by the advisory are outside this test.
+    currently installed EOS. TerminAttr recommendations use the advisory's exact EOS compatibility bounds. Hotfix builds above a published
+    upper bound require compatibility confirmation; for example, EOS ``4.36.3.1M`` receives guidance to confirm a supported TerminAttr release
+    rather than a specific version recommendation. This does not change whether either installed version is affected.
+
+    All EOS platforms, including CVX, are assessed without platform-family exclusions. Other Arista products covered by the advisory are
+    outside this test.
 
     Examples
     --------
