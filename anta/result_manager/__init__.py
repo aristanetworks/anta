@@ -255,7 +255,8 @@ class ResultManager:
         """Get the results, optionally filtered by status and sorted by TestResult fields.
 
         If no status is provided, all results are returned.
-        List fields are compared lexicographically; None values are treated as empty strings.
+        The categories and messages lists are compared lexicographically; None values are treated as empty strings.
+        Sorting by atomic_results is unsupported because AtomicTestResult does not define ordering.
 
         Parameters
         ----------
@@ -310,7 +311,8 @@ class ResultManager:
     def sort(self, sort_by: list[str]) -> ResultManager:
         """Sort the ResultManager results based on TestResult fields.
 
-        List fields are compared lexicographically; None values are treated as empty strings.
+        The categories and messages lists are compared lexicographically; None values are treated as empty strings.
+        Sorting by atomic_results is unsupported because AtomicTestResult does not define ordering.
 
         Parameters
         ----------
