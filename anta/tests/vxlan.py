@@ -329,3 +329,64 @@ class VerifyVxlan1VVTEPIPAddresses(AntaTest):
                 self.result.is_failure(f"Interface: Vxlan1 - VVTEP {ip_version} address is not configured")
             elif expected != configured:
                 self.result.is_failure(f"Interface: Vxlan1 - Incorrect VVTEP {ip_version} address - Expected: {expected} Actual: {configured}")
+
+
+class VerifyVxlanFloodVtep(AntaTest):
+    """Verifies the flood VTEP list for the provided VLANs.
+
+    Each provided VLAN must have exactly the expected IPv4 VTEPs, regardless of order.
+    VLANs not provided in the inputs are ignored. EOS only displays flood lists for
+    VLANs whose line protocol is up, so an absent VLAN fails this check.
+
+    Expected Results
+    ----------------
+    * Success: All provided VLANs have exactly the expected flood VTEPs.
+    * Failure: A provided VLAN is absent, or has missing or unexpected flood VTEPs.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.vxlan:
+      - VerifyVxlanFloodVtep:
+          vlans:
+            100:
+              - 3.3.3.3
+            101:
+              - 11.1.1.1
+              - 11.1.1.2
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["vxlan"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show vxlan flood vtep", ofmt="text")]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyVxlanFloodVtep test."""
+
+        vlans: dict[VlanId, list[IPv4Address]] = Field(min_length=1)
+        """Mapping of VLAN IDs to their expected flood VTEPs. An empty peer list requires an empty flood list."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyVxlanFloodVtep."""
+        self.result.is_success()
+        flood_vteps: dict[str, set[str]] = {}
+        vlan = None
+        for line in self.instance_commands[0].text_output.splitlines():
+            if not (fields := line.split()):
+                continue
+            if fields[0].isdigit():
+                vlan = fields.pop(0)
+                flood_vteps[vlan] = set()
+            if vlan is not None:
+                flood_vteps[vlan].update(fields)
+
+        for vlan_id, vteps in self.inputs.vlans.items():
+            if (actual := flood_vteps.get(str(vlan_id))) is None:
+                self.result.is_failure(f"VLAN: {vlan_id} - Flood list not found")
+                continue
+            expected = {str(vtep) for vtep in vteps}
+            if missing := expected - actual:
+                self.result.is_failure(f"VLAN: {vlan_id} - Missing flood VTEP(s): {', '.join(sorted(missing))}")
+            if unexpected := actual - expected:
+                self.result.is_failure(f"VLAN: {vlan_id} - Unexpected flood VTEP(s): {', '.join(sorted(unexpected))}")

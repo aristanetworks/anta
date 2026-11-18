@@ -1620,6 +1620,14 @@ anta.tests.vxlan:
       ipv6_address: fd00:dc:1::1
   - VerifyVxlanConfigSanity:
       # Verifies there are no VXLAN config-sanity inconsistencies.
+  - VerifyVxlanFloodVtep:
+      # Verifies the flood VTEP list for the provided VLANs.
+      vlans:
+        100:
+          - 3.3.3.3
+        101:
+          - 11.1.1.1
+          - 11.1.1.2
   - VerifyVxlanVniBinding:
       # Verifies the VNI-VLAN, VNI-VRF bindings of the Vxlan1 interface.
       bindings:
