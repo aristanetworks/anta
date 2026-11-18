@@ -27,7 +27,6 @@ from anta.decorators import preview_test_class
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-# Advisory version metadata stays local even when identical.
 CVE_121294_AFFECTED_VERSIONS: tuple[VersionRule, ...] = (
     VersionRule(major=4, minor=36, patch_lte=2),
     VersionRule(major=4, minor=35, patch_lte=6),

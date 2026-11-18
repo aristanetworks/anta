@@ -22,7 +22,6 @@ from anta._advisory.remediation import FixedRelease, software_version_plan
 from anta._eos.version import EOSVersion
 from anta.decorators import preview_test_class
 
-# Advisory version metadata stays local even when identical.
 AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
     VersionRule(major=4, minor=36, patch_lte=1),
     VersionRule(major=4, minor=35, patch_lte=5),

@@ -23,7 +23,6 @@ from anta.decorators import preview_test_class
 if TYPE_CHECKING:
     from anta._advisory.facts.models import Fact
 
-# Advisory version metadata stays local even when identical.
 AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
     VersionRule(major=4, minor=36, patch_lte=1),
     VersionRule(major=4, minor=35, patch_lte=5),
