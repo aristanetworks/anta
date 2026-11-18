@@ -628,15 +628,42 @@ class TestResultManager:
         assert results[2].test == "Test3"
         assert results[2].custom_field == "custom"
 
-    def test_sort_invalid_field(self) -> None:
-        """Test that sort method raises ValueError for invalid sort_by fields."""
-        result_manager = ResultManager()
-        expected_match = (
-            r"Invalid sort_by fields: ['bad_field']. Accepted fields are: "
-            r"['name', 'test', 'categories', 'description', 'result', 'messages', 'atomic_results', 'custom_field']"
+    @pytest.mark.parametrize("method", ["get_results", "sort"])
+    @pytest.mark.parametrize("field", ["name", "test", "categories", "description", "result", "messages", "custom_field"])
+    def test_sort_supported_fields(self, method: str, field: str) -> None:
+        """Sort every supported field even when the results contain distinct atomic results."""
+        manager = ResultManager()
+        first = models.TestResult(name="leaf1", test="TestA", categories=[], description="", result=AntaTestStatus.ERROR, messages=[], custom_field=None)
+        second = models.TestResult(
+            name="leaf2", test="TestB", categories=["system"], description="System", result=AntaTestStatus.SUCCESS, messages=["ok"], custom_field="custom"
         )
-        with pytest.raises(ValueError, match=re.escape(expected_match)):
-            _ = result_manager.sort(["bad_field"])
+        first.add("First atomic result")
+        second.add("Second atomic result")
+        manager.results = [second, first]
+
+        results = manager.get_results(sort_by=[field]) if method == "get_results" else manager.sort([field]).results
+
+        assert [result.name for result in results] == ["leaf1", "leaf2"]
+        assert [result.name for result in manager.results] == (["leaf2", "leaf1"] if method == "get_results" else ["leaf1", "leaf2"])
+
+    @pytest.mark.parametrize("method", ["get_results", "sort"])
+    @pytest.mark.parametrize("sort_by", [["bad_field"], ["atomic_results"], ["name", "atomic_results"], ["atomic_results", "name"]])
+    @pytest.mark.parametrize("result_count", [0, 1, 2])
+    def test_sort_invalid_field(self, method: str, sort_by: list[str], result_count: int) -> None:
+        """Reject unsupported fields before sorting, regardless of result count, and preserve stored order."""
+        manager = ResultManager()
+        original = [models.TestResult(name=name, test="Test", categories=[], description="") for name in ("leaf2", "leaf1")[:result_count]]
+        for result in original:
+            result.add(f"Atomic result for {result.name}")
+        manager.results = original.copy()
+        expected_message = (
+            f"Invalid sort_by fields: {sort_by}. Accepted fields are: ['name', 'test', 'categories', 'description', 'result', 'messages', 'custom_field']"
+        )
+
+        with pytest.raises(ValueError, match=f"^{re.escape(expected_message)}$"):
+            getattr(manager, method)(sort_by=sort_by)
+
+        assert [id(result) for result in manager.results] == [id(result) for result in original]
 
     def test_sort_is_chainable(self) -> None:
         """Test that the sort method is chainable."""
