@@ -207,7 +207,7 @@ class VerifyEVPNSanity(AntaTest):
     ```yaml
     anta.tests.evpn:
       - VerifyEVPNSanity:
-            warning_as_failure: true
+          warning_as_failure: true
     ```
     """
 
@@ -236,12 +236,13 @@ class VerifyEVPNSanity(AntaTest):
 
     def _verify_check(self, item: dict[str, Any], result: AtomicTestResult) -> None:
         """Evaluate one EVPN sanity check and update its atomic result."""
+        status = item["status"]
         reason = f" - {details}" if (details := item.get("reasonNotOk")) else ""
-        match item["status"], self.inputs.warning_as_failure:
+        match status, self.inputs.warning_as_failure:
             case "ok", _:
                 return
             case "warn", False:
                 result.is_success(f"Status: warn{reason}")
-            case status, warning_as_failure:
-                expected = "ok" if warning_as_failure else "ok, warn"
+            case _:
+                expected = "ok" if self.inputs.warning_as_failure else "ok, warn"
                 result.is_failure(f"Invalid status - Expected: {expected} Actual: {status}{reason}")

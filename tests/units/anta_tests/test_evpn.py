@@ -449,7 +449,7 @@ DATA: AntaUnitTestData = {
             {
                 "categories": {
                     "General": {"items": [{"name": "Send community", "status": "ok"}]},
-                    "L2": {"items": [{"name": "MAC-VRF route-distinguisher", "status": "ok"}]},
+                    "L2": {"items": [{"name": "MAC-VRF route distinguisher", "status": "ok"}]},
                     "VXLAN": {"items": [{"name": "VRF to VNI map for IP-VRF", "status": "ok"}]},
                 }
             }
@@ -458,7 +458,7 @@ DATA: AntaUnitTestData = {
             "result": AntaTestStatus.SUCCESS,
             "atomic_results": [
                 {"description": "Category: General Item: Send community", "result": AntaTestStatus.SUCCESS},
-                {"description": "Category: L2 Item: MAC-VRF route-distinguisher", "result": AntaTestStatus.SUCCESS},
+                {"description": "Category: L2 Item: MAC-VRF route distinguisher", "result": AntaTestStatus.SUCCESS},
                 {"description": "Category: VXLAN Item: VRF to VNI map for IP-VRF", "result": AntaTestStatus.SUCCESS},
             ],
         },
@@ -486,7 +486,7 @@ DATA: AntaUnitTestData = {
                     "L2": {
                         "items": [
                             {
-                                "name": "MAC-VRF route-distinguisher",
+                                "name": "MAC-VRF route distinguisher",
                                 "status": "warn",
                                 "reasonNotOk": "The MAC-VRF VLAN 100 is not configured with a route-distinguisher",
                             },
@@ -504,7 +504,7 @@ DATA: AntaUnitTestData = {
                 "Category: General Item: Send community - Invalid status - Expected: ok Actual: fail - Extended community not sent to 10.0.0.2",
                 "Category: General Item: Neighbor established - Invalid status - Expected: ok Actual: warn - Following EVPN sessions are not established: 10.0.0.2",
                 (
-                    "Category: L2 Item: MAC-VRF route-distinguisher - Invalid status - Expected: ok Actual: warn - "
+                    "Category: L2 Item: MAC-VRF route distinguisher - Invalid status - Expected: ok Actual: warn - "
                     "The MAC-VRF VLAN 100 is not configured with a route-distinguisher"
                 ),
                 "Category: L2 Item: MAC-VRF redistribute - Invalid status - Expected: ok Actual: fail",
@@ -522,7 +522,7 @@ DATA: AntaUnitTestData = {
                     "messages": ["Invalid status - Expected: ok Actual: warn - Following EVPN sessions are not established: 10.0.0.2"],
                 },
                 {
-                    "description": "Category: L2 Item: MAC-VRF route-distinguisher",
+                    "description": "Category: L2 Item: MAC-VRF route distinguisher",
                     "result": AntaTestStatus.FAILURE,
                     "messages": ["Invalid status - Expected: ok Actual: warn - The MAC-VRF VLAN 100 is not configured with a route-distinguisher"],
                 },
