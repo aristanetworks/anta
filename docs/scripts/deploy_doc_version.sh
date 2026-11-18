@@ -54,6 +54,7 @@ if [[ "$FINAL_RELEASE" == "true" ]]; then
 else
   python "$SOURCE_ROOT/docs/scripts/manage_doc_versions.py" "$DEPLOY_WORKTREE"
 fi
+python "$SOURCE_ROOT/docs/scripts/generate_root_llms.py" "$DEPLOY_WORKTREE"
 
 git -C "$DEPLOY_WORKTREE" add --all
 if ! git -C "$DEPLOY_WORKTREE" diff --cached --quiet; then

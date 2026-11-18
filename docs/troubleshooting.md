@@ -14,9 +14,13 @@ tags:
 
 A couple of things to check when hitting an issue with ANTA:
 
-<textarea hidden class="mermaid-zoom-source" data-title="Troubleshooting ANTA">
+<!-- Zensical 0.1.0 Markdown-export workaround: a hidden textarea leaks this
+     duplicate zoom source into the export. An inert text/plain script preserves
+     the raw Mermaid text for the zoom helper and is omitted from exports.
+     Keep the normal Mermaid block below; recheck after upgrading Zensical. -->
+<script type="text/plain" class="mermaid-zoom-source" data-title="Troubleshooting ANTA">
 --8<-- "troubleshooting.mmd"
-</textarea>
+</script>
 
 ```mermaid
 --8<-- "troubleshooting.mmd"

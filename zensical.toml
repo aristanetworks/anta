@@ -2,7 +2,7 @@
 # Project information
 site_name = "Arista Network Test Automation - ANTA"
 site_author = "Khelil Sator"
-site_description = "Arista Network Test Automation"
+site_description = "Validate Arista EOS networks with ANTA's Python framework, CLI, and automated test catalog."
 site_url = "https://anta.arista.com/"
 copyright = "Copyright &copy; 2019 - 2026 Arista Networks"
 
@@ -202,10 +202,67 @@ the same version as the installed ANTA package.
   "troubleshooting.md",
   "faq.md",
 ]
-"CLI" = ["cli/overview.md", "cli/*.md"]
+"CLI" = [
+  "cli/overview.md",
+  { "cli/nrfu.md" = "Run network validation tests and generate reports." },
+  "cli/exec.md",
+  "cli/inv-from-cvp.md",
+  "cli/inv-from-ansible.md",
+  "cli/get-inventory-information.md",
+  "cli/get-tests.md",
+  "cli/check.md",
+  "cli/debug.md",
+  "cli/tag-management.md",
+]
 "Reports" = ["reports/index.md", "reports/*.md"]
-"Tests and Input Types" = ["api/tests.md", "api/tests/*.md"]
-"Security Advisories" = ["security-advisory/usage.md", "security-advisory/*.md"]
+"Built-in Tests" = [
+  { "api/tests.md" = "Browse the built-in test modules and their catalog names." },
+  { "api/tests/aaa.md" = "Authentication, authorization, and accounting checks." },
+  { "api/tests/avt.md" = "Adaptive Virtual Topology checks." },
+  { "api/tests/bfd.md" = "Bidirectional Forwarding Detection checks." },
+  { "api/tests/configuration.md" = "Device configuration checks." },
+  { "api/tests/connectivity.md" = "Network connectivity checks." },
+  { "api/tests/cvx.md" = "CloudVision eXchange checks." },
+  { "api/tests/evpn.md" = "Ethernet VPN checks." },
+  { "api/tests/field_notices.md" = "Checks for conditions described in Arista field notices." },
+  { "api/tests/flow_tracking.md" = "Flow tracking checks." },
+  { "api/tests/greent.md" = "GreenT postcard telemetry policy and counter checks." },
+  { "api/tests/hardware.md" = "Hardware and environmental checks." },
+  { "api/tests/interfaces.md" = "Network interface checks." },
+  { "api/tests/lanz.md" = "LANZ (Latency Analyzer) enablement checks." },
+  { "api/tests/logging.md" = "Device logging checks." },
+  { "api/tests/mlag.md" = "Multi-chassis Link Aggregation checks." },
+  { "api/tests/multicast.md" = "Multicast and IGMP checks." },
+  { "api/tests/profiles.md" = "ASIC profile checks." },
+  { "api/tests/ptp.md" = "Precision Time Protocol checks." },
+  { "api/tests/path_selection.md" = "Router path-selection checks." },
+  { "api/tests/routing.generic.md" = "Generic IP routing checks." },
+  { "api/tests/routing.bgp.md" = "Border Gateway Protocol checks." },
+  { "api/tests/routing.ospf.md" = "Open Shortest Path First checks." },
+  { "api/tests/routing.isis.md" = "IS-IS routing checks." },
+  { "api/tests/security.md" = "Device security configuration checks." },
+  { "api/tests/services.md" = "Device service checks." },
+  { "api/tests/snmp.md" = "Simple Network Management Protocol checks." },
+  { "api/tests/stp.md" = "Spanning Tree Protocol checks." },
+  { "api/tests/stun.md" = "Session Traversal Utilities for NAT checks." },
+  { "api/tests/software.md" = "EOS software checks." },
+  { "api/tests/system.md" = "System feature and protocol checks." },
+  { "api/tests/vxlan.md" = "Virtual Extensible LAN checks." },
+  { "api/tests/vlan.md" = "Virtual LAN checks." },
+]
+"Security Advisories" = [
+  "security-advisory/usage.md",
+  "security-advisory/reports.md",
+  "security-advisory/tests-overview.md",
+  "security-advisory/tests.md",
+  "security-advisory/lab.md",
+]
+"Advisory Design Decisions" = [
+  { "security-advisory/decisions/0001 - Advisory assessment states.md" = "Definitions and result mappings for advisory assessment states." },
+  { "security-advisory/decisions/0002 - Agent tracing as an exposure condition.md" = "How runtime tracing affects advisory assessment." },
+  { "security-advisory/decisions/0003 - Advisory software version boundaries.md" = "Software version boundaries when an advisory has no published fix." },
+  { "security-advisory/decisions/0004-scoped-observation-aggregation.md" = "Rules for aggregating evidence across scoped observations." },
+]
 "Advanced Usage" = ["advanced_usages/*.md"]
 "API Reference" = [
   "api/class-diagram.md",
@@ -213,6 +270,8 @@ the same version as the installed ANTA package.
   "api/inventory.md",
   "api/catalog.md",
   "api/commands.md",
+  { "api/tests/anta_test.md" = "AntaTest base class, inputs, and test execution API." },
+  { "api/tests/types.md" = "Reusable input types for test catalogs and custom tests." },
   "api/tests-documentation.md",
   "api/result.md",
   "api/reporter/*.md",

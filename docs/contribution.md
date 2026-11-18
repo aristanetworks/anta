@@ -482,7 +482,13 @@ Register new object identifiers under `MD052.ignored_labels` in `.github/.markdo
 
 Each documentation build generates `llms.txt` at the root of that documentation version (for example, `/main/llms.txt`), linking to rendered Markdown pages. These exports include expanded snippets and generated API documentation. Relative export links stay within the selected documentation version, independently of the HTML canonical URLs. Use the exports from the documentation version matching your installed ANTA package.
 
-The sections under `project.plugins.llmstxt` in `zensical.toml` select the exported pages. When adding a page outside the existing patterns, add it to the appropriate section. After running `zensical build --clean --strict`, check `site/llms.txt` and the affected Markdown output. Verify links, examples, and API content. Zensical 0.1.0 preserves API object reference text but drops those links; images and interactive diagrams are also omitted.
+Deployment also generates a discovery index at the site root, `/llms.txt`, with absolute links to the versioned indexes that exist in that deployment. Stable is listed first when its export is available; main is identified as unreleased development. Existing releases are listed only after their documentation has been rebuilt with exports enabled.
+
+The sections under `project.plugins.llmstxt` in `zensical.toml` select and order the exported pages. Add new pages to the appropriate section and use short entry descriptions where the title needs context. Keep built-in tests, framework APIs, and advisory design decisions in their respective sections. Patterns can match nested directories, and pages selected in different sections are not deduplicated.
+
+After running `zensical build --clean --strict`, run `python docs/scripts/check_llms_exports.py`. CI also runs this check to reject missing or duplicate entries, missing Markdown outputs, and index links that leave the selected version. The check covers all Markdown pages under `docs/`, except paths excluded from publication in `zensical.toml`.
+
+Inspect `site/llms.txt` and the affected Markdown output for useful ordering, intact sentences, links, expanded examples, and generated API content. Zensical 0.1.0 preserves API object reference text but drops those links and object labels. The function template also identifies asynchronous APIs in their content so their coroutine status survives export. Mermaid diagrams remain as fenced source without interactive rendering. Image handling is selective: remote badges and some linked local images remain, while many local screenshots are omitted. Keep icons outside text links so that the exporter preserves the link text. The zoom helper uses inert `text/plain` script blocks to keep its duplicate diagram source out of the Markdown export.
 
 ### Generated CLI snippets
 
