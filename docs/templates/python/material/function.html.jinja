@@ -1,0 +1,11 @@
+{% extends "_base/function.html.jinja" %}
+
+{% block docstring scoped %}
+<!-- Zensical 0.1.0 Markdown-export workaround: object labels are removed,
+     including async metadata. Keep coroutine status in the API content as well
+     as the HTML heading label. Recheck after upgrading Zensical. -->
+{% if "async" in function.labels %}
+<p><strong>Asynchronous {{ "method" if function.parent.is_class else "function" }}.</strong></p>
+{% endif %}
+{{ super() }}
+{% endblock docstring %}

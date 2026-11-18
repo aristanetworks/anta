@@ -125,6 +125,8 @@ jobs:
         run: pip install -e ".[cli]" --group doc -e tools/zensical_extensions
       - name: "Build Zensical documentation offline"
         run: zensical build --strict
+      - name: Check LLM documentation export coverage
+        run: python docs/scripts/check_llms_exports.py
   benchmarks:
     name: Benchmark ANTA
     needs: [file-changes, test-python]

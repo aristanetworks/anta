@@ -102,9 +102,13 @@ Before running tests or other eAPI commands, ANTA refreshes each device to verif
 
 `--timeout` and `ANTA_TIMEOUT` configure the timeout used for eAPI command requests, including inventory refresh, tests, `anta exec`, and `anta debug`. They do not configure the preliminary eAPI endpoint check or session login; each of those requests gets its own fixed five-second HTTPX timeout window.
 
-<textarea hidden class="mermaid-zoom-source timeout-sequence-diagram-source" data-title="ANTA Device Connection and Refresh">
+<!-- Zensical 0.1.0 Markdown-export workaround: a hidden textarea leaks this
+     duplicate zoom source into the export. An inert text/plain script preserves
+     the raw Mermaid text for the zoom helper and is omitted from exports.
+     Keep the normal Mermaid block below; recheck after upgrading Zensical. -->
+<script type="text/plain" class="mermaid-zoom-source timeout-sequence-diagram-source" data-title="ANTA Device Connection and Refresh">
 --8<-- "inventory-refresh.mmd"
-</textarea>
+</script>
 
 ```mermaid
 --8<-- "inventory-refresh.mmd"
