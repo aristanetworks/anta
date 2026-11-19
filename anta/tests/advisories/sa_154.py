@@ -22,7 +22,6 @@ from anta._advisory.remediation import FixedRelease, software_version_plan
 from anta._eos.version import EOSVersion
 from anta.decorators import preview_test_class
 
-# pylint: disable=duplicate-code  # Advisory version metadata stays local even when identical.
 AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
     VersionRule(major=4, minor=36, patch_lte=1),
     VersionRule(major=4, minor=35, patch_lte=5),
@@ -36,7 +35,6 @@ FIXED_RELEASES = (
     FixedRelease(EOSVersion(4, 34, 8, suffix="M")),
     FixedRelease(EOSVersion(4, 33, 9, suffix="M")),
 )
-# pylint: enable=duplicate-code
 
 ADVISORY = _AdvisoryMetadata(
     sa_number="0154",

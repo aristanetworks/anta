@@ -3,8 +3,6 @@
 # that can be found in the LICENSE file.
 """Test anta.report.csv_reporter.py."""
 
-# pylint: disable=too-few-public-methods
-
 import csv
 import pathlib
 from collections.abc import Callable

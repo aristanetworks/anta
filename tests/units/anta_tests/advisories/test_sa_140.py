@@ -2,7 +2,6 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 # ruff: noqa: D102, F811
-# pylint: disable=duplicate-code, missing-function-docstring, redefined-outer-name
 """Unit tests for Arista Security Advisory 140."""
 
 from __future__ import annotations

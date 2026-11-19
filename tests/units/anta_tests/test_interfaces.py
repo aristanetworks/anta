@@ -3,7 +3,6 @@
 # that can be found in the LICENSE file.
 """Test inputs for anta.tests.interfaces."""
 
-# pylint: disable=C0302
 from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta

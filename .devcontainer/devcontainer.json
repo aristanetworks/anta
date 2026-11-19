@@ -18,7 +18,6 @@
 				"formulahendry.github-actions",
 				"matangover.mypy",
 				"ms-python.mypy-type-checker",
-				"ms-python.pylint",
 				"LittleFoxTeam.vscode-python-test-adapter",
 				"njqdev.vscode-python-typehint",
 				"hbenl.vscode-test-explorer",

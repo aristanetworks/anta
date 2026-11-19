@@ -809,7 +809,6 @@ class AsyncEOSDevice(AntaDevice):
 
     def _handle_connect_error(self, e: ConnectError | OSError) -> None:
         """Handle and log a ConnectError or OSError raised during command collection."""
-        # pylint: disable=no-member
         if (isinstance(exc := e.__cause__, httpcore.ConnectError) and isinstance(os_error := exc.__context__, OSError)) or isinstance(os_error := e, OSError):
             if isinstance(os_error.__cause__, OSError):
                 os_error = os_error.__cause__

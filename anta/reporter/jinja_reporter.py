@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     import pathlib
 
 
-class ReportJinja:  # pylint: disable=too-few-public-methods
+class ReportJinja:
     """Report builder based on a Jinja2 template."""
 
     def __init__(self, template_path: pathlib.Path) -> None:

@@ -27,7 +27,6 @@ from anta.decorators import preview_test_class
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-# pylint: disable=duplicate-code  # Advisory version metadata stays local even when identical.
 CVE_121294_AFFECTED_VERSIONS: tuple[VersionRule, ...] = (
     VersionRule(major=4, minor=36, patch_lte=2),
     VersionRule(major=4, minor=35, patch_lte=6),
@@ -50,7 +49,6 @@ FIXED_RELEASES = (
     FixedRelease(EOSVersion(4, 34, 9, suffix="M")),
     FixedRelease(EOSVersion(4, 33, 11, suffix="M")),
 )
-# pylint: enable=duplicate-code
 AFFECTED_PLATFORM_FAMILIES = frozenset(
     {
         PlatformFamily.SERIES_710,

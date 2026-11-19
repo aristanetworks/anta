@@ -83,8 +83,6 @@ benchmark = [
 lint = [
   "codespell>=2.4.3,<2.5.0",
   "pre-commit>=4.7.0",
-  "pylint-pydantic>=0.4.1",
-  "pylint>=4.1.3,<4.1.4",
   "pyright",
   "ruff>=0.17.4,<0.17.5",
   "types-PyYAML",
@@ -298,8 +296,7 @@ dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 convention = "numpy"
 
 [tool.ruff.lint.pylint]
-# Ruff owns the overlapping complexity checks so thresholds and per-file exceptions
-# have one source of truth. Keep Pylint-only design checks until Ruff has stable replacements.
+# Configure the Pylint-derived rules implemented by Ruff.
 max-branches = 13
 max-args = 10
 max-returns = 6
@@ -382,79 +379,3 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
   "T203",   # `pprint` found
 
 ]
-
-################################
-# Pylint
-################################
-[tool.pylint]
-# Delegate verified duplicates to enabled, stable Ruff rules rather than copying
-# the full tracker: https://github.com/astral-sh/ruff/issues/970 also lists preview rules.
-disable = [
-    "invalid-name",
-    "fixme",
-    "unused-import",
-    "unused-argument",
-    "keyword-arg-before-vararg",
-    "protected-access",
-    "too-many-arguments", # PLR0913
-    "too-many-positional-arguments",
-    # Ruff owns complexity limits and exceptions; avoid conflicting Pylint defaults.
-    "too-many-branches", # PLR0912
-    "too-many-return-statements", # PLR0911
-    "too-many-statements", # PLR0915
-    "wrong-import-position",
-    "pointless-statement",
-    "broad-exception-caught",
-    "line-too-long",
-    "unused-variable",
-    "redefined-builtin",
-    "global-statement",
-    "reimported",
-    "wrong-import-order",
-    "unnecessary-lambda",
-    "abstract-class-instantiated", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-instantiation-of-abstract-classes-abstract
-    "unexpected-keyword-arg", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-arguments-in-calls-call-arg and other rules
-    "no-value-for-parameter", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-arguments-in-calls-call-arg
-    "import-outside-toplevel",
-    # Stable Ruff replacements for duplicate style and syntax checks.
-    "anomalous-backslash-in-string", # W605
-    "assert-on-tuple", # F631
-    "f-string-without-interpolation", # F541
-    "bare-except", # E722
-    "eval-used", # S307
-    "exec-used", # S102
-    "nonexistent-operator", # B002
-    "notimplemented-raised", # F901
-    "multiple-imports", # E401
-    "multiple-statements", # E701, E702
-    "unnecessary-semicolon", # E703
-    "trailing-whitespace", # W291
-    "missing-final-newline", # W292
-    "bad-classmethod-argument", # N804
-    "no-self-argument", # N805
-    "unnecessary-lambda-assignment", # E731
-    "unnecessary-direct-lambda-call", # PLC3002
-    "no-else-return", # RET505
-    "no-else-raise", # RET506
-    "no-else-continue", # RET507
-    "no-else-break", # RET508
-    "useless-object-inheritance", # UP004
-    "super-with-arguments", # UP008
-    "redundant-u-string-prefix", # UP025
-    "global-at-module-level", # PLW0604
-    "self-assigning-variable", # PLW0127
-    "useless-else-on-loop", # PLW0120
-    "useless-import-alias", # PLC0414
-    "ungrouped-imports", # I001
-]
-max-locals=23
-max-line-length=165
-max-module-lines=1700
-# making similarity lines limit a bit higher than default 4
-min-similarity-lines=10
-# https://stackoverflow.com/questions/49680191/click-and-pylint
-signature-mutators="click.decorators.option"
-load-plugins="pylint_pydantic"
-extension-pkg-whitelist="pydantic"
-# Pylint does not treat dataclasses differently: https://github.com/pylint-dev/pylint/issues/9058
-max-attributes=15

@@ -87,7 +87,6 @@ def test_sa172_assessment_contract() -> None:
 
 def test_sa172_version_boundaries() -> None:
     """Cover every source-defined affected and first-fixed EOS boundary."""
-    # pylint: disable=duplicate-code
     assert_version_statuses(
         AFFECTED_VERSION_MATRIX,
         (
@@ -102,7 +101,6 @@ def test_sa172_version_boundaries() -> None:
             ("4.32.99M", AffectedStatus.AFFECTED),
         ),
     )
-    # pylint: enable=duplicate-code
 
 
 _DATA: AntaUnitTestData = {

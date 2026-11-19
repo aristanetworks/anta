@@ -76,8 +76,6 @@ class TestVerifyISISSegmentRoutingDataplaneInput:
 class TestTunnelPath:
     """Test anta.input_models.routing.isis.TestTunnelPath."""
 
-    # pylint: disable=too-few-public-methods
-
     @pytest.mark.parametrize(
         ("nexthop", "type", "interface", "tunnel_id", "expected"),
         [
