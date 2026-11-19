@@ -288,7 +288,7 @@ class AntaInventory(dict[str, AntaDevice]):
         username: str,
         password: str,
         enable_password: str | None = None,
-        timeout: float | None = None,
+        timeout: float | None = 30.0,
         file_format: Literal["yaml", "json"] = "yaml",
         *,
         enable: bool = False,
@@ -311,7 +311,7 @@ class AntaInventory(dict[str, AntaDevice]):
         enable_password
             Enable password to use if required.
         timeout
-            Global timeout value in seconds for outgoing eAPI calls. None means no timeout.
+            Global timeout value in seconds for outgoing eAPI calls. Defaults to 30.0. None means no timeout.
         file_format
             Whether the inventory file is in JSON or YAML.
         enable
