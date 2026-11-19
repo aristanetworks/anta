@@ -84,7 +84,7 @@ lint = [
   "codespell>=2.4.3,<2.5.0",
   "pre-commit>=4.7.0",
   "pyright",
-  "ruff>=0.17.4,<0.17.5",
+  "ruff>=0.17.5,<0.17.6",
   "types-PyYAML",
   "types-pyOpenSSL",
   "types-requests",
