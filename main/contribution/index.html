@@ -3667,30 +3667,10 @@ uv<span class="w"> </span>lock<span class="w"> </span>--upgrade
 <p>Record the advisory and reason in the PR, update the affected package, and remove the exception once the distributions required by the supported environments are at least seven days old, measured from their registry upload times. Any applicable Renovate approval or release-age restrictions must also be handled when expediting its PRs.</p>
 <p>A lock update selects versions for environments that consume it. Ordinary pip installations use ANTA&rsquo;s published dependency ranges. When addressing a relevant vulnerability, also assess whether those ranges must exclude affected versions; updating the lock alone does not change downstream requirements or existing installations.</p>
 <h4 id="code-linting">Code linting<a class="headerlink" href="#code-linting" title="Permanent link">&para;</a></h4>
+<p>Ruff checks lint rules and formatting:</p>
 <div class="highlight"><pre><span></span><code>tox<span class="w"> </span>-e<span class="w"> </span>lint
-<span class="o">[</span>...<span class="o">]</span>
-lint:<span class="w"> </span>commands<span class="o">[</span><span class="m">0</span><span class="o">]</span>&gt;<span class="w"> </span>ruff<span class="w"> </span>check<span class="w"> </span>.
-All<span class="w"> </span>checks<span class="w"> </span>passed!
-lint:<span class="w"> </span>commands<span class="o">[</span><span class="m">1</span><span class="o">]</span>&gt;<span class="w"> </span>ruff<span class="w"> </span>format<span class="w"> </span>.<span class="w"> </span>--check
-<span class="m">224</span><span class="w"> </span>files<span class="w"> </span>already<span class="w"> </span>formatted
-lint:<span class="w"> </span>commands<span class="o">[</span><span class="m">2</span><span class="o">]</span>&gt;<span class="w"> </span>pylint<span class="w"> </span>anta
-
---------------------------------------------------------------------
-Your<span class="w"> </span>code<span class="w"> </span>has<span class="w"> </span>been<span class="w"> </span>rated<span class="w"> </span>at<span class="w"> </span><span class="m">10</span>.00/10<span class="w"> </span><span class="o">(</span>previous<span class="w"> </span>run:<span class="w"> </span><span class="m">10</span>.00/10,<span class="w"> </span>+0.00<span class="o">)</span>
-
-lint:<span class="w"> </span>commands<span class="o">[</span><span class="m">3</span><span class="o">]</span>&gt;<span class="w"> </span>pylint<span class="w"> </span>tests
-
---------------------------------------------------------------------
-Your<span class="w"> </span>code<span class="w"> </span>has<span class="w"> </span>been<span class="w"> </span>rated<span class="w"> </span>at<span class="w"> </span><span class="m">10</span>.00/10<span class="w"> </span><span class="o">(</span>previous<span class="w"> </span>run:<span class="w"> </span><span class="m">10</span>.00/10,<span class="w"> </span>+0.00<span class="o">)</span>
-
-lint:<span class="w"> </span>commands<span class="o">[</span><span class="m">4</span><span class="o">]</span>&gt;<span class="w"> </span>pylint<span class="w"> </span>asynceapi
-
---------------------------------------------------------------------
-Your<span class="w"> </span>code<span class="w"> </span>has<span class="w"> </span>been<span class="w"> </span>rated<span class="w"> </span>at<span class="w"> </span><span class="m">10</span>.00/10<span class="w"> </span><span class="o">(</span>previous<span class="w"> </span>run:<span class="w"> </span><span class="m">10</span>.00/10,<span class="w"> </span>+0.00<span class="o">)</span>
-
-<span class="w">  </span>lint:<span class="w"> </span>OK<span class="w"> </span><span class="o">(</span><span class="m">38</span>.75<span class="o">=</span>setup<span class="o">[</span><span class="m">12</span>.60<span class="o">]</span>+cmd<span class="o">[</span><span class="m">0</span>.98,0.08,9.51,13.49,2.09<span class="o">]</span><span class="w"> </span>seconds<span class="o">)</span>
-<span class="w">  </span>congratulations<span class="w"> </span>:<span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="m">38</span>.78<span class="w"> </span>seconds<span class="o">)</span>
 </code></pre></div>
+<p>Run the separate typing environment below to check types with Pyright. Static analysis complements tests; exercise invalid inputs, import paths, iterator behavior, and resource cleanup in the relevant unit tests.</p>
 <h4 id="code-typing">Code Typing<a class="headerlink" href="#code-typing" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code>tox<span class="w"> </span>-e<span class="w"> </span><span class="nb">type</span>
 
@@ -3908,7 +3888,6 @@ Check<span class="w"> </span>and<span class="w"> </span>insert<span class="w"> <
 Check<span class="w"> </span>and<span class="w"> </span>insert<span class="w"> </span>license<span class="w"> </span>on<span class="w"> </span>Markdown<span class="w"> </span>files...............................Passed
 Run<span class="w"> </span>Ruff<span class="w"> </span>linter..........................................................Passed
 Run<span class="w"> </span>Ruff<span class="w"> </span>formatter.......................................................Passed
-Check<span class="w"> </span>code<span class="w"> </span>style<span class="w"> </span>with<span class="w"> </span>pylint.............................................Passed
 Checks<span class="w"> </span><span class="k">for</span><span class="w"> </span>common<span class="w"> </span>misspellings<span class="w"> </span><span class="k">in</span><span class="w"> </span>text<span class="w"> </span>files.............................Passed
 PyRight<span class="w"> </span>static<span class="w"> </span><span class="nb">type</span><span class="w"> </span>checker..............................................Passed
 Check<span class="w"> </span><span class="k">for</span><span class="w"> </span>Linting<span class="w"> </span>errors<span class="w"> </span>on<span class="w"> </span>Markdown<span class="w"> </span>files...............................Passed
@@ -4023,7 +4002,7 @@ git<span class="w"> </span>diff<span class="w"> </span>--exit-code<span class="w
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    November 10, 2026
+    November 19, 2026
   </span>
 
     
