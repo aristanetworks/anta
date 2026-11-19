@@ -1,16 +1,21 @@
 ---
-name: Scan published container
+name: Scan container
 
 "on":
-  pull_request:
-    paths:
-      - .github/workflows/container-scan.yml
   schedule:
     - cron: "23 4 * * *"
   workflow_dispatch:
     inputs:
+      source:
+        description: "Image source (branch builds use the selected workflow branch)"
+        required: true
+        type: choice
+        default: published
+        options:
+          - published
+          - branch
       tag:
-        description: "Published ANTA image tag to scan"
+        description: "Published image tag (ignored for branch builds)"
         required: true
         type: string
         default: latest
@@ -26,22 +31,36 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
+      SCAN_SOURCE: ${{ inputs.source || 'published' }}
       IMAGE_TAG: ${{ inputs.tag || 'latest' }}
-      IMAGE_REF: ghcr.io/aristanetworks/anta:${{ inputs.tag || 'latest' }}
+      IMAGE_REF: >-
+        ${{ inputs.source == 'branch'
+            && format('anta-scan:{0}', github.sha)
+            || format('ghcr.io/aristanetworks/anta:{0}', inputs.tag || 'latest') }}
     steps:
-      - name: Validate image tag
+      - name: Check out selected branch
+        if: inputs.source == 'branch'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Build selected branch without publishing
+        if: inputs.source == 'branch'
+        run: docker build --pull --platform linux/amd64 --tag "$IMAGE_REF" .
+
+      - name: Prepare scan
         run: |
-          if [[ ! "$IMAGE_TAG" =~ ^[a-zA-Z0-9_][a-zA-Z0-9_.-]{0,127}$ ]]; then
+          if [[ "$SCAN_SOURCE" == published && ! "$IMAGE_TAG" =~ ^[a-zA-Z0-9_][a-zA-Z0-9_.-]{0,127}$ ]]; then
             echo '::error::Invalid image tag. Use a published tag such as latest, dev, or 1.0.0.'
             exit 1
           fi
           mkdir -p reports
 
-      - name: Scan published image
+      - name: Scan image
         id: trivy
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         env:
-          TRIVY_IMAGE_SRC: remote
+          TRIVY_IMAGE_SRC: ${{ inputs.source == 'branch' && 'docker' || 'remote' }}
           TRIVY_PLATFORM: linux/amd64
         with:
           version: v0.76.2
@@ -67,8 +86,9 @@ jobs:
         if: ${{ !cancelled() && steps.trivy.outcome == 'success' }}
         run: |
           {
-            echo '### Published ANTA container scan'
+            echo '### ANTA container scan'
             echo ""
+            echo "Source: $SCAN_SOURCE"
             echo "Image: \`$IMAGE_REF\` (\`linux/amd64\`)"
             echo ""
             echo 'Reports contain vulnerabilities with available fixes. HIGH/CRITICAL findings fail this scan.'
