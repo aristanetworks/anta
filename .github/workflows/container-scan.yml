@@ -100,19 +100,23 @@ jobs:
               ["CRITICAL", "HIGH", "MEDIUM", "LOW", "UNKNOWN"][] as $severity |
               "| \($severity) | \([$findings[] | select(.Severity == $severity)] | length) |"
             ' reports/trivy.json
-            echo ""
-            echo 'Download the full JSON and text reports from this run’s artifacts.'
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Retain available reports
+        id: reports
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: trivy-container-reports
+          name: trivy-container-reports-${{ github.run_attempt }}
           path: reports/
           if-no-files-found: warn
-          overwrite: true
           retention-days: 30
+
+      - name: Link uploaded reports
+        if: ${{ !cancelled() && steps.reports.outcome == 'success' && steps.reports.outputs.artifact-url != '' }}
+        env:
+          ARTIFACT_URL: ${{ steps.reports.outputs.artifact-url }}
+        run: printf '\n[Download available reports](%s).\n' "$ARTIFACT_URL" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Fail on fixable HIGH or CRITICAL vulnerabilities
         if: ${{ !cancelled() && steps.trivy.outcome == 'success' }}
