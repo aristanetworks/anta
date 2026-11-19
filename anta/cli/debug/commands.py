@@ -1,7 +1,6 @@
 # Copyright (c) 2023-2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-# pylint: disable = redefined-outer-name
 """Click commands to execute EOS commands on remote devices."""
 
 from __future__ import annotations

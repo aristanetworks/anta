@@ -22,8 +22,6 @@ FAKE_TEST = FakeTestWithInput
 class TestResultFactoryProtocol(Protocol):
     """https://mypy.readthedocs.io/en/stable/protocols.html#callback-protocols."""
 
-    # pylint: disable=R0903
-
     def __call__(  # noqa: D102
         self, index: int, atomic_results_status: list[AntaTestStatus] | None = None, *, distinct_tests: bool = False, distinct_devices: bool = False
     ) -> TestResult: ...
@@ -31,8 +29,6 @@ class TestResultFactoryProtocol(Protocol):
 
 class ResultManagerFactoryProtocol(Protocol):
     """https://mypy.readthedocs.io/en/stable/protocols.html#callback-protocols."""
-
-    # pylint: disable=R0903
 
     def __call__(  # noqa: D102
         self, size: int, atomic_results_status: list[AntaTestStatus] | None = None, *, distinct_tests: bool = False, distinct_devices: bool = False

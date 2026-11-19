@@ -83,8 +83,6 @@ benchmark = [
 lint = [
   "codespell>=2.4.3,<2.5.0",
   "pre-commit>=4.7.0",
-  "pylint-pydantic>=0.4.1",
-  "pylint>=4.1.3",
   "pyright",
   "ruff>=0.17.4,<0.17.5",
   "types-PyYAML",
@@ -99,11 +97,11 @@ doc = [
   "griffe-warnings-deprecated~=1.1.2",
   "mike @ git+https://github.com/squidfunk/mike.git@2d4ad799442f4592db8ad53b179bfb33db8c69ac",
   "packaging>=26.3",
-  "zensical==0.1.0",
+  "zensical==0.1.1",
   "mkdocs~=1.6",
   "mkdocs-autorefs~=1.4",
   "mkdocstrings[python]~=1.0.8",
-  "mkdocstrings-python~=2.0.10",
+  "mkdocstrings-python~=2.0.11",
 ]
 [project.urls]
 Homepage = "https://anta.arista.com"
@@ -285,7 +283,6 @@ ignore = [
   "TD002",   # We don't have require authors in TODO
   "TD003",   # We don't have an issue link for all TODOs today
   "FIX002",  # Line contains TODO - ignoring for ruff for now
-  "F821",    # Disable undefined-name until resolution of #10451
 ]
 
 # Allow autofix for all enabled rules (when `--fix`) is provided.
@@ -299,11 +296,11 @@ dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 convention = "numpy"
 
 [tool.ruff.lint.pylint]
-# These settings are used to configure pylint rules run in ruff. In order to keep sane and while
-# we have not removed pylint completely, these settings should be kept in sync with our pylintrc file.
-# https://github.com/astral-sh/ruff/issues/970
+# Configure the Pylint-derived rules implemented by Ruff.
 max-branches = 13
 max-args = 10
+max-returns = 6
+max-statements = 50
 
 [tool.ruff.lint.mccabe]
 # Unlike Flake8, default to a complexity level of 10.
@@ -359,7 +356,7 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
 ]
 "anta/tests/routing/isis.py" = [
   "C901",     # TODO: test function is too complex, needs a refactor
-  "PLR0912"   # Too many branches (15/12) (too-many-branches), needs a refactor
+  "PLR0912"   # Too many branches; needs a refactor
 ]
 "anta/tests/logging.py" = [
   "A005",  # TODO: Module `logging` shadows a Python standard-library module
@@ -382,46 +379,3 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
   "T203",   # `pprint` found
 
 ]
-
-################################
-# Pylint
-################################
-[tool.pylint]
-disable = [ # Any rule listed here can be disabled: https://github.com/astral-sh/ruff/issues/970
-    "invalid-name",
-    "fixme",
-    "unused-import",
-    "unused-argument",
-    "keyword-arg-before-vararg",
-    "protected-access",
-    "too-many-arguments",
-    "too-many-positional-arguments",
-    "wrong-import-position",
-    "pointless-statement",
-    "broad-exception-caught",
-    "line-too-long",
-    "unused-variable",
-    "redefined-builtin",
-    "global-statement",
-    "reimported",
-    "wrong-import-order",
-    "wrong-import-position",
-    "unnecessary-lambda",
-    "abstract-class-instantiated", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-instantiation-of-abstract-classes-abstract
-    "unexpected-keyword-arg", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-arguments-in-calls-call-arg and other rules
-    "no-value-for-parameter", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-arguments-in-calls-call-arg
-    "import-outside-toplevel"
-]
-max-statements=61
-max-returns=8
-max-locals=23
-max-line-length=165
-max-module-lines=1700
-# making similarity lines limit a bit higher than default 4
-min-similarity-lines=10
-# https://stackoverflow.com/questions/49680191/click-and-pylint
-signature-mutators="click.decorators.option"
-load-plugins="pylint_pydantic"
-extension-pkg-whitelist="pydantic"
-# Pylint does not treat dataclasses differently: https://github.com/pylint-dev/pylint/issues/9058
-max-attributes=15

@@ -53,30 +53,6 @@ repos:
       - id: ruff-format
         name: Run Ruff formatter
 
-  - repo: https://github.com/pycqa/pylint
-    rev: "8a396357098337ba8be714fffdf2d00947a9778c"  # frozen: v4.0.6
-    hooks:
-      - id: pylint
-        name: Check code style with pylint
-        description: This hook runs pylint.
-        types: [python]
-        language: python
-        args:
-          - -rn # Only display messages
-          - -sn # Don't display the score
-          - --rcfile=pyproject.toml # Link to config file
-        additional_dependencies:
-          - anta[cli]
-          - types-PyYAML==6.0.12.20261103
-          - types-requests==2.33.0.20261030
-          - types-pyOpenSSL==24.1.0.20240722
-          - pylint_pydantic==0.4.1
-          - pytest==9.2.0
-          - pytest-codspeed!=4.1.0
-          - respx==0.23.1
-          - pydantic-settings==2.16.2
-          - zensical==0.1.0
-
   - repo: https://github.com/codespell-project/codespell
     rev: 57b21406f092110c18776e39b0bda50d37c945c8  # frozen: v2.4.3
     hooks:
@@ -100,14 +76,14 @@ repos:
           - respx==0.23.1
           - pytest-httpx>=0.36.2
           - pytest-codspeed>=5.0.4
-          - types-PyYAML==6.0.12.20261103
+          - types-PyYAML==6.0.12.20261111
           - types-requests==2.33.0.20261030
           - types-pyOpenSSL==24.1.0.20240722
-          - zensical==0.1.0
+          - zensical==0.1.1
         files: ^(anta|tests|asynceapi|tools/zensical_extensions)/
 
   - repo: https://github.com/DavidAnson/markdownlint-cli2
-    rev: 341e2a331ba578029e66c2e01183e7a6b5ca9ab4  # frozen: v0.24.0
+    rev: c01a1853c19b175aee6a09f24e2ad9b748c485ad  # frozen: v0.24.1
     hooks:
       - id: markdownlint-cli2
         name: Check for Linting errors on Markdown files.

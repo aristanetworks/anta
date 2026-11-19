@@ -35,7 +35,7 @@ def _matches_bounds(
 
 
 @dataclass(frozen=True)
-class VersionRule:  # pylint: disable=too-many-instance-attributes
+class VersionRule:
     """Declarative EOS version filter rule.
 
     Bounds apply independently to each numeric version component. An omitted

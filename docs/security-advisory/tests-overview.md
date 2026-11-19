@@ -56,7 +56,7 @@ ANTA** identifies the first release aligned with that revision.
 | Security Advisory 0204 | | N/A | | Advance Notice |
 | Security Advisory 0203 | | N/A | | Arista NDR; not covered by ANTA |
 | Security Advisory 0202 | | N/A | | VeloCloud; not covered by ANTA |
-| Security Advisory 0201 | 2026-11-04 | v1.11 | | |
+| Security Advisory 0201 | 2026-11-13 | v1.11 | v1.12 | |
 | Security Advisory 0200 | | N/A | | PHP in Arista cloud services; not covered by ANTA |
 | Security Advisory 0199 | | N/A | | VeloCloud; not covered by ANTA |
 | Security Advisory 0198 | | N/A | | Wi-Fi Access Points; not covered by ANTA |
@@ -110,7 +110,7 @@ ANTA** identifies the first release aligned with that revision.
 | Security Advisory 0150 | 2026-09-09 | v1.10 | | |
 | Security Advisory 0149 | 2026-09-09 | v1.10 | | |
 | Security Advisory 0148 | | N/A | | Advance Notice |
-| Security Advisory 0147 | 2026-08-31 | v1.10 | | |
+| Security Advisory 0147 | 2026-10-16 | v1.10 | v1.12 | |
 | Security Advisory 0146 | 2026-08-19 | v1.10 | | |
 | Security Advisories 0145–0143 | | TBD | | |
 | Security Advisory 0142 | 2026-08-10 | v1.10 | | |

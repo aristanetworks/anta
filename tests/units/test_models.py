@@ -290,6 +290,7 @@ class DeprecatedTestWithNewTest(AntaTest):
         self.result.is_success()
 
 
+# Intentionally abstract: this fixture tests that instantiation fails.
 class FakeTestWithMissingTest(AntaTest):
     """ANTA test with missing test() method implementation."""
 

@@ -4,7 +4,6 @@
 """Module related to the device interfaces tests."""
 
 # TODO: https://github.com/aristanetworks/anta/issues/1260
-# pylint: disable=too-many-lines, duplicate-code
 
 # Pyright does not understand AntaTest.Input typing
 # pyright: reportAttributeAccessIssue=false

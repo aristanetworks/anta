@@ -391,7 +391,7 @@ def _ospfv2_interfaces(output: str) -> tuple[_Ospfv2Interface, ...] | None:
                 or re.fullmatch(r"Message-digest sha\S+ authentication(?:,.*)?", line, flags=re.IGNORECASE) is not None
             )
     append_current()
-    return tuple(interfaces) if interface_count > 0 and len(interfaces) == interface_count else None
+    return tuple(interfaces) if 0 < interface_count == len(interfaces) else None
 
 
 def _ospfv2_area_authentication(
@@ -437,7 +437,6 @@ class Ospfv2BroadcastAuthenticationFact(FeatureFact, CommandsFactDefinition["Osp
     commands: ClassVar[tuple[AntaCommand, ...]] = (OSPFV2_INTERFACE_COMMAND, OSPFV2_SUMMARY_COMMAND)
 
     @classmethod
-    # pylint: disable-next=too-many-return-statements
     def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[Ospfv2BroadcastAuthenticationFact]:  # noqa: PLR0911
         """Find cryptographic authentication on active OSPFv2 broadcast interfaces."""
         interface_command, summary_command = commands
@@ -922,7 +921,6 @@ class RipMd5AuthenticationFact(FeatureFact, CommandsFactDefinition["RipMd5Authen
     commands: ClassVar[tuple[AntaCommand, ...]] = (RIP_CONFIG_COMMAND, RIP_AUTHENTICATION_CONFIG_COMMAND, IP_INTERFACE_COMMAND)
 
     @classmethod
-    # pylint: disable-next=too-many-return-statements
     def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[RipMd5AuthenticationFact]:  # noqa: PLR0911
         """Correlate interface MD5 authentication with enabled RIP network prefixes in the interface VRF."""
         rip_command, authentication_command, interface_command = commands
@@ -969,7 +967,6 @@ class RipDhcpMd5InterfaceFact(ConfigurationFact, CommandsFactDefinition["RipDhcp
     commands: ClassVar[tuple[AntaCommand, ...]] = (RIP_CONFIG_COMMAND, RIP_AUTHENTICATION_CONFIG_COMMAND, IP_INTERFACE_COMMAND)
 
     @classmethod
-    # pylint: disable-next=too-many-return-statements
     def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[RipDhcpMd5InterfaceFact]:  # noqa: PLR0911
         """Correlate DHCP addressing of interfaces with RIP MD5 authentication with enabled RIP instances in the interface VRF."""
         rip_command, authentication_command, interface_command = commands
@@ -1018,7 +1015,6 @@ class RipManagementInterfaceFact(FeatureFact, CommandsFactDefinition["RipManagem
     commands: ClassVar[tuple[AntaCommand, ...]] = (RIP_CONFIG_COMMAND, IP_INTERFACE_COMMAND)
 
     @classmethod
-    # pylint: disable-next=too-many-return-statements
     def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[RipManagementInterfaceFact]:  # noqa: PLR0911
         """Correlate management interface addresses with enabled RIP network prefixes in the interface VRF."""
         rip_command, interface_command = commands
@@ -1058,7 +1054,6 @@ class RipDhcpManagementInterfaceFact(ConfigurationFact, CommandsFactDefinition["
     commands: ClassVar[tuple[AntaCommand, ...]] = (RIP_CONFIG_COMMAND, IP_INTERFACE_COMMAND)
 
     @classmethod
-    # pylint: disable-next=too-many-return-statements
     def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[RipDhcpManagementInterfaceFact]:  # noqa: PLR0911
         """Correlate DHCP addressing of management interfaces with enabled RIP instances in the interface VRF."""
         rip_command, interface_command = commands

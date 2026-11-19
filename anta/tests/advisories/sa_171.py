@@ -106,7 +106,6 @@ def _assess_ospfv2_issue(
     hotfix_releases: frozenset[str],
 ) -> VulnerabilityResult:
     """Assess one OSPFv2 issue using its independent version and feature prerequisite."""
-    # pylint: disable=duplicate-code
     if not isinstance(prerequisite, UnavailableFact) and prerequisite.value.state is not FeatureState.ENABLED:
         return NotAffectedResult(vulnerability_id=vulnerability_id, decisive=(prerequisite,))
     eos_release = assess_eos_scope(vulnerability_id, version, affected_versions)
@@ -131,7 +130,6 @@ def _assess_ospfv2_issue(
         context=(eos_release,),
         remediation=remediation,
     )
-    # pylint: enable=duplicate-code
 
 
 def _assess_broadcast_issue(

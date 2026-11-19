@@ -69,7 +69,7 @@ def _has_error_result(test_data: dict[str, Any]) -> bool:
     return expected["result"] is AntaTestStatus.ERROR or any(atomic_result["result"] is AntaTestStatus.ERROR for atomic_result in expected.get("atomic_results", []))
 
 
-class AntaMockEnvironment:  # pylint: disable=too-few-public-methods
+class AntaMockEnvironment:
     """Generate an ANTA test catalog from the unit tests data. It can be accessed using the `catalog` attribute of this class instance.
 
     Also provide the attribute 'eos_data_catalog` with the output of all the commands used in the test catalog.

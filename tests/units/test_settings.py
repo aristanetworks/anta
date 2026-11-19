@@ -105,7 +105,7 @@ class TestAntaRunnerSettings:
             assert "Initial file descriptor limits for the current ANTA process: Soft Limit: 8192 | Hard Limit: 1048576" in caplog.text
             assert "Setting file descriptor soft limit to 20480" in caplog.text
 
-            setrlimit_mock.assert_called_once_with(resource.RLIMIT_NOFILE, (20480, 1048576))  # pylint: disable=possibly-used-before-assignment # pyright: ignore[reportPossiblyUnboundVariable]
+            setrlimit_mock.assert_called_once_with(resource.RLIMIT_NOFILE, (20480, 1048576))  # pyright: ignore[reportPossiblyUnboundVariable]
 
     @pytest.mark.skipif(os.name != "posix", reason="Cannot run this test on Windows")
     def test_file_descriptor_limit_value_error(self, caplog: pytest.LogCaptureFixture) -> None:

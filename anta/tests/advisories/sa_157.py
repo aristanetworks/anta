@@ -39,7 +39,6 @@ from anta._advisory.remediation import (
 from anta._eos.version import EOSVersion
 from anta.decorators import preview_test_class
 
-# pylint: disable=duplicate-code
 AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
     VersionRule(major=4, minor=36, patch_lte=1),
     VersionRule(major=4, minor=35, patch_lte=5),
@@ -60,7 +59,6 @@ FIXED_RELEASES = (
     FixedRelease(EOSVersion(4, 34, 8, suffix="M")),
     FixedRelease(EOSVersion(4, 33, 10, suffix="M")),
 )
-# pylint: enable=duplicate-code
 ANTI_REPLAY_CONFIGURATION = ApplyConfiguration(("vrrp ipv4 authentication anti-replay",))
 ADVISORY = _AdvisoryMetadata(
     sa_number="0157",
@@ -130,7 +128,7 @@ def _replay_version_relation(version: AvailableFact[EosVersionFact]) -> VersionR
     return VersionRelation.OUTSIDE_SCOPE
 
 
-def _assess_replay(  # noqa: PLR0911  # pylint: disable=too-many-return-statements
+def _assess_replay(  # noqa: PLR0911
     version: Fact[EosVersionFact], ip_ah: Fact[VrrpV2IpAhFact], anti_replay: Fact[VrrpAntiReplayFact]
 ) -> VulnerabilityResult:
     """Require both fixed software and explicitly enabled VRRP replay protection."""

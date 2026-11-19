@@ -100,31 +100,13 @@ A lock update selects versions for environments that consume it. Ordinary pip in
 
 ### Code linting
 
+Ruff checks lint rules and formatting:
+
 ```bash
 tox -e lint
-[...]
-lint: commands[0]> ruff check .
-All checks passed!
-lint: commands[1]> ruff format . --check
-224 files already formatted
-lint: commands[2]> pylint anta
-
---------------------------------------------------------------------
-Your code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)
-
-lint: commands[3]> pylint tests
-
---------------------------------------------------------------------
-Your code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)
-
-lint: commands[4]> pylint asynceapi
-
---------------------------------------------------------------------
-Your code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)
-
-  lint: OK (38.75=setup[12.60]+cmd[0.98,0.08,9.51,13.49,2.09] seconds)
-  congratulations :) (38.78 seconds)
 ```
+
+Run the separate typing environment below to check types with Pyright. Static analysis complements tests; exercise invalid inputs, import paths, iterator behavior, and resource cleanup in the relevant unit tests.
 
 ### Code Typing
 
@@ -392,7 +374,6 @@ Check and insert license on Python files.................................Passed
 Check and insert license on Markdown files...............................Passed
 Run Ruff linter..........................................................Passed
 Run Ruff formatter.......................................................Passed
-Check code style with pylint.............................................Passed
 Checks for common misspellings in text files.............................Passed
 PyRight static type checker..............................................Passed
 Check for Linting errors on Markdown files...............................Passed

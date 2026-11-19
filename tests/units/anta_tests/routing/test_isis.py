@@ -3,8 +3,6 @@
 # that can be found in the LICENSE file.
 """Tests for anta.tests.routing.ospf.py."""
 
-# pylint: disable=too-many-lines
-
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

@@ -24,7 +24,7 @@ GIT_RENAME_FIELD_COUNT = 3
 GIT_COMMAND = which("git") or "git"
 
 
-class GitDatesPreprocessor(Preprocessor):  # pylint: disable=too-few-public-methods
+class GitDatesPreprocessor(Preprocessor):
     """Populate Material's expected Git date page metadata."""
 
     def run(self, lines: list[str]) -> list[str]:
@@ -45,7 +45,7 @@ class GitDatesPreprocessor(Preprocessor):  # pylint: disable=too-few-public-meth
         return lines
 
 
-class GitDatesExtension(Extension):  # pylint: disable=too-few-public-methods
+class GitDatesExtension(Extension):
     """Register the Git date metadata preprocessor."""
 
     def extendMarkdown(self, md: Markdown) -> None:  # noqa: N802

@@ -30,7 +30,6 @@ from tests.units.test_models import FakeTest
 DATA_DIR: Path = Path(__file__).parent.parent.resolve() / "data"
 
 
-# pylint: disable=too-many-public-methods
 class TestAntaRunner:
     """Test AntaRunner class."""
 
@@ -586,7 +585,6 @@ class TestAntaRunner:
             mock_disconnect.assert_not_called()
 
 
-# pylint: disable=too-few-public-methods
 class TestAntaRunContext:
     """Test AntaRunContext class."""
 

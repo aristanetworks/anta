@@ -337,7 +337,7 @@ class TestAntaCatalog:
         assert sum(len(tests) for tests in file.root.values()) == 228
 
 
-class TestAntaCatalogFile:  # pylint: disable=too-few-public-methods
+class TestAntaCatalogFile:
     """Test for anta.catalog.AntaCatalogFile."""
 
     def test_yaml(self) -> None:

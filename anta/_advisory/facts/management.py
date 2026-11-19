@@ -776,7 +776,6 @@ class GnpsiAuthenticationExposureFact(FeatureFact, CommandsFactDefinition["Gnpsi
     commands: ClassVar[tuple[AntaCommand, ...]] = (GNPSI_COMMAND,)
 
     @classmethod
-    # pylint: disable-next=too-many-return-statements
     def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[GnpsiAuthenticationExposureFact]:  # noqa: C901, PLR0911
         """Normalize TLS metadata and mTLS common-name authentication paths."""
         (command,) = commands
@@ -820,7 +819,6 @@ class GnpsiMutualTlsSpiffeMitigationFact(MitigationFact, CommandsFactDefinition[
     commands: ClassVar[tuple[AntaCommand, ...]] = (GNPSI_COMMAND,)
 
     @classmethod
-    # pylint: disable-next=too-many-return-statements
     def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[GnpsiMutualTlsSpiffeMitigationFact]:  # noqa: C901, PLR0911
         """Verify the exact authentication control across every effective transport."""
         (command,) = commands

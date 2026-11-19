@@ -69,8 +69,6 @@ class AntaTemplate:
         Enable or disable caching for this AntaTemplate if the AntaDevice supports it.
     """
 
-    # pylint: disable=too-few-public-methods
-
     def __init__(
         self,
         template: str,
