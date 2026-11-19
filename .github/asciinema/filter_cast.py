@@ -34,20 +34,15 @@ def normalize_nrfu_progress(events: list[dict[str, object] | list[object]], dura
 def validate_psirt_recording(events: list[dict[str, object] | list[object]]) -> None:
     """Require the successful report outcome before replacing the committed cast."""
     success_message = "Security advisory Markdown report saved to psirt.md"
-    if not any(
-        isinstance(event, list)
-        and len(event) == 3
-        and event[1] == "o"
-        and isinstance(event[2], str)
-        and success_message in event[2]
-        for event in events
-    ):
+    # Asciinema events have three fields: delay, stream, and data.
+    if not any(isinstance(event, list) and len(event) == 3 and event[1] == "o" and isinstance(event[2], str) and success_message in event[2] for event in events):  # noqa: PLR2004
         msg = "PSIRT Markdown report success message was not found in the recording"
         raise RuntimeError(msg)
 
 
 # pylint: disable=too-many-locals
-def animate_nrfu_table(events: list[dict[str, object] | list[object]]) -> list[dict[str, object] | list[object]]:
+# Keep the table animation stages together in their output order.
+def animate_nrfu_table(events: list[dict[str, object] | list[object]]) -> list[dict[str, object] | list[object]]:  # noqa: C901, PLR0915
     """Pause on two representative NRFU rows, then rapidly print the rest."""
     start = next(
         (index for index, event in enumerate(events) if isinstance(event, list) and event[1] == "o" and "All tests results" in event[2]),
@@ -76,7 +71,7 @@ def animate_nrfu_table(events: list[dict[str, object] | list[object]]) -> list[d
     lines = table_text.splitlines(keepends=True)
     header_separator = next((index for index, line in enumerate(lines) if plain_text(line).lstrip().startswith("┡")), None)
     row_boundaries = [index for index, line in enumerate(lines) if plain_text(line).lstrip().startswith(("├", "└"))]
-    if header_separator is None or len(row_boundaries) < 2:
+    if header_separator is None or len(row_boundaries) < 2:  # noqa: PLR2004 - a separator and bottom border delimit the rows
         msg = "NRFU result table rows were not found after joining cast events"
         raise RuntimeError(msg)
 
@@ -133,13 +128,12 @@ def main() -> None:
     for event in events:
         if isinstance(event, dict):
             event["command"] = public_command
-        elif isinstance(event, list) and len(event) == 3 and event[1] == "o":
-            if recording == "nrfu":
-                if "WARNING " in event[2] or "ERROR   " in event[2]:
-                    progress_start = event[2].rfind("\x1b[32m(")
-                    if progress_start == -1:
-                        continue
-                    event[2] = "\r\x1b[2K" + event[2][progress_start:]
+        elif isinstance(event, list) and len(event) == 3 and event[1] == "o":  # noqa: PLR2004 - asciinema events have three fields
+            if recording == "nrfu" and ("WARNING " in event[2] or "ERROR   " in event[2]):
+                progress_start = event[2].rfind("\x1b[32m(")
+                if progress_start == -1:
+                    continue
+                event[2] = "\r\x1b[2K" + event[2][progress_start:]
             event[2] = OSC_HYPERLINK.sub("", event[2])
         filtered_events.append(event)
 
