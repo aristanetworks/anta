@@ -37,6 +37,10 @@ Python applications can render an ANTA `ResultManager` with the regular reporter
 
 These API references document the reporter classes and their supported methods. JSON serialization and text rendering are exposed by the CLI rather than as equivalent public reporter classes.
 
+## Experimental reporters
+
+[JUnit reporting](../experimental/junit.md) is available through `anta nrfu junit` and `anta.experimental.reporter.junit_reporter.JUnitReporter`. Its API and report format are experimental; review the documented correctness limitations before using it in automation.
+
 !!! note "ANTA PSIRT reports"
     For security advisory report formats and semantics, see
     [Security Advisory Reports](../security-advisory/reports.md).
