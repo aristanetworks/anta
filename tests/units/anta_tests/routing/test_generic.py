@@ -1145,8 +1145,8 @@ DATA: AntaUnitTestData = {
                             "10": {
                                 "filterType": "permit",
                                 "matchRules": {
-                                    "community": "CL-BGP-EXPORT",
                                     "prefixList": "PL-IPV4-EXPORT",
+                                    "community": "CL-BGP-EXPORT",
                                     "debugInfo": {"community": {"undefined": "CL-BGP-EXPORT"}},
                                 },
                                 "setRules": {
@@ -1274,6 +1274,7 @@ DATA: AntaUnitTestData = {
                                 "filterType": "permit",
                                 "matchRules": {"prefixList": "PL-IPV4-EXPORT", "ipAddrDynamicPrefixList": "DPL-IPV4-EXPORT", "debugInfo": {}},
                                 "setRules": {"debugInfo": {}},
+                                "continueClause": True,
                                 "description": [],
                             },
                         }
@@ -1299,6 +1300,7 @@ DATA: AntaUnitTestData = {
                 "Route-Map: RM-BGP-EXPORT - Sequence: 10 - continue target 9999 is undefined",
                 "Route-Map: RM-BGP-EXPORT - Sequence: 20 - Prefix-list PL-IPV4-EXPORT is undefined",
                 "Route-Map: RM-BGP-EXPORT - Sequence: 20 - Dynamic prefix-list DPL-IPV4-EXPORT is undefined",
+                "Route-Map: RM-BGP-EXPORT - Sequence: 20 - continue target next sequence is undefined",
             ],
             "atomic_results": [
                 {
@@ -1320,6 +1322,7 @@ DATA: AntaUnitTestData = {
                         "Sequence: 10 - continue target 9999 is undefined",
                         "Sequence: 20 - Prefix-list PL-IPV4-EXPORT is undefined",
                         "Sequence: 20 - Dynamic prefix-list DPL-IPV4-EXPORT is undefined",
+                        "Sequence: 20 - continue target next sequence is undefined",
                     ],
                 },
             ],

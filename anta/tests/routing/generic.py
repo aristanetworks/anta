@@ -687,7 +687,6 @@ class VerifyRouteMapSanity(AntaTest):
     def test(self) -> None:
         """Main test function for VerifyRouteMapSanity."""
         command_output = self.instance_commands[0].json_output
-        self.result.is_success()
         route_maps = command_output.get("routeMaps", {})
         if not route_maps:
             self.result.is_success("Route-map configuration sanity check passed")
