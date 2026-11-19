@@ -7,10 +7,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import TYPE_CHECKING, Generic, TypeAlias, TypeVar
-
-if TYPE_CHECKING:
-    from typing_extensions import Never  # noqa: UP035
+from typing import Generic, Never, TypeAlias, TypeVar
 
 T = TypeVar("T")
 

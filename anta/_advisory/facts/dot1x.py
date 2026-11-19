@@ -399,7 +399,6 @@ class Dot1xSupplicantInterfacesFact(CommandsFactDefinition["Dot1xSupplicantInter
     # The command boundary and individual records retain distinct failures.
     def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[Dot1xSupplicantInterfacesFact]:  # noqa: PLR0911
         """Keep configured identities without interpreting authentication progress."""
-        # Collection guards match the independent authenticator observation.
         (command,) = commands
         source = FactSource(command.command, FactSourceKind.COMMAND)
         if is_unsupported_optional_command(command):
