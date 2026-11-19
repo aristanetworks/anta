@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""ANTA test for Arista Security Advisory 201, revision 1.3."""
+"""ANTA test for Arista Security Advisory 201, revision 1.4."""
 
 from __future__ import annotations
 
@@ -44,13 +44,13 @@ from anta.decorators import preview_test_class
 
 AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
     VersionRule(major=4, minor=36, patch_lt=3),
-    VersionRule(major=4, minor=36, patch_eq=3, hotfix_lt=2),
+    VersionRule(major=4, minor=36, patch_eq=3, hotfix_lt=1),
     VersionRule(major=4, minor=35, patch_lt=7),
-    VersionRule(major=4, minor=35, patch_eq=7, hotfix_lt=2),
+    VersionRule(major=4, minor=35, patch_eq=7, hotfix_lt=1),
     VersionRule(major=4, minor=34, patch_lt=9),
-    VersionRule(major=4, minor=34, patch_eq=9, hotfix_lt=2),
+    VersionRule(major=4, minor=34, patch_eq=9, hotfix_lt=1),
     VersionRule(major=4, minor=33, patch_lt=11),
-    VersionRule(major=4, minor=33, patch_eq=11, hotfix_lt=2),
+    VersionRule(major=4, minor=33, patch_eq=11, hotfix_lt=1),
     VersionRule(major=4, minor=32),
     VersionRule(major=4, minor=31),
     VersionRule(major=4, minor=30),
@@ -61,10 +61,10 @@ AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
 )
 FIXED_RELEASES: tuple[FixedRelease, ...] = (
     FixedRelease(EOSVersion(4, 37, 0, suffix="F")),
-    FixedRelease(EOSVersion(4, 36, 3, hotfix=2, suffix="M")),
-    FixedRelease(EOSVersion(4, 35, 7, hotfix=2, suffix="M")),
-    FixedRelease(EOSVersion(4, 34, 9, hotfix=2, suffix="M")),
-    FixedRelease(EOSVersion(4, 33, 11, hotfix=2, suffix="M")),
+    FixedRelease(EOSVersion(4, 36, 3, hotfix=1, suffix="M")),
+    FixedRelease(EOSVersion(4, 35, 7, hotfix=1, suffix="M")),
+    FixedRelease(EOSVersion(4, 34, 9, hotfix=1, suffix="M")),
+    FixedRelease(EOSVersion(4, 33, 11, hotfix=1, suffix="M")),
 )
 # Each key is a v1.x minor release. None means every patch is affected;
 # otherwise the last affected patch is inclusive. Unlisted minors are outside scope.
@@ -135,7 +135,7 @@ TERMINATTR_EOS_COMPATIBILITY = {
 }
 ADVISORY = _AdvisoryMetadata(
     sa_number="0201",
-    last_updated=date(2026, 11, 4),
+    last_updated=date(2026, 11, 13),
     title="Security Advisory 0201",
     vulnerabilities=(
         _AdvisoryVulnerability(
@@ -178,6 +178,8 @@ def _terminattr_version_assessment(fact: Fact[TerminAttrVersionFact]) -> Compone
 
 def _compatible_terminattr_fixes(version: EOSVersion) -> tuple[FixedRelease, ...]:
     """Select only the component releases explicitly supported on the observed EOS."""
+    # The advisory does not explicitly extend its upper bounds to hotfix builds.
+    # Keep the full version comparison until that compatibility is confirmed.
     return tuple(
         release
         for release in TERMINATTR_FIXED_RELEASES
@@ -275,13 +277,19 @@ class SA201(OptionalCommandsMixin, _AntaAdvisoryTest):
     assessment does not use client configuration to exempt affected software. Explicit CA paths, disabled clients, destinations, and runtime
     sessions do not change the result. No trust-store workaround is assessed or recommended by this test.
 
+    Revision 1.4 lists EOS ``4.36.3.1M``, ``4.35.7.1M``, ``4.34.9.1M``, and ``4.33.11.1M`` as fixed releases.
+
     TerminAttr package versions with underscore build labels retain their original spelling in findings. Numeric release components determine
     the affected train and patch; a build at the first fixed patch is conservatively affected until it is the final release. For example,
     ``v1.46.3_devel`` does not establish the fix published in final ``v1.46.3``.
 
     EOS and TerminAttr upgrades must be compatible. When EOS must also change, select TerminAttr for the target EOS release rather than the
-    currently installed EOS. All EOS platforms, including CVX, are assessed without platform-family exclusions. Other Arista products covered
-    by the advisory are outside this test.
+    currently installed EOS. TerminAttr recommendations use the advisory's exact EOS compatibility bounds. Hotfix builds above a published
+    upper bound require compatibility confirmation; for example, EOS ``4.36.3.1M`` receives guidance to confirm a supported TerminAttr release
+    rather than a specific version recommendation. This does not change whether either installed version is affected.
+
+    All EOS platforms, including CVX, are assessed without platform-family exclusions. Other Arista products covered by the advisory are
+    outside this test.
 
     Examples
     --------

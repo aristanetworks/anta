@@ -76,14 +76,14 @@ repos:
           - respx==0.23.1
           - pytest-httpx>=0.36.2
           - pytest-codspeed>=5.0.4
-          - types-PyYAML==6.0.12.20261103
+          - types-PyYAML==6.0.12.20261111
           - types-requests==2.33.0.20261030
           - types-pyOpenSSL==24.1.0.20240722
           - zensical==0.1.1
         files: ^(anta|tests|asynceapi|tools/zensical_extensions)/
 
   - repo: https://github.com/DavidAnson/markdownlint-cli2
-    rev: 341e2a331ba578029e66c2e01183e7a6b5ca9ab4  # frozen: v0.24.0
+    rev: c01a1853c19b175aee6a09f24e2ad9b748c485ad  # frozen: v0.24.1
     hooks:
       - id: markdownlint-cli2
         name: Check for Linting errors on Markdown files.

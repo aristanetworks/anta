@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""ANTA test for Arista Security Advisory 147."""
+"""ANTA test for Arista Security Advisory 147, revision 1.2."""
 
 from __future__ import annotations
 
@@ -54,9 +54,19 @@ from anta.decorators import preview_test_class
 
 OPENSSH_VERSION_PATTERN = re.compile(r"^(?P<major>\d+)\.(?P<minor>\d+)(?:p(?P<patch>\d+))?(?:[^\d].*)?$")
 
+CVE_59995_59996_60001_FIXED_RELEASES = (
+    FixedRelease(EOSVersion(4, 37, 0, suffix="F")),
+    FixedRelease(EOSVersion(4, 36, 3, suffix="M")),
+    FixedRelease(EOSVersion(4, 35, 7, suffix="M")),
+    FixedRelease(EOSVersion(4, 34, 9, suffix="M")),
+    FixedRelease(EOSVersion(4, 33, 11, suffix="M")),
+)
 CVE_60002_FIXED_RELEASES = (
+    FixedRelease(EOSVersion(4, 37, 0, suffix="F")),
+    FixedRelease(EOSVersion(4, 36, 3, suffix="M")),
     FixedRelease(EOSVersion(4, 35, 6, suffix="M")),
     FixedRelease(EOSVersion(4, 34, 8, suffix="M")),
+    FixedRelease(EOSVersion(4, 33, 11, suffix="M")),
 )
 CVE_59995_59996_60001_AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
     VersionRule(major=4, minor=36, patch_lte=2),
@@ -75,7 +85,7 @@ CVE_60002_AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
 ADVISORY = _AdvisoryMetadata(
     sa_number="0147",
     title="Security Advisory 0147",
-    last_updated=date(2026, 8, 31),
+    last_updated=date(2026, 10, 16),
     vulnerabilities=(
         _AdvisoryVulnerability(
             id="CVE-2026-59995",
@@ -168,6 +178,7 @@ def _assess_server_issue(  # noqa: PLR0911
     affected_versions: tuple[VersionRule, ...],
     package_version: Fact[OpenSshServerVersionFact],
     ssh_server: Fact[SshServerFact],
+    fixed_releases: tuple[FixedRelease, ...] = (),
 ) -> VulnerabilityResult:
     """Assess the OpenSSH server vulnerability from normalized facts."""
     eos_release = assess_eos_scope(vulnerability_id, eos_version, affected_versions)
@@ -192,7 +203,7 @@ def _assess_server_issue(  # noqa: PLR0911
         vulnerability_id=vulnerability_id,
         context=(eos_release, ComponentVersionAssessment(package_version, VersionRelation.AFFECTED)),
         conditions=(ssh_server,),
-        remediation=software_version_plan((), current_version=eos_release.fact.value),
+        remediation=software_version_plan(fixed_releases, current_version=eos_release.fact.value),
     )
 
 
@@ -242,18 +253,21 @@ class SA147(OptionalCommandsMixin, _AntaAdvisoryTest):
                 vulnerability_id=vulnerability_ids[0],
                 eos_version=facts.version,
                 affected_versions=CVE_59995_59996_60001_AFFECTED_VERSION_MATRIX,
+                fixed_releases=CVE_59995_59996_60001_FIXED_RELEASES,
                 package_version=facts.client_version,
             ),
             _assess_client_issue(
                 vulnerability_id=vulnerability_ids[1],
                 eos_version=facts.version,
                 affected_versions=CVE_59995_59996_60001_AFFECTED_VERSION_MATRIX,
+                fixed_releases=CVE_59995_59996_60001_FIXED_RELEASES,
                 package_version=facts.client_version,
             ),
             _assess_server_issue(
                 vulnerability_id=vulnerability_ids[2],
                 eos_version=facts.version,
                 affected_versions=CVE_59995_59996_60001_AFFECTED_VERSION_MATRIX,
+                fixed_releases=CVE_59995_59996_60001_FIXED_RELEASES,
                 package_version=facts.server_version,
                 ssh_server=facts.ssh_server,
             ),

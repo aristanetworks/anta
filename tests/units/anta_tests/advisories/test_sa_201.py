@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""Independent version-boundary and end-to-end tests for SA-0201 revision 1.3."""
+"""Independent version-boundary and end-to-end tests for SA-0201 revision 1.4."""
 
 from __future__ import annotations
 
@@ -51,10 +51,10 @@ FIXED_PACKAGE: dict[str, object] = {"details": {"packages": {"TerminAttr-core": 
 # Expected source boundaries and remediation are independent from production literals.
 EXPECTED_EOS_FIXED_RELEASES = (
     FixedRelease(EOSVersion(4, 37, 0, suffix="F")),
-    FixedRelease(EOSVersion(4, 36, 3, hotfix=2, suffix="M")),
-    FixedRelease(EOSVersion(4, 35, 7, hotfix=2, suffix="M")),
-    FixedRelease(EOSVersion(4, 34, 9, hotfix=2, suffix="M")),
-    FixedRelease(EOSVersion(4, 33, 11, hotfix=2, suffix="M")),
+    FixedRelease(EOSVersion(4, 36, 3, hotfix=1, suffix="M")),
+    FixedRelease(EOSVersion(4, 35, 7, hotfix=1, suffix="M")),
+    FixedRelease(EOSVersion(4, 34, 9, hotfix=1, suffix="M")),
+    FixedRelease(EOSVersion(4, 33, 11, hotfix=1, suffix="M")),
 )
 EXPECTED_EOS_ACTION = ChangeSoftwareVersion(SoftwareTarget.EOS, EOSVersion(4, 36, 3, suffix="M"), KnownFixedReleases(EXPECTED_EOS_FIXED_RELEASES))
 EXPECTED_VERIFY_TERMINATTR = OperationalAction("Verify TerminAttr is outside the affected versions and supported on the target EOS release; upgrade it if needed.")
@@ -64,7 +64,7 @@ EXPECTED_UPGRADE_TERMINATTR = OperationalAction(
 EXPECTED_EOS_PLAN = RemediationPlan(AllOf((EXPECTED_EOS_ACTION, EXPECTED_VERIFY_TERMINATTR)))
 EXPECTED_COMBINED_PLAN = RemediationPlan(AllOf((EXPECTED_EOS_ACTION, EXPECTED_UPGRADE_TERMINATTR)))
 EXPECTED_COMPONENT_ONLY_PLAN = RemediationPlan(
-    OperationalAction("Upgrade TerminAttr to a fixed release supported on EOS 4.36.3.2M; confirm compatibility with Arista before selecting the release.")
+    OperationalAction("Upgrade TerminAttr to a fixed release supported on EOS 4.36.3.1M; confirm compatibility with Arista before selecting the release.")
 )
 expected_result = partial(build_expected_advisory_result, "CVE-2026-111943")
 
@@ -89,20 +89,20 @@ _DATA: AntaUnitTestData = {
         ),
     },
     (SA201, "fixed-eos-does-not-clear-affected-terminattr"): {
-        "version": build_eos_version("4.36.3.2M"),
+        "version": build_eos_version("4.36.3.1M"),
         "eos_data": [PACKAGE],
         "expected": expected_result(
             AntaTestStatus.FAILURE,
-            "The device is affected because EOS version '4.36.3.2M' is outside the affected releases and TerminAttr 'v1.46.2' is affected.",
+            "The device is affected because EOS version '4.36.3.1M' is outside the affected releases and TerminAttr 'v1.46.2' is affected.",
             EXPECTED_COMPONENT_ONLY_PLAN,
         ),
     },
     (SA201, "both-versions-outside-affected-releases"): {
-        "version": build_eos_version("4.36.3.2M"),
+        "version": build_eos_version("4.36.3.1M"),
         "eos_data": [FIXED_PACKAGE],
         "expected": expected_result(
             AntaTestStatus.SUCCESS,
-            "The device is not affected because EOS version '4.36.3.2M' is outside the affected releases and TerminAttr 'v1.46.3' is outside the affected releases.",
+            "The device is not affected because EOS version '4.36.3.1M' is outside the affected releases and TerminAttr 'v1.46.3' is outside the affected releases.",
             None,
         ),
     },
@@ -116,7 +116,7 @@ _DATA: AntaUnitTestData = {
         ),
     },
     (SA201, "fixed-eos-with-missing-terminattr"): {
-        "version": build_eos_version("4.36.3.2M"),
+        "version": build_eos_version("4.36.3.1M"),
         "eos_data": [{}],
         "expected": expected_result(
             AntaTestStatus.ERROR,
@@ -184,7 +184,7 @@ for _name, _eos, _terminattr, _message, _component_action in (
     }
 
 
-def version_fact(version: str | None = "4.36.3.2M") -> Fact[EosVersionFact]:
+def version_fact(version: str | None = "4.36.3.1M") -> Fact[EosVersionFact]:
     """Construct EOS metadata independently of collection."""
     if version is None:
         return EosVersionFact.unavailable(FactProblemKind.MISSING, SOURCE)
@@ -211,25 +211,25 @@ def version_fact(version: str | None = "4.36.3.2M") -> Fact[EosVersionFact]:
         ("4.32.99M", True),
         ("4.33.0F", True),
         ("4.33.11M", True),
-        ("4.33.11.1M", True),
+        ("4.33.11.1M", False),
         ("4.33.11.2M", False),
         ("4.33.11.3M", False),
         ("4.33.12M", False),
         ("4.34.0F", True),
         ("4.34.9M", True),
-        ("4.34.9.1M", True),
+        ("4.34.9.1M", False),
         ("4.34.9.2M", False),
         ("4.34.9.3M", False),
         ("4.34.10M", False),
         ("4.35.0F", True),
         ("4.35.7M", True),
-        ("4.35.7.1M", True),
+        ("4.35.7.1M", False),
         ("4.35.7.2M", False),
         ("4.35.7.3M", False),
         ("4.35.8M", False),
         ("4.36.0F", True),
         ("4.36.3M", True),
-        ("4.36.3.1M", True),
+        ("4.36.3.1M", False),
         ("4.36.3.2M", False),
         ("4.36.3.3M", False),
         ("4.36.4M", False),
@@ -334,7 +334,7 @@ def test_component_build_labels_preserve_numeric_boundaries(version: str, suffix
 async def test_suffixed_component_on_fixed_eos(version: str, status: AdvisoryStatus) -> None:
     """Exercise suffix parsing where affected EOS cannot mask a component parsing error."""
     device = OfflineAntaDevice("test")
-    device.version = parse_eos_version("4.36.3.2M").unwrap()
+    device.version = parse_eos_version("4.36.3.1M").unwrap()
     await device.refresh()
     instance = SA201(device=device, eos_data=[{"details": {"packages": {"TerminAttr-core": {"version": version}}}}])
     await instance.test()
@@ -365,8 +365,11 @@ async def test_suffixed_component_on_fixed_eos(version: str, status: AdvisorySta
         ("4.34.8M", ("v1.46.3", "v1.43.11", "v1.40.15")),
         ("4.34.9M", ("v1.46.3", "v1.43.11")),
         ("4.35.7M", ("v1.46.3", "v1.43.11")),
+        ("4.35.7.1M", ("v1.46.3",)),
+        ("4.35.7.2M", ("v1.46.3",)),
         ("4.35.8M", ("v1.46.3",)),
         ("4.36.3M", ("v1.46.3",)),
+        ("4.36.3.1M", ()),
         ("4.36.3.2M", ()),
         ("4.37.0F", ()),
     ],
@@ -399,11 +402,11 @@ async def test_platform_identity_does_not_limit_software_assessment(model: str |
         ("4.36.3M", "v1.46.2", AffectedResult),
         ("4.28.15M", "v1.31.18", AffectedResult),
         ("4.36.3M", "v1.46.3", AffectedResult),
-        ("4.36.3.2M", "v1.46.2", AffectedResult),
-        ("4.36.3.2M", "v1.46.3", NotAffectedResult),
+        ("4.36.3.1M", "v1.46.2", AffectedResult),
+        ("4.36.3.1M", "v1.46.3", NotAffectedResult),
         ("4.36.3M", None, AffectedResult),
         (None, "v1.46.2", AffectedResult),
-        ("4.36.3.2M", None, ErrorResult),
+        ("4.36.3.1M", None, ErrorResult),
         (None, "v1.46.3", ErrorResult),
         (None, None, ErrorResult),
     ],
@@ -428,7 +431,7 @@ def test_all_required_unavailable_facts_are_retained() -> None:
 
 
 @pytest.mark.parametrize("version", ["1.46.2", "v1.46", "v1.46.2-dev", "v1.46.2_", "v1.46.2_bad label", "v1.46.2_bad/label", "v1.46.2_rel\n", "invalid"])
-@pytest.mark.parametrize(("eos_version", "result_type"), [("4.36.3M", AffectedResult), ("4.36.3.2M", ErrorResult)])
+@pytest.mark.parametrize(("eos_version", "result_type"), [("4.36.3M", AffectedResult), ("4.36.3.1M", ErrorResult)])
 def test_invalid_component_version_cannot_clear_affected_eos(version: str, eos_version: str, result_type: type) -> None:
     """Malformed component metadata is an error only when needed to decide impact."""
     result = _assess_sa201(version_fact(eos_version), TerminAttrVersionFact(version).available(PACKAGE_SOURCE))
@@ -437,7 +440,7 @@ def test_invalid_component_version_cannot_clear_affected_eos(version: str, eos_v
         assert result.problems[0].problem is FactProblemKind.INVALID
 
 
-@pytest.mark.parametrize("eos_version", ["4.37.0F", "4.36.3.2M", "4.35.7.2M", "4.34.9.2M", "4.33.11.2M"])
+@pytest.mark.parametrize("eos_version", ["4.37.0F", "4.36.3.1M", "4.35.7.1M", "4.34.9.1M", "4.33.11.1M"])
 @pytest.mark.parametrize(("package", "status"), [(PACKAGE, AdvisoryStatus.AFFECTED), (FIXED_PACKAGE, AdvisoryStatus.NOT_AFFECTED)])
 async def test_fixed_eos_still_requires_fixed_terminattr(eos_version: str, package: dict[str, object], status: AdvisoryStatus) -> None:
     """Every published fixed EOS branch still assesses the installed component independently."""
@@ -451,7 +454,7 @@ async def test_fixed_eos_still_requires_fixed_terminattr(eos_version: str, packa
     assert atomic.advisory_status is status
 
 
-@pytest.mark.parametrize("eos_version", ["4.36.3M", "4.36.3.2M"])
+@pytest.mark.parametrize("eos_version", ["4.36.3M", "4.36.3.1M"])
 @pytest.mark.parametrize("errors", [["Permission denied"], ["This command is not supported on this hardware platform"]])
 async def test_component_collection_failure_does_not_soften_affected_eos(eos_version: str, errors: list[str]) -> None:
     """A failed component command cannot turn established EOS impact into Error."""
@@ -482,7 +485,7 @@ def test_combined_upgrade_does_not_recommend_a_component_for_the_old_eos() -> No
 def test_source_metadata_and_command_contract() -> None:
     """Collect only the installed TerminAttr version, never client configuration."""
     assert ADVISORY.sa_number == "0201"
-    assert ADVISORY.last_updated == date(2026, 11, 4)
+    assert ADVISORY.last_updated == date(2026, 11, 13)
     assert tuple(vulnerability.id for vulnerability in ADVISORY.vulnerabilities) == ("CVE-2026-111943",)
     assert ADVISORY.vulnerabilities[0].severity is _AdvisoryVulnerabilitySeverity.CRITICAL
     assert FIXED_RELEASES == EXPECTED_EOS_FIXED_RELEASES
@@ -518,3 +521,23 @@ async def test_exact_end_to_end_finding(name: str, status: AdvisoryStatus) -> No
     assert _get_atomic_vulnerability_ids(atomic) == ("CVE-2026-111943",)
     assert atomic.messages == expected_messages
     assert atomic.advisory_status is status
+
+
+@pytest.mark.parametrize("base", ["4.36.3", "4.35.7", "4.34.9", "4.33.11"])
+@pytest.mark.parametrize("hotfix", ["", ".1", ".2"])
+@pytest.mark.parametrize("component_version", ["v1.46.2", "v1.46.3", None])
+def test_hotfix_component_cross_product(base: str, hotfix: str, component_version: str | None) -> None:
+    """Fixed EOS cannot hide an affected or missing independently installed component."""
+    component = (
+        TerminAttrVersionFact(component_version).available(PACKAGE_SOURCE)
+        if component_version is not None
+        else TerminAttrVersionFact.unavailable(FactProblemKind.MISSING, PACKAGE_SOURCE)
+    )
+    result = _assess_sa201(version_fact(f"{base}{hotfix}M"), component)
+    if not hotfix or component_version == "v1.46.2":
+        assert isinstance(result, AffectedResult)
+    elif component_version is None:
+        assert isinstance(result, ErrorResult)
+        assert result.problems == (component,)
+    else:
+        assert isinstance(result, NotAffectedResult)
