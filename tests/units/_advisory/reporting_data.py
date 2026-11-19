@@ -22,7 +22,7 @@ from anta.tests.advisories.sa_117 import FIXED_RELEASES as SA117_FIXED_RELEASES
 from anta.tests.advisories.sa_117 import SA117
 from anta.tests.advisories.sa_146 import EOS_FIXED_RELEASES as SA146_EOS_FIXED_RELEASES
 from anta.tests.advisories.sa_146 import SA146
-from anta.tests.advisories.sa_147 import CVE_60002_FIXED_RELEASES, SA147
+from anta.tests.advisories.sa_147 import CVE_59995_59996_60001_FIXED_RELEASES, CVE_60002_FIXED_RELEASES, SA147
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -109,7 +109,7 @@ def ensure_atomic_results(result: _AdvisoryTestResult) -> _AdvisoryTestResult:
 
 def _sa147_plan(eos_version: EOSVersion, *, vulnerability_id: str) -> RemediationPlan:
     """Return the production SA147 software-version plan for one vulnerability."""
-    fixed_releases = CVE_60002_FIXED_RELEASES if vulnerability_id == "CVE-2026-60002" else ()
+    fixed_releases = CVE_60002_FIXED_RELEASES if vulnerability_id == "CVE-2026-60002" else CVE_59995_59996_60001_FIXED_RELEASES
     return software_version_plan(fixed_releases, current_version=eos_version)
 
 

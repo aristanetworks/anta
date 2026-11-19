@@ -7,10 +7,14 @@
 # pyright: reportAttributeAccessIssue=false
 from __future__ import annotations
 
-from typing import Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from anta.input_models.evpn import EVPNPath, EVPNRoute, EVPNType5Prefix
 from anta.models import AntaCommand, AntaTemplate, AntaTest
+from anta.result_manager.models import AntaTestStatus
+
+if TYPE_CHECKING:
+    from anta.result_manager.models import AtomicTestResult
 
 
 class VerifyEVPNType5Routes(AntaTest):
@@ -184,3 +188,61 @@ class VerifyEVPNType5Routes(AntaTest):
         # Check that at least one matching path is active/valid
         if not self._has_active_valid_path(matching_paths):
             self.result.is_failure(f"{prefix_input} {route_input} {path_input} - No active and valid path found")
+
+
+class VerifyEVPNSanity(AntaTest):
+    """Verifies there are no EVPN sanity-check inconsistencies.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all EVPN sanity checks report `ok`.
+      When `warning_as_failure: false` (default), checks reporting `warn` also pass,
+      with their details included as messages.
+    * Failure: The test will fail if any EVPN sanity check reports a status other than `ok` or `warn`,
+      or reports `warn` when `warning_as_failure: true`.
+    * Skipped: The test will be skipped if no EVPN sanity checks are detected.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.evpn:
+      - VerifyEVPNSanity:
+          warning_as_failure: true
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["bgp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp evpn sanity detail", revision=1)]
+    _atomic_support: ClassVar[bool] = True
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyEVPNSanity test."""
+
+        warning_as_failure: bool = False
+        """Treat checks reporting `warn` as failures. By default, these checks pass with warning messages."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyEVPNSanity."""
+        command_output = self.instance_commands[0].json_output
+
+        for category_name, category_data in command_output["categories"].items():
+            for item in category_data["items"]:
+                result = self.result.add(description=f"Category: {category_name} Item: {item['name']}", status=AntaTestStatus.SUCCESS)
+                self._verify_check(item, result)
+
+        if not self.result.atomic_results:
+            self.result.is_skipped("No EVPN sanity checks detected")
+
+    def _verify_check(self, item: dict[str, Any], result: AtomicTestResult) -> None:
+        """Evaluate one EVPN sanity check and update its atomic result."""
+        status = item["status"]
+        reason = f" - {details}" if (details := item.get("reasonNotOk")) else ""
+        match status, self.inputs.warning_as_failure:
+            case "ok", _:
+                return
+            case "warn", False:
+                result.is_success(f"Status: warn{reason}")
+            case _:
+                expected = "ok" if self.inputs.warning_as_failure else "ok, warn"
+                result.is_failure(f"Invalid status - Expected: {expected} Actual: {status}{reason}")

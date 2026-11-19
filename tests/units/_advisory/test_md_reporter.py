@@ -141,8 +141,17 @@ def test_security_advisory_markdown_device_findings_use_atomic_results(tmp_path:
     ) in content
     assert "| DC1-LEAF3 | 🟡&nbsp;CVE-2026-59995 | 🛑&nbsp;Affected |" in content
     assert "openssh-clients '9.8p1' is affected." in content
-    assert "Upgrade EOS to a fixed release when one is published." in content
-    assert "Upgrade to EOS 4.35.6M or later in the 4.35 train or EOS 4.34.8M or later in the 4.34 train." in content
+    assert "Upgrade EOS to a fixed release when one is published." not in content
+    assert (
+        "Upgrade to EOS 4.37.0F or later in the 4.37 train, EOS 4.36.3M or later in the 4.36 train, "
+        "EOS 4.35.7M or later in the 4.35 train, EOS 4.34.9M or later in the 4.34 train, "
+        "or EOS 4.33.11M or later in the 4.33 train."
+    ) in content
+    assert (
+        "Upgrade to EOS 4.37.0F or later in the 4.37 train, EOS 4.36.3M or later in the 4.36 train, "
+        "EOS 4.35.6M or later in the 4.35 train, EOS 4.34.8M or later in the 4.34 train, "
+        "or EOS 4.33.11M or later in the 4.33 train."
+    ) in content
     assert "CVE-2026-60001: The device is affected" not in content
     assert "**Detailed findings:**" not in content
     assert "**Overall evidence:**" not in content

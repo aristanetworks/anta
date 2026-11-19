@@ -25,6 +25,14 @@ logger = logging.getLogger(__name__)
 # https://docs.pydantic.dev/latest/api/type_adapter/
 ResultManagerTypeAdapter = TypeAdapter(list[TestResult])
 
+_SORTABLE_FIELDS = ("name", "test", "categories", "description", "result", "messages", "custom_field")
+
+
+def _get_sort_key(result: TestResult, sort_by: list[str]) -> list[Any]:
+    """Build a sort key, replacing only None values with empty strings."""
+    values = (getattr(result, field) for field in sort_by)
+    return ["" if value is None else value for value in values]
+
 
 class ResultManager:
     """Manager of ANTA Results.
@@ -249,13 +257,15 @@ class ResultManager:
         """Get the results, optionally filtered by status and sorted by TestResult fields.
 
         If no status is provided, all results are returned.
+        The categories and messages lists are compared lexicographically; None values are treated as empty strings.
+        Sorting by atomic_results or any other unsupported field raises ValueError.
 
         Parameters
         ----------
         status
             Optional set of AntaTestStatus enum members to filter the results.
         sort_by
-            Optional list of TestResult fields to sort the results.
+            Optional list of fields to sort the results: name, test, categories, description, result, messages, custom_field.
 
         Returns
         -------
@@ -266,11 +276,11 @@ class ResultManager:
         results = self._results if status is None else list(chain.from_iterable(self.results_by_status.get(status, []) for status in status))
 
         if sort_by:
-            accepted_fields = TestResult.model_fields.keys()
+            accepted_fields = _SORTABLE_FIELDS
             if not set(sort_by).issubset(set(accepted_fields)):
                 msg = f"Invalid sort_by fields: {sort_by}. Accepted fields are: {list(accepted_fields)}"
                 raise ValueError(msg)
-            results = sorted(results, key=lambda result: [getattr(result, field) or "" for field in sort_by])
+            results = sorted(results, key=lambda result: _get_sort_key(result, sort_by))
 
         return results
 
@@ -303,16 +313,19 @@ class ResultManager:
     def sort(self, sort_by: list[str]) -> ResultManager:
         """Sort the ResultManager results based on TestResult fields.
 
+        The categories and messages lists are compared lexicographically; None values are treated as empty strings.
+        Sorting by atomic_results or any other unsupported field raises ValueError.
+
         Parameters
         ----------
         sort_by
-            List of TestResult fields to sort the results.
+            List of fields to sort the results: name, test, categories, description, result, messages, custom_field.
         """
-        accepted_fields = TestResult.model_fields.keys()
+        accepted_fields = _SORTABLE_FIELDS
         if not set(sort_by).issubset(set(accepted_fields)):
             msg = f"Invalid sort_by fields: {sort_by}. Accepted fields are: {list(accepted_fields)}"
             raise ValueError(msg)
-        self._results.sort(key=lambda result: [getattr(result, field) or "" for field in sort_by])
+        self._results.sort(key=lambda result: _get_sort_key(result, sort_by))
         return self
 
     def filter(self, hide: set[AntaTestStatus]) -> ResultManager:
