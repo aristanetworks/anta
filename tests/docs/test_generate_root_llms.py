@@ -78,5 +78,7 @@ def test_cli_explains_missing_exports_without_traceback(tmp_path: Path) -> None:
     assert result.returncode == 1
     assert "Cannot generate root llms.txt: No versioned llms.txt exports found" in result.stderr
     assert str(root) in result.stderr
+    assert "aborting documentation deployment before push" in result.stderr
+    assert "Rebuild the current version with llmstxt enabled." in result.stderr
     assert "Traceback" not in result.stderr
     assert index.read_text(encoding="utf-8") == "Existing discovery index\n"

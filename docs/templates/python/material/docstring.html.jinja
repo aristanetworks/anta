@@ -1,0 +1,7 @@
+{# Zensical 0.1.1 removes doc-labels from Markdown exports. Retain semantic
+   labels outside headings so HTML tooltips stay unchanged. CSS hides this text
+   in HTML. Recheck after upgrading Zensical. #}
+{% if config.show_labels and obj.labels %}
+<p class="llms-api-labels">API labels: {{ obj.labels | sort | join(", ") }}.</p>
+{% endif %}
+{% include "_base/docstring.html.jinja" %}
