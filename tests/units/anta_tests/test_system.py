@@ -340,6 +340,20 @@ DATA: AntaUnitTestData = {
         ],
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Device has reported a high memory usage - Expected: < 75% Actual: 95.56%"]},
     },
+    (VerifyMemoryUtilization, "success-custom-threshold"): {
+        "eos_data": [
+            {"uptime": 1994.67, "modelName": "vEOS-lab", "internalVersion": "4.27.3F-26379303.4273F", "memTotal": 2004568, "memFree": 89004, "version": "4.27.3F"}
+        ],
+        "inputs": {"threshold": 96.0},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyMemoryUtilization, "failure-custom-threshold"): {
+        "eos_data": [
+            {"uptime": 1994.67, "modelName": "vEOS-lab", "internalVersion": "4.27.3F-26379303.4273F", "memTotal": 2004568, "memFree": 879004, "version": "4.27.3F"}
+        ],
+        "inputs": {"threshold": 55.0},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Device has reported a high memory usage - Expected: < 55% Actual: 56.15%"]},
+    },
     (VerifyFileSystemUtilization, "success"): {
         "eos_data": [
             (
