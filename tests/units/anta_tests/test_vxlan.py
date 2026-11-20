@@ -14,6 +14,7 @@ from anta.tests.vxlan import (
     VerifyVxlan1Interface,
     VerifyVxlan1VVTEPIPAddresses,
     VerifyVxlanConfigSanity,
+    VerifyVxlanFloodVtep,
     VerifyVxlanVniBinding,
     VerifyVxlanVtep,
 )
@@ -408,5 +409,79 @@ DATA: AntaUnitTestData = {
             "result": AntaTestStatus.FAILURE,
             "messages": ["Interface: Vxlan1 - Incorrect VVTEP IPv6 address - Expected: fd00:dc:1::1 Actual: fd00:dc:1::2"],
         },
+    },
+    (VerifyVxlanFloodVtep, "success-wrapped-table"): {
+        "eos_data": [
+            (
+                "          Vxlan Flood Vtep Table\n"
+                "--------------------------------------------------------\n\n"
+                "Vlan   Ip Address\n"
+                "----   -------------------------------------------------\n"
+                "100    3.3.3.3\n"
+                "101    11.1.1.1         11.1.1.2         11.1.1.3\n"
+                "102    11.1.1.1         11.1.1.2         11.1.1.3\n"
+                "       12.1.1.1\n"
+            )
+        ],
+        "inputs": {"vlans": {100: ["3.3.3.3"], 101: ["11.1.1.3", "11.1.1.2", "11.1.1.1"], 102: ["12.1.1.1", "11.1.1.1", "11.1.1.2", "11.1.1.3"]}},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyVxlanFloodVtep, "success-ignore-other-vlans"): {
+        "eos_data": ["Vlan   Ip Address\n----   ----------------\n100    3.3.3.3\n101    11.1.1.1\n"],
+        "inputs": {"vlans": {100: ["3.3.3.3"]}},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyVxlanFloodVtep, "failure-missing-vtep"): {
+        "eos_data": ["100    11.1.1.1\n"],
+        "inputs": {"vlans": {100: ["11.1.1.1", "11.1.1.2"]}},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["VLAN: 100 - Missing flood VTEP(s): 11.1.1.2"]},
+    },
+    (VerifyVxlanFloodVtep, "failure-unexpected-vtep"): {
+        "eos_data": ["100    11.1.1.3 11.1.1.2 11.1.1.1\n"],
+        "inputs": {"vlans": {100: ["11.1.1.1"]}},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["VLAN: 100 - Unexpected flood VTEP(s): 11.1.1.2, 11.1.1.3"]},
+    },
+    (VerifyVxlanFloodVtep, "failure-wrong-vlan"): {
+        "eos_data": ["100    11.1.1.1\n101    11.1.1.2\n"],
+        "inputs": {"vlans": {100: ["11.1.1.2"], 101: ["11.1.1.1"]}},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "VLAN: 100 - Missing flood VTEP(s): 11.1.1.2",
+                "VLAN: 100 - Unexpected flood VTEP(s): 11.1.1.1",
+                "VLAN: 101 - Missing flood VTEP(s): 11.1.1.1",
+                "VLAN: 101 - Unexpected flood VTEP(s): 11.1.1.2",
+            ],
+        },
+    },
+    (VerifyVxlanFloodVtep, "failure-missing-vlan"): {
+        "eos_data": ["100    3.3.3.3\n"],
+        "inputs": {"vlans": {101: ["11.1.1.1"]}},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["VLAN: 101 - Flood list not found"]},
+    },
+    (VerifyVxlanFloodVtep, "failure-empty-table"): {
+        "eos_data": ["Vxlan Flood Vtep Table\n---------------------\nVlan   Ip Address\n----   ----------\n"],
+        "inputs": {"vlans": {100: ["3.3.3.3"]}},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["VLAN: 100 - Flood list not found"]},
+    },
+    (VerifyVxlanFloodVtep, "success-empty-flood-list"): {
+        "eos_data": ["100\n"],
+        "inputs": {"vlans": {100: []}},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyVxlanFloodVtep, "failure-empty-flood-list"): {
+        "eos_data": ["100\n"],
+        "inputs": {"vlans": {100: ["3.3.3.3"]}},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["VLAN: 100 - Missing flood VTEP(s): 3.3.3.3"]},
+    },
+    (VerifyVxlanFloodVtep, "failure-expected-empty-flood-list"): {
+        "eos_data": ["100    3.3.3.3\n"],
+        "inputs": {"vlans": {100: []}},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["VLAN: 100 - Unexpected flood VTEP(s): 3.3.3.3"]},
+    },
+    (VerifyVxlanFloodVtep, "failure-empty-output"): {
+        "eos_data": [""],
+        "inputs": {"vlans": {100: []}},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["VLAN: 100 - Flood list not found"]},
     },
 }
