@@ -98,6 +98,14 @@ Record the advisory and reason in the PR, update the affected package, and remov
 
 A lock update selects versions for environments that consume it. Ordinary pip installations use ANTA's published dependency ranges. When addressing a relevant vulnerability, also assess whether those ranges must exclude affected versions; updating the lock alone does not change downstream requirements or existing installations.
 
+### CI Python runtimes
+
+General CI tooling uses Python 3.14: Windows tests, documentation builds and deployments, pre-commit autofix, and release versioning and distribution builds. These jobs select the latest available 3.14 patch. Renovate interpreter updates are capped below 3.15 until maintainers explicitly change this policy. When changing the Windows minor version, update Python setup, the tox environment, and the job and step names together.
+
+The locked-dependency job stays on the minimum supported Python, currently 3.11. The unit-test and release installation matrices cover all supported versions, including 3.15; their entries and matching tox environments are maintained explicitly. ANTA's minimum Python requirement and Ruff and Pyright targets remain aligned with 3.11.
+
+Benchmarks are excluded from Renovate interpreter updates: simulation follows the latest Python 3.14 patch, while memory pins the qualified patch version. See the [benchmark documentation](https://github.com/aristanetworks/anta/blob/main/tests/benchmark/README.md) for runtime selection and upgrade requirements. Updates to the setup actions themselves remain enabled.
+
 ### Code linting
 
 Ruff checks lint rules and formatting:
