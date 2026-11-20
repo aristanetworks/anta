@@ -16,12 +16,16 @@ name: Scan container
           - branch
       tag:
         description: "Published image tag (ignored for branch builds)"
-        required: true
+        required: false
         type: string
         default: latest
 
 permissions:
   contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   scan:
@@ -33,6 +37,7 @@ jobs:
     env:
       SCAN_SOURCE: ${{ inputs.source || 'published' }}
       IMAGE_TAG: ${{ inputs.tag || 'latest' }}
+      # Published scans intentionally target upstream, including manual runs in forks.
       IMAGE_REF: >-
         ${{ inputs.source == 'branch'
             && format('anta-scan:{0}', github.sha)
@@ -63,6 +68,7 @@ jobs:
           TRIVY_IMAGE_SRC: ${{ inputs.source == 'branch' && 'docker' || 'remote' }}
           TRIVY_PLATFORM: linux/amd64
         with:
+          # renovate: datasource=github-releases depName=aquasecurity/trivy
           version: v0.76.2
           scan-type: image
           image-ref: ${{ env.IMAGE_REF }}
