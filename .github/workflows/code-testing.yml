@@ -5,11 +5,47 @@ on:
     branches:
       - main
   pull_request:
+  merge_group:
+    types: [checks_requested]
+
+concurrency:
+  # Cancel superseded PR runs without cancelling other merge groups.
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
 
 jobs:
+  required-checks:
+    # Required in branch protection. Keep this name stable.
+    name: required-checks
+    needs:
+      - file-changes
+      - test-locked-dependencies
+      - test-python
+      - test-python-windows
+      - test-documentation
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check required job results
+        env:
+          NEEDS_JSON: ${{ toJSON(needs) }}
+          EVENT_NAME: ${{ github.event_name }}
+          CODE_CHANGED: ${{ needs.file-changes.outputs.code }}
+        run: |
+          echo "$NEEDS_JSON" | jq 'map_values(.result)'
+          if ! echo "$NEEDS_JSON" | jq -e --arg event "$EVENT_NAME" --arg code "$CODE_CHANGED" '
+            to_entries | all(
+              .value.result == "success" or
+              (.key == "test-python-windows" and .value.result == "skipped" and
+               $event != "merge_group" and $code == "false")
+            )'; then
+            echo "::error::Required CI jobs failed, were cancelled, or were unexpectedly skipped. See job results above."
+            exit 1
+          fi
+
   file-changes:
     runs-on: ubuntu-latest
     outputs:
@@ -25,7 +61,10 @@ jobs:
           filters: |
             code:
               - 'anta/**'
+              - 'asynceapi/**'
               - 'tests/**'
+              - 'tox.toml'
+              - '.github/workflows/code-testing.yml'
               # detect dependency changes
               - 'pyproject.toml'
               - 'uv.lock'
@@ -93,7 +132,7 @@ jobs:
     name: Pytest on 3.12 for windows
     runs-on: windows-2022
     needs: [file-changes]
-    if: needs.file-changes.outputs.code == 'true'
+    if: github.event_name == 'merge_group' || needs.file-changes.outputs.code == 'true'
     env:
       # Required to prevent asyncssh to fail.
       USERNAME: WindowsUser
@@ -128,7 +167,7 @@ jobs:
   benchmarks:
     name: Benchmark ANTA
     needs: [file-changes, test-python]
-    if: (needs.file-changes.outputs.code == 'true' || needs.file-changes.outputs.benchmarks == 'true') && github.repository == 'aristanetworks/anta'
+    if: github.event_name != 'merge_group' && (needs.file-changes.outputs.code == 'true' || needs.file-changes.outputs.benchmarks == 'true') && github.repository == 'aristanetworks/anta'
     permissions:
       contents: read
       id-token: write
@@ -136,7 +175,7 @@ jobs:
   codecov:
     name: Upload coverage to codecov
     needs: [test-python]
-    if: github.repository == 'aristanetworks/anta'
+    if: github.event_name != 'merge_group' && github.repository == 'aristanetworks/anta'
     permissions:
       contents: read
       id-token: write
