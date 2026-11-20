@@ -42,9 +42,18 @@ def test_run_eos_commands(capsys: pytest.CaptureFixture[str], inventory: AntaInv
         runpy.run_path(str(RUN_EOS_COMMANDS_PATH), run_name="__main__")
         captured = capsys.readouterr()
         # This is only to make sure we get the expected output - what counts is that the script runs.
-        assert "'device-0': [AntaCommand(command='show version', version='latest', revision=None, ofmt='json', output={'modelName': 'pytest'}," in captured.out
-        assert "'device-1': [AntaCommand(command='show version', version='latest', revision=None, ofmt='json', output={'modelName': 'pytest'}," in captured.out
-        assert "'device-2': [AntaCommand(command='show version', version='latest', revision=None, ofmt='json', output={'modelName': 'pytest'}," in captured.out
+        assert (
+            "'device-0': [AntaCommand(command='show version', version='latest', revision=None, ofmt='json', output={'modelName': 'pytest', 'version': '4.31.1F'},"
+            in captured.out
+        )
+        assert (
+            "'device-1': [AntaCommand(command='show version', version='latest', revision=None, ofmt='json', output={'modelName': 'pytest', 'version': '4.31.1F'},"
+            in captured.out
+        )
+        assert (
+            "'device-2': [AntaCommand(command='show version', version='latest', revision=None, ofmt='json', output={'modelName': 'pytest', 'version': '4.31.1F'},"
+            in captured.out
+        )
         assert "AntaCommand(command='show ip bgp summary', version='latest', revision=None, ofmt='json', output={'mocked': 'mock'}, " in captured.out
 
     finally:

@@ -69,6 +69,7 @@ Options:
                                   ANTA_LOG_LEVEL; default: INFO]
 
 Commands:
+  bug    Check inventory devices against the Arista bug database.
   check  Commands to validate configuration files.
   debug  Commands to execute EOS commands on remote devices.
   exec   Commands to execute various scripts on EOS devices.
