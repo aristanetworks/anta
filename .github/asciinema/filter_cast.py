@@ -14,6 +14,13 @@ from pathlib import Path
 
 OSC_HYPERLINK = re.compile(r"\x1b]8;.*?\x1b\\")
 ANSI_CONTROL = re.compile(r"\x1b(?:\[[0-?]*[ -/]*[@-~]|\].*?\x1b\\)")
+ASCIINEMA_EVENT_FIELDS = 3  # delay, stream, data
+MIN_ROW_BOUNDARIES = 2  # A row separator and bottom border delimit the two required rows.
+
+
+def is_output_event(event: object) -> bool:
+    """Identify an asciinema output event containing text."""
+    return isinstance(event, list) and len(event) == ASCIINEMA_EVENT_FIELDS and event[1] == "o" and isinstance(event[2], str)
 
 
 def plain_text(value: str) -> str:
@@ -23,7 +30,7 @@ def plain_text(value: str) -> str:
 
 def normalize_nrfu_progress(events: list[dict[str, object] | list[object]], duration: float = 4) -> None:
     """Normalize progress timing so lab performance does not control GIF duration."""
-    progress_events = [event for event in events if isinstance(event, list) and event[1] == "o" and "Running Tests" in event[2]]
+    progress_events = [event for event in events if is_output_event(event) and "Running Tests" in event[2]]
     actual_duration = sum(event[0] for event in progress_events)
     if actual_duration > 0:
         factor = duration / actual_duration
@@ -34,8 +41,7 @@ def normalize_nrfu_progress(events: list[dict[str, object] | list[object]], dura
 def validate_psirt_recording(events: list[dict[str, object] | list[object]]) -> None:
     """Require the successful report outcome before replacing the committed cast."""
     success_message = "Security advisory Markdown report saved to psirt.md"
-    # Asciinema events have three fields: delay, stream, and data.
-    if not any(isinstance(event, list) and len(event) == 3 and event[1] == "o" and isinstance(event[2], str) and success_message in event[2] for event in events):  # noqa: PLR2004
+    if not any(is_output_event(event) and success_message in event[2] for event in events):
         msg = "PSIRT Markdown report success message was not found in the recording"
         raise RuntimeError(msg)
 
@@ -44,7 +50,7 @@ def validate_psirt_recording(events: list[dict[str, object] | list[object]]) -> 
 def animate_nrfu_table(events: list[dict[str, object] | list[object]]) -> list[dict[str, object] | list[object]]:  # noqa: C901, PLR0915
     """Pause on two representative NRFU rows, then rapidly print the rest."""
     start = next(
-        (index for index, event in enumerate(events) if isinstance(event, list) and event[1] == "o" and "All tests results" in event[2]),
+        (index for index, event in enumerate(events) if is_output_event(event) and "All tests results" in event[2]),
         None,
     )
     if start is None:
@@ -54,7 +60,7 @@ def animate_nrfu_table(events: list[dict[str, object] | list[object]]) -> list[d
     end = None
     bottom_started = False
     for index, event in enumerate(events[start:], start):
-        if not isinstance(event, list) or event[1] != "o":
+        if not is_output_event(event):
             continue
         output = plain_text(event[2])
         bottom_started = bottom_started or "└" in output
@@ -66,11 +72,11 @@ def animate_nrfu_table(events: list[dict[str, object] | list[object]]) -> list[d
         raise RuntimeError(msg)
 
     table_events = events[start : end + 1]
-    table_text = "".join(event[2] for event in table_events if isinstance(event, list) and event[1] == "o")
+    table_text = "".join(event[2] for event in table_events if is_output_event(event))
     lines = table_text.splitlines(keepends=True)
     header_separator = next((index for index, line in enumerate(lines) if plain_text(line).lstrip().startswith("┡")), None)
     row_boundaries = [index for index, line in enumerate(lines) if plain_text(line).lstrip().startswith(("├", "└"))]
-    if header_separator is None or len(row_boundaries) < 2:  # noqa: PLR2004 - a separator and bottom border delimit the rows
+    if header_separator is None or len(row_boundaries) < MIN_ROW_BOUNDARIES:
         msg = "NRFU result table rows were not found after joining cast events"
         raise RuntimeError(msg)
 
@@ -127,7 +133,7 @@ def main() -> None:
     for event in events:
         if isinstance(event, dict):
             event["command"] = public_command
-        elif isinstance(event, list) and len(event) == 3 and event[1] == "o":  # noqa: PLR2004 - asciinema events have three fields
+        elif is_output_event(event):
             if recording == "nrfu" and ("WARNING " in event[2] or "ERROR   " in event[2]):
                 progress_start = event[2].rfind("\x1b[32m(")
                 if progress_start == -1:
