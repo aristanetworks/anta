@@ -459,18 +459,6 @@ Create an [AntaInventory][anta.inventory.AntaInventory] and add an
 
 Register new object identifiers under `MD052.ignored_labels` in `.github/.markdownlint-cli2.yaml` (lowercase with underscores removed, as reported by MD052). This central list allows autorefs syntax while keeping MD052 enabled for ordinary reference links; it does not validate Python objects. After adding or changing an object reference, run `zensical build --strict` and check that the link opens the intended object in the rendered site.
 
-### Documentation exports for LLMs
-
-Each documentation build generates `llms.txt` at the root of that documentation version (for example, `/main/llms.txt`), linking to rendered Markdown pages. These exports include expanded snippets and generated API documentation. Relative export links stay within the selected documentation version, independently of the HTML canonical URLs. Use the exports from the documentation version matching your installed ANTA package.
-
-Deployment also generates a discovery index at the site root, `/llms.txt`, with absolute links to the versioned indexes that exist in that deployment. Stable is listed first when its export is available; main is identified as unreleased development. Existing releases are listed only after their documentation has been rebuilt with exports enabled.
-
-The sections under `project.plugins.llmstxt` in `zensical.toml` select and order the exported pages. Add new pages to the appropriate section and use short entry descriptions where the title needs context. Keep built-in tests, framework APIs, and advisory design decisions in their respective sections. Patterns can match nested directories, and pages selected in different sections are not deduplicated.
-
-After running `zensical build --clean --strict`, run `python docs/scripts/check_llms_exports.py`. CI also runs this check to reject missing or duplicate entries, missing Markdown outputs, and index links that leave the selected version. The check covers all Markdown pages under `docs/`, except paths excluded from publication in `zensical.toml`.
-
-Inspect `site/llms.txt` and the affected Markdown output for useful ordering, intact sentences, links, expanded examples, and generated API content. Zensical 0.1.0 preserves API object reference text but drops those links and object labels. The function template also identifies asynchronous APIs in their content so their coroutine status survives export. Mermaid diagrams remain as fenced source without interactive rendering. Image handling is selective: remote badges and some linked local images remain, while many local screenshots are omitted. Keep icons outside text links so that the exporter preserves the link text. The zoom helper uses inert `text/plain` script blocks to keep its duplicate diagram source out of the Markdown export.
-
 ### Generated CLI snippets
 
 The CLI help blocks published in the documentation are generated from the current Click output. After changing CLI commands, options, or help text, refresh the snippets and verify that the generated files are committed:
@@ -518,3 +506,11 @@ muffet -c 2 --color=always http://127.0.0.1:8000 -e fonts.gstatic.com -b 8192
 ## Continuous Integration
 
 GitHub actions is used to test git pushes and pull requests. The workflows are defined in this [directory](https://github.com/aristanetworks/anta/tree/main/.github/workflows). The results can be viewed [here](https://github.com/aristanetworks/anta/actions).
+
+## Documentation exports for LLMs
+
+Each documentation version publishes an `llms.txt` index (for example, `/main/llms.txt`) linking to rendered Markdown, including expanded snippets and generated API documentation. The site-root `/llms.txt` lists available version indexes. Use the version matching your installed ANTA package.
+
+When adding a page, include it in the appropriate section under `project.plugins.llmstxt` in `zensical.toml`. Patterns match nested directories; avoid selecting a page in multiple sections. Add a short description when its title needs context.
+
+After `zensical build --clean --strict`, run `python docs/scripts/check_llms_exports.py`; CI enforces export coverage and uniqueness. Inspect the affected Markdown for intact text, API labels, links, and examples. Current exporter limitations and workarounds are recorded in the [Zensical migration tracker](https://github.com/aristanetworks/anta/blob/main/.github/zensical-migration.md).

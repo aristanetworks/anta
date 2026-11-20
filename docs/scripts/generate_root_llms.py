@@ -36,7 +36,10 @@ def generate_root_llms(deployment_root: Path, config_path: Path) -> None:
         links.append((priority, f"- [{title}](<{url}>)"))
 
     if not links:
-        msg = f"No versioned llms.txt exports found under {deployment_root}; leaving the root index unchanged"
+        msg = (
+            f"No versioned llms.txt exports found under {deployment_root}; aborting documentation deployment before push. "
+            "Rebuild the current version with llmstxt enabled. The root index is unchanged."
+        )
         raise ValueError(msg)
     # Stable sorting retains the normalized release order within each priority.
     links.sort(key=lambda link: link[0])

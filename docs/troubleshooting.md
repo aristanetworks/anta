@@ -14,7 +14,7 @@ tags:
 
 A couple of things to check when hitting an issue with ANTA:
 
-<!-- Zensical 0.1.0 Markdown-export workaround: a hidden textarea leaks this
+<!-- Zensical 0.1.1 Markdown-export workaround: a hidden textarea leaks this
      duplicate zoom source into the export. An inert text/plain script preserves
      the raw Mermaid text for the zoom helper and is omitted from exports.
      Keep the normal Mermaid block below; recheck after upgrading Zensical. -->
