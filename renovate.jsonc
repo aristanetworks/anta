@@ -107,14 +107,6 @@
       "groupSlug": "ruff"
     },
     {
-      "description": "Group Pylint updates across Python and pre-commit",
-      "matchManagers": ["pep621", "pre-commit"],
-      "matchPackageNames": ["pylint", "pycqa/pylint"],
-      "matchUpdateTypes": ["minor", "patch"],
-      "groupName": "Pylint",
-      "groupSlug": "pylint"
-    },
-    {
       "description": "Group codespell updates across Python and pre-commit",
       "matchManagers": ["pep621", "pre-commit"],
       "matchPackageNames": ["codespell", "codespell-project/codespell"],

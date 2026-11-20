@@ -137,7 +137,6 @@ def test_sa157_version_boundaries() -> None:
 
 def expected_result(status: Status, issues: tuple[Issue, ...]) -> UnitTestResult:
     """Build parent and per-vulnerability expectations."""
-    # pylint: disable=duplicate-code
     atomic_results: list[AtomicResult] = []
     for vulnerability, (issue_status, message, remediation) in zip(ADVISORY.vulnerabilities, issues, strict=True):
         atomic: AtomicResult = {"description": f"Verify {vulnerability.id}.", "result": issue_status, "messages": [message]}
@@ -150,7 +149,6 @@ def expected_result(status: Status, issues: tuple[Issue, ...]) -> UnitTestResult
         "remediations": list(dict.fromkeys(remediation for _, _, remediation in issues if remediation is not None)),
         "atomic_results": atomic_results,
     }
-    # pylint: enable=duplicate-code
 
 
 _DATA: AntaUnitTestData = {

@@ -58,7 +58,6 @@ class MacsecProfilesFact(CommandsFactDefinition["MacsecProfilesFact"]):
 
     @classmethod
     # Keep individual source/profile failures scoped instead of failing the inventory.
-    # pylint: disable-next=too-many-return-statements,too-many-branches
     def parse(cls, commands: tuple[AntaCommand, ...]) -> Fact[MacsecProfilesFact]:  # noqa: C901, PLR0911
         """Deserialize only the identity, key-source token, and interface list."""
         (command,) = commands

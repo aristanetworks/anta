@@ -158,7 +158,6 @@ class AntaRunContext:
         return None
 
 
-# pylint: disable=too-few-public-methods
 class AntaRunner:
     """Run and manage ANTA test execution.
 

@@ -30,13 +30,11 @@ set_env = { COLUMNS = "165"}
 
 [env.lint]
 description = "Check the code style"
-dependency_groups = ["lint", "test", "benchmark"]
+dependency_groups = ["lint"]
+skip_install = true
 commands =[
   ["ruff", "check", "."],
   ["ruff", "format", ".", "--check"],
-  ["pylint", "anta"],
-  ["pylint", "tests"],
-  ["pylint", "asynceapi"],
 ]
 
 [env.type]

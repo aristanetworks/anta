@@ -40,7 +40,6 @@ def validate_psirt_recording(events: list[dict[str, object] | list[object]]) -> 
         raise RuntimeError(msg)
 
 
-# pylint: disable=too-many-locals
 # Keep the table animation stages together in their output order.
 def animate_nrfu_table(events: list[dict[str, object] | list[object]]) -> list[dict[str, object] | list[object]]:  # noqa: C901, PLR0915
     """Pause on two representative NRFU rows, then rapidly print the rest."""

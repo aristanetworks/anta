@@ -37,7 +37,6 @@ FAKE_CATALOG: AntaCatalog = AntaCatalog.from_list([(FakeTest, None)])
 @pytest.mark.skipif(os.name != "posix", reason="Cannot run this test on Windows")
 def test_adjust_rlimit_nofile_valid_env(caplog: pytest.LogCaptureFixture) -> None:
     """Test adjust_rlimit_nofile with valid environment variables."""
-    # pylint: disable=E0606
     with (
         caplog.at_level(logging.DEBUG),
         patch.dict("os.environ", {"ANTA_NOFILE": "20480"}),

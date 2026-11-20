@@ -119,7 +119,6 @@ class PersistentHotfixFact(MitigationFact, CommandsFactDefinition[HotfixFactT], 
     )
 
     @classmethod
-    # pylint: disable-next=too-many-return-statements
     def _installed_extension(cls, command: AntaCommand) -> Fact[HotfixFactT] | Mapping[str, object]:  # noqa: PLR0911
         """Return installed extension data or a result decided by extension state alone."""
         source = FactSource(command.command, FactSourceKind.COMMAND)
