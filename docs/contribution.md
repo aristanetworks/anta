@@ -506,3 +506,11 @@ muffet -c 2 --color=always http://127.0.0.1:8000 -e fonts.gstatic.com -b 8192
 ## Continuous Integration
 
 GitHub actions is used to test git pushes and pull requests. The workflows are defined in this [directory](https://github.com/aristanetworks/anta/tree/main/.github/workflows). The results can be viewed [here](https://github.com/aristanetworks/anta/actions).
+
+## Documentation exports for LLMs
+
+Documentation builds publish a version-specific `llms.txt` index (for example, `/main/llms.txt`) linking to rendered Markdown, including expanded snippets and generated API documentation. The site-root `/llms.txt` lists only versions with exports; older releases appear after their documentation is rebuilt with exports enabled. Use an export matching your installed ANTA version when available.
+
+When adding a page, include it in the appropriate section under `project.plugins.llmstxt` in `zensical.toml`. Patterns match nested directories; avoid selecting a page in multiple sections. Add a short description when its title needs context.
+
+After `zensical build --clean --strict`, run `python docs/scripts/check_llms_exports.py`; CI enforces export coverage and uniqueness. Inspect the affected Markdown for intact text, API labels, links, and examples. Current exporter limitations and workarounds are recorded in the [Zensical migration tracker](https://github.com/aristanetworks/anta/blob/main/.github/zensical-migration.md).
