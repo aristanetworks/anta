@@ -29,6 +29,8 @@ jobs:
               # detect dependency changes
               - 'pyproject.toml'
               - 'uv.lock'
+              # Run Windows tests when their interpreter or tox setup changes.
+              - '.github/workflows/code-testing.yml'
             benchmarks:
               - 'tests/benchmark/**'
               - '.github/workflows/codspeed.yml'
@@ -46,6 +48,7 @@ jobs:
         uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
         with:
           version: "0.13.8"
+          # Exercise the minimum supported Python; maintain with requires-python.
           python-version: "3.11"
       - name: Check lock freshness
         run: uv lock --check
@@ -90,7 +93,7 @@ jobs:
           name: pytest-coverage
           path: coverage.xml
   test-python-windows:
-    name: Pytest on 3.12 for windows
+    name: Pytest on 3.14 for Windows
     runs-on: windows-2022
     needs: [file-changes]
     if: needs.file-changes.outputs.code == 'true'
@@ -104,11 +107,12 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
-          python-version: 3.12
+          python-version: "3.14"
+          check-latest: true
       - name: Install tox
         run: python -m pip install --group tox
-      - name: Run pytest via tox for 3.12 on Windows
-        run: tox run -e py312 -- --ignore=tests/docs
+      - name: Run pytest via tox for 3.14 on Windows
+        run: tox run -e py314 -- --ignore=tests/docs
   test-documentation:
     name: Build offline documentation for testing
     runs-on: ubuntu-latest
@@ -120,7 +124,8 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
-          python-version: "3.11"
+          python-version: "3.14"
+          check-latest: true
       - name: Install dependencies
         run: pip install -e ".[cli]" --group doc -e tools/zensical_extensions
       - name: "Build Zensical documentation offline"
