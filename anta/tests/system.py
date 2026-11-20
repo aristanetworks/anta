@@ -25,7 +25,6 @@ if TYPE_CHECKING:
     from typing import Self
 
 CPU_IDLE_THRESHOLD = 25
-MEMORY_THRESHOLD = 0.25
 DISK_SPACE_THRESHOLD = 75
 
 
@@ -257,23 +256,30 @@ class VerifyCPUUtilization(AntaTest):
 
 
 class VerifyMemoryUtilization(AntaTest):
-    """Verifies whether the memory utilization is below 75%.
+    """Verifies that memory utilization is below the configured threshold.
 
     Expected Results
     ----------------
-    * Success: The test will pass if the memory utilization is below 75%.
-    * Failure: The test will fail if the memory utilization is over 75%.
+    * Success: The test will pass if memory utilization is below the threshold.
+    * Failure: The test will fail if memory utilization exceeds the threshold.
 
     Examples
     --------
     ```yaml
     anta.tests.system:
       - VerifyMemoryUtilization:
+          threshold: 75.0
     ```
     """
 
     categories: ClassVar[list[str]] = ["system"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show version", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyMemoryUtilization test."""
+
+        threshold: Percent = 75.0
+        """Memory utilization threshold above which the test will fail."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -281,8 +287,9 @@ class VerifyMemoryUtilization(AntaTest):
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
         memory_usage = command_output["memFree"] / command_output["memTotal"]
-        if memory_usage < MEMORY_THRESHOLD:
-            self.result.is_failure(f"Device has reported a high memory usage - Expected: < 75% Actual: {(1 - memory_usage) * 100:.2f}%")
+        memory_utilization = (1 - memory_usage) * 100
+        if memory_usage < (100 - self.inputs.threshold) / 100:
+            self.result.is_failure(f"Device has reported a high memory usage - Expected: < {self.inputs.threshold:g}% Actual: {memory_utilization:.2f}%")
 
 
 class VerifyFileSystemUtilization(AntaTest):
