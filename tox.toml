@@ -4,7 +4,7 @@
 # https://github.com/mbarkhau/bumpver/issues/247
 ################################
 # Bootstrap minimum only; install the managed version from the tox dependency group.
-requires = ["tox>=4.21"]
+requires = ["tox>=4.67.13"]
 env_list = [
   "clean",
   "lint",
