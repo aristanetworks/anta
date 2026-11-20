@@ -6,7 +6,17 @@
   "dependencyDashboard": {
     "enabled": true
   },
-  "enabledManagers": ["pep621", "github-actions", "pre-commit"],
+  "enabledManagers": ["pep621", "github-actions", "pre-commit", "custom.regex"],
+
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.github/workflows/container-scan\\.yml$/"],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\s+version: (?<currentValue>\\S+)"
+      ]
+    }
+  ],
 
   "pre-commit": {
     "enabled": true

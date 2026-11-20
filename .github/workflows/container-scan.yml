@@ -1,0 +1,129 @@
+---
+name: Scan container
+
+"on":
+  schedule:
+    - cron: "23 4 * * *"
+  workflow_dispatch:
+    inputs:
+      source:
+        description: "Image source (branch builds use the selected workflow branch)"
+        required: true
+        type: choice
+        default: published
+        options:
+          - published
+          - branch
+      tag:
+        description: "Published image tag (ignored for branch builds)"
+        required: false
+        type: string
+        default: latest
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    name: Trivy / linux/amd64
+    # Scheduled scans belong to upstream; forks can test the workflow manually.
+    if: github.repository == 'aristanetworks/anta' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      SCAN_SOURCE: ${{ inputs.source || 'published' }}
+      IMAGE_TAG: ${{ inputs.tag || 'latest' }}
+      # Published scans intentionally target upstream, including manual runs in forks.
+      IMAGE_REF: >-
+        ${{ inputs.source == 'branch'
+            && format('anta-scan:{0}', github.sha)
+            || format('ghcr.io/aristanetworks/anta:{0}', inputs.tag || 'latest') }}
+    steps:
+      - name: Check out selected branch
+        if: inputs.source == 'branch'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Build selected branch without publishing
+        if: inputs.source == 'branch'
+        run: docker build --pull --platform linux/amd64 --tag "$IMAGE_REF" .
+
+      - name: Prepare scan
+        run: |
+          if [[ "$SCAN_SOURCE" == published && ! "$IMAGE_TAG" =~ ^[a-zA-Z0-9_][a-zA-Z0-9_.-]{0,127}$ ]]; then
+            echo '::error::Invalid image tag. Use a published tag such as latest, dev, or 1.0.0.'
+            exit 1
+          fi
+          mkdir -p reports
+
+      - name: Scan image
+        id: trivy
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        env:
+          TRIVY_IMAGE_SRC: ${{ inputs.source == 'branch' && 'docker' || 'remote' }}
+          TRIVY_PLATFORM: linux/amd64
+        with:
+          # renovate: datasource=github-releases depName=aquasecurity/trivy
+          version: v0.76.2
+          scan-type: image
+          image-ref: ${{ env.IMAGE_REF }}
+          scanners: vuln
+          vuln-type: os,library
+          severity: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
+          # Reports and the severity gate cover vulnerabilities with available fixes.
+          ignore-unfixed: "true"
+          format: json
+          output: reports/trivy.json
+          # Upload reports before evaluating findings. Scanner errors still fail this step.
+          exit-code: "0"
+          timeout: 15m
+          cache: "true"
+
+      - name: Generate readable report
+        if: ${{ !cancelled() && steps.trivy.outcome == 'success' }}
+        run: trivy convert --format table --scanners vuln --output reports/trivy.txt reports/trivy.json
+
+      - name: Summarize findings
+        if: ${{ !cancelled() && steps.trivy.outcome == 'success' }}
+        run: |
+          {
+            echo '### ANTA container scan'
+            echo ""
+            echo "Source: $SCAN_SOURCE"
+            echo "Image: \`$IMAGE_REF\` (\`linux/amd64\`)"
+            echo ""
+            echo 'Reports contain vulnerabilities with available fixes. HIGH/CRITICAL findings fail this scan.'
+            echo ""
+            echo '| Severity | Findings |'
+            echo '| --- | ---: |'
+            jq -r '
+              [.Results[]?.Vulnerabilities[]?] as $findings |
+              ["CRITICAL", "HIGH", "MEDIUM", "LOW", "UNKNOWN"][] as $severity |
+              "| \($severity) | \([$findings[] | select(.Severity == $severity)] | length) |"
+            ' reports/trivy.json
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Retain available reports
+        id: reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: trivy-container-reports-${{ github.run_attempt }}
+          path: reports/
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Link uploaded reports
+        if: ${{ !cancelled() && steps.reports.outcome == 'success' && steps.reports.outputs.artifact-url != '' }}
+        env:
+          ARTIFACT_URL: ${{ steps.reports.outputs.artifact-url }}
+        run: printf '\n[Download available reports](%s).\n' "$ARTIFACT_URL" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Fail on fixable HIGH or CRITICAL vulnerabilities
+        if: ${{ !cancelled() && steps.trivy.outcome == 'success' }}
+        run: trivy convert --format table --scanners vuln --severity HIGH,CRITICAL --exit-code 1 reports/trivy.json
