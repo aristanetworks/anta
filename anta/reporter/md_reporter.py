@@ -617,7 +617,6 @@ class TestResults(MDReportBase):
         return f"| {' | '.join(row_parts)} |\n"
 
 
-# pylint: disable=too-few-public-methods
 class MDReportGenerator:
     """Class responsible for generating a Markdown report based on the provided `ResultManager` object.
 

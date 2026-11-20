@@ -206,7 +206,7 @@ def fact_field(definition: type[FactDefinition[T]]) -> Fact[T]:
     Runtime validation checks the metadata shape and definition value but does
     not inspect the field annotation or its generic type.
     """
-    return cast("Fact[T]", field(metadata={"definition": definition}))  # pylint: disable=invalid-field-call
+    return cast("Fact[T]", field(metadata={"definition": definition}))
 
 
 @dataclass_transform(field_specifiers=(fact_field,), frozen_default=True)

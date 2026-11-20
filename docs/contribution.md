@@ -73,11 +73,9 @@ COLUMNS=165 uv run --no-sync python -m pytest tests/units --no-cov
 
 CI checks lock freshness and runs this environment in addition to the existing tox checks. Tox continues to resolve dependencies independently across the supported Python versions. Pre-commit continues to manage its own isolated hook environments.
 
-Lint and type tools, including type stubs, use exact version pins because tool updates can change diagnostics without an ANTA code change. Documentation tools are pinned to keep rendering and plugin behavior stable, and benchmark tools are pinned to keep measurements comparable. Tox and development utilities are also pinned to make their execution predictable. The Git-based `mike` dependency is pinned to a commit. These pins control direct tool versions; reproducing transitive dependencies also requires the lockfile.
+Lint/type tools and stubs, documentation tools, benchmarks, and reporting tools use exact pins to keep diagnostics, rendered output, and measurements stable. Test and runtime dependencies retain ranges: the locked CI job provides a fixed baseline, while tox tests independently resolved dependencies. The Git-based `mike` dependency stays pinned to a commit.
 
-The `test` dependency group retains version ranges. The locked CI job provides an exact baseline, while tox resolves the test dependencies independently across supported Python versions to expose compatibility issues with newer test tooling and runtime dependencies. A new pytest or plugin release can therefore break the tox jobs while the locked baseline still passes; inspect the dependency differences when diagnosing such failures. Test dependencies installed inside pre-commit hooks remain pinned because those environments support stable lint and type diagnostics.
-
-Runtime dependencies, including `typing-extensions` shared with the lint group, retain compatibility ranges. Update the declared pins when upgrading pinned development tools; `uv lock --upgrade` alone does not advance an exact pin.
+Keep tool versions in the `pyproject.toml` dependency groups so Renovate can maintain them. Tox's `requires` is only a bootstrap minimum; an exact pin there would override the installed tox version through automatic provisioning. Its clean/report environments share the managed `coverage` group. Update declared pins before refreshing the lock; `uv lock --upgrade` alone does not advance an exact pin.
 
 When changing project metadata or dependency declarations in `pyproject.toml`, regenerate and commit the lock together with the manifest:
 
@@ -106,37 +104,15 @@ A lock update selects versions for environments that consume it. Ordinary pip in
 
 ### Code linting
 
-Run lint and type checks in dedicated virtual environments. Tox creates separate `.tox/lint` and `.tox/type` environments with the required dependency groups, and pre-commit manages its own isolated hook environments. This keeps tool requirements separate from the runtime or test environment; isolation does not replace version pins or lock transitive dependencies. A plain `uv sync` installs the default `dev` group into the project environment and does not create separate lint and type environments.
+Use `tox -e lint,type` for dedicated `.tox/lint` and `.tox/type` virtual environments, or use pre-commit's isolated hook environments. Plain `uv sync` installs the default `dev` group into the project environment. Isolation prevents environment conflicts; it does not lock transitive dependencies. The type environment also installs ranged test/runtime dependencies, so their updates can still affect diagnostics. Test helpers inside pre-commit hooks stay pinned to stabilize checking.
 
-The tox lint and type environments also include the ranged `test` group because the checks inspect test code. Checker versions stay pinned, but updates to test dependencies or runtime dependencies can still affect diagnostics.
-
-Run both checks with `tox -e lint,type`, or select an individual environment:
+Ruff checks lint rules and formatting:
 
 ```bash
 tox -e lint
-[...]
-lint: commands[0]> ruff check .
-All checks passed!
-lint: commands[1]> ruff format . --check
-224 files already formatted
-lint: commands[2]> pylint anta
-
---------------------------------------------------------------------
-Your code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)
-
-lint: commands[3]> pylint tests
-
---------------------------------------------------------------------
-Your code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)
-
-lint: commands[4]> pylint asynceapi
-
---------------------------------------------------------------------
-Your code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)
-
-  lint: OK (38.75=setup[12.60]+cmd[0.98,0.08,9.51,13.49,2.09] seconds)
-  congratulations :) (38.78 seconds)
 ```
+
+Run the separate typing environment below to check types with Pyright. Static analysis complements tests; exercise invalid inputs, import paths, iterator behavior, and resource cleanup in the relevant unit tests.
 
 ### Code Typing
 
@@ -404,7 +380,6 @@ Check and insert license on Python files.................................Passed
 Check and insert license on Markdown files...............................Passed
 Run Ruff linter..........................................................Passed
 Run Ruff formatter.......................................................Passed
-Check code style with pylint.............................................Passed
 Checks for common misspellings in text files.............................Passed
 PyRight static type checker..............................................Passed
 Check for Linting errors on Markdown files...............................Passed

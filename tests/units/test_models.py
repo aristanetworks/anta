@@ -291,7 +291,7 @@ class DeprecatedTestWithNewTest(AntaTest):
 
 
 # Intentionally abstract: this fixture tests that instantiation fails.
-class FakeTestWithMissingTest(AntaTest):  # pylint: disable=abstract-method
+class FakeTestWithMissingTest(AntaTest):
     """ANTA test with missing test() method implementation."""
 
     categories: ClassVar[list[str]] = []

@@ -13,8 +13,6 @@ from anta.reporter.jinja_reporter import ReportJinja
 class TestReportJinja:
     """Tests for ReportJinja class."""
 
-    # pylint: disable=too-few-public-methods
-
     def test_fail__init__file_not_found(self) -> None:
         """Test __init__ failure if the template file is not found."""
         with pytest.raises(FileNotFoundError, match=r"template file is not found: [/|\\]gnu[/|\\]terry[/|\\]pratchett"):

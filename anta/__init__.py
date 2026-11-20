@@ -27,7 +27,6 @@ if __DEBUG__:
 
 
 # Source: https://rich.readthedocs.io/en/stable/appendix/colors.html
-# pylint: disable=R0903
 class RICH_COLOR_PALETTE:
     """Color code for text rendering."""
 

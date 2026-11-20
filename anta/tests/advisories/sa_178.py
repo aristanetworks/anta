@@ -44,7 +44,6 @@ from anta._advisory.remediation import FixedRelease, RemediationPlan, RunCommand
 from anta._eos.version import EOSVersion
 from anta.decorators import preview_test_class
 
-# pylint: disable=duplicate-code
 AFFECTED_VERSION_MATRIX: tuple[VersionRule, ...] = (
     VersionRule(major=4, minor=36, patch_lte=2),
     VersionRule(major=4, minor=35, patch_lte=6),
@@ -58,7 +57,6 @@ FIXED_RELEASES = (
     FixedRelease(EOSVersion(4, 34, 9, suffix="M")),
     FixedRelease(EOSVersion(4, 33, 11, suffix="M")),
 )
-# pylint: enable=duplicate-code
 HOTFIX_RELEASES = frozenset({"4.36.2F", "4.35.6M", "4.34.8M", "4.33.10M"})
 CONVERT_CREDENTIALS = RunCommand(("configure convert new-syntax",))
 

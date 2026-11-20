@@ -28,7 +28,7 @@ class SecurityAdvisoryReportCsv(ReportCsv):
     _REPORT_NAME = "security advisory CSV"
 
     @dataclass
-    class Headers(ReportCsv.Headers):  # pylint: disable=too-many-instance-attributes
+    class Headers(ReportCsv.Headers):
         """Headers for the security advisory CSV report."""
 
         advisory_result: str = "Advisory Result"
