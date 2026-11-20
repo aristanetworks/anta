@@ -509,7 +509,7 @@ GitHub actions is used to test git pushes and pull requests. The workflows are d
 
 ## Documentation exports for LLMs
 
-Each documentation version publishes an `llms.txt` index (for example, `/main/llms.txt`) linking to rendered Markdown, including expanded snippets and generated API documentation. The site-root `/llms.txt` lists available version indexes. Use the version matching your installed ANTA package.
+Documentation builds publish a version-specific `llms.txt` index (for example, `/main/llms.txt`) linking to rendered Markdown, including expanded snippets and generated API documentation. The site-root `/llms.txt` lists only versions with exports; older releases appear after their documentation is rebuilt with exports enabled. Use an export matching your installed ANTA version when available.
 
 When adding a page, include it in the appropriate section under `project.plugins.llmstxt` in `zensical.toml`. Patterns match nested directories; avoid selecting a page in multiple sections. Add a short description when its title needs context.
 
