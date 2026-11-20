@@ -70,10 +70,9 @@
     // Overrides: labels -> ["CI"]
     // -------------------------------------------------------------------------
     {
-      "description": "Pin GitHub Actions digests.",
+      "description": "Label GitHub Actions updates.",
       "matchManagers": ["github-actions"],
-      "labels": ["CI"],
-      "pinDigests": true
+      "labels": ["CI"]
     },
     {
       "description": "Handling hook rev autoupdates.",
