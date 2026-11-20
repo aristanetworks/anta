@@ -72,10 +72,10 @@ repos:
         language: python
         additional_dependencies:
           - anta[cli]
-          - pytest>=9.2.0
+          - pytest==9.2.0
           - respx==0.23.1
-          - pytest-httpx>=0.36.2
-          - pytest-codspeed>=5.0.4
+          - pytest-httpx==0.36.2
+          - pytest-codspeed==5.0.4
           - types-PyYAML==6.0.12.20261111
           - types-requests==2.33.0.20261030
           - types-pyOpenSSL==24.1.0.20240722
@@ -126,5 +126,5 @@ repos:
         additional_dependencies:
           - anta[cli]
           # Keep generated CLI snippets stable with Click's optional subcommand rendering.
-          - click~=8.5.1
+          - click==8.5.1
           - pydantic-settings==2.16.2

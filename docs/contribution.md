@@ -73,6 +73,10 @@ COLUMNS=165 uv run --no-sync python -m pytest tests/units --no-cov
 
 CI checks lock freshness and runs this environment in addition to the existing tox checks. Tox continues to resolve dependencies independently across the supported Python versions. Pre-commit continues to manage its own isolated hook environments.
 
+Lint/type tools and stubs, documentation tools, benchmarks, and reporting tools use exact pins to keep diagnostics, rendered output, and measurements stable. Test and runtime dependencies retain ranges: the locked CI job provides a fixed baseline, while tox tests independently resolved dependencies. The Git-based `mike` dependency stays pinned to a commit.
+
+Keep tool versions in the `pyproject.toml` dependency groups so Renovate can maintain them. Tox's `requires` is only a bootstrap minimum; an exact pin there would override the installed tox version through automatic provisioning. Its clean/report environments share the managed `coverage` group. Update declared pins before refreshing the lock; `uv lock --upgrade` alone does not advance an exact pin.
+
 When changing project metadata or dependency declarations in `pyproject.toml`, regenerate and commit the lock together with the manifest:
 
 ```bash
@@ -99,6 +103,8 @@ Record the advisory and reason in the PR, update the affected package, and remov
 A lock update selects versions for environments that consume it. Ordinary pip installations use ANTA's published dependency ranges. When addressing a relevant vulnerability, also assess whether those ranges must exclude affected versions; updating the lock alone does not change downstream requirements or existing installations.
 
 ### Code linting
+
+Use `tox -e lint,type` for dedicated `.tox/lint` and `.tox/type` virtual environments, or use pre-commit's isolated hook environments. Plain `uv sync` installs the default `dev` group into the project environment. Isolation prevents environment conflicts; it does not lock transitive dependencies. The type environment also installs ranged test/runtime dependencies, so their updates can still affect diagnostics. Test helpers inside pre-commit hooks stay pinned to stabilize checking.
 
 Ruff checks lint rules and formatting:
 
