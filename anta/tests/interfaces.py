@@ -1523,8 +1523,9 @@ class VerifyInterfacesOpticsReceivePower(AntaTest):
     ----------------
     * Success: The test will pass if all tested interfaces have their installed transceiver receive power levels
                 above their low-alarm threshold and below their high-alarm threshold, considering the defined tolerance.
-    * Failure: The test will fail if any interface reports a receive power level from its transceiver that,
-                after subtracting the tolerance, falls below its low-alarm threshold or obove its high-alarm threshold.
+    * Failure: The test will fail if any interface reports a receive power level from its transceiver that
+                falls below the lower alarm threshold (after subtracting the tolerance) or
+                rises above the upper alarm threshold (after adding the tolerance).
 
     Examples
     --------
@@ -1557,7 +1558,7 @@ class VerifyInterfacesOpticsReceivePower(AntaTest):
         """A list of Ethernet interfaces to ignore."""
         failure_margin: PositiveInteger = Field(default=2)
         """Proactive failure margin in dB. The test will fail if the receive power is weaker than the low-alarm threshold plus this margin,
-        or if the receive power is stornger than the high-alarm threshold plus this margin."""
+        or if the receive power is stornger than the high-alarm threshold minus this margin."""
         ignore_shutdown_interfaces: bool = False
         """If `True`, administratively shutdown interfaces are skipped."""
 
