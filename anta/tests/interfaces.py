@@ -1522,9 +1522,9 @@ class VerifyInterfacesOpticsReceivePower(AntaTest):
     Expected Results
     ----------------
     * Success: The test will pass if all tested interfaces have their installed transceiver receive power levels
-                above their low-alarm threshold, considering the defined tolerance.
+                above their low-alarm threshold and below their high-alarm threshold, considering the defined tolerance.
     * Failure: The test will fail if any interface reports a receive power level from its transceiver that,
-                after subtracting the tolerance, falls below its low-alarm threshold.
+                after subtracting the tolerance, falls below its low-alarm threshold or obove its high-alarm threshold.
 
     Examples
     --------
@@ -1556,7 +1556,8 @@ class VerifyInterfacesOpticsReceivePower(AntaTest):
         ignored_interfaces: list[EthernetInterface] | None = None
         """A list of Ethernet interfaces to ignore."""
         failure_margin: PositiveInteger = Field(default=2)
-        """Proactive failure margin in dB. The test will fail if the receive power is weaker than the low-alarm threshold plus this margin."""
+        """Proactive failure margin in dB. The test will fail if the receive power is weaker than the low-alarm threshold plus this margin,
+        or if the receive power is stornger than the high-alarm threshold plus this margin."""
         ignore_shutdown_interfaces: bool = False
         """If `True`, administratively shutdown interfaces are skipped."""
 
@@ -1580,10 +1581,18 @@ class VerifyInterfacesOpticsReceivePower(AntaTest):
                 if (intf_detail := get_value(intf_details["interfaces"], intf_name, separator="..")) is None:
                     self.result.is_failure(f"Interface: {intf_name} - Optic not found")
                     continue
+                # Remove ignored interfaces from interfaces list
+                if is_interface_ignored(intf_name, self.inputs.ignored_interfaces):
+                    continue
                 interfaces_to_check[intf_name] = intf_detail
         else:
-            # If no specific interfaces are given, use all interfaces
-            interfaces_to_check = intf_details["interfaces"]
+            for intf_name, intf_detail in intf_details["interfaces"].items():
+                # Remove ignored interfaces from interfaces list
+                if is_interface_ignored(intf_name, self.inputs.ignored_interfaces):
+                    continue
+
+                # If no specific interfaces are given, use all interfaces
+                interfaces_to_check[intf_name] = intf_detail
         return interfaces_to_check
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
@@ -1596,16 +1605,13 @@ class VerifyInterfacesOpticsReceivePower(AntaTest):
 
         interfaces_to_check = self._get_interfaces_to_check(int_transceiver_details)
         for interface, int_data in interfaces_to_check.items():
-            # Verification is skipped if the interface is in the ignored interfaces list
-            if is_interface_ignored(interface, self.inputs.ignored_interfaces):
-                continue
-
             # Skip administratively shutdown interfaces when requested
             if self.inputs.ignore_shutdown_interfaces and int_descriptions.get(interface, {}).get("interfaceStatus") == "adminDown":
                 continue
 
             # Verify receive power details
-            if (rx_power_details := get_value(int_data, "parameters.rxPower")) is None:
+            rx_power_details = get_value(int_data, "parameters.rxPower")
+            if rx_power_details is None:
                 message = f"Interface: {interface} - Receive power details are not found (DOM not supported)"
                 if self.inputs.interfaces:
                     self.result.is_failure(message)
@@ -1618,7 +1624,10 @@ class VerifyInterfacesOpticsReceivePower(AntaTest):
             description_str = f" Description: {intf_description}" if intf_description else ""
 
             # Skip interfaces where threshold data is not available
-            if (low_alarm_threshold := get_value(rx_power_details, "threshold.lowAlarm")) is None:
+            low_alarm_threshold = get_value(rx_power_details, "threshold.lowAlarm")
+            high_alarm_threshold = get_value(rx_power_details, "threshold.highAlarm")
+
+            if low_alarm_threshold is None or high_alarm_threshold is None:
                 message = f"Interface: {interface} - Threshold data is not available"
                 if self.inputs.interfaces:
                     self.result.is_failure(message)
@@ -1627,14 +1636,25 @@ class VerifyInterfacesOpticsReceivePower(AntaTest):
                 continue
 
             for channel, rx_power_value in rx_power_details["channels"].items():
-                effective_threshold = low_alarm_threshold + self.inputs.failure_margin
+                effective_low_threshold = low_alarm_threshold + self.inputs.failure_margin
+                effective_high_threshold = high_alarm_threshold - self.inputs.failure_margin
+
                 is_receiving_light = rx_power_value != NO_LIGHT_DBM
-                if is_receiving_light and (rx_power_value < effective_threshold):
+
+                if is_receiving_light and (rx_power_value < effective_low_threshold):
                     self.result.is_failure(
                         f"Interface: {interface}{description_str} Status: {int_descriptions[interface]['interfaceStatus']} "
                         f"Channel: {channel} Optic: {int_data.get('mediaType')} - "
                         f"Low receive power detected - "
-                        f"Expected: >= {effective_threshold:.2f}dBm (Alarm: {low_alarm_threshold:.2f}dBm + Margin: {self.inputs.failure_margin}dBm) "
+                        f"Expected: >= {effective_low_threshold:.2f}dBm (Alarm: {low_alarm_threshold:.2f}dBm + Margin: {self.inputs.failure_margin}dBm) "
+                        f"Actual: {rx_power_value:.2f}dBm"
+                    )
+                if is_receiving_light and (rx_power_value > effective_high_threshold):
+                    self.result.is_failure(
+                        f"Interface: {interface}{description_str} Status: {int_descriptions[interface]['interfaceStatus']} "
+                        f"Channel: {channel} Optic: {int_data.get('mediaType')} - "
+                        f"High receive power detected - "
+                        f"Expected: <= {effective_high_threshold:.2f}dBm (Alarm: {high_alarm_threshold:.2f}dBm - Margin: {self.inputs.failure_margin}dBm) "
                         f"Actual: {rx_power_value:.2f}dBm"
                     )
 
