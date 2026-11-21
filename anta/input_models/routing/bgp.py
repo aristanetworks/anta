@@ -9,7 +9,7 @@ from ipaddress import IPv4Address, IPv4Network, IPv6Address, IPv6Network
 from typing import TYPE_CHECKING, Any, Literal
 from warnings import warn
 
-from pydantic import BaseModel, ConfigDict, Field, PositiveInt, model_validator
+from pydantic import BaseModel, ConfigDict, Field, NonNegativeInt, model_validator
 from pydantic_extra_types.mac_address import MacAddress
 
 from anta.custom_types import Afi, BgpCommunity, BgpDropStats, BgpUpdateError, Interface, MultiProtocolCaps, RedistributedAfiSafi, RedistributedProtocol, Safi, Vni
@@ -68,7 +68,7 @@ class BgpAddressFamily(BaseModel):
 
     These AFIs operate at a global level and do not use the VRF concept in the same way as IPv4/IPv6.
     """
-    num_peers: PositiveInt | None = None
+    num_peers: NonNegativeInt | None = None
     """Number of expected established BGP peers with negotiated AFI/SAFI. Required field in the `VerifyBGPPeerCount` test."""
     peers: list[IPv4Address | IPv6Address] | None = None
     """List of expected IPv4/IPv6 BGP peers supporting the AFI/SAFI. Required field in the `VerifyBGPSpecificPeers` test."""
