@@ -8,6 +8,7 @@
 from __future__ import annotations
 
 import re
+from decimal import Decimal
 from json import JSONDecodeError, loads
 from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
@@ -288,7 +289,9 @@ class VerifyMemoryUtilization(AntaTest):
         command_output = self.instance_commands[0].json_output
         memory_usage = command_output["memFree"] / command_output["memTotal"]
         memory_utilization = (1 - memory_usage) * 100
-        if memory_usage < (100 - self.inputs.threshold) / 100:
+        memory_used = command_output["memTotal"] - command_output["memFree"]
+        memory_threshold = Decimal(str(self.inputs.threshold))
+        if memory_used * 100 > memory_threshold * command_output["memTotal"]:
             self.result.is_failure(f"Device has reported a high memory usage - Expected: < {self.inputs.threshold:g}% Actual: {memory_utilization:.2f}%")
 
 
