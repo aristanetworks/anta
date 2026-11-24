@@ -79,7 +79,9 @@
     document.querySelectorAll(".mermaid-zoom-source").forEach(function(sourceElement) {
       var diagram = findMermaidDiagram(sourceElement)
 
-      if (!diagram) {
+      // Zensical replaces the source <pre> after asynchronous Mermaid rendering.
+      // Attach controls to the rendered element so that replacement keeps them.
+      if (!diagram || diagram.tagName === "PRE") {
         return
       }
 
@@ -137,6 +139,24 @@
     initializeMermaidZoom()
     window.requestAnimationFrame(initializeMermaidZoom)
     window.setTimeout(initializeMermaidZoom, 100)
+  }
+
+  if (!state.diagramObserver) {
+    state.diagramObserver = new MutationObserver(function(mutations) {
+      var diagramAdded = mutations.some(function(mutation) {
+        return Array.prototype.some.call(mutation.addedNodes, function(node) {
+          return node instanceof Element && (
+            node.matches(".mermaid, .mermaid-zoom-source") ||
+            node.querySelector(".mermaid, .mermaid-zoom-source")
+          )
+        })
+      })
+
+      if (diagramAdded) {
+        scheduleMermaidZoomInit()
+      }
+    })
+    state.diagramObserver.observe(document.body, { childList: true, subtree: true })
   }
 
   function waitForMermaid() {

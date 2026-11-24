@@ -25,7 +25,7 @@ from ._auth import EapiSessionAuth
 # -----------------------------------------------------------------------------
 # Private Imports
 # -----------------------------------------------------------------------------
-from ._constants import EapiCommandFormat
+from ._constants import EAPI_CONNECTIVITY_TIMEOUT, EapiCommandFormat
 from .aio_portcheck import port_check_url
 from .config_session import SessionConfig
 from .errors import EapiCommandError
@@ -180,7 +180,7 @@ class Device(httpx.AsyncClient):
             True when the device eAPI HTTP endpoint is accessible (2xx status code),
             otherwise an HTTPStatusError exception is raised.
         """
-        response = await self.head(self.EAPI_COMMAND_API_URL, timeout=5)
+        response = await self.head(self.EAPI_COMMAND_API_URL, timeout=EAPI_CONNECTIVITY_TIMEOUT)
         response.raise_for_status()
         return True
 

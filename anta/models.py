@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import hashlib
+import inspect
 import logging
 import re
 from abc import ABC, abstractmethod
@@ -13,7 +14,7 @@ from functools import wraps
 from string import Formatter
 from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
-from pydantic import BaseModel, ConfigDict, ValidationError, create_model, field_serializer
+from pydantic import BaseModel, ConfigDict, ValidationError, create_model, field_serializer, field_validator
 
 from anta.constants import EOS_BLACKLIST_CMDS, KNOWN_EOS_ERRORS, UNSUPPORTED_PLATFORM_ERRORS
 from anta.custom_types import Revision
@@ -32,6 +33,15 @@ if TYPE_CHECKING:
 # https://stackoverflow.com/questions/74103528/type-hinting-an-instance-of-a-nested-class
 
 logger = logging.getLogger(__name__)
+
+
+def _description_from_docstring(docstring: str | None, class_name: str) -> str:
+    """Return a normalized class description from its docstring."""
+    cleaned_docstring = inspect.cleandoc(docstring or "")
+    if not cleaned_docstring:
+        msg = f"Cannot set the description for class {class_name}, either set it in the class definition or add a docstring to the class."
+        raise AttributeError(msg)
+    return cleaned_docstring.splitlines()[0]
 
 
 class AntaParamsBaseModel(BaseModel):
@@ -58,8 +68,6 @@ class AntaTemplate:
     use_cache
         Enable or disable caching for this AntaTemplate if the AntaDevice supports it.
     """
-
-    # pylint: disable=too-few-public-methods
 
     def __init__(
         self,
@@ -183,8 +191,7 @@ class AntaCommand(BaseModel):
     def uid(self) -> str:
         """Generate a unique identifier for this command."""
         uid_str = f"{self.command}_{self.version}_{self.revision or 'NA'}_{self.ofmt}"
-        # Ignoring S324 probable use of insecure hash function - sha1 is enough for our needs.
-        return hashlib.sha1(uid_str.encode()).hexdigest()  # noqa: S324
+        return hashlib.sha1(uid_str.encode(), usedforsecurity=False).hexdigest()
 
     @property
     def json_output(self) -> dict[str, Any]:
@@ -212,6 +219,11 @@ class AntaCommand(BaseModel):
     def error(self) -> bool:
         """Return True if the command returned an error, False otherwise."""
         return len(self.errors) > 0
+
+    @property
+    def errors_deferred(self) -> bool:
+        """Return whether error reporting is delegated to the test body."""
+        return False
 
     @property
     def collected(self) -> bool:
@@ -360,8 +372,8 @@ class AntaTest(ABC):
 
     # Class variables to handle the progress bar of ANTA CLI
     progress: Progress | None = None
+    # TODO(ANTA 2.0): Rename `nrfu_task` to `_progress_task`.
     nrfu_task: TaskID | None = None
-
     # Instance attributes
     device: AntaDevice
     inputs: AntaTest.Input
@@ -388,12 +400,18 @@ class AntaTest(ABC):
         Attributes
         ----------
         result_overwrite
-            Define fields to overwrite in the TestResult object.
+            Define fields to overwrite in the TestResult object. An empty override is treated as omitted.
         """
 
         model_config = ConfigDict(extra="forbid")
         result_overwrite: ResultOverwrite | None = None
         filters: Filters | None = None
+
+        @field_validator("result_overwrite")
+        @classmethod
+        def _normalize_result_overwrite(cls, value: ResultOverwrite | None) -> ResultOverwrite | None:
+            """Treat an override with no configured fields as an omitted override."""
+            return None if value == cls.ResultOverwrite() else value
 
         def __hash__(self) -> int:
             """Implement generic hashing for AntaTest.Input.
@@ -460,7 +478,7 @@ class AntaTest(ABC):
         self.logger = logging.getLogger(f"{self.module}.{self.__class__.__name__}")
         self.device = device
         self.instance_commands = []
-        self.result = TestResult(name=device.name, test=self.name, categories=self.categories, description=self.description)
+        self.result = self._create_result()
         self._init_inputs(inputs)
         if hasattr(self, "inputs"):
             self._init_commands(eos_data)
@@ -471,6 +489,10 @@ class AntaTest(ABC):
                     self.result.description = res_ow.description
                 if res_ow.custom_field:
                     self.result.custom_field = res_ow.custom_field
+
+    def _create_result(self) -> TestResult:
+        """Create the test result."""
+        return TestResult(name=self.device.name, test=self.name, categories=self.categories, description=self.description)
 
     def _init_inputs(self, inputs: dict[str, Any] | AntaTest.Input | None) -> None:
         """Instantiate the `inputs` instance attribute with an `AntaTest.Input` instance to validate test inputs using the model.
@@ -558,11 +580,7 @@ class AntaTest(ABC):
 
         cls.name = getattr(cls, "name", cls.__name__)
         if not hasattr(cls, "description"):
-            if not cls.__doc__ or cls.__doc__.strip() == "":
-                # No doctsring or empty doctsring - raise
-                msg = f"Cannot set the description for class {cls.name}, either set it in the class definition or add a docstring to the class."
-                raise AttributeError(msg)
-            cls.description = cls.__doc__.split(sep="\n", maxsplit=1)[0]
+            cls.description = _description_from_docstring(cls.__doc__, cls.name)
 
     @property
     def module(self) -> str:

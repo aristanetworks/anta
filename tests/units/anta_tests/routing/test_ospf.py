@@ -10,7 +10,10 @@ from typing import TypeAlias
 from anta.models import AntaTest
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.routing.ospf import VerifyOSPFMaxLSA, VerifyOSPFNeighborCount, VerifyOSPFNeighborState, VerifyOSPFSpecificNeighbors
-from tests.units.anta_tests import AntaUnitTest, test
+from tests.units.anta_tests import (
+    AntaUnitTest,
+    test,  # noqa: F401 - Pytest collects this imported test function.
+)
 
 AntaUnitTestData: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
 
@@ -290,6 +293,79 @@ DATA: AntaUnitTestData = {
         ],
         "expected": {"result": AntaTestStatus.SUCCESS},
     },
+    (VerifyOSPFMaxLSA, "success-disabled-limit"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "instList": {
+                            "64580": {
+                                "maxLsaInformation": {"maxLsa": 0, "maxLsaThreshold": 75},
+                                "lsaInformation": {"numLsa": 16},
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyOSPFMaxLSA, "success-disabled-and-enabled-limits"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "instList": {
+                            "64580": {
+                                "maxLsaInformation": {"maxLsa": 0, "maxLsaThreshold": 75},
+                                "lsaInformation": {"numLsa": 16},
+                            },
+                            "1": {
+                                "maxLsaInformation": {"maxLsa": 1000, "maxLsaThreshold": 75},
+                                "lsaInformation": {"numLsa": 16},
+                            },
+                        }
+                    }
+                }
+            }
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyOSPFMaxLSA, "failure-disabled-and-enabled-limits"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "instList": {
+                            "64580": {
+                                "maxLsaInformation": {"maxLsa": 0, "maxLsaThreshold": 75},
+                                "lsaInformation": {"numLsa": 16},
+                            },
+                            "1": {
+                                "maxLsaInformation": {"maxLsa": 1000, "maxLsaThreshold": 75},
+                                "lsaInformation": {"numLsa": 1500},
+                            },
+                        }
+                    },
+                    "TEST": {
+                        "instList": {
+                            "10": {
+                                "maxLsaInformation": {"maxLsa": 1000, "maxLsaThreshold": 75},
+                                "lsaInformation": {"numLsa": 1500},
+                            }
+                        }
+                    },
+                }
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Instance: 1 - Crossed the maximum LSA threshold - Expected: < 750 Actual: 1500",
+                "Instance: 10 - Crossed the maximum LSA threshold - Expected: < 750 Actual: 1500",
+            ],
+        },
+    },
     (VerifyOSPFMaxLSA, "failure"): {
         "eos_data": [
             {
@@ -335,6 +411,27 @@ DATA: AntaUnitTestData = {
                 "Instance: 1 - Crossed the maximum LSA threshold - Expected: < 9000 Actual: 11500",
                 "Instance: 10 - Crossed the maximum LSA threshold - Expected: < 750 Actual: 1500",
             ],
+        },
+    },
+    (VerifyOSPFMaxLSA, "failure-lsa-information-missing"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "instList": {
+                            "1": {
+                                "instanceId": 1,
+                                "maxLsaInformation": {"maxLsa": 12000, "maxLsaThreshold": 75},
+                                "routerId": "1.1.1.1",
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Instance: 1 - Current number of LSAs not found"],
         },
     },
     (VerifyOSPFMaxLSA, "skipped"): {"eos_data": [{"vrfs": {}}], "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["OSPF not configured"]}},

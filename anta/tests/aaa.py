@@ -168,6 +168,14 @@ class VerifyAuthenMethods(AntaTest):
     ----------------
     * Success: The test will pass if the provided AAA authentication method list is matching in the configured authentication types.
     * Failure: The test will fail if the provided AAA authentication method list is NOT matching in the configured authentication types.
+      It will also fail if `login` is selected and its console method list is absent while `require_console_method` is `True`.
+
+    Notes
+    -----
+    * For backward compatibility, `require_console_method` defaults to `True`: the test fails when `login` is selected
+      and no explicit console method list is returned. This list is named `login` before EOS 4.36 and `console`
+      starting with EOS 4.36. Set `require_console_method: false` to allow EOS to use the default login method list
+      without an explicit console list. All returned method lists are still checked.
 
     Examples
     --------
@@ -192,36 +200,40 @@ class VerifyAuthenMethods(AntaTest):
         """Input model for the VerifyAuthenMethods test."""
 
         methods: list[AAAAuthMethod]
-        """List of AAA authentication methods. Methods should be in the right order."""
+        """List of expected AAA authentication methods."""
         types: set[Literal["login", "enable", "dot1x"]]
         """List of authentication types to verify."""
+        # TODO(ANTA 2.0): Remove this backward-compatibility input and the requirement for an explicit console method list.
+        require_console_method: bool = True
+        """Require an explicit console method list when verifying login authentication.
+
+        Defaults to `True` for backward compatibility. Set to `False` to allow EOS to use the default login
+        method list without an explicit `login` (before EOS 4.36) or `console` (EOS 4.36 and later) list.
+        All returned method lists are still checked.
+        """
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyAuthenMethods."""
+        self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        not_matching: list[str] = []
-        for k, v in command_output.items():
-            auth_type = k.replace("AuthenMethods", "")
-            if auth_type not in self.inputs.types:
-                # We do not need to verify this accounting type
-                continue
-            # Starting with EOS 4.36, the login method list for console authentication is named console.
-            if auth_type == "login":
-                auth_details = v.get("console", v.get("login"))
-                if auth_details is None:
-                    self.result.is_failure("AAA authentication methods are not configured for login console")
-                    return
-                if auth_details["methods"] != self.inputs.methods:
-                    self.result.is_failure(f"AAA authentication methods {', '.join(self.inputs.methods)} are not matching for login console")
-                    return
-            if any(methods["methods"] != self.inputs.methods for methods in v.values()):
-                not_matching.append(auth_type)
 
-        if not not_matching:
-            self.result.is_success()
-        else:
-            self.result.is_failure(f"AAA authentication methods {', '.join(self.inputs.methods)} are not matching for {', '.join(not_matching)}")
+        for auth_type in ("login", "enable", "dot1x"):
+            # We do not need to verify this authentication type
+            if auth_type not in self.inputs.types:
+                continue
+
+            auth_type_lookup = f"{auth_type}AuthenMethods"
+            if not (auth_details := command_output.get(auth_type_lookup)):
+                self.result.is_failure(f"AAA authentication methods are not configured for {auth_type}")
+                continue
+
+            if auth_type == "login" and self.inputs.require_console_method and auth_details.get("console", auth_details.get("login")) is None:
+                self.result.is_failure("AAA authentication methods are not configured for login console")
+
+            for method, details in auth_details.items():
+                if sorted(details["methods"]) != sorted(self.inputs.methods):
+                    self.result.is_failure(f"AAA authentication methods {', '.join(self.inputs.methods)} are not matching for {auth_type}/{method}")
 
 
 class VerifyAuthzMethods(AntaTest):
@@ -254,7 +266,7 @@ class VerifyAuthzMethods(AntaTest):
         """Input model for the VerifyAuthzMethods test."""
 
         methods: list[AAAAuthMethod]
-        """List of AAA authorization methods. Methods should be in the right order."""
+        """List of expected AAA authorization methods."""
         types: set[Literal["commands", "exec"]]
         """List of authorization types to verify."""
 
@@ -268,7 +280,7 @@ class VerifyAuthzMethods(AntaTest):
             if authz_type not in self.inputs.types:
                 # We do not need to verify this accounting type
                 continue
-            not_matching.extend(authz_type for methods in v.values() if methods["methods"] != self.inputs.methods)
+            not_matching.extend(authz_type for methods in v.values() if sorted(methods["methods"]) != sorted(self.inputs.methods))
 
         if not not_matching:
             self.result.is_success()
@@ -308,7 +320,7 @@ class VerifyAcctDefaultMethods(AntaTest):
         """Input model for the VerifyAcctDefaultMethods test."""
 
         methods: list[AAAAuthMethod]
-        """List of AAA accounting methods. Methods should be in the right order."""
+        """List of expected AAA accounting methods."""
         types: set[Literal["commands", "exec", "system", "dot1x"]]
         """List of accounting types to verify."""
 
@@ -326,7 +338,7 @@ class VerifyAcctDefaultMethods(AntaTest):
             for methods in v.values():
                 if "defaultAction" not in methods:
                     not_configured.append(acct_type)
-                if methods["defaultMethods"] != self.inputs.methods:
+                if sorted(methods["defaultMethods"]) != sorted(self.inputs.methods):
                     not_matching.append(acct_type)
         if not_configured:
             self.result.is_failure(f"AAA default accounting is not configured for {', '.join(not_configured)}")
@@ -369,7 +381,7 @@ class VerifyAcctConsoleMethods(AntaTest):
         """Input model for the VerifyAcctConsoleMethods test."""
 
         methods: list[AAAAuthMethod]
-        """List of AAA accounting console methods. Methods should be in the right order."""
+        """List of expected AAA accounting console methods."""
         types: set[Literal["commands", "exec", "system", "dot1x"]]
         """List of accounting console types to verify."""
 
@@ -387,7 +399,7 @@ class VerifyAcctConsoleMethods(AntaTest):
             for methods in v.values():
                 if "consoleAction" not in methods:
                     not_configured.append(acct_type)
-                if methods["consoleMethods"] != self.inputs.methods:
+                if sorted(methods["consoleMethods"]) != sorted(self.inputs.methods):
                     not_matching.append(acct_type)
         if not_configured:
             self.result.is_failure(f"AAA console accounting is not configured for {', '.join(not_configured)}")

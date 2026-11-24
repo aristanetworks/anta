@@ -26,6 +26,9 @@ DEFAULT_NOFILE = 16384
 DEFAULT_HTTPX_TRUST_ENV = True
 """Default value for the trust_env parameter of the HTTPX client."""
 
+DEFAULT_SSL_CIPHERS: str | None = None
+"""Default value for the SSL cipher list."""
+
 
 class AntaRunnerSettings(BaseSettings):
     """Environment variables for configuring the ANTA runner.
@@ -129,4 +132,41 @@ def get_httpx_settings() -> AntaHttpxSettings:
         return AntaHttpxSettings()
     except ValidationError as exc:
         msg = f"Failed to load ANTA HTTPX settings. Check ANTA_HTTPX_* environment variables: {exc_to_str(exc)}"
+        raise ValueError(msg) from exc
+
+
+class AntaSslSettings(BaseSettings):
+    """Environment variables for configuring SSL connections.
+
+    Attributes
+    ----------
+    ciphers : str | None
+        Environment variable: ANTA_SSL_CIPHERS
+
+        OpenSSL cipher list applied to HTTPS connections. None uses the Python defaults.
+    """
+
+    model_config = SettingsConfigDict(env_prefix="ANTA_SSL_")
+
+    ciphers: str | None = Field(default=DEFAULT_SSL_CIPHERS)
+
+
+@cache
+def get_ssl_settings() -> AntaSslSettings:
+    """Return the cached ANTA SSL settings loaded from environment variables.
+
+    Returns
+    -------
+    AntaSslSettings
+        The SSL settings instance populated from ``ANTA_SSL_*`` environment variables.
+
+    Raises
+    ------
+    ValueError
+        If any ``ANTA_SSL_*`` environment variable has an invalid value.
+    """
+    try:
+        return AntaSslSettings()
+    except ValidationError as exc:
+        msg = f"Failed to load ANTA SSL settings. Check ANTA_SSL_* environment variables: {exc_to_str(exc)}"
         raise ValueError(msg) from exc

@@ -1,0 +1,10 @@
+---
+anta.tests.connectivity:
+  - VerifyReachability:
+      hosts:
+        - source: Management0
+          destination: 172.16.1.12
+          vrf: MGMT
+        - source: Management0
+          destination: 192.0.2.1
+          vrf: MGMT

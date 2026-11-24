@@ -8,7 +8,7 @@ from __future__ import annotations
 import sys
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 from pydantic import BaseModel, Field
@@ -19,11 +19,8 @@ else:
     from typing_extensions import override
 
 
-class AntaTestStatus(str, Enum):
-    """Test status Enum for the TestResult.
-
-    NOTE: This could be updated to StrEnum when Python 3.11 is the minimum supported version in ANTA.
-    """
+class AntaTestStatus(StrEnum):
+    """Test status Enum for the TestResult."""
 
     UNSET = "unset"
     SUCCESS = "success"
@@ -31,10 +28,14 @@ class AntaTestStatus(str, Enum):
     ERROR = "error"
     SKIPPED = "skipped"
 
-    @override
-    def __str__(self) -> str:
-        """Override the __str__ method to return the value of the Enum, mimicking the behavior of StrEnum."""
-        return self.value
+
+_STATUS_PRIORITY = {
+    AntaTestStatus.UNSET: 0,
+    AntaTestStatus.SKIPPED: 0,
+    AntaTestStatus.SUCCESS: 1,
+    AntaTestStatus.FAILURE: 2,
+    AntaTestStatus.ERROR: 3,
+}
 
 
 class BaseTestResult(BaseModel, ABC):
@@ -120,8 +121,8 @@ class AtomicTestResult(BaseTestResult):
     def _set_status(self, status: AntaTestStatus, message: str | None = None) -> None:
         """Set status and insert optional message.
 
-        If the parent TestResult status is UNSET and this AtomicTestResult status is SUCCESS, the parent TestResult status will be set as a SUCCESS.
-        If this AtomicTestResult status is FAILURE or ERROR, the parent TestResult status will be set with the same status.
+        The parent TestResult is updated according to the following precedence:
+        ERROR > FAILURE > SUCCESS > SKIPPED/UNSET.
 
         Parameters
         ----------
@@ -131,7 +132,7 @@ class AtomicTestResult(BaseTestResult):
             Optional message.
         """
         self.result = status
-        if (self.parent.result == AntaTestStatus.UNSET and status == AntaTestStatus.SUCCESS) or status in [AntaTestStatus.FAILURE, AntaTestStatus.ERROR]:
+        if _STATUS_PRIORITY[status] > _STATUS_PRIORITY[self.parent.result]:
             self.parent.result = status
         if message is not None:
             self.messages.append(message)

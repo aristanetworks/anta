@@ -14,7 +14,7 @@ tags:
 
 ## Python version
 
-Python 3 (`>=3.10`) is required:
+Python 3 (`>=3.11`) is required:
 
 ```bash
 python --version
@@ -92,7 +92,7 @@ which anta
 ```bash
 # Check ANTA version
 anta --version
-anta, version v1.9.0
+anta, version v1.11.0
 ```
 
 ## EOS Requirements

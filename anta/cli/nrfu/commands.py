@@ -11,9 +11,9 @@ from typing import Literal
 
 import click
 
-from anta.cli.utils import exit_with_code
+from anta.cli.utils import exit_with_code, template_report_options
 
-from .utils import print_jinja, print_json, print_table, print_text, run_tests, save_markdown_report, save_to_csv
+from .utils import print_json, print_table, print_text, run_template_report, run_tests, save_markdown_report, save_to_csv
 
 logger = logging.getLogger(__name__)
 
@@ -113,27 +113,10 @@ def csv(ctx: click.Context, csv_output: pathlib.Path) -> None:
 
 @click.command()
 @click.pass_context
-@click.option(
-    "--template",
-    "-tpl",
-    type=click.Path(file_okay=True, dir_okay=False, exists=True, readable=True, path_type=pathlib.Path),
-    show_envvar=True,
-    required=True,
-    help="Path to the template to use for the report",
-)
-@click.option(
-    "--output",
-    "-o",
-    type=click.Path(file_okay=True, dir_okay=False, exists=False, writable=True, path_type=pathlib.Path),
-    show_envvar=True,
-    required=False,
-    help="Path to save report as a file",
-)
+@template_report_options
 def tpl_report(ctx: click.Context, template: pathlib.Path, output: pathlib.Path | None) -> None:
     """ANTA command to check network state with templated report."""
-    _ = run_tests(ctx)
-    print_jinja(results=ctx.obj["result_manager"], template=template, output=output)
-    exit_with_code(ctx)
+    run_template_report(ctx, template, output)
 
 
 @click.command()

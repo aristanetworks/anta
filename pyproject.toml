@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "anta"
-version = "v1.9.0"
+version = "v1.11.0"
 readme = "README.md"
 authors = [{ name = "Arista Networks ANTA maintainers", email = "anta-dev@arista.com" }]
 maintainers = [
@@ -41,17 +41,17 @@ classifiers = [
     "Intended Audience :: Information Technology",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
     "Programming Language :: Python :: 3 :: Only",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Software Development :: Testing",
     "Topic :: System :: Networking",
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 
 [project.optional-dependencies]
 cli = [
@@ -63,26 +63,28 @@ cli = [
 dev = [
   {include-group = "test"},
   {include-group = "lint"},
+  {include-group = "tox"},
   "bumpver>=2026.1132",
 ]
+tox = [
+  "tox>=4.67.13,<5.0.0",
+]
 test = [
-  "pytest-asyncio>=1.4.0",
+  "pytest-asyncio>=1.5.0",
   "pytest-cov>=7.1.0",
-  "pytest-codspeed>=5.0.3",
-  "pytest-html>=4.2.0",
   "pytest-httpx>=0.36.2",
-  "pytest-metadata>=3.1.1",
-  "pytest>=9.1.1",
+  "pytest>=9.2.0",
   "respx>=0.23.1",
-  "tox>=4.60.0,<5.0.0",
+]
+benchmark = [
+  "pytest-codspeed>=5.0.4",
+  "pytest-dependency>=0.6.1",
 ]
 lint = [
   "codespell>=2.4.3,<2.5.0",
-  "pre-commit>=4.6.2",
-  "pylint-pydantic>=0.4.1",
-  "pylint>=4.0.7",
+  "pre-commit>=4.7.0",
   "pyright",
-  "ruff>=0.16.3,<0.16.4",
+  "ruff>=0.17.5,<0.17.6",
   "types-PyYAML",
   "types-pyOpenSSL",
   "types-requests",
@@ -91,16 +93,15 @@ lint = [
 ]
 
 doc = [
-  "griffe >=2.2.0,<2.3",
-  "griffe-warnings-deprecated~=1.1.1",
+  "griffe >=2.4.1,<2.5",
+  "griffe-warnings-deprecated~=1.1.2",
   "mike @ git+https://github.com/squidfunk/mike.git@2d4ad799442f4592db8ad53b179bfb33db8c69ac",
-  "zensical==0.0.55",
+  "packaging>=26.3",
+  "zensical==0.1.1",
   "mkdocs~=1.6",
   "mkdocs-autorefs~=1.4",
-  "mkdocs-material~=9.7",
-  "mkdocs-material-extensions>=1.3.1",
-  "mkdocstrings[python]~=1.0.6",
-  "mkdocstrings-python~=2.0.6",
+  "mkdocstrings[python]~=1.0.8",
+  "mkdocstrings-python~=2.0.11",
 ]
 [project.urls]
 Homepage = "https://anta.arista.com"
@@ -118,10 +119,18 @@ namespaces = false
 "anta" = ["py.typed"]
 
 ################################
+# Dependency resolution
+################################
+[tool.uv]
+required-version = ">=0.9.25"
+# Match Renovate's minimumReleaseAge, including transitive lock updates.
+exclude-newer = "7 days"
+
+################################
 # Version
 ################################
 [tool.bumpver]
-current_version = "1.9.0"
+current_version = "1.11.0"
 version_pattern = "MAJOR.MINOR.PATCH[.PYTAGNUM]"
 commit_message  = "bump: Version {old_version} -> {new_version}"
 commit = true
@@ -143,7 +152,7 @@ exclude = [
   # Excluded
   ".tox",
 ]
-pythonVersion = "3.10"
+pythonVersion = "3.11"
 reportMissingImports = "error"
 
 ################################
@@ -153,7 +162,6 @@ reportMissingImports = "error"
 # When run from anta directory this will read cov-config from pyproject.toml
 addopts = "-ra -q -vv --cov --cov-report term:skip-covered --color yes"
 log_level = "WARNING"
-render_collapsed = true
 testpaths = ["tests"]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
@@ -250,13 +258,12 @@ exclude = [
     "node_modules",
     "site-packages",
     "venv",
-    ".github",
 ]
 
 line-length = 165
 
-# Assume Python 3.10 as this is the lowest supported version for ANTA
-target-version = "py310"
+# Python 3.11 is the lowest supported version for ANTA.
+target-version = "py311"
 
 [tool.ruff.lint]
 # select all cause we like being suffering
@@ -269,12 +276,12 @@ select = ["ALL",
     "D417",
 ]
 ignore = [
+  "UP042",   # StrEnum changes __str__; migrate only enums with compatible string behavior
   "COM812",  # Ignoring conflicting rules that may cause conflicts when used with the formatter
   "ISC001",  # Ignoring conflicting rules that may cause conflicts when used with the formatter
   "TD002",   # We don't have require authors in TODO
   "TD003",   # We don't have an issue link for all TODOs today
   "FIX002",  # Line contains TODO - ignoring for ruff for now
-  "F821",    # Disable undefined-name until resolution of #10451
 ]
 
 # Allow autofix for all enabled rules (when `--fix`) is provided.
@@ -288,11 +295,11 @@ dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 convention = "numpy"
 
 [tool.ruff.lint.pylint]
-# These settings are used to configure pylint rules run in ruff. In order to keep sane and while
-# we have not removed pylint completely, these settings should be kept in sync with our pylintrc file.
-# https://github.com/astral-sh/ruff/issues/970
+# Configure the Pylint-derived rules implemented by Ruff.
 max-branches = 13
 max-args = 10
+max-returns = 6
+max-statements = 50
 
 [tool.ruff.lint.mccabe]
 # Unlike Flake8, default to a complexity level of 10.
@@ -310,6 +317,9 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
 
 
 [tool.ruff.lint.per-file-ignores]
+"asynceapi/aio_portcheck.py" = [
+  "ASYNC109", # Keep the public timeout parameter, which is enforced with asyncio.wait_for
+]
 "tests/*" = [
   "S101",    # Complains about asserts in units and libs.
   "SLF001",  # Lots of private member accessed for test purposes
@@ -325,9 +335,6 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
 ]
 "tests/units/anta_tests/test_interfaces.py" = [
   "S104",  # False positive for 0.0.0.0 bindings in test inputs
-]
-"tests/units/anta_tests/*" = [
-  "F401",  # In this module, we import tests.units.anta_tests.test without using it to auto-generate tests
 ]
 "anta/*" = [
   "TRY400",  # Use `logging.exception` instead of `logging.error` - we know what we are doing
@@ -348,7 +355,7 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
 ]
 "anta/tests/routing/isis.py" = [
   "C901",     # TODO: test function is too complex, needs a refactor
-  "PLR0912"   # Too many branches (15/12) (too-many-branches), needs a refactor
+  "PLR0912"   # Too many branches; needs a refactor
 ]
 "anta/tests/logging.py" = [
   "A005",  # TODO: Module `logging` shadows a Python standard-library module
@@ -371,46 +378,3 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
   "T203",   # `pprint` found
 
 ]
-
-################################
-# Pylint
-################################
-[tool.pylint]
-disable = [ # Any rule listed here can be disabled: https://github.com/astral-sh/ruff/issues/970
-    "invalid-name",
-    "fixme",
-    "unused-import",
-    "unused-argument",
-    "keyword-arg-before-vararg",
-    "protected-access",
-    "too-many-arguments",
-    "too-many-positional-arguments",
-    "wrong-import-position",
-    "pointless-statement",
-    "broad-exception-caught",
-    "line-too-long",
-    "unused-variable",
-    "redefined-builtin",
-    "global-statement",
-    "reimported",
-    "wrong-import-order",
-    "wrong-import-position",
-    "unnecessary-lambda",
-    "abstract-class-instantiated", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-instantiation-of-abstract-classes-abstract
-    "unexpected-keyword-arg", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-arguments-in-calls-call-arg and other rules
-    "no-value-for-parameter", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-arguments-in-calls-call-arg
-    "import-outside-toplevel"
-]
-max-statements=61
-max-returns=8
-max-locals=23
-max-line-length=165
-max-module-lines=1700
-# making similarity lines limit a bit higher than default 4
-min-similarity-lines=10
-# https://stackoverflow.com/questions/49680191/click-and-pylint
-signature-mutators="click.decorators.option"
-load-plugins="pylint_pydantic"
-extension-pkg-whitelist="pydantic"
-# Pylint does not treat dataclasses differently: https://github.com/pylint-dev/pylint/issues/9058
-max-attributes=15

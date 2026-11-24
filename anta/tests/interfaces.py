@@ -4,7 +4,6 @@
 """Module related to the device interfaces tests."""
 
 # TODO: https://github.com/aristanetworks/anta/issues/1260
-# pylint: disable=too-many-lines, duplicate-code
 
 # Pyright does not understand AntaTest.Input typing
 # pyright: reportAttributeAccessIssue=false
@@ -27,18 +26,14 @@ from anta.custom_types import (
     PositiveInteger,
 )
 from anta.decorators import skip_on_platforms
+from anta.input_models import interfaces as interface_models
 from anta.input_models.interfaces import InterfaceDetail, InterfaceState
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.result_manager.models import AntaTestStatus
 from anta.tools import custom_division, get_item, get_value, get_value_by_range_key, is_interface_ignored, time_ago
 
 if TYPE_CHECKING:
-    import sys
-
-    if sys.version_info >= (3, 11):
-        from typing import Self
-    else:
-        from typing_extensions import Self
+    from typing import Self
 
 BPS_GBPS_CONVERSIONS = 1000000000
 NO_LIGHT_DBM = -30.0
@@ -354,7 +349,7 @@ class VerifyInterfacesStatus(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyInterfacesStatus test."""
 
-        interfaces: list[InterfaceState]
+        interfaces: list[interface_models.InterfaceState]
         """List of interfaces with their expected state."""
         InterfaceState: ClassVar[type[InterfaceState]] = InterfaceState
 
@@ -1049,7 +1044,7 @@ class VerifyLACPInterfacesStatus(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyLACPInterfacesStatus test."""
 
-        interfaces: list[InterfaceState]
+        interfaces: list[interface_models.InterfaceState]
         """List of interfaces with their expected state."""
         InterfaceState: ClassVar[type[InterfaceState]] = InterfaceState
 
@@ -1232,7 +1227,7 @@ class VerifyInterfacesTridentCounters(AntaTest):
     Examples
     --------
     ```yaml
-    anta.tests.hardware:
+    anta.tests.interfaces:
       - VerifyInterfacesTridentCounters:
           ignored_counters:
             - nonCongestionDiscard
@@ -1410,6 +1405,9 @@ class VerifyInterfacesCounterDetails(AntaTest):
         ]
         for counter in counters_to_verify:
             counter_value = get_value(interface_counters, counter["counter_key"])
+            if counter_value is None:
+                self.result.is_failure(f"{interface_failure_message_summary} - {counter['counter_name']} not found")
+                continue
             if counter_value > self.inputs.counters_threshold:
                 failure_msg = f"Expected: <= {self.inputs.counters_threshold} Actual: {counter_value}"
                 self.result.is_failure(f"{interface_failure_message_summary} - {counter['counter_name']} above threshold - {failure_msg}")

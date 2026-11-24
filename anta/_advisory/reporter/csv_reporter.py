@@ -1,0 +1,136 @@
+# Copyright (c) 2026 Arista Networks, Inc.
+# Use of this source code is governed by the Apache License 2.0
+# that can be found in the LICENSE file.
+"""CSV reporting for ANTA security advisory results."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import TYPE_CHECKING
+
+from anta._advisory.remediation import consolidate_remediations, render_remediation_plain
+from anta._advisory.reporter.reporting import _get_advisory_result, _get_advisory_severity, _iter_advisory_row_results
+from anta._advisory.results import _AdvisoryAtomicTestResult, _AdvisoryTestResult, _get_atomic_vulnerability_ids
+from anta.reporter.csv_reporter import ReportCsv
+
+if TYPE_CHECKING:
+    import pathlib
+    from collections.abc import Iterator
+
+    from anta._advisory.models import _AdvisoryMetadata, _AdvisoryVulnerability
+    from anta._advisory.reporter.reporting import SecurityAdvisoryReport
+    from anta.result_manager.models import AtomicTestResult, TestResult
+
+
+class SecurityAdvisoryReportCsv(ReportCsv):
+    """Build a detailed CSV report from security advisory test results."""
+
+    _REPORT_NAME = "security advisory CSV"
+
+    @dataclass
+    class Headers(ReportCsv.Headers):
+        """Headers for the security advisory CSV report."""
+
+        advisory_result: str = "Advisory Result"
+        advisory_result_messages: str = "Advisory Result Messages"
+        vulnerability_result: str = "Vulnerability Result"
+        vulnerability_result_messages: str = "Vulnerability Result Messages"
+        vulnerability_remediation: str = "Vulnerability Remediation"
+        advisory_remediation: str = "Advisory Remediation"
+        advisory_id: str = "Advisory ID"
+        advisory_title: str = "Advisory Title"
+        advisory_severity: str = "Advisory Severity"
+        advisory_url: str = "Advisory URL"
+        advisory_description: str = "Advisory Description"
+        vulnerability_id: str = "Vulnerability ID"
+        vulnerability_description: str = "Vulnerability Description"
+        vulnerability_severity: str = "Vulnerability Severity"
+
+    @staticmethod
+    def _format_result(result: TestResult | AtomicTestResult) -> str:
+        """Translate an ANTA status to advisory-facing result wording."""
+        return _get_advisory_result(result)
+
+    @staticmethod
+    def _format_remediations(result: TestResult | AtomicTestResult) -> str:
+        """Render consolidated structured remediation into a plain-text CSV cell."""
+        if not isinstance(result, (_AdvisoryTestResult, _AdvisoryAtomicTestResult)):
+            return ""
+        rendered = []
+        for remediation in consolidate_remediations(result):
+            prefix = f"{', '.join(remediation.vulnerability_ids)}: " if isinstance(result, _AdvisoryTestResult) and remediation.vulnerability_ids else ""
+            rendered.append(f"{prefix}{render_remediation_plain(remediation.plan, remediation.guidance)}".replace("\n", "\\n"))
+        return "\\n".join(rendered)
+
+    @classmethod
+    def _convert_to_list(
+        cls,
+        result: TestResult,
+        row_result: TestResult | AtomicTestResult,
+        advisory: _AdvisoryMetadata,
+        vulnerability: _AdvisoryVulnerability | None,
+    ) -> list[str]:
+        """Convert one atomic advisory result into a CSV row."""
+        return [
+            str(result.name),
+            result.test,
+            cls._format_result(result),
+            cls.split_list_to_txt_list(result.messages, "\\n"),
+            cls._format_result(row_result),
+            cls.split_list_to_txt_list(row_result.messages, "\\n"),
+            cls._format_remediations(row_result),
+            cls._format_remediations(result),
+            f"SA{advisory.sa_number}",
+            advisory.title,
+            _get_advisory_severity(advisory).value,
+            advisory.url,
+            advisory.description,
+            vulnerability.id if vulnerability is not None else "",
+            vulnerability.description if vulnerability is not None else "",
+            vulnerability.severity.value if vulnerability is not None else "",
+        ]
+
+    @classmethod
+    def _iter_result_rows(cls, result: TestResult, advisory: _AdvisoryMetadata) -> Iterator[list[str]]:
+        """Yield one row per vulnerability assessment emitted by the advisory test."""
+        vulnerability_by_id = {vulnerability.id: vulnerability for vulnerability in advisory.vulnerabilities}
+        for row_result in _iter_advisory_row_results(result):
+            vulnerability_ids = _get_atomic_vulnerability_ids(row_result) if isinstance(row_result, _AdvisoryAtomicTestResult) else ()
+            vulnerability_ids = vulnerability_ids or (None,)
+            for vulnerability_id in vulnerability_ids:
+                vulnerability = None if vulnerability_id is None else vulnerability_by_id[vulnerability_id]
+                yield cls._convert_to_list(result, row_result, advisory, vulnerability)
+
+    @classmethod
+    def _advisory_headers(cls) -> list[str]:
+        """Return the security advisory CSV column headers."""
+        return [
+            cls.Headers.device,
+            cls.Headers.test_name,
+            cls.Headers.advisory_result,
+            cls.Headers.advisory_result_messages,
+            cls.Headers.vulnerability_result,
+            cls.Headers.vulnerability_result_messages,
+            cls.Headers.vulnerability_remediation,
+            cls.Headers.advisory_remediation,
+            cls.Headers.advisory_id,
+            cls.Headers.advisory_title,
+            cls.Headers.advisory_severity,
+            cls.Headers.advisory_url,
+            cls.Headers.advisory_description,
+            cls.Headers.vulnerability_id,
+            cls.Headers.vulnerability_description,
+            cls.Headers.vulnerability_severity,
+        ]
+
+    @classmethod
+    def _iter_advisory_rows(cls, report: SecurityAdvisoryReport) -> Iterator[list[str]]:
+        """Yield CSV rows for the provided security advisory report."""
+        for group in report.groups:
+            for result in group.results:
+                yield from cls._iter_result_rows(result, group.advisory)
+
+    @classmethod
+    def write_report(cls, report: SecurityAdvisoryReport, csv_filename: pathlib.Path) -> None:
+        """Build a detailed CSV report from a validated security advisory report."""
+        cls._write_rows(csv_filename, cls._advisory_headers(), cls._iter_advisory_rows(report))

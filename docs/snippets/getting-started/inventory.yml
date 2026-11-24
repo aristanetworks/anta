@@ -1,20 +1,27 @@
+---
 anta_inventory:
   hosts:
-  - host: 192.168.0.10
-    name: s1-spine1
-    tags: ['fabric', 'spine']
-  - host: 192.168.0.11
-    name: s1-spine2
-    tags: ['fabric', 'spine']
-  - host: 192.168.0.12
-    name: s1-leaf1
-    tags: ['fabric', 'leaf']
-  - host: 192.168.0.13
-    name: s1-leaf2
-    tags: ['fabric', 'leaf']
-  - host: 192.168.0.14
-    name: s1-leaf3
-    tags: ['fabric', 'leaf']
-  - host: 192.168.0.15
-    name: s1-leaf3
-    tags: ['fabric', 'leaf']
+    - name: dc1-leaf1a
+      host: 172.16.1.101
+      tags: [dc1, leaf]
+    - name: dc1-leaf1b
+      host: 172.16.1.102
+      tags: [dc1, leaf]
+    - name: dc1-leaf1c
+      host: 172.16.1.151
+      tags: [dc1, leaf]
+    - name: dc1-leaf2a
+      host: 172.16.1.103
+      tags: [dc1, leaf]
+    - name: dc1-leaf2b
+      host: 172.16.1.104
+      tags: [dc1, leaf]
+    - name: dc1-leaf2c
+      host: 172.16.1.152
+      tags: [dc1, leaf]
+    - name: dc1-spine1
+      host: 172.16.1.11
+      tags: [dc1, spine]
+    - name: dc1-spine2
+      host: 172.16.1.12
+      tags: [dc1, spine]

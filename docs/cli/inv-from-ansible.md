@@ -29,44 +29,26 @@ In large setups, it might be beneficial to construct your inventory based on you
 
     - The current implementation only considers devices directly attached to a specific Ansible group and does not support inheritance when using the `--ansible-group` option.
 
-By default, if user does not provide `--output` file, anta will save output to configured anta inventory (`anta --inventory`). If the output file has content, anta will ask user to overwrite when running in interactive console. This mechanism can be controlled by triggers in case of CI usage: `--overwrite` to force anta to overwrite file. If not set, anta will exit
+The output path is required, either through `--output` or `ANTA_INVENTORY`. If the destination file contains data, ANTA asks for confirmation in an interactive terminal. Use `--overwrite` for intentional, non-interactive replacement.
 
-## Command output
+## Example
 
-`host` value is coming from the `ansible_host` key in your inventory while `name` is the name you defined for your host. Below is an ansible inventory example used to generate previous inventory:
+The example uses the following Ansible inventory. Each `ansible_host` becomes the ANTA `host`, while the Ansible host key becomes its `name`:
 
 ```yaml
----
-all:
-  children:
-    endpoints:
-      hosts:
-        srv-pod01:
-          ansible_httpapi_port: 9023
-          ansible_port: 9023
-          ansible_host: 10.73.252.41
-          type: endpoint
-        srv-pod02:
-          ansible_httpapi_port: 9024
-          ansible_port: 9024
-          ansible_host: 10.73.252.42
-          type: endpoint
-        srv-pod03:
-          ansible_httpapi_port: 9025
-          ansible_port: 9025
-          ansible_host: 10.73.252.43
-          type: endpoint
+--8<-- "ansible-inventory.yml"
 ```
 
-The output is an inventory where the name of the container is added as a tag for each host:
+Run the conversion against the `endpoints` group:
+
+```bash
+anta get from-ansible --ansible-inventory docs/snippets/ansible-inventory.yml --ansible-group endpoints --output anta-inventory.yml --overwrite
+```
+
+![anta get from Ansible results](../imgs/anta_get_fromansible_ansibleinventory_docs_snippets_ansibleinventoryyml_ansiblegroup_endpoints_output_antainventoryyml_overwrite.svg){ class="img_center" loading=lazy width="1600" }
+
+The generated `anta-inventory.yml` contains:
 
 ```yaml
-anta_inventory:
-  hosts:
-  - host: 10.73.252.41
-    name: srv-pod01
-  - host: 10.73.252.42
-    name: srv-pod02
-  - host: 10.73.252.43
-    name: srv-pod03
+--8<-- "anta-inventory-from-ansible.yml"
 ```

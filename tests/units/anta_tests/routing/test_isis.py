@@ -3,16 +3,10 @@
 # that can be found in the LICENSE file.
 """Tests for anta.tests.routing.ospf.py."""
 
-# pylint: disable=too-many-lines
-
 from __future__ import annotations
 
-import sys
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
-import pytest
-
-from anta.models import AntaTest
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.routing.isis import (
     VerifyISISGracefulRestart,
@@ -23,7 +17,7 @@ from anta.tests.routing.isis import (
     VerifyISISSegmentRoutingDataplane,
     VerifyISISSegmentRoutingTunnels,
 )
-from tests.units.anta_tests import test
+from tests.units.anta_tests import test  # noqa: F401 - Pytest collects this imported test function.
 
 if TYPE_CHECKING:
     from tests.units.anta_tests import AntaUnitTestData

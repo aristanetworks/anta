@@ -9,7 +9,7 @@ import logging
 from asyncio import Semaphore, gather
 from collections import defaultdict
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from functools import cached_property
 from inspect import getcoroutinelocals
 from typing import TYPE_CHECKING, Any
@@ -158,7 +158,6 @@ class AntaRunContext:
         return None
 
 
-# pylint: disable=too-few-public-methods
 class AntaRunner:
     """Run and manage ANTA test execution.
 
@@ -257,7 +256,7 @@ class AntaRunner:
         AntaRunContext
             The complete context and results of this ANTA run.
         """
-        start_time = datetime.now(tz=timezone.utc)
+        start_time = datetime.now(tz=UTC)
         logger.info("ANTA run starting ...")
 
         ctx = AntaRunContext(
@@ -279,21 +278,21 @@ class AntaRunner:
 
             if not ctx.catalog.tests:
                 self._log_warning_msg(msg="The list of tests is empty. Exiting ...", ctx=ctx)
-                ctx.end_time = datetime.now(tz=timezone.utc)
+                ctx.end_time = datetime.now(tz=UTC)
                 return ctx
 
             with Catchtime(logger=logger, message="Preparing ANTA NRFU Run"):
                 # Set up inventory
                 setup_inventory_ok = await self._setup_inventory(ctx)
                 if not setup_inventory_ok:
-                    ctx.end_time = datetime.now(tz=timezone.utc)
+                    ctx.end_time = datetime.now(tz=UTC)
                     return ctx
 
                 # Set up tests
                 with Catchtime(logger=logger, message="Preparing Tests"):
                     setup_tests_ok = self._setup_tests(ctx)
                     if not setup_tests_ok:
-                        ctx.end_time = datetime.now(tz=timezone.utc)
+                        ctx.end_time = datetime.now(tz=UTC)
                         return ctx
 
                 # Get test coroutines
@@ -304,11 +303,11 @@ class AntaRunner:
             if ctx.dry_run:
                 logger.info("Dry-run mode, exiting before running the tests.")
                 self._close_test_coroutines(test_coroutines, ctx)
-                ctx.end_time = datetime.now(tz=timezone.utc)
+                ctx.end_time = datetime.now(tz=UTC)
                 return ctx
 
             if AntaTest.progress is not None:
-                AntaTest.nrfu_task = AntaTest.progress.add_task("Running NRFU Tests ...", total=ctx.total_tests_scheduled)
+                AntaTest.nrfu_task = AntaTest.progress.add_task("Running Tests ...", total=ctx.total_tests_scheduled)
 
             with Catchtime(logger=logger, message="Running Tests"):
                 sem = Semaphore(self._settings.max_concurrency)
@@ -330,7 +329,7 @@ class AntaRunner:
                 with Catchtime(logger=logger, message="Disconnecting from devices"):
                     await ctx.filtered_inventory.disconnect_inventory()
 
-        ctx.end_time = datetime.now(tz=timezone.utc)
+        ctx.end_time = datetime.now(tz=UTC)
         return ctx
 
     async def _setup_inventory(self, ctx: AntaRunContext) -> bool:
@@ -421,7 +420,7 @@ class AntaRunner:
             for test_def in test_definitions:
                 try:
                     coros.append(test_def.test(device=device, inputs=test_def.inputs).test())
-                except Exception as exc:  # noqa: BLE001, PERF203
+                except Exception as exc:  # noqa: BLE001
                     # An AntaTest instance is potentially user-defined code.
                     # We need to catch everything and exit gracefully with an error message.
                     msg = "\n".join(

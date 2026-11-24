@@ -1,5 +1,5 @@
 ---
-name: Linting and Testing ANTA
+name: Testing ANTA
 on:
   push:
     branches:
@@ -14,122 +14,85 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       code: ${{ steps.filter.outputs.code }}
-      docs: ${{ steps.filter.outputs.docs }}
+      benchmarks: ${{ steps.filter.outputs.benchmarks }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # v4.0.1
+      - uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
         id: filter
         with:
           filters: |
             code:
-              - 'anta/*'
               - 'anta/**'
-              - 'tests/*'
               - 'tests/**'
               # detect dependency changes
               - 'pyproject.toml'
-            core:
-              - 'anta/*'
-              - 'anta/reporter/*'
-              - 'anta/result_manager/*'
-              - 'anta/tools/*'
-            cli:
-              - 'anta/cli/*'
-              - 'anta/cli/**'
-            tests:
-              - 'anta/tests/*'
-              - 'anta/tests/**'
-            docs:
-              - '.github/workflows/pull-request-management.yml'
-              - 'tools/zensical_extensions/**'
-              - 'mkdocs.yml'
-              - 'docs/*'
-              - 'docs/**'
-              - 'README.md'
-  check-requirements:
+              - 'uv.lock'
+            benchmarks:
+              - 'tests/benchmark/**'
+              - '.github/workflows/codspeed.yml'
+              - '.github/workflows/code-testing.yml'
+  test-locked-dependencies:
+    name: Pytest with locked dependencies
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
-    needs: file-changes
+    env:
+      COLUMNS: "165"
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+      - name: Set up uv and Python
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
         with:
-          python-version: ${{ matrix.python-version }}
-      - name: install requirements
-        run: |
-          pip install .
-      - name: install dev requirements
-        run: pip install --group dev
-  lint-python:
-    name: Check the code style
-    runs-on: ubuntu-latest
-    needs: file-changes
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - name: Setup Python
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
-        with:
+          version: "0.13.8"
           python-version: "3.11"
-      - name: Install dependencies
-        run: pip install tox
-      - name: "Run tox linting environment"
-        run: tox run -e lint
-  type-python:
-    name: Check typing
-    runs-on: ubuntu-latest
-    needs: file-changes
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - name: Setup Python
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
-        with:
-          python-version: "3.11"
-      - name: Install dependencies
-        run: pip install tox
-      - name: "Run tox typing environment"
-        run: tox run -e type
+      - name: Check lock freshness
+        run: uv lock --check
+      - name: Install locked dependencies
+        run: uv sync --locked --no-default-groups --group test --extra cli
+      - name: Run unit tests with locked dependencies
+        run: uv run --no-sync python -m pytest tests/units --no-cov
   test-python:
-    name: Pytest across all supported python versions
+    name: Pytest across all supported python versions (${{ matrix.python }})
     runs-on: ubuntu-latest
-    needs: [lint-python, type-python]
     strategy:
       matrix:
-        python: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+        include:
+          - python: "3.11"
+            tox-env: clean,py311,report
+          - python: "3.12"
+            tox-env: py312
+          - python: "3.13"
+            tox-env: py313
+          - python: "3.14"
+            tox-env: py314
+          - python: "3.15"
+            tox-env: py315
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - name: Setup Python
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: ${{ matrix.python }}
-      - name: Install dependencies
-        run: pip install tox tox-gh-actions
+      - name: Install tox
+        run: python -m pip install --group tox
       - name: "Run pytest via tox for ${{ matrix.python }}"
-        run: tox run
+        run: tox run -e "${{ matrix.tox-env }}"
       - name: Upload coverage from pytest
         # Coverage only runs as part of 3.11.
         if: |
           matrix.python == '3.11'
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: pytest-coverage
           path: coverage.xml
   test-python-windows:
     name: Pytest on 3.12 for windows
     runs-on: windows-2022
-    needs: [lint-python, type-python]
+    needs: [file-changes]
     if: needs.file-changes.outputs.code == 'true'
     env:
       # Required to prevent asyncssh to fail.
@@ -139,48 +102,37 @@ jobs:
         with:
           persist-credentials: false
       - name: Setup Python
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: 3.12
-      - name: Install dependencies
-        run: pip install tox tox-gh-actions
+      - name: Install tox
+        run: python -m pip install --group tox
       - name: Run pytest via tox for 3.12 on Windows
-        run: tox run
+        run: tox run -e py312 -- --ignore=tests/docs
   test-documentation:
     name: Build offline documentation for testing
     runs-on: ubuntu-latest
-    needs: [test-python]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           persist-credentials: false
       - name: Setup Python
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: "3.11"
       - name: Install dependencies
-        run: |
-          # Keep generated CLI snippets stable with Click's optional subcommand rendering.
-          pip install -e ".[cli]" "click~=8.4.2" --group doc -e tools/zensical_extensions
-      - name: "Check generated CLI doc snippets"
-        run: |
-          python docs/scripts/generate_doc_snippets.py
-          if [ -n "$(git status --porcelain -- docs/snippets)" ]; then
-            git status --short -- docs/snippets
-            git diff -- docs/snippets
-            exit 1
-          fi
+        run: pip install -e ".[cli]" --group doc -e tools/zensical_extensions
       - name: "Build Zensical documentation offline"
         run: zensical build --strict
   benchmarks:
-    name: Benchmark ANTA for Python 3.12
-    needs: [test-python]
-    if: needs.file-changes.outputs.code == 'true' && github.repository == 'aristanetworks/anta'
+    name: Benchmark ANTA
+    needs: [file-changes, test-python]
+    if: (needs.file-changes.outputs.code == 'true' || needs.file-changes.outputs.benchmarks == 'true') && github.repository == 'aristanetworks/anta'
     permissions:
       contents: read
       id-token: write
-    uses: ./.github/workflows/codspeed.yml
+    uses: $/.github/workflows/codspeed.yml
   codecov:
     name: Upload coverage to codecov
     needs: [test-python]
@@ -188,4 +140,4 @@ jobs:
     permissions:
       contents: read
       id-token: write
-    uses: ./.github/workflows/codecov.yml
+    uses: $/.github/workflows/codecov.yml

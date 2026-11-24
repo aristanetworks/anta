@@ -13,7 +13,6 @@ examples/tests_*
 .personal/*
 *.env
 *.swp
-uv.lock
 
 # Distribution / packaging
 .Python
@@ -95,7 +94,7 @@ env.bak/
 venv.bak/
 .envrc
 
-# mkdocs documentation
+# Zensical documentation
 /site
 
 # VScode settings
@@ -106,3 +105,4 @@ venv.bak/
 
 # AI
 .agents/
+.codex/

@@ -3,16 +3,13 @@
 # that can be found in the LICENSE file.
 """Tests for anta.tests.bfd.py."""
 
-# pylint: disable=C0302
 from __future__ import annotations
 
-import sys
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
-from anta.models import AntaTest
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.bfd import VerifyBFDPeersHealth, VerifyBFDPeersIntervals, VerifyBFDPeersRegProtocols, VerifyBFDSpecificPeers
-from tests.units.anta_tests import test
+from tests.units.anta_tests import test  # noqa: F401 - Pytest collects this imported test function.
 
 if TYPE_CHECKING:
     from tests.units.anta_tests import AntaUnitTestData
@@ -315,6 +312,14 @@ DATA: AntaUnitTestData = {
                 "Peer: 192.0.255.70 VRF: MGMT - Incorrect Multiplier - Expected: 3 Actual: 5",
                 "Peer: 192.0.255.70 VRF: MGMT - Incorrect Detection Time - Expected: 3600 Actual: 4000",
             ],
+        },
+    },
+    (VerifyBFDPeersIntervals, "failure-peer-stats-detail-missing"): {
+        "eos_data": [{"vrfs": {"default": {"ipv4Neighbors": {"192.0.255.7": {"peerStats": {"": {}}}}}}}],
+        "inputs": {"bfd_peers": [{"peer_address": "192.0.255.7", "vrf": "default", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3}]},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["Peer: 192.0.255.7 VRF: default - Peer stats detail not found"],
         },
     },
     (VerifyBFDSpecificPeers, "success"): {

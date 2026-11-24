@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 import subprocess
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from functools import cache
 from pathlib import Path
 from shutil import which
@@ -24,7 +24,7 @@ GIT_RENAME_FIELD_COUNT = 3
 GIT_COMMAND = which("git") or "git"
 
 
-class GitDatesPreprocessor(Preprocessor):  # pylint: disable=too-few-public-methods
+class GitDatesPreprocessor(Preprocessor):
     """Populate Material's expected Git date page metadata."""
 
     def run(self, lines: list[str]) -> list[str]:
@@ -45,7 +45,7 @@ class GitDatesPreprocessor(Preprocessor):  # pylint: disable=too-few-public-meth
         return lines
 
 
-class GitDatesExtension(Extension):  # pylint: disable=too-few-public-methods
+class GitDatesExtension(Extension):
     """Register the Git date metadata preprocessor."""
 
     def extendMarkdown(self, md: Markdown) -> None:  # noqa: N802
@@ -187,5 +187,5 @@ def _strip_license_comment(lines: list[str]) -> list[str]:
 
 def _format_date(timestamp: str) -> str:
     """Return a localized-style date without platform-specific strftime flags."""
-    date = datetime.fromtimestamp(int(timestamp), tz=timezone.utc)
+    date = datetime.fromtimestamp(int(timestamp), tz=UTC)
     return f"{date:%B} {date.day}, {date:%Y}"

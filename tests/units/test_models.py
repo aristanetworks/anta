@@ -290,6 +290,7 @@ class DeprecatedTestWithNewTest(AntaTest):
         self.result.is_success()
 
 
+# Intentionally abstract: this fixture tests that instantiation fails.
 class FakeTestWithMissingTest(AntaTest):
     """ANTA test with missing test() method implementation."""
 
@@ -495,6 +496,17 @@ class TestAntaTest:
         assert _TestOverwriteNameAndDescription.name == "CustomName"
         assert _TestOverwriteNameAndDescription.description == "Custom description"
 
+        normalized_description_test = type(
+            "_NormalizedDescriptionTest",
+            (AntaTest,),
+            {
+                "__doc__": "\n        Description on the next line.\n\n            Additional indented details.\n        ",
+                "categories": [],
+                "commands": [],
+            },
+        )
+        assert normalized_description_test.description == "Description on the next line."
+
     def test_abc(self) -> None:
         """Test that an error is raised if AntaTest is not implemented."""
         with pytest.raises(TypeError) as exec_info:
@@ -553,6 +565,16 @@ class TestAntaTest:
         assert test.result.result == AntaTestStatus.ERROR
         assert f"<{command}> is blocked for security reason" in test.result.messages
         assert test.instance_commands[0].collected is False
+
+    @pytest.mark.parametrize("result_overwrite", [None, {}, {"description": None, "categories": None, "custom_field": None}, AntaTest.Input.ResultOverwrite()])
+    def test_empty_result_overwrite(self, result_overwrite: dict[str, None] | AntaTest.Input.ResultOverwrite | None) -> None:
+        """Empty and omitted result overrides must produce equivalent, equally hashed inputs."""
+        omitted = FakeTest.Input()
+        explicit = FakeTest.Input.model_validate({"result_overwrite": result_overwrite})
+
+        assert explicit.result_overwrite is None
+        assert explicit == omitted
+        assert hash(explicit) == hash(omitted)
 
     @pytest.mark.parametrize(
         ("categories", "description", "custom_field"),

@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import ssl
 from contextlib import AbstractContextManager
 from contextlib import nullcontext as does_not_raise
 from pathlib import Path
@@ -18,8 +19,11 @@ from asyncssh import SSHClientConnection, SSHClientConnectionOptions
 from httpx import ConnectError, ConnectTimeout, HTTPError, TimeoutException
 from rich import print as rprint
 
-from anta.device import AntaDevice, AntaDeviceCapabilities, AsyncEOSDevice
+from anta._eos.platform import PlatformComponentRole, PlatformFamily, PlatformIdentity, PlatformType, parse_eos_platform_or_none
+from anta._eos.version import EOSVersion
+from anta.device import AntaDevice, AntaDeviceCapabilities, AsyncEOSDevice, SSLParameters
 from anta.models import AntaCommand
+from anta.settings import get_ssl_settings
 from asynceapi import EapiCommandError
 from asynceapi._models import EAPIClientConnectionOptions
 from asynceapi.errors import EapiAuthenticationError
@@ -458,8 +462,22 @@ REFRESH_PARAMS: list[ParameterSet] = [
                 ]
             },
         ),
-        {"is_online": True, "established": True, "hw_model": "DCS-7280CR3-32P4-F"},
+        {
+            "is_online": True,
+            "established": True,
+            "hw_model": "DCS-7280CR3-32P4-F",
+            "version": EOSVersion(major=4, minor=31, patch=1, suffix="F-34361447.fraserrel (engineering build)"),
+        },
         id="established",
+    ),
+    pytest.param(
+        {},
+        (
+            {"return_value": True},
+            {"return_value": [{"modelName": "DCS-7280CR3-32P4-F", "version": "invalid"}]},
+        ),
+        {"is_online": True, "established": True, "hw_model": "DCS-7280CR3-32P4-F", "version": None},
+        id="invalid EOS version",
     ),
     pytest.param(
         {},
@@ -507,7 +525,12 @@ REFRESH_PARAMS: list[ParameterSet] = [
                 ]
             },
         ),
-        {"is_online": True, "established": False, "hw_model": None},
+        {
+            "is_online": True,
+            "established": False,
+            "hw_model": None,
+            "version": EOSVersion(major=4, minor=31, patch=1, suffix="F-34361447.fraserrel (engineering build)"),
+        },
         id="cannot parse command",
     ),
     pytest.param(
@@ -555,6 +578,24 @@ REFRESH_PARAMS: list[ParameterSet] = [
         {"is_online": True, "established": False, "hw_model": ""},
         id="modelName empty string",
     ),
+    pytest.param(
+        {},
+        (
+            {"return_value": True},
+            {"return_value": [{"modelName": "   "}]},
+        ),
+        {"is_online": True, "established": False, "hw_model": "   "},
+        id="modelName invalid string",
+    ),
+    pytest.param(
+        {},
+        (
+            {"return_value": True},
+            {"return_value": [{"modelName": 42}]},
+        ),
+        {"is_online": True, "established": False, "hw_model": None},
+        id="modelName invalid type",
+    ),
 ]
 COLLECT_PARAMS: list[ParameterSet] = [
     pytest.param(
@@ -592,6 +633,23 @@ CACHE_STATS_PARAMS: list[ParameterSet] = [
 
 class TestAntaDevice:
     """Test for anta.device.AntaDevice Abstract class."""
+
+    def test_version_is_instance_state(self, device: AntaDevice) -> None:
+        """Verify the generic software version is stored independently on each device instance."""
+        other_device = AntaDevice(name="other")  # type: ignore[abstract]
+        device.version = EOSVersion(major=4, minor=34, patch=7, suffix="M")
+
+        assert device.version == EOSVersion(major=4, minor=34, patch=7, suffix="M")
+        assert other_device.version is None
+
+    def test__init__supports_subclass_with_read_only_version_property(self) -> None:
+        """Verify the base constructor does not assign through a subclass's read-only version property."""
+        device_class = type("DeviceWithReadOnlyVersion", (AntaDevice,), {"version": property(lambda _self: None)})
+
+        with patch.object(device_class, "__abstractmethods__", set()):
+            device = device_class(name="custom")
+
+        assert device.version is None
 
     @pytest.mark.parametrize(("device", "command", "expected"), COLLECT_PARAMS, indirect=["device"])
     async def test_collect(self, device: AntaDevice, command: dict[str, Any], expected: dict[str, Any]) -> None:
@@ -644,15 +702,47 @@ class TestAntaDevice:
         """Verify the base AntaDevice capabilities default to all-False."""
         assert device.capabilities == AntaDeviceCapabilities()
         assert device.capabilities.supports_session_auth is False
+        assert device.capabilities.supports_ssl is False
 
 
-# pylint: disable=too-many-public-methods
 class TestAsyncEOSDevice:
     """Test for anta.device.AsyncEOSDevice."""
 
     def test_capabilities(self) -> None:
-        """Verify AsyncEOSDevice advertises session auth support."""
+        """Verify AsyncEOSDevice advertises its supported optional features."""
         assert AsyncEOSDevice.capabilities.supports_session_auth is True
+        assert AsyncEOSDevice.capabilities.supports_ssl is True
+
+    def test_ssl_parameters_default_context(self) -> None:
+        """Verify SSL parameters preserve ANTA's existing certificate behavior by default."""
+        context = SSLParameters().create_ssl_context()
+
+        assert context.verify_mode is ssl.CERT_NONE
+        assert context.check_hostname is False
+
+    def test_ssl_parameters_verified_context(self) -> None:
+        """Verify certificate and hostname validation can be enabled together."""
+        context = SSLParameters(verify=True, check_hostname=True).create_ssl_context()
+
+        assert context.verify_mode is ssl.CERT_REQUIRED
+        assert context.check_hostname is True
+
+    def test_ssl_parameters_hostname_requires_verification(self) -> None:
+        """Verify hostname validation cannot be enabled without certificate verification."""
+        with pytest.raises(ValueError, match="SSL hostname checking requires certificate verification"):
+            SSLParameters(check_hostname=True)
+
+    def test_ssl_parameters_invalid_ciphers(self) -> None:
+        """Verify invalid OpenSSL cipher expressions fail with a clear error."""
+        with pytest.raises(ValueError, match="Invalid SSL cipher list"):
+            SSLParameters(ciphers="NOT-A-CIPHER").create_ssl_context()
+
+    def test_ssl_parameters_custom_ciphers(self) -> None:
+        """Verify the configured OpenSSL ciphers are enabled on the context."""
+        context = SSLParameters(ciphers="AES256-SHA:AES128-SHA").create_ssl_context()
+        cipher_names = {cipher["name"] for cipher in context.get_ciphers()}
+
+        assert {"AES256-SHA", "AES128-SHA"} <= cipher_names
 
     @pytest.mark.parametrize(("device", "expected", "expected_raise"), INIT_PARAMS)
     def test__init__(self, device: dict[str, Any], expected: dict[str, Any] | None, expected_raise: AbstractContextManager[Exception]) -> None:
@@ -662,6 +752,8 @@ class TestAsyncEOSDevice:
 
             assert expected is not None
             assert dev.name == expected["name"]
+            assert dev.version is None
+            assert dev.platform is None
             if device.get("disable_cache") is True:
                 assert dev.cache is None
                 assert dev.cache_locks is None
@@ -686,11 +778,50 @@ class TestAsyncEOSDevice:
             timeout=12.0,
         )
 
+    def test__init__uses_per_device_ssl_parameters(self) -> None:
+        """Verify per-device SSL parameters are applied to the HTTPX transport."""
+        ssl_params = SSLParameters(ciphers="AES256-SHA")
+        dev = AsyncEOSDevice(host="42.42.42.42", username="anta", password="anta", ssl_params=ssl_params)
+        context = dev._client._transport._pool._ssl_context  # pyright: ignore[reportAttributeAccessIssue]
+
+        assert dev.ssl_params is ssl_params
+        assert "AES256-SHA" in {cipher["name"] for cipher in context.get_ciphers()}
+
+    def test__init__uses_global_ssl_ciphers(self, setenvvar: pytest.MonkeyPatch) -> None:
+        """Verify ANTA_SSL_CIPHERS applies when no per-device parameters are provided."""
+        get_ssl_settings.cache_clear()
+        setenvvar.setenv("ANTA_SSL_CIPHERS", "AES128-SHA")
+        dev = AsyncEOSDevice(host="42.42.42.42", username="anta", password="anta")
+        context = dev._client._transport._pool._ssl_context  # pyright: ignore[reportAttributeAccessIssue]
+
+        assert dev.ssl_params is None
+        assert "AES128-SHA" in {cipher["name"] for cipher in context.get_ciphers()}
+        get_ssl_settings.cache_clear()
+
+    def test__init__explicit_ssl_parameters_override_global(self, setenvvar: pytest.MonkeyPatch) -> None:
+        """Verify an explicit empty SSLParameters object opts out of the global cipher override."""
+        get_ssl_settings.cache_clear()
+        setenvvar.setenv("ANTA_SSL_CIPHERS", "AES128-SHA")
+        dev = AsyncEOSDevice(host="42.42.42.42", username="anta", password="anta", ssl_params=SSLParameters())
+        context = dev._client._transport._pool._ssl_context  # pyright: ignore[reportAttributeAccessIssue]
+
+        assert "AES128-SHA" not in {cipher["name"] for cipher in context.get_ciphers()}
+        get_ssl_settings.cache_clear()
+
+    def test__init__ignores_ssl_parameters_for_http(self) -> None:
+        """Verify SSL parameters are not evaluated for clear-text HTTP connections."""
+        dev = AsyncEOSDevice(host="42.42.42.42", username="anta", password="anta", proto="http", ssl_params=SSLParameters(ciphers="NOT-A-CIPHER"))
+
+        assert dev._client.base_url.scheme == "http"
+
     def test__rich_repr_debug_sanitizes_client_details(self, async_device: AsyncEOSDevice) -> None:
         """Test the debug Rich repr does not expose internal client state."""
+        async_device.version = EOSVersion(major=4, minor=34, patch=7, hotfix=1, suffix="M")
         with patch("anta.device.__DEBUG__", new=True):
             rich_repr = dict(async_device.__rich_repr__())
 
+        assert rich_repr["version"] == "4.34.7.1M"
+        assert rich_repr["platform"] is None
         assert rich_repr["_client"] == {
             "host": async_device._client.host,
             "port": async_device._client.port,
@@ -699,6 +830,26 @@ class TestAsyncEOSDevice:
         }
         assert "auth" not in rich_repr["_client"]
         assert "_auth" not in rich_repr["_client"]
+
+    def test__repr__renders_version_as_string(self, async_device: AsyncEOSDevice) -> None:
+        """Test the printable representation renders the normalized version string."""
+        async_device.version = EOSVersion(major=4, minor=34, patch=7, hotfix=1, suffix="M")
+
+        assert "version='4.34.7.1M'" in repr(async_device)
+
+    def test_default_representations_omit_ssl_parameters(self, async_device: AsyncEOSDevice) -> None:
+        """Verify default SSL parameters do not alter device representations."""
+        assert "ssl_params" not in dict(async_device.__rich_repr__())
+        assert "ssl_params" not in repr(async_device)
+
+    def test__repr__renders_missing_version_as_none(self, async_device: AsyncEOSDevice) -> None:
+        """Test the printable representation renders None when the version is unavailable."""
+        device_repr = repr(async_device)
+
+        assert device_repr.startswith("AsyncEOSDevice('pytest', tags=")
+        assert "platform=None" in device_repr
+        assert "version=None" in device_repr
+        assert "is_online=False" in device_repr
 
     @pytest.mark.parametrize(("device1", "device2", "expected"), EQUALITY_PARAMS)
     def test__eq(self, device1: dict[str, Any], device2: dict[str, Any], expected: bool) -> None:
@@ -720,6 +871,10 @@ class TestAsyncEOSDevice:
         with patch.object(async_device, "_client", None):
             assert async_device.max_connections is None
 
+
+class TestAsyncEOSDeviceOperations:
+    """Test AsyncEOSDevice refresh, collection, lifecycle, and tag operations."""
+
     @pytest.mark.parametrize(
         ("async_device", "patch_kwargs", "expected"),
         REFRESH_PARAMS,
@@ -727,6 +882,7 @@ class TestAsyncEOSDevice:
     )
     async def test_refresh(self, async_device: AsyncEOSDevice, patch_kwargs: list[dict[str, Any]], expected: dict[str, Any]) -> None:
         """Test AsyncEOSDevice.refresh()."""
+        async_device.version = EOSVersion(major=4, minor=1, patch=1, suffix="M")
         with patch.object(async_device._client, "check_api_endpoint", **patch_kwargs[0]), patch.object(async_device._client, "cli", **patch_kwargs[1]):
             await async_device.refresh()
             async_device._client.check_api_endpoint.assert_called_once()  # type: ignore[attr-defined] # asynceapi.Device.check_api_endpoint is patched
@@ -735,13 +891,186 @@ class TestAsyncEOSDevice:
             assert async_device.is_online == expected["is_online"]
             assert async_device.established == expected["established"]
             assert async_device.hw_model == expected["hw_model"]
+            assert async_device.version == expected.get("version")
+            if expected["established"] and isinstance(expected["hw_model"], str) and expected["hw_model"].strip():
+                assert isinstance(async_device.platform, PlatformIdentity)
+                assert str(async_device.platform) == expected["hw_model"]
+            else:
+                assert async_device.platform is None
+
+    async def test_refresh_collects_modular_inventory_once(self, async_device: AsyncEOSDevice) -> None:
+        """Verify modular systems collect and retain structured module identities once per refresh."""
+        responses = [
+            [{"modelName": "DCS-7358-CH-F", "version": "4.35.4M"}],
+            [
+                {
+                    "modules": {
+                        "1": {"modelName": "7358X4-SC"},
+                        "2": {"modelName": "7368-SUP-D"},
+                        "3": {"modelName": "7368-16C"},
+                    }
+                }
+            ],
+        ]
+        with (
+            patch.object(async_device._client, "check_api_endpoint", return_value=True),
+            patch.object(async_device._client, "cli", side_effect=responses) as cli_mock,
+        ):
+            await async_device.refresh()
+
+        assert async_device.established
+        assert cli_mock.await_count == 2
+        assert cli_mock.await_args_list[1].kwargs["commands"] == [{"cmd": "show module", "revision": 1}]
+        assert isinstance(async_device.platform, PlatformIdentity)
+        assert [component.model for component in async_device.platform.modules if component.role is PlatformComponentRole.SWITCH_CARD] == ["7358X4-SC"]
+        assert PlatformFamily.SERIES_7358_X4 in async_device.platform.platform_families
+
+    async def test_refresh_keeps_modular_device_established_when_module_collection_fails(
+        self,
+        async_device: AsyncEOSDevice,
+        caplog: pytest.LogCaptureFixture,
+    ) -> None:
+        """Verify unavailable optional module evidence does not make a refreshed device unusable."""
+        caplog.set_level(logging.WARNING)
+        responses: list[object] = [
+            [{"modelName": "DCS-7508N", "version": "4.35.4M"}],
+            HTTPError("show module unavailable"),
+        ]
+        with patch.object(async_device._client, "check_api_endpoint", return_value=True), patch.object(async_device._client, "cli", side_effect=responses):
+            await async_device.refresh()
+
+        assert async_device.established
+        assert isinstance(async_device.platform, PlatformIdentity)
+        assert not async_device.platform.modules
+        assert "collection failed (show module could not be collected)" in caplog.text
+
+    async def test_refresh_handles_empty_module_collection(self, async_device: AsyncEOSDevice, caplog: pytest.LogCaptureFixture) -> None:
+        """Verify an empty module response is handled as a collection failure without aborting refresh."""
+        caplog.set_level(logging.WARNING)
+        responses: list[object] = [
+            [{"modelName": "DCS-7508N", "version": "4.35.4M"}],
+            [None],
+        ]
+        with patch.object(async_device._client, "check_api_endpoint", return_value=True), patch.object(async_device._client, "cli", side_effect=responses):
+            await async_device.refresh()
+
+        assert async_device.established
+        assert isinstance(async_device.platform, PlatformIdentity)
+        assert not async_device.platform.modules
+        assert "collection failed (show module could not be collected)" in caplog.text
+
+    async def test_refresh_logs_unsupported_module_collection(self, async_device: AsyncEOSDevice, caplog: pytest.LogCaptureFixture) -> None:
+        """Verify unsupported module collection is distinguished from other failures."""
+        caplog.set_level(logging.WARNING)
+        responses: list[object] = [
+            [{"modelName": "DCS-7508N", "version": "4.35.4M"}],
+            EapiCommandError(
+                passed=[],
+                failed="show module",
+                errors=["not supported on this hardware platform"],
+                errmsg="Invalid command",
+                not_exec=[],
+            ),
+        ]
+        with patch.object(async_device._client, "check_api_endpoint", return_value=True), patch.object(async_device._client, "cli", side_effect=responses):
+            await async_device.refresh()
+
+        assert async_device.established
+        assert isinstance(async_device.platform, PlatformIdentity)
+        assert not async_device.platform.modules
+        assert "unsupported (show module could not be collected)" in caplog.text
+
+    async def test_refresh_logs_unknown_platform_type(self, async_device: AsyncEOSDevice, caplog: pytest.LogCaptureFixture) -> None:
+        """Verify a valid unrecognized model remains established and is logged at debug."""
+        caplog.set_level(logging.DEBUG)
+        with (
+            patch.object(async_device._client, "check_api_endpoint", return_value=True),
+            patch.object(async_device._client, "cli", return_value=[{"modelName": "DCS-UNRECOGNIZED", "version": "4.35.4M"}]) as cli_mock,
+        ):
+            await async_device.refresh()
+
+        assert async_device.established
+        assert isinstance(async_device.platform, PlatformIdentity)
+        assert async_device.platform.type is PlatformType.UNKNOWN
+        assert cli_mock.await_count == 1
+        assert "has an unknown platform type" in caplog.text
+
+    @pytest.mark.parametrize(
+        ("model", "version", "expected_established", "expected_version", "message"),
+        [
+            pytest.param("", "4.35.4M", False, EOSVersion(4, 35, 4, suffix="M"), "invalid (show version modelName is empty)", id="platform"),
+            pytest.param(
+                "DCS-7050SX3-48YC12-F",
+                None,
+                True,
+                None,
+                "Cannot parse EOS version for device pytest: missing (EOS version is missing)",
+                id="version-missing",
+            ),
+            pytest.param(
+                "DCS-7050SX3-48YC12-F",
+                42,
+                True,
+                None,
+                "Cannot parse EOS version for device pytest: malformed (EOS version is not a string)",
+                id="version-malformed",
+            ),
+            pytest.param(
+                "DCS-7050SX3-48YC12-F",
+                "",
+                True,
+                None,
+                "Cannot parse EOS version for device pytest: invalid (EOS version is empty)",
+                id="version-empty",
+            ),
+            pytest.param(
+                "DCS-7050SX3-48YC12-F",
+                "unknown",
+                True,
+                None,
+                "Cannot parse EOS version for device pytest: invalid (EOS version has an invalid format)",
+                id="version-invalid",
+            ),
+        ],
+    )
+    async def test_refresh_logs_typed_parse_failure(
+        self,
+        async_device: AsyncEOSDevice,
+        caplog: pytest.LogCaptureFixture,
+        model: str,
+        version: object,
+        *,
+        expected_established: bool,
+        expected_version: EOSVersion | None,
+        message: str,
+    ) -> None:
+        """Verify typed metadata failures are reported with the appropriate establishment state."""
+        caplog.set_level(logging.WARNING)
+        with (
+            patch.object(async_device._client, "check_api_endpoint", return_value=True),
+            patch.object(async_device._client, "cli", return_value=[{"modelName": model, "version": version}]),
+        ):
+            await async_device.refresh()
+
+        assert async_device.established is expected_established
+        assert async_device.version == expected_version
+        assert (async_device.platform is not None) is expected_established
+        assert message in caplog.text
+
+    async def test_refresh_resets_platform_before_connectivity_failure(self, async_device: AsyncEOSDevice) -> None:
+        """Verify a failed refresh cannot retain stale structured inventory evidence."""
+        async_device.platform = parse_eos_platform_or_none("DCS-7050SX3-48YC12-F")
+        with patch.object(async_device._client, "check_api_endpoint", side_effect=HTTPError("unavailable")):
+            await async_device.refresh()
+
+        assert async_device.platform is None
 
     async def test_refresh_timeout_without_message_in_exception(self, async_device: AsyncEOSDevice, caplog: pytest.LogCaptureFixture) -> None:
         """Test when a timeout occurs in AsyncEOSDevice.refresh() without a message in the HTTPX exception."""
         caplog.set_level(logging.WARNING)
 
         # Simulating a low-level asyncio timeout created without additional context
-        with patch.object(async_device._client, "check_api_endpoint", side_effect=ConnectTimeout(message=str(asyncio.TimeoutError()))):
+        with patch.object(async_device._client, "check_api_endpoint", side_effect=ConnectTimeout(message=str(TimeoutError()))):
             await async_device.refresh()
 
             assert not async_device.is_online
@@ -853,6 +1182,8 @@ class TestAsyncEOSDevice:
             assert async_device.is_online is True
             assert async_device.established is True
             assert async_device.hw_model == "DCS-72"
+            assert isinstance(async_device.platform, PlatformIdentity)
+            assert async_device.platform.type is PlatformType.UNKNOWN
 
     async def test__collect_raises_when_client_closed(self, async_device: AsyncEOSDevice) -> None:
         """Test that _collect() raises RuntimeError when the httpx client is closed."""

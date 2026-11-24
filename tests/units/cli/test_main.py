@@ -29,6 +29,7 @@ def test_anta_help(click_runner: CliRunner) -> None:
     result = click_runner.invoke(anta, ["--help"])
     assert result.exit_code == ExitCode.OK
     assert "Usage" in result.output
+    assert "psirt" in result.output
 
 
 def test_anta_exec_help(click_runner: CliRunner) -> None:

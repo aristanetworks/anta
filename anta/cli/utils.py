@@ -19,6 +19,7 @@ from anta.catalog import AntaCatalog
 from anta.inventory import AntaInventory
 from anta.inventory.exceptions import InventoryIncorrectSchemaError, InventoryRootKeyError
 from anta.logger import anta_log_exception
+from anta.result_manager.models import AntaTestStatus
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -32,6 +33,9 @@ else:
 
 logger = logging.getLogger(__name__)
 R = TypeVar("R")
+
+_HIDE_STATUS: list[str] = list(AntaTestStatus)
+_HIDE_STATUS.remove("unset")
 
 
 class ExitCode(enum.IntEnum):
@@ -59,14 +63,14 @@ def parse_tags(_ctx: click.Context, _param: Option, value: str | None) -> set[st
 def exit_with_code(ctx: click.Context) -> None:
     """Exit the Click application with an exit code.
 
-    This function determines the global test status to be either `unset`, `skipped`, `success` or `error`
-    from the `ResultManger` instance.
+    This function determines the global test status to be either `unset`, `skipped`, `success`, `failure` or `error`
+    from the `ResultManager` instance.
     If flag `ignore_error` is set, the `error` status will be ignored in all the tests.
     If flag `ignore_status` is set, the exit code will always be 0.
     Exit the application with the following exit code:
         * 0 if `ignore_status` is `True` or global test status is `unset`, `skipped` or `success`
-        * 1 if status is `failure`
-        * 2 if status is `error`.
+        * 3 if status is `error`
+        * 4 if status is `failure`.
 
     Parameters
     ----------
@@ -99,9 +103,9 @@ class AliasedGroup(click.Group):
     From Click documentation.
     """
 
-    # Adding noqa because https://github.com/astral-sh/ruff/issues/5474, same for pylint
+    # Adding noqa because https://github.com/astral-sh/ruff/issues/5474
     @override  # noqa: RET503
-    def get_command(self, ctx: click.Context, cmd_name: str) -> click.Command | click.Group | None:  # pylint: disable=R1710
+    def get_command(self, ctx: click.Context, cmd_name: str) -> click.Command | click.Group | None:
         """Try to find a command name based on a prefix."""
         rv = click.Group.get_command(self, ctx, cmd_name)
         if rv is not None:
@@ -120,6 +124,52 @@ class AliasedGroup(click.Group):
         if not cmd or cmd.name is None:
             return None, None, []
         return cmd.name, cmd, args
+
+
+def result_options(f: Callable[..., R]) -> Callable[..., R]:
+    """Click common options for filtering test results and determining the exit code."""
+    f = click.option(
+        "--hide",
+        default=None,
+        type=click.Choice(_HIDE_STATUS, case_sensitive=False),
+        multiple=True,
+        help="Hide results by type: success / failure / error / skipped.",
+        required=False,
+    )(f)
+    f = click.option(
+        "--ignore-error",
+        help="Ignore test errors when determining the exit code.",
+        show_envvar=True,
+        is_flag=True,
+        default=False,
+    )(f)
+    return click.option(
+        "--ignore-status",
+        help="Exit code will always be 0.",
+        show_envvar=True,
+        is_flag=True,
+        default=False,
+    )(f)
+
+
+def template_report_options(f: Callable[..., R]) -> Callable[..., R]:
+    """Click common options for template report commands."""
+    f = click.option(
+        "--output",
+        "-o",
+        type=click.Path(file_okay=True, dir_okay=False, exists=False, writable=True, path_type=Path),
+        show_envvar=True,
+        required=False,
+        help="Path to save report as a file",
+    )(f)
+    return click.option(
+        "--template",
+        "-tpl",
+        type=click.Path(file_okay=True, dir_okay=False, exists=True, readable=True, path_type=Path),
+        show_envvar=True,
+        required=True,
+        help="Path to the template to use for the report",
+    )(f)
 
 
 def core_options(f: Callable[..., R]) -> Callable[..., R]:

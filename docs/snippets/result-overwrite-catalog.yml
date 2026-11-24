@@ -1,0 +1,10 @@
+---
+anta.tests.configuration:
+  - VerifyZeroTouch:
+      result_overwrite:
+        categories: [demo, customized]
+        description: Verifies Zero Touch Provisioning is disabled in the lab.
+
+anta.tests.system:
+  - VerifyUptime:
+      minimum: 1

@@ -14,7 +14,7 @@ from typing import Any
 from pydantic import TypeAdapter
 from typing_extensions import deprecated
 
-from anta.result_manager.models import AntaTestStatus, TestResult
+from anta.result_manager.models import _STATUS_PRIORITY, AntaTestStatus, TestResult
 
 from .models import CategoryStats, DeviceStats, TestStats
 
@@ -25,24 +25,33 @@ logger = logging.getLogger(__name__)
 # https://docs.pydantic.dev/latest/api/type_adapter/
 ResultManagerTypeAdapter = TypeAdapter(list[TestResult])
 
+_SORTABLE_FIELDS = ("name", "test", "categories", "description", "result", "messages", "custom_field")
+
+
+def _get_sort_key(result: TestResult, sort_by: list[str]) -> list[Any]:
+    """Build a sort key, replacing only None values with empty strings."""
+    values = (getattr(result, field) for field in sort_by)
+    return ["" if value is None else value for value in values]
+
 
 class ResultManager:
     """Manager of ANTA Results.
 
     The status of the class is initialized to "unset"
 
-    Then when adding a test with a status that is NOT 'error' the following
-    table shows the updated status:
+    When adding a test with a status that is not `error`, the overall status is
+    updated according to the following precedence:
+    `failure` > `success` > `skipped`/`unset`.
 
-    | Current Status |         Added test Status       | Updated Status |
-    | -------------- | ------------------------------- | -------------- |
-    |      unset     |              Any                |       Any      |
-    |     skipped    |         unset, skipped          |     skipped    |
-    |     skipped    |            success              |     success    |
-    |     skipped    |            failure              |     failure    |
-    |     success    |     unset, skipped, success     |     success    |
-    |     success    |            failure              |     failure    |
-    |     failure    | unset, skipped success, failure |     failure    |
+    | Current Status | Added test Status                | Updated Status |
+    | -------------- | -------------------------------- | -------------- |
+    | unset          | Any                              | Any            |
+    | skipped        | unset, skipped                   | skipped        |
+    | skipped        | success                          | success        |
+    | skipped        | failure                          | failure        |
+    | success        | unset, skipped, success          | success        |
+    | success        | failure                          | failure        |
+    | failure        | Any status except error          | failure        |
 
     If the status of the added test is error, the status is untouched and the
     `error_status` attribute is set to True.
@@ -52,7 +61,7 @@ class ResultManager:
     results
     dump
     status
-        Status rerpesenting all the results.
+        Status representing all the results.
     error_status
         Will be `True` if a test returned an error.
     results_by_status
@@ -62,9 +71,6 @@ class ResultManager:
     category_stats
     test_stats
     """
-
-    # TODO: Remove the following pylint disable once deprecated methods are removed.
-    # pylint: disable=too-many-public-methods
 
     _results: list[TestResult]
     status: AntaTestStatus
@@ -161,10 +167,13 @@ class ResultManager:
         if test_status == "error":
             self.error_status = True
             return
-        if self.status == "unset" or (self.status == "skipped" and test_status in {"success", "failure"}):
+
+        if self.status == AntaTestStatus.UNSET:
             self.status = test_status
-        elif self.status == "success" and test_status == "failure":
-            self.status = AntaTestStatus.FAILURE
+            return
+
+        if _STATUS_PRIORITY[test_status] > _STATUS_PRIORITY[self.status]:
+            self.status = test_status
 
     def _reset_stats(self) -> None:
         """Create or reset the statistics attributes."""
@@ -245,13 +254,15 @@ class ResultManager:
         """Get the results, optionally filtered by status and sorted by TestResult fields.
 
         If no status is provided, all results are returned.
+        The categories and messages lists are compared lexicographically; None values are treated as empty strings.
+        Sorting by atomic_results or any other unsupported field raises ValueError.
 
         Parameters
         ----------
         status
             Optional set of AntaTestStatus enum members to filter the results.
         sort_by
-            Optional list of TestResult fields to sort the results.
+            Optional list of fields to sort the results: name, test, categories, description, result, messages, custom_field.
 
         Returns
         -------
@@ -262,11 +273,11 @@ class ResultManager:
         results = self._results if status is None else list(chain.from_iterable(self.results_by_status.get(status, []) for status in status))
 
         if sort_by:
-            accepted_fields = TestResult.model_fields.keys()
+            accepted_fields = _SORTABLE_FIELDS
             if not set(sort_by).issubset(set(accepted_fields)):
                 msg = f"Invalid sort_by fields: {sort_by}. Accepted fields are: {list(accepted_fields)}"
                 raise ValueError(msg)
-            results = sorted(results, key=lambda result: [getattr(result, field) or "" for field in sort_by])
+            results = sorted(results, key=lambda result: _get_sort_key(result, sort_by))
 
         return results
 
@@ -299,16 +310,19 @@ class ResultManager:
     def sort(self, sort_by: list[str]) -> ResultManager:
         """Sort the ResultManager results based on TestResult fields.
 
+        The categories and messages lists are compared lexicographically; None values are treated as empty strings.
+        Sorting by atomic_results or any other unsupported field raises ValueError.
+
         Parameters
         ----------
         sort_by
-            List of TestResult fields to sort the results.
+            List of fields to sort the results: name, test, categories, description, result, messages, custom_field.
         """
-        accepted_fields = TestResult.model_fields.keys()
+        accepted_fields = _SORTABLE_FIELDS
         if not set(sort_by).issubset(set(accepted_fields)):
             msg = f"Invalid sort_by fields: {sort_by}. Accepted fields are: {list(accepted_fields)}"
             raise ValueError(msg)
-        self._results.sort(key=lambda result: [getattr(result, field) or "" for field in sort_by])
+        self._results.sort(key=lambda result: _get_sort_key(result, sort_by))
         return self
 
     def filter(self, hide: set[AntaTestStatus]) -> ResultManager:

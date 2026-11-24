@@ -74,7 +74,16 @@ TEST_RESULTS: list[ParameterSet] = [
         ),
         id="error-atomic",
     ),
-    # TODO: failure + error atomic
+    pytest.param(
+        AntaTestStatus.ERROR,
+        [AntaTestStatus.ERROR, AntaTestStatus.FAILURE],
+        (
+            f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): error [error,failure]\nMessages:\n"
+            f"FakeTestWithInput1AtomicTestResult0 - atomic error message\n"
+            f"FakeTestWithInput1AtomicTestResult1 - atomic failure message"
+        ),
+        id="error-failure-atomic",
+    ),
 ]
 
 

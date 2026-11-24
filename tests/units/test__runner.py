@@ -30,7 +30,6 @@ from tests.units.test_models import FakeTest
 DATA_DIR: Path = Path(__file__).parent.parent.resolve() / "data"
 
 
-# pylint: disable=too-many-public-methods
 class TestAntaRunner:
     """Test AntaRunner class."""
 
@@ -193,6 +192,34 @@ class TestAntaRunner:
 
         with pytest.raises(ValidationError, match="1 validation error for AntaRunFilters"):
             await runner.run(inventory, catalog, filters=AntaRunFilters(devices="invalid"), dry_run=True)  # type: ignore[arg-type]
+
+    @pytest.mark.parametrize(
+        ("result_overwrite", "expected_tests"),
+        [
+            pytest.param({}, 1, id="empty"),
+            pytest.param({"description": None, "categories": None, "custom_field": None}, 1, id="all-none"),
+            pytest.param({"description": "Another description"}, 2, id="description"),
+            pytest.param({"categories": ["hardware"]}, 2, id="categories"),
+            pytest.param({"custom_field": "Another custom field"}, 2, id="custom-field"),
+        ],
+    )
+    async def test_run_result_overwrite_deduplication(self, result_overwrite: dict[str, str | list[str] | None], expected_tests: int) -> None:
+        """An empty override must not cause the same test to execute twice on one device."""
+        device = AsyncEOSDevice(host="device.example.com", username="admin", password="password", name="device", disable_cache=True)
+        inventory = AntaInventory()
+        inventory.add_device(device)
+        catalog = AntaCatalog.from_list([(FakeTest, None), (FakeTest, {"result_overwrite": result_overwrite})])
+
+        async def refresh() -> None:
+            device.is_online = True
+            device.established = True
+
+        with patch.object(device, "refresh", new=AsyncMock(side_effect=refresh)):
+            ctx = await AntaRunner().run(inventory, catalog, disconnect=True)
+
+        assert ctx.total_tests_scheduled == expected_tests
+        assert len(ctx.manager.results) == expected_tests
+        assert all(result.result == "success" for result in ctx.manager.results)
 
     async def test_run_provided_manager(self) -> None:
         """Test AntaRunner.run() with a provided ResultManager instance."""
@@ -511,7 +538,7 @@ class TestAntaRunner:
 
     @pytest.mark.parametrize(("inventory"), [{"count": 3}], indirect=True)
     @respx.mock
-    async def test_run(self, inventory: AntaInventory) -> None:
+    async def test_run(self, inventory: AntaInventory, monkeypatch: pytest.MonkeyPatch) -> None:
         """Test AntaRunner.run()."""
         # Mock the eAPI requests
         respx.post(path="/command-api", headers={"Content-Type": "application/json-rpc"}, json__params__cmds__0__cmd="show ip route vrf default").respond(
@@ -520,8 +547,13 @@ class TestAntaRunner:
         tests = [AntaTestDefinition(test=VerifyRoutingTableEntry, inputs={"routes": [f"10.1.0.{i}"], "collect": "all"}) for i in range(5)]
         catalog = AntaCatalog(tests=tests)
         runner = AntaRunner()
+        monkeypatch.setattr(AntaTest, "nrfu_task", None)
 
-        ctx = await runner.run(inventory, catalog)
+        with patch.object(AntaTest, "progress") as progress:
+            ctx = await runner.run(inventory, catalog)
+
+        progress.add_task.assert_called_once_with("Running Tests ...", total=15)
+        assert AntaTest.nrfu_task == progress.add_task.return_value
 
         assert ctx.total_devices_selected_for_testing == 3
         assert ctx.total_tests_scheduled == 15
@@ -553,7 +585,6 @@ class TestAntaRunner:
             mock_disconnect.assert_not_called()
 
 
-# pylint: disable=too-few-public-methods
 class TestAntaRunContext:
     """Test AntaRunContext class."""
 

@@ -14,4 +14,9 @@ tags:
   ~ that can be found in the LICENSE file.
   -->
 
-::: anta.reporter.ReportJinja
+!!! warning "Deprecated import"
+
+    `ReportJinja` has been moved. Import it from `anta.reporter.jinja_reporter`.
+    Direct import from `anta.reporter` will be removed in ANTA v2.0.0.
+
+::: anta.reporter.jinja_reporter.ReportJinja

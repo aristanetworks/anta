@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, ClassVar
 
 import pytest
 
-from anta.decorators import deprecated_test_class, skip_on_platforms
+from anta.decorators import deprecated_test, deprecated_test_class, preview_test_class, skip_on_platforms
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 
 if TYPE_CHECKING:
@@ -38,18 +38,87 @@ class ExampleTest(AntaTest):
     ],
 )
 def test_deprecated_test_class(caplog: pytest.LogCaptureFixture, device: AntaDevice, new_tests: list[str] | None) -> None:
-    """Test deprecated_test_class decorator."""
+    """Test deprecated_test_class decorator only logs the warning once per test class."""
     caplog.set_level(logging.INFO)
 
     decorated_test_class = deprecated_test_class(new_tests=new_tests)(ExampleTest)
 
-    # Initialize the decorated test
+    decorated_test_class(device)
     decorated_test_class(device)
 
     if new_tests is None:
-        assert "ExampleTest test is deprecated." in caplog.messages
+        warning = "ExampleTest test is deprecated."
     else:
-        assert f"ExampleTest test is deprecated. Consider using the following new tests: {', '.join(new_tests)}." in caplog.messages
+        warning = f"ExampleTest test is deprecated. Consider using the following new tests: {', '.join(new_tests)}."
+    assert caplog.messages.count(warning) == 1
+
+
+@pytest.mark.parametrize(
+    "new_tests",
+    [
+        pytest.param(None, id="No new_tests"),
+        pytest.param(["NewExampleTest"], id="one new_tests"),
+        pytest.param(["NewExampleTest1", "NewExampleTest2"], id="multiple new_tests"),
+    ],
+)
+async def test_deprecated_test(caplog: pytest.LogCaptureFixture, device: AntaDevice, new_tests: list[str] | None) -> None:
+    """Test deprecated_test decorator only logs the warning once per test function."""
+    test_instance = ExampleTest(device)
+    caplog.clear()
+    decorated_test = deprecated_test(new_tests=new_tests)(ExampleTest.test)
+
+    await decorated_test(test_instance)
+    await decorated_test(test_instance)
+
+    if new_tests is None:
+        warning = "ExampleTest test is deprecated."
+    else:
+        warning = f"ExampleTest test is deprecated. Consider using the following new tests: {', '.join(new_tests)}."
+    assert caplog.messages.count(warning) == 1
+
+
+def test_preview_test_class(caplog: pytest.LogCaptureFixture, device: AntaDevice) -> None:
+    """Test preview_test_class decorator logs the default warning once per test class."""
+    caplog.set_level(logging.WARNING)
+
+    class PreviewExampleTest(AntaTest):
+        """ANTA preview test that always succeeds."""
+
+        categories: ClassVar[list[str]] = []
+        commands: ClassVar[list[AntaCommand | AntaTemplate]] = []
+
+        @AntaTest.anta_test
+        def test(self) -> None:
+            """Test function."""
+            self.result.is_success()
+
+    decorated_test_class = preview_test_class(PreviewExampleTest)
+
+    decorated_test_class(device)
+    decorated_test_class(device)
+
+    warning = "PreviewExampleTest test is in preview. Input models and behavior may change between minor releases."
+    assert caplog.messages.count(warning) == 1
+
+
+def test_preview_test_class_deduplicates_custom_warning(caplog: pytest.LogCaptureFixture, device: AntaDevice) -> None:
+    """Test preview_test_class deduplicates a custom warning shared by multiple test classes."""
+    caplog.set_level(logging.WARNING)
+    warning = "A group of tests is in preview"
+
+    class FirstExampleTest(ExampleTest):
+        """First ANTA preview test that always succeeds."""
+
+    class AnotherExampleTest(ExampleTest):
+        """Another ANTA preview test that always succeeds."""
+
+    first_test_class = preview_test_class(warning_message=warning)(FirstExampleTest)
+    second_test_class = preview_test_class(warning_message=warning)(AnotherExampleTest)
+
+    first_test_class(device)
+    second_test_class(device)
+
+    assert caplog.messages.count(warning) == 1
 
 
 @pytest.mark.parametrize(

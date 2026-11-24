@@ -1,0 +1,24 @@
+%%{init: {"sequence": {"actorMargin": 220, "diagramMarginX": 20, "messageMargin": 16, "noteMargin": 6}}}%%
+sequenceDiagram
+    participant ANTA
+    participant EOS as EOS eAPI
+
+    opt Session authentication enabled
+        ANTA->>EOS: POST /login
+        Note over ANTA,EOS: HTTPX timeout: 5 seconds
+        EOS-->>ANTA: Session cookie
+    end
+
+    ANTA->>EOS: HEAD /command-api
+    Note over ANTA,EOS: HTTPX timeout: 5 seconds
+    EOS-->>ANTA: Endpoint available
+
+    ANTA->>EOS: show version
+    Note over ANTA,EOS: --timeout / ANTA_TIMEOUT
+    EOS-->>ANTA: Platform information
+
+    opt Chassis platform
+        ANTA->>EOS: show module
+        Note over ANTA,EOS: --timeout / ANTA_TIMEOUT
+        EOS-->>ANTA: Module information
+    end

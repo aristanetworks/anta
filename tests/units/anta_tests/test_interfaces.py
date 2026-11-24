@@ -3,14 +3,11 @@
 # that can be found in the LICENSE file.
 """Test inputs for anta.tests.interfaces."""
 
-# pylint: disable=C0302
 from __future__ import annotations
 
-import sys
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING, Any
 
-from anta.models import AntaTest
 from anta.result_manager.models import AntaTestStatus
 from anta.tests.interfaces import (
     VerifyIllegalLACP,
@@ -41,7 +38,7 @@ from anta.tests.interfaces import (
     VerifyStormControlDrops,
     VerifySVI,
 )
-from tests.units.anta_tests import test
+from tests.units.anta_tests import test  # noqa: F401 - Pytest collects this imported test function.
 
 if TYPE_CHECKING:
     from tests.units.anta_tests import AntaUnitTestData
@@ -72,7 +69,7 @@ def create_status_data(*interfaces_with_status: tuple[str, str, float]) -> dict[
 
 
 # Mock current time to maintain test VerifyInterfacesCounterDetails stability
-now = datetime.now(timezone.utc)
+now = datetime.now(UTC)
 one_day_ago = now - timedelta(days=1)
 timestamp_one_day_ago = one_day_ago.timestamp()
 
@@ -4687,6 +4684,40 @@ DATA: AntaUnitTestData = {
         ],
         "inputs": {"interfaces": ["Ethernet12/1/1", "Ethernet13/2", "Ethernet4/2/1"], "counters_threshold": 0, "link_status_changes_threshold": 100},
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Interface: Ethernet12/1/1 - Not found", "Interface: Ethernet13/2 - Not found"]},
+    },
+    (VerifyInterfacesCounterDetails, "failure-optional-counter-missing"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet1": {
+                        "name": "Ethernet1",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "interfaceCounters": {
+                            "linkStatusChanges": 2,
+                            "totalInErrors": 0,
+                            "totalOutErrors": 0,
+                        },
+                    }
+                }
+            }
+        ],
+        "inputs": {"counters_threshold": 0, "link_status_changes_threshold": 100},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet1 - Input discards not found",
+                "Interface: Ethernet1 - Output discards not found",
+                "Interface: Ethernet1 - Runt frames not found",
+                "Interface: Ethernet1 - Giant frames not found",
+                "Interface: Ethernet1 - CRC errors not found",
+                "Interface: Ethernet1 - Alignment errors not found",
+                "Interface: Ethernet1 - Symbol errors not found",
+                "Interface: Ethernet1 - Collisions not found",
+                "Interface: Ethernet1 - Late collisions not found",
+                "Interface: Ethernet1 - Deferred transmissions not found",
+            ],
+        },
     },
     (VerifyInterfacesBER, "success"): {
         "eos_data": [

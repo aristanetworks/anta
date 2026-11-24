@@ -1,10 +1,14 @@
 {% extends "_base/class.html.jinja" %}
 {% set anta_test = namespace(found=false) %}
+{% set anta_advisory_test = namespace(found=false) %}
 {% set anta_test_input_model = namespace(found=false) %}
 {% for base in class.bases %}
 {%   set basestr = base | string %}
 {%   if "AntaTest" == basestr %}
 {%     set anta_test.found = True %}
+{%   endif %}
+{%   if "_AntaAdvisoryTest" == basestr %}
+{%     set anta_advisory_test.found = True %}
 {%   endif %}
 {% endfor %}
 {# TODO make this nicer #}
@@ -17,7 +21,7 @@
   {% set heading_level = heading_level + 1 %}
   {% include "anta_test.html.jinja" with context %}
   {# render source after children - TODO make add flag to respect disabling it.. though do we want to disable?#}
-  <details class="quote">
+  <details class="quote mkdocstrings-source">
   <summary>Source code in <code>
     {%- if class.relative_filepath.is_absolute() -%}
       {{ class.relative_package_filepath }}
@@ -32,7 +36,7 @@
   {% set heading_level = heading_level + 1 %}
   {% include "anta_test_input_model.html.jinja" with context %}
   {# render source after children - TODO make add flag to respect disabling it.. though do we want to disable?#}
-  <details class="quote">
+  <details class="quote mkdocstrings-source">
   <summary>Source code in <code>
     {%- if class.relative_filepath.is_absolute() -%}
       {{ class.relative_package_filepath }}
@@ -54,6 +58,13 @@
 {%   endif %}
 {% endblock source %}
 
+{% block docstring %}
+{{ super() }}
+{% if anta_advisory_test.found %}
+{% include "anta_advisory_test.html.jinja" with context %}
+{% endif %}
+{% endblock docstring %}
+
 {# overwrite block base to render some stuff on deprecation for anta_test #}
 {% block bases %}
 {{ super() }}
@@ -63,7 +74,7 @@
 <img alt="Atomic support badge" src="https://img.shields.io/badge/Atomic%20result%20support-brightgreen?style=flat&logoSize=auto">
 {% endif %}
 {% for dec in class.decorators %}
-{% if dec.value.name is defined and dec.value.name == "preview_test_class" %}
+{% if (dec.value.name is defined and dec.value.name == "preview_test_class") or (dec.value.function is defined and dec.value.function.name == "preview_test_class") %}
 <img alt="Preview badge" src="https://img.shields.io/badge/PREVIEW-blue?style=flat&logoSize=auto">
 <div class="admonition warning">
 <p class="admonition-title">Preview</p>

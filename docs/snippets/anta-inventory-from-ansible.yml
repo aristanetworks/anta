@@ -1,0 +1,8 @@
+anta_inventory:
+  hosts:
+  - host: 192.0.2.11
+    name: srv-pod01
+  - host: 192.0.2.12
+    name: srv-pod02
+  - host: 192.0.2.13
+    name: srv-pod03

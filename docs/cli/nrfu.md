@@ -23,6 +23,8 @@ ANTA provides a set of commands for performing NRFU tests on devices. These comm
 - [CSV report](#performing-nrfu-and-saving-results-in-a-csv-file)
 - [Markdown report](#performing-nrfu-and-saving-results-in-a-markdown-file)
 
+See [ANTA Test Reports](../reports/anta.md) for help choosing a format and for the corresponding Python reporter APIs.
+
 ## NRFU Command overview
 
 ```bash
@@ -61,10 +63,10 @@ The `text` subcommand provides a straightforward text report for each test execu
 ### Example
 
 ```bash
-anta nrfu --device DC1-LEAF1A text
+anta nrfu --device dc1-leaf1a text
 ```
 
-![anta nrfu text results](../imgs/anta_nrfu_device_dc1leaf1a_text.svg){ loading=lazy width="1600" }
+![anta nrfu text results](../imgs/anta_nrfu_device_dc1leaf1a_text.svg){ class="img_center" loading=lazy width="1600" }
 
 ## Performing NRFU with table rendering
 
@@ -81,10 +83,10 @@ The `--group-by` option shows a summarized view of the test results per host or 
 ### Examples
 
 ```bash
-anta nrfu --tags LEAF table
+anta nrfu --tags leaf table
 ```
 
-![anta nrfu table results](../imgs/anta_nrfu_tags_LEAF_table.svg){ loading=lazy width="1600" }
+![anta nrfu table results](../imgs/anta_nrfu_tags_leaf_table.svg){ class="img_center" loading=lazy width="1600" }
 
 For larger setups, you can also group the results by host or test to get a summarized view:
 
@@ -92,13 +94,13 @@ For larger setups, you can also group the results by host or test to get a summa
 anta nrfu table --group-by device
 ```
 
-![$1anta nrfu table group_by_host_output](../imgs/anta_nrfu_table_groupby_device.svg){ loading=lazy width="1600" }
+![anta nrfu table grouped by device](../imgs/anta_nrfu_table_groupby_device.svg){ class="img_center" loading=lazy width="1600" }
 
 ```bash
 anta nrfu table --group-by test
 ```
 
-![$1anta nrfu table group_by_test_output](../imgs/anta_nrfu_table_groupby_test.svg){ loading=lazy width="1600" }
+![anta nrfu table grouped by test](../imgs/anta_nrfu_table_groupby_test.svg){ class="img_center" loading=lazy width="1600" }
 
 To get more specific information, it is possible to filter on a single device or a single test:
 
@@ -106,13 +108,13 @@ To get more specific information, it is possible to filter on a single device or
 anta nrfu --device dc1-spine1 table
 ```
 
-![$1anta nrfu table filter_host_output](../imgs/anta_nrfu_device_dc1spine1_table.svg){ loading=lazy width="1600" }
+![anta nrfu table filtered by device](../imgs/anta_nrfu_device_dc1spine1_table.svg){ class="img_center" loading=lazy width="1600" }
 
 ```bash
 anta nrfu --test VerifyZeroTouch table
 ```
 
-![$1anta nrfu table filter_test_output](../imgs/anta_nrfu_test_VerifyZeroTouch_table.svg){ loading=lazy width="1600" }
+![anta nrfu table filtered by test](../imgs/anta_nrfu_test_VerifyZeroTouch_table.svg){ class="img_center" loading=lazy width="1600" }
 
 ## Performing NRFU with JSON rendering
 
@@ -129,10 +131,10 @@ The `--output` option allows you to save the JSON report as a file. If specified
 ### Example
 
 ```bash
-anta nrfu --tags LEAF json
+anta nrfu --tags leaf json
 ```
 
-![$1anta nrfu json results](../imgs/anta_nrfu_tags_LEAF_json.svg){ loading=lazy width="1600" }
+![anta nrfu json results](../imgs/anta_nrfu_tags_leaf_json.svg){ class="img_center" loading=lazy width="1600" }
 
 ## Performing NRFU and saving results in a CSV file
 
@@ -146,7 +148,11 @@ The `csv` command in NRFU testing is useful for generating a CSV file with all t
 
 ### Example
 
-![anta nrfu csv results](../imgs/anta_nrfu_csv.png){ loading=lazy width="1600" }
+```bash
+anta nrfu --tags leaf csv --csv-output nrfu.csv
+```
+
+![anta nrfu csv results](../imgs/anta_nrfu_tags_leaf_csv_csvoutput_nrfucsv.svg){ class="img_center" loading=lazy width="1600" }
 
 ## Performing NRFU and saving results in a Markdown file
 
@@ -160,7 +166,11 @@ The `md-report` command in NRFU testing generates a comprehensive Markdown repor
 
 ### Example
 
-![anta nrfu md-report results](../imgs/anta-nrfu-md-report-output.png){ loading=lazy width="1600" }
+```bash
+anta nrfu --tags leaf md-report --md-output nrfu.md
+```
+
+![anta nrfu md-report results](../imgs/anta_nrfu_tags_leaf_mdreport_mdoutput_nrfumd.svg){ class="img_center" loading=lazy width="1600" }
 
 ## Performing NRFU with custom reports
 
@@ -179,39 +189,40 @@ The `--output` option allows you to choose the path where the final report will 
 ### Example
 
 ```bash
-anta nrfu --tags LEAF tpl-report --template ./custom_template.j2
+anta nrfu --tags leaf tpl-report --template ./custom_template.j2
 ```
 
-![$1anta nrfu tpl_results](../imgs/anta-nrfu-tpl-report-output.png){ loading=lazy width="1600" }
+![anta nrfu custom report results](../imgs/anta_nrfu_tags_leaf_tplreport_template__custom_templatej2.svg){ class="img_center" loading=lazy width="1600" }
 
 The template `./custom_template.j2` is a simple Jinja2 template:
 
 ```j2
 {% for d in data %}
-* {{ d.test }} is [green]{{ d.result | upper}}[/green] for {{ d.name }}
+* {{ d.test }} is [{{ "green" if d.result == "success" else "red" }}]{{ d.result | upper }}[/] for {{ d.name }}
 {% endfor %}
 ```
 
-The Jinja2 template has access to all `TestResult` elements and their values, as described in this [documentation](../api/result.md#anta.result_manager.models.TestResult).
+The Jinja2 template has access to all `TestResult` elements and their values, as described in this [documentation][anta.result_manager.models.TestResult].
 
 You can also save the report result to a file using the `--output` option:
 
 ```bash
-anta nrfu --tags LEAF tpl-report --template ./custom_template.j2 --output nrfu-tpl-report.txt
+anta nrfu --tags leaf tpl-report --template ./custom_template.j2 --output nrfu-tpl-report.txt
 ```
 
-The resulting output might look like this:
+An excerpt of the resulting file might look like this:
 
 ```bash
 cat nrfu-tpl-report.txt
-* VerifyMlagStatus is [green]SUCCESS[/green] for DC1-LEAF1A
-* VerifyMlagInterfaces is [green]SUCCESS[/green] for DC1-LEAF1A
-* VerifyMlagConfigSanity is [green]SUCCESS[/green] for DC1-LEAF1A
-* VerifyMlagReloadDelay is [green]SUCCESS[/green] for DC1-LEAF1A
+* VerifyMlagInterfaces is [red]FAILURE[/] for dc1-leaf1a
+* VerifyEOSVersion is [green]SUCCESS[/] for dc1-leaf1a
+* VerifyMlagConfigSanity is [green]SUCCESS[/] for dc1-leaf1a
+* VerifyUptime is [green]SUCCESS[/] for dc1-leaf1a
+... 44 results omitted ...
 ```
 
 ## Dry-run mode
 
 It is possible to run `anta nrfu --dry-run` to execute ANTA up to the point where it should communicate with the network to execute the tests. When using `--dry-run`, all inventory devices are assumed to be online. This can be useful to check how many tests would be run using the catalog and inventory.
 
-![$1anta nrfu dry_run](../imgs/anta_nrfu___dry_run.svg){ loading=lazy width="1600" }
+![anta nrfu dry-run results](../imgs/anta_nrfu_dryrun.svg){ class="img_center" loading=lazy width="1600" }

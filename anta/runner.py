@@ -209,7 +209,7 @@ def get_coroutines(selected_tests: defaultdict[AntaDevice, set[AntaTestDefinitio
                 if manager is not None:
                     manager.add(test_instance.result)
                 coros.append(test_instance.test())
-            except Exception as e:  # noqa: PERF203, BLE001
+            except Exception as e:  # noqa: BLE001
                 # An AntaTest instance is potentially user-defined code.
                 # We need to catch everything and exit gracefully with an error message.
                 message = "\n".join(
