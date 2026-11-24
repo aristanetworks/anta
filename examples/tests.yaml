@@ -1564,7 +1564,8 @@ anta.tests.system:
   - VerifyMaintenance:
       # Verifies that the device is not currently under or entering maintenance.
   - VerifyMemoryUtilization:
-      # Verifies whether the memory utilization is below 75%.
+      # Verifies that memory utilization is below the configured threshold.
+      threshold: 75.0
   - VerifyNTP:
       # Verifies if NTP is synchronised.
   - VerifyNTPAssociations:
