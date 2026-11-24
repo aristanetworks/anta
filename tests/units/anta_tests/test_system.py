@@ -340,6 +340,39 @@ DATA: AntaUnitTestData = {
         ],
         "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Device has reported a high memory usage - Expected: < 75% Actual: 95.56%"]},
     },
+    (VerifyMemoryUtilization, "success-custom-threshold"): {
+        "eos_data": [
+            {"uptime": 1994.67, "modelName": "vEOS-lab", "internalVersion": "4.27.3F-26379303.4273F", "memTotal": 2004568, "memFree": 89004, "version": "4.27.3F"}
+        ],
+        "inputs": {"threshold": 96.0},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyMemoryUtilization, "failure-custom-threshold"): {
+        "eos_data": [
+            {"uptime": 1994.67, "modelName": "vEOS-lab", "internalVersion": "4.27.3F-26379303.4273F", "memTotal": 2004568, "memFree": 879004, "version": "4.27.3F"}
+        ],
+        "inputs": {"threshold": 55.0},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Device has reported a high memory usage - Expected: < 55% Actual: 56.15%"]},
+    },
+    (VerifyMemoryUtilization, "success-default-threshold-boundary"): {
+        "eos_data": [{"memTotal": 10000, "memFree": 2500}],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyMemoryUtilization, "success-fractional-threshold-boundary"): {
+        "eos_data": [{"memTotal": 10000, "memFree": 2490}],
+        "inputs": {"threshold": 75.1},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyMemoryUtilization, "success-below-fractional-threshold"): {
+        "eos_data": [{"memTotal": 10000, "memFree": 2491}],
+        "inputs": {"threshold": 75.1},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyMemoryUtilization, "failure-above-fractional-threshold"): {
+        "eos_data": [{"memTotal": 10000, "memFree": 2489}],
+        "inputs": {"threshold": 75.1},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Device has reported a high memory usage - Expected: < 75.1% Actual: 75.11%"]},
+    },
     (VerifyFileSystemUtilization, "success"): {
         "eos_data": [
             (
