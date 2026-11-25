@@ -106,6 +106,14 @@
       "groupSlug": "ruff"
     },
     {
+      "description": "Group Pyright updates across Python and pre-commit",
+      "matchManagers": ["pep621", "pre-commit"],
+      "matchPackageNames": ["pyright", "RobertCraigie/pyright-python"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "Pyright",
+      "groupSlug": "pyright"
+    },
+    {
       "description": "Group codespell updates across Python and pre-commit",
       "matchManagers": ["pep621", "pre-commit"],
       "matchPackageNames": ["codespell", "codespell-project/codespell"],

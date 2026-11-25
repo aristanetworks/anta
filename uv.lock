@@ -47,9 +47,13 @@ benchmark = [
     { name = "pytest-codspeed" },
     { name = "pytest-dependency" },
 ]
+coverage = [
+    { name = "coverage" },
+]
 dev = [
     { name = "bumpver" },
     { name = "codespell" },
+    { name = "coverage" },
     { name = "pre-commit" },
     { name = "pyright" },
     { name = "pytest" },
@@ -117,48 +121,50 @@ provides-extras = ["cli"]
 
 [package.metadata.requires-dev]
 benchmark = [
-    { name = "pytest-codspeed", specifier = ">=5.0.4" },
-    { name = "pytest-dependency", specifier = ">=0.6.1" },
+    { name = "pytest-codspeed", specifier = "==5.0.4" },
+    { name = "pytest-dependency", specifier = "==0.6.1" },
 ]
+coverage = [{ name = "coverage", extras = ["toml"], specifier = "==7.17.3" }]
 dev = [
-    { name = "bumpver", specifier = ">=2026.1132" },
-    { name = "codespell", specifier = ">=2.4.3,<2.5.0" },
-    { name = "pre-commit", specifier = ">=4.7.0" },
-    { name = "pyright" },
+    { name = "bumpver", specifier = "==2026.1132" },
+    { name = "codespell", specifier = "==2.4.3" },
+    { name = "coverage", extras = ["toml"], specifier = "==7.17.3" },
+    { name = "pre-commit", specifier = "==4.7.0" },
+    { name = "pyright", specifier = "==1.1.414" },
     { name = "pytest", specifier = ">=9.2.0" },
     { name = "pytest-asyncio", specifier = ">=1.5.0" },
     { name = "pytest-cov", specifier = ">=7.1.0" },
     { name = "pytest-httpx", specifier = ">=0.36.2" },
     { name = "respx", specifier = ">=0.23.1" },
-    { name = "ruff", specifier = ">=0.17.5,<0.17.6" },
-    { name = "tox", specifier = ">=4.67.15,<5.0.0" },
-    { name = "types-pyopenssl" },
-    { name = "types-pyyaml" },
-    { name = "types-requests" },
+    { name = "ruff", specifier = "==0.17.5" },
+    { name = "tox", specifier = "==4.67.15" },
+    { name = "types-pyopenssl", specifier = "==24.1.0.20240722" },
+    { name = "types-pyyaml", specifier = "==6.0.12.20261113" },
+    { name = "types-requests", specifier = "==2.33.0.20261030" },
     { name = "typing-extensions" },
-    { name = "yamllint", specifier = ">=1.38.0" },
+    { name = "yamllint", specifier = "==1.38.0" },
 ]
 doc = [
-    { name = "griffe", specifier = ">=2.4.1,<2.5" },
-    { name = "griffe-warnings-deprecated", specifier = "~=1.1.2" },
+    { name = "griffe", specifier = "==2.4.1" },
+    { name = "griffe-warnings-deprecated", specifier = "==1.1.2" },
     { name = "mike", git = "https://github.com/squidfunk/mike.git?rev=2d4ad799442f4592db8ad53b179bfb33db8c69ac" },
-    { name = "mkdocs", specifier = "~=1.6" },
-    { name = "mkdocs-autorefs", specifier = "~=1.4" },
-    { name = "mkdocstrings", extras = ["python"], specifier = "~=1.0.8" },
-    { name = "mkdocstrings-python", specifier = "~=2.0.11" },
-    { name = "packaging", specifier = ">=26.3" },
+    { name = "mkdocs", specifier = "==1.6.1" },
+    { name = "mkdocs-autorefs", specifier = "==1.4.5" },
+    { name = "mkdocstrings", extras = ["python"], specifier = "==1.0.8" },
+    { name = "mkdocstrings-python", specifier = "==2.0.11" },
+    { name = "packaging", specifier = "==26.3" },
     { name = "zensical", specifier = "==0.1.2" },
 ]
 lint = [
-    { name = "codespell", specifier = ">=2.4.3,<2.5.0" },
-    { name = "pre-commit", specifier = ">=4.7.0" },
-    { name = "pyright" },
-    { name = "ruff", specifier = ">=0.17.5,<0.17.6" },
-    { name = "types-pyopenssl" },
-    { name = "types-pyyaml" },
-    { name = "types-requests" },
+    { name = "codespell", specifier = "==2.4.3" },
+    { name = "pre-commit", specifier = "==4.7.0" },
+    { name = "pyright", specifier = "==1.1.414" },
+    { name = "ruff", specifier = "==0.17.5" },
+    { name = "types-pyopenssl", specifier = "==24.1.0.20240722" },
+    { name = "types-pyyaml", specifier = "==6.0.12.20261113" },
+    { name = "types-requests", specifier = "==2.33.0.20261030" },
     { name = "typing-extensions" },
-    { name = "yamllint", specifier = ">=1.38.0" },
+    { name = "yamllint", specifier = "==1.38.0" },
 ]
 test = [
     { name = "pytest", specifier = ">=9.2.0" },
@@ -167,7 +173,7 @@ test = [
     { name = "pytest-httpx", specifier = ">=0.36.2" },
     { name = "respx", specifier = ">=0.23.1" },
 ]
-tox = [{ name = "tox", specifier = ">=4.67.15,<5.0.0" }]
+tox = [{ name = "tox", specifier = "==4.67.15" }]
 
 [[package]]
 name = "anyio"

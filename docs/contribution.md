@@ -73,6 +73,10 @@ COLUMNS=165 uv run --no-sync python -m pytest tests/units --no-cov
 
 CI checks lock freshness and runs this environment in addition to the existing tox checks. Tox continues to resolve dependencies independently across the supported Python versions. Pre-commit continues to manage its own isolated hook environments.
 
+Lint/type tools and stubs, documentation generators, benchmarks, and release/reporting tools use exact pins so version changes can be reviewed in Renovate PRs. Runtime and test dependencies keep ranges: the locked CI job provides a fixed baseline, while tox tests independently resolved versions. Pins fix direct versions; the lockfile also fixes transitive dependencies.
+
+Keep tool versions in `pyproject.toml`. Tox's `requires` stays a bootstrap minimum so it accepts the managed tox version; clean/report share the `coverage` group. Update exact pins before refreshing the lock; `uv lock --upgrade` cannot advance them.
+
 When changing project metadata or dependency declarations in `pyproject.toml`, regenerate and commit the lock together with the manifest:
 
 ```bash
@@ -99,6 +103,8 @@ Record the advisory and reason in the PR, update the affected package, and remov
 A lock update selects versions for environments that consume it. Ordinary pip installations use ANTA's published dependency ranges. When addressing a relevant vulnerability, also assess whether those ranges must exclude affected versions; updating the lock alone does not change downstream requirements or existing installations.
 
 ### Code linting
+
+Use `tox -e lint,type` for isolated linting and typing environments, or run the pre-commit hooks.
 
 Ruff checks lint rules and formatting:
 
