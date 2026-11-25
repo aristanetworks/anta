@@ -9,9 +9,9 @@ from ipaddress import IPv4Interface
 from typing import Any, Literal
 from warnings import warn
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from anta.custom_types import Interface, InterfaceRange, PortChannelInterface
+from anta.custom_types import Interface, InterfaceRange, PortChannelInterface, expand_interface_range
 
 
 class InterfaceState(BaseModel):
@@ -57,6 +57,15 @@ class InterfaceState(BaseModel):
     """The number of lanes in the interface. Valid range is 1 to 8. Can be provided in the `VerifyInterfacesSpeed` test."""
     media_type: str | None = None
     """Expected transceiver media type (e.g., '100GBASE-SR4'). Required for the `VerifyInterfacesTransceiverType` test."""
+
+    @field_validator("name", mode="before")
+    @classmethod
+    def validate_name_range(cls, value: object) -> object:
+        """Expand range-like strings before scalar autocomplete can discard invalid syntax."""
+        if isinstance(value, str) and ("," in value or "-" in value):
+            expanded = expand_interface_range(value)
+            return expanded if len(expanded) > 1 else expanded[0]
+        return value
 
     def expand(self) -> list[InterfaceState]:
         """Return one InterfaceState per interface name, expanding range names into individual entries.

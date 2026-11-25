@@ -338,8 +338,10 @@ def expand_normalized_pattern(normalized: str, max_range_size: int = 1000) -> li
             msg = f"Invalid interface pattern: {normalized}"
             raise ValueError(msg)
 
-        # Inherit slots from previous segment if this segment omits them (e.g., '5' in 'Ethernet1/1-3,5')
-        slots = match.group("slots") or prev_slots
+        # Only prefix-less segments inherit omitted slots (e.g., '5' in 'Ethernet1/1-3,5').
+        slots = match.group("slots")
+        if not match.group("prefix"):
+            slots = slots or prev_slots
         prev_slots = slots
 
         port, sub_start = match.group("port"), match.group("sub_start")
@@ -635,4 +637,4 @@ def _expand_for_range(v: object) -> object:
     return v
 
 
-InterfaceRange = Annotated[list[Interface], BeforeValidator(_expand_for_range)]
+InterfaceRange = Annotated[list[Interface], Field(min_length=1), BeforeValidator(_expand_for_range)]
