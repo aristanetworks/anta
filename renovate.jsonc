@@ -59,10 +59,10 @@
       "enabled": false
     },
     {
-      "description": "Bump range shape for dependency groups.",
+      "description": "Preserve dependency-group minimums and widen supported ranges when needed. Exact pins continue to update.",
       "matchManagers": ["pep621"],
       "matchDepTypes": ["dependency-groups"],
-      "rangeStrategy": "bump"
+      "rangeStrategy": "widen"
     },
     // -------------------------------------------------------------------------
     // CI Tools (GitHub Actions & pre-commit)
