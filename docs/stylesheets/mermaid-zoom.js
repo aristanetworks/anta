@@ -3,8 +3,6 @@
   window.__antaMermaidZoom = state
 
   function getMermaidSource(sourceElement) {
-    // Inert text/plain script blocks preserve Mermaid syntax in HTML while
-    // keeping this duplicate zoom source out of rendered Markdown exports.
     if (sourceElement instanceof HTMLTextAreaElement) {
       return sourceElement.value.trim()
     }

@@ -186,6 +186,7 @@ glob = ["scripts/**"]
 # HTML canonical URL points to stable.
 [project.plugins.llmstxt]
 base_url = "."
+preprocess = "docs/scripts/preprocess_llms.py"
 markdown_description = """
 ANTA is a Python framework and CLI for automating Arista EOS network validation.
 These pages cover installation, inventories and test catalogs, CLI workflows,
