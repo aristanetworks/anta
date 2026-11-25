@@ -68,10 +68,10 @@ dev = [
   "bumpver==2026.1132",
 ]
 tox = [
-  "tox==4.67.13",
+  "tox==4.67.15",
 ]
 coverage = [
-  "coverage[toml]==7.17.2",
+  "coverage[toml]==7.17.3",
 ]
 test = [
   "pytest-asyncio>=1.5.0",
@@ -89,10 +89,10 @@ lint = [
   "pre-commit==4.7.0",
   "pyright==1.1.414",
   "ruff==0.17.5",
-  "types-PyYAML==6.0.12.20261111",
+  "types-PyYAML==6.0.12.20261113",
   "types-pyOpenSSL==24.1.0.20240722",
   "types-requests==2.33.0.20261030",
-  "typing-extensions>=4.12",
+  "typing-extensions",
   "yamllint==1.38.0",
 ]
 
@@ -101,7 +101,7 @@ doc = [
   "griffe-warnings-deprecated==1.1.2",
   "mike @ git+https://github.com/squidfunk/mike.git@2d4ad799442f4592db8ad53b179bfb33db8c69ac",
   "packaging==26.3",
-  "zensical==0.1.1",
+  "zensical==0.1.2",
   "mkdocs==1.6.1",
   "mkdocs-autorefs==1.4.5",
   "mkdocstrings[python]==1.0.8",
@@ -262,7 +262,6 @@ exclude = [
     "node_modules",
     "site-packages",
     "venv",
-    ".github",
 ]
 
 line-length = 165

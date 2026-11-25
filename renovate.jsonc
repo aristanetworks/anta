@@ -59,10 +59,10 @@
       "enabled": false
     },
     {
-      "description": "Bump range shape for dependency groups.",
+      "description": "Preserve dependency-group minimums and widen supported ranges when needed. Exact pins continue to update.",
       "matchManagers": ["pep621"],
       "matchDepTypes": ["dependency-groups"],
-      "rangeStrategy": "bump"
+      "rangeStrategy": "widen"
     },
     // -------------------------------------------------------------------------
     // CI Tools (GitHub Actions & pre-commit)
@@ -70,10 +70,9 @@
     // Overrides: labels -> ["CI"]
     // -------------------------------------------------------------------------
     {
-      "description": "Pin GitHub Actions digests.",
+      "description": "Label GitHub Actions updates.",
       "matchManagers": ["github-actions"],
-      "labels": ["CI"],
-      "pinDigests": true
+      "labels": ["CI"]
     },
     {
       "description": "Handling hook rev autoupdates.",
@@ -105,6 +104,14 @@
       "matchUpdateTypes": ["minor", "patch"],
       "groupName": "Ruff",
       "groupSlug": "ruff"
+    },
+    {
+      "description": "Group Pyright updates across Python and pre-commit",
+      "matchManagers": ["pep621", "pre-commit"],
+      "matchPackageNames": ["pyright", "RobertCraigie/pyright-python"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "Pyright",
+      "groupSlug": "pyright"
     },
     {
       "description": "Group codespell updates across Python and pre-commit",
