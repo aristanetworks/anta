@@ -67,7 +67,7 @@ dev = [
   "bumpver>=2026.1132",
 ]
 tox = [
-  "tox>=4.67.13,<5.0.0",
+  "tox>=4.67.15,<5.0.0",
 ]
 test = [
   "pytest-asyncio>=1.5.0",
@@ -97,7 +97,7 @@ doc = [
   "griffe-warnings-deprecated~=1.1.2",
   "mike @ git+https://github.com/squidfunk/mike.git@2d4ad799442f4592db8ad53b179bfb33db8c69ac",
   "packaging>=26.3",
-  "zensical==0.1.1",
+  "zensical==0.1.2",
   "mkdocs~=1.6",
   "mkdocs-autorefs~=1.4",
   "mkdocstrings[python]~=1.0.8",
