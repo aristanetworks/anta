@@ -30,6 +30,7 @@ ANTA** identifies the first release aligned with that revision.
 
 | Security advisory | Last updated | Introduced in ANTA | Last updated in ANTA | Comment |
 | --- | --- | --- | --- | --- |
+| Security Advisory 0229 | 2026-11-24 | v1.11 | | Recognized boot control produces Inconclusive; no Bash access required |
 | Security Advisory 0227 | | N/A | | Wi-Fi Access Points; not covered by ANTA |
 | Security Advisory 0226 | | N/A | | CloudVision Appliance, DMF and AGNI server hardware; not covered by ANTA |
 | Security Advisory 0225 | 2026-11-10 | v1.11 | | |
