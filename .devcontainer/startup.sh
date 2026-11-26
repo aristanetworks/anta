@@ -13,4 +13,4 @@ echo "Installing ANTA CLI package from git"
 pip install -e ".[cli]"
 
 echo "Installing development tools"
-pip install -e ".[dev]"
+pip install -e . --group dev

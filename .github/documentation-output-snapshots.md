@@ -113,6 +113,6 @@ Run the focused tests and documentation checks:
 
 ```bash
 uv run --no-default-groups --extra cli --group test pytest tests/docs/test_generate_snippet.py tests/docs/test_doc_output_examples.py tests/docs/test_asciinema.py
-pre-commit run --files <changed-file> [<changed-file> ...]
+prek run --files <changed-file> [<changed-file> ...]
 uv run --group doc --with-editable tools/zensical_extensions zensical build --clean --strict
 ```
