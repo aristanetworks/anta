@@ -359,6 +359,8 @@ DATA: AntaUnitTestData = {
 
 ANTA uses [prek](https://prek.j178.dev/) to run the hooks defined in `.pre-commit-config.yaml`. The YAML configuration is retained so Renovate can maintain hook revisions and dependencies.
 
+The whitespace, end-of-file, file-size, and merge-conflict checks use prek's builtin hooks. This repository's hook configuration therefore requires prek.
+
 The `dev` dependency group includes prek. To install only the hook runner and enable it for this checkout, run from the repository root:
 
 ```bash
