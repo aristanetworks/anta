@@ -75,6 +75,13 @@
       "labels": ["CI"]
     },
     {
+      "description": "Manage Python interpreter upgrades manually.",
+      "matchManagers": ["github-actions"],
+      "matchDepTypes": ["uses-with"],
+      "matchPackageNames": ["actions/python-versions"],
+      "enabled": false
+    },
+    {
       "description": "Handling hook rev autoupdates.",
       "matchManagers": ["pre-commit"],
       "matchDepTypes": ["repository"],

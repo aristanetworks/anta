@@ -11,6 +11,10 @@ The [CodSpeed workflow](../../.github/workflows/codspeed.yml) runs two separate 
 - Simulation on Python 3.12 covers the entire benchmark suite.
 - Memory on CPython 3.14.9 covers dry and full ANTA runs with 1, 2, and 5 devices (`test_anta.py`). Each invocation uses a fresh inventory, catalog, and result manager.
 
+Simulation retains its Python 3.12 selection; memory pins the qualified patch version. Renovate does not update either job's interpreter selection. Check interpreter changes separately, comparing the same workload and environment, and establish a new baseline before interpreting subsequent ANTA changes. Patch updates can also affect the signal.
+
+Upgrading simulation to Python 3.14 is currently deferred because the Markdown reporter benchmark (`test_markdown`) regresses on Python 3.14 in native Linux measurements, and the loss of model-attribute specialization matches [CPython issue #155962](https://github.com/python/cpython/issues/155962). Confirm the upstream fix against this workload before reconsidering the upgrade.
+
 ## Why memory uses CPython 3.14
 
 On older CPython versions, the native asyncio task registry uses a shared weak set. Removing completed tasks leaves the underlying hash table allocated, with deleted entries. Later task creation can trigger a table resize or compaction depending on the registry's history. A measured invocation can therefore include a large interpreter allocation even when ANTA's workload has not changed. A fixed hash seed does not eliminate this effect.
