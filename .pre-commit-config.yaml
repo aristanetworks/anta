@@ -79,7 +79,7 @@ repos:
           - types-PyYAML==6.0.12.20261113
           - types-requests==2.33.0.20261030
           - types-pyOpenSSL==24.1.0.20240722
-          - zensical==0.1.2
+          - zensical==0.1.3
         files: ^(anta|tests|asynceapi|tools/zensical_extensions)/
 
   - repo: https://github.com/DavidAnson/markdownlint-cli2
