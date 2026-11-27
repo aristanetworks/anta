@@ -122,7 +122,7 @@ DATA: AntaUnitTestData = {
             {
                 "imageFormatVersion": "1.0",
                 "uptime": 1109144.35,
-                "modelName": "DCS-7050SX3-48YC12-SSD-R",
+                "modelName": "DCS-7050CX3-32S-SSD-R",
                 "details": {"deviations": [], "components": [{"name": "Aboot", "version": "Aboot-norcal6-6.1.1-3255441"}]},
             }
         ],

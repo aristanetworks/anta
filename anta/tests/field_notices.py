@@ -83,17 +83,18 @@ class VerifyFieldNotice44Resolution(AntaTest):
             "DCS-7280SR-48C6",
             "DCS-7280SRA-48C6",
             "DCS-7280SRAM-48C6",
-            "DCS-7280SR2K-48C6-M",
+            "DCS-7280SR2K-48C6",
             "DCS-7280SR2-48YC6",
             "DCS-7280SR2A-48YC6",
             "DCS-7280SRM-40CX2",
             "DCS-7280QR-C36",
             "DCS-7280QRA-C36S",
         ]
-        # Remove the airflow suffix first: DCS-7280SR2K-48C6-M is a base model whose name ends with -M.
-        model = command_output["modelName"].removesuffix("-F").removesuffix("-R")
-        if model not in devices:
-            model = model.removesuffix("-SSD").removesuffix("-M")
+        variants = ["-SSD-F", "-SSD-R", "-M-F", "-M-R", "-F", "-R"]
+
+        model = command_output["modelName"]
+        for variant in variants:
+            model = model.replace(variant, "")
         if model not in devices:
             self.result.is_skipped("Device is not impacted by FN044")
             return
