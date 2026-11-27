@@ -102,29 +102,29 @@ config:
     style: "asterisk"
 
   # Python object references are resolved by mkdocs-autorefs during the strict
-  # Zensical build. MD052 only supports exact labels; its undefined-reference parser lowercases
-  # these labels and removes underscores.
+  # Zensical build. MD052 only supports exact labels; its undefined-reference parser
+  # lowercases labels, so entries here must be lowercase.
   # Keep ordinary undefined reference links checked; register new object IDs here.
   MD052:
     ignored_labels:
       - x  # Preserve the default task-list exemption.
       - anta.catalog.antacatalog
-      - anta.constants.knowneoserrors
-      - anta.customtypes
+      - anta.constants.known_eos_errors
+      - anta.custom_types
       - anta.device.antadevice
       - anta.device.antadevice.collect
       - anta.device.antadevice.copy
       - anta.device.antadevice.disconnect
       - anta.device.antadevice.refresh
       - anta.device.asynceosdevice
-      - anta.device.asynceosdevice.collect
+      - anta.device.asynceosdevice._collect
       - anta.device.asynceosdevice.copy
       - anta.device.asynceosdevice.refresh
       - anta.inventory.antainventory
-      - anta.inventory.antainventory.adddevice
-      - anta.inventory.antainventory.connectinventory
-      - anta.inventory.antainventory.disconnectinventory
-      - anta.inventory.antainventory.getinventory
+      - anta.inventory.antainventory.add_device
+      - anta.inventory.antainventory.connect_inventory
+      - anta.inventory.antainventory.disconnect_inventory
+      - anta.inventory.antainventory.get_inventory
       - anta.inventory.antainventory.parse
       - anta.models.antacommand
       - anta.models.antatemplate
@@ -134,11 +134,11 @@ config:
       - anta.models.antatest.input.resultoverwrite
       - anta.models.antatest.render
       - anta.models.antatest.test
-      - anta.reporter.csvreporter.reportcsv
-      - anta.reporter.jinjareporter.reportjinja
-      - anta.reporter.mdreporter.mdreportgenerator
-      - anta.resultmanager.models.antateststatus
-      - anta.resultmanager.models.testresult
+      - anta.reporter.csv_reporter.reportcsv
+      - anta.reporter.jinja_reporter.reportjinja
+      - anta.reporter.md_reporter.mdreportgenerator
+      - anta.result_manager.models.antateststatus
+      - anta.result_manager.models.testresult
       - anta.tests.hardware.verifytemperature
 
   # MD059/descriptive-link-text
