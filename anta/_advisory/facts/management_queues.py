@@ -88,10 +88,11 @@ def _boot_action(record: object) -> bool | FactProblemKind:
     if not isinstance(action, str):
         return FactProblemKind.MISSING if action is None else FactProblemKind.MALFORMED
     try:
-        matches = shlex.split(action) == shlex.split(SINGLE_QUEUE_BOOT_ACTION)
+        # Validate quoting only; token comparison loses shell expansion semantics.
+        shlex.split(action)
     except ValueError:
         return FactProblemKind.MALFORMED
-    return _boot_properties(record) if matches else False
+    return _boot_properties(record) if action == SINGLE_QUEUE_BOOT_ACTION else False
 
 
 @dataclass(frozen=True, slots=True)

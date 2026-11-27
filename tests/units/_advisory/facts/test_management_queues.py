@@ -13,7 +13,7 @@ import pytest
 from anta._advisory.facts.management_queues import ManagementSingleQueueBootFact
 from anta._advisory.facts.models import AvailableFact, Fact, FactProblemKind, FeatureState, UnavailableFact
 from tests.units.anta_tests.advisories import OfflineAntaDevice
-from tests.units.anta_tests.advisories.sa229_data import BOOT_ABSENT, BOOT_ENABLED
+from tests.units.anta_tests.advisories.sa229_data import BOOT_ABSENT, BOOT_ENABLED, BOOT_REQUOTED
 
 
 def boot(output: object, errors: list[str] | None = None) -> Fact[ManagementSingleQueueBootFact]:
@@ -133,5 +133,12 @@ def test_extra_command_does_not_match_canonical_action() -> None:
     record = enabled_record()
     record["action"] += "; echo another-command"
     fact = boot({"eventHandlers": {"modified": record}})
+    assert isinstance(fact, AvailableFact)
+    assert fact.value.state is FeatureState.DISABLED
+
+
+def test_changed_shell_quoting_is_not_recognized() -> None:
+    """Changing expansion timing must not identify a different script as canonical."""
+    fact = boot(BOOT_REQUOTED)
     assert isinstance(fact, AvailableFact)
     assert fact.value.state is FeatureState.DISABLED

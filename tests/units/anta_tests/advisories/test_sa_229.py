@@ -35,7 +35,7 @@ from tests.units.anta_tests import (
 )
 from tests.units.anta_tests.advisories import OfflineAntaDevice, build_expected_advisory_result
 from tests.units.anta_tests.advisories.fact_builders import assert_version_statuses, eos_version_fact
-from tests.units.anta_tests.advisories.sa229_data import BOOT_ABSENT, BOOT_ENABLED
+from tests.units.anta_tests.advisories.sa229_data import BOOT_ABSENT, BOOT_ENABLED, BOOT_REQUOTED
 
 if TYPE_CHECKING:
     from anta.device import AntaDevice
@@ -48,6 +48,16 @@ EXPECTED_REMEDIATION = RemediationPlan(ChangeSoftwareVersion(SoftwareTarget.EOS,
 expected = partial(build_expected_advisory_result, "CVE-2026-99288")
 
 _DATA: AntaUnitTestData = {
+    (SA229, "affected-with-requoted-boot-action"): {
+        "version": build_eos_version("4.35.6M"),
+        "platform": build_eos_platform("DCS-7280SR3M-48YC8-F"),
+        "eos_data": [BOOT_REQUOTED],
+        "expected": expected(
+            AntaTestStatus.FAILURE,
+            "The device is affected because platform 'DCS-7280SR3M-48YC8-F' is within the affected platform scope and EOS version '4.35.6M' is affected.",
+            EXPECTED_REMEDIATION,
+        ),
+    },
     (SA229, "affected-without-boot-control"): {
         "version": build_eos_version("4.35.6M"),
         "platform": build_eos_platform("vEOS-lab"),

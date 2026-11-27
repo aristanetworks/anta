@@ -161,7 +161,7 @@ class SA229(OptionalCommandsMixin, _AntaAdvisoryTest):
     enumerates namespaces, or changes device configuration. This deliberately limited observation contract supports ANTA
     accounts without shell access or permission to execute arbitrary Bash commands.
 
-    An enabled on-boot handler is recognized by the advisory's canonical action text, regardless of its name. That text is
+    An enabled on-boot handler is recognized by an exact match to the advisory's canonical action text, regardless of its name. That text is
     compared as data and is never executed. Equivalent arbitrary Bash programs are not interpreted. A complete matching
     handler can be recognized despite unrelated malformed handler records.
 
