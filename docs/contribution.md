@@ -397,7 +397,7 @@ Documentation tooling requires Python 3.11 or newer. ANTA's library Python requi
 Run pip with a compatible Python interpreter to install the documentation requirements from the root of the repo:
 
 ```bash
-pip install -e . --group doc -e tools/zensical_extensions
+pip install -e . --group doc
 ```
 
 ### Testing documentation
@@ -419,6 +419,8 @@ Run the same build command used by CI before opening a documentation PR:
 ```bash
 zensical build --strict
 ```
+
+Page update dates use native Git revision history. Commit new documentation pages before the final strict build; pages with no Git history produce a diagnostic and fail strict validation. CI and deployment checkouts fetch the full history.
 
 Use `zensical build --clean` when you want to remove the previous generated output before building locally:
 
@@ -490,7 +492,7 @@ Use the existing Mermaid conventions in `docs/api/class-diagram.mmd`:
 Build the documentation locally and inspect the rendered diagram after editing it:
 
 ```bash
-uv run --group doc --with-editable tools/zensical_extensions zensical build --clean --strict
+uv run --group doc zensical build --clean --strict
 ```
 
 The rendered diagram has a fullscreen button for readability. Use it to check that labels are visible and that the layout still reads correctly on a screen.
