@@ -14,6 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       code: ${{ steps.filter.outputs.code }}
+      windows: ${{ steps.filter.outputs.windows }}
       benchmarks: ${{ steps.filter.outputs.benchmarks }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -29,6 +30,9 @@ jobs:
               # detect dependency changes
               - 'pyproject.toml'
               - 'uv.lock'
+            windows:
+              - 'tox.toml'
+              - '.github/workflows/code-testing.yml'
             benchmarks:
               - 'tests/benchmark/**'
               - '.github/workflows/codspeed.yml'
@@ -43,7 +47,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Set up uv and Python
-        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
         with:
           version: "0.13.9"
           python-version: "3.11"
@@ -90,10 +94,10 @@ jobs:
           name: pytest-coverage
           path: coverage.xml
   test-python-windows:
-    name: Pytest on 3.12 for windows
+    name: Pytest on Windows
     runs-on: windows-2022
     needs: [file-changes]
-    if: needs.file-changes.outputs.code == 'true'
+    if: needs.file-changes.outputs.code == 'true' || needs.file-changes.outputs.windows == 'true'
     env:
       # Required to prevent asyncssh to fail.
       USERNAME: WindowsUser
@@ -104,11 +108,12 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
-          python-version: 3.12
+          python-version: "3.14"
       - name: Install tox
         run: python -m pip install --group tox
-      - name: Run pytest via tox for 3.12 on Windows
-        run: tox run -e py312 -- --ignore=tests/docs
+      - name: Run pytest via tox on Windows
+        # Use setup-python's interpreter without duplicating its version in the tox environment.
+        run: python -m tox run -e py -- --ignore=tests/docs
   test-documentation:
     name: Build offline documentation for testing
     runs-on: ubuntu-latest
@@ -120,7 +125,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
-          python-version: "3.11"
+          python-version: "3.14"
       - name: Install dependencies
         run: pip install -e ".[cli]" --group doc -e tools/zensical_extensions
       - name: "Build Zensical documentation offline"
