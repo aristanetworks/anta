@@ -13,7 +13,7 @@ The [CodSpeed workflow](../../.github/workflows/codspeed.yml) runs two separate 
 
 Simulation retains its Python 3.12 selection; memory pins the qualified patch version. Renovate does not update either job's interpreter selection. Check interpreter changes separately, comparing the same workload and environment, and establish a new baseline before interpreting subsequent ANTA changes. Patch updates can also affect the signal.
 
-The simulation upgrade to Python 3.14 is deferred to a separate PR. The Markdown regression reproduces in native Linux measurements, and the loss of model-attribute specialization matches [CPython issue #155962](https://github.com/python/cpython/issues/155962). Confirm the upstream fix against this workload before reconsidering the upgrade.
+Upgrading simulation to Python 3.14 is currently deferred because the Markdown reporter benchmark (`test_markdown`) regresses on Python 3.14 in native Linux measurements, and the loss of model-attribute specialization matches [CPython issue #155962](https://github.com/python/cpython/issues/155962). Confirm the upstream fix against this workload before reconsidering the upgrade.
 
 ## Why memory uses CPython 3.14
 

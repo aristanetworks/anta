@@ -75,18 +75,10 @@
       "labels": ["CI"]
     },
     {
-      "description": "Keep general CI Python runtimes on Python 3.14 or older until explicitly upgraded.",
+      "description": "Manage Python interpreter upgrades manually.",
       "matchManagers": ["github-actions"],
       "matchDepTypes": ["uses-with"],
       "matchPackageNames": ["actions/python-versions"],
-      "allowedVersions": "<3.15"
-    },
-    {
-      "description": "Upgrade benchmark Python runtimes only after checking repeatability and baseline comparability.",
-      "matchManagers": ["github-actions"],
-      "matchDepTypes": ["uses-with"],
-      "matchPackageNames": ["actions/python-versions"],
-      "matchFileNames": [".github/workflows/codspeed.yml"],
       "enabled": false
     },
     {
