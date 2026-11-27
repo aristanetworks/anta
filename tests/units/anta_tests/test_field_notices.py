@@ -84,6 +84,50 @@ DATA: AntaUnitTestData = {
         ],
         "expected": {"result": AntaTestStatus.SKIPPED, "messages": ["Device is not impacted by FN044"]},
     },
+    (VerifyFieldNotice44Resolution, "failure-model-ending-with-m"): {
+        "eos_data": [
+            {
+                "imageFormatVersion": "1.0",
+                "uptime": 1109144.35,
+                "modelName": "DCS-7280SR2K-48C6-M-F",
+                "details": {"deviations": [], "components": [{"name": "Aboot", "version": "Aboot-norcal6-6.1.1-3255441"}]},
+            }
+        ],
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Device is running incorrect version of aboot 6.1.1"]},
+    },
+    (VerifyFieldNotice44Resolution, "success-model-ending-with-m"): {
+        "eos_data": [
+            {
+                "imageFormatVersion": "1.0",
+                "uptime": 1109144.35,
+                "modelName": "DCS-7280SR2K-48C6-M-R",
+                "details": {"deviations": [], "components": [{"name": "Aboot", "version": "Aboot-norcal6-6.1.7-3255441"}]},
+            }
+        ],
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyFieldNotice44Resolution, "failure-memory-variant"): {
+        "eos_data": [
+            {
+                "imageFormatVersion": "1.0",
+                "uptime": 1109144.35,
+                "modelName": "DCS-7280SR-48C6-M-F",
+                "details": {"deviations": [], "components": [{"name": "Aboot", "version": "Aboot-norcal6-6.1.1-3255441"}]},
+            }
+        ],
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Device is running incorrect version of aboot 6.1.1"]},
+    },
+    (VerifyFieldNotice44Resolution, "failure-ssd-variant"): {
+        "eos_data": [
+            {
+                "imageFormatVersion": "1.0",
+                "uptime": 1109144.35,
+                "modelName": "DCS-7050CX3-32S-SSD-R",
+                "details": {"deviations": [], "components": [{"name": "Aboot", "version": "Aboot-norcal6-6.1.1-3255441"}]},
+            }
+        ],
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["Device is running incorrect version of aboot 6.1.1"]},
+    },
     (VerifyFieldNotice44Resolution, "failure-no-aboot-component"): {
         "eos_data": [
             {

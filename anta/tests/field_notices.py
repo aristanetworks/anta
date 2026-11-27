@@ -83,7 +83,7 @@ class VerifyFieldNotice44Resolution(AntaTest):
             "DCS-7280SR-48C6",
             "DCS-7280SRA-48C6",
             "DCS-7280SRAM-48C6",
-            "DCS-7280SR2K-48C6-M",
+            "DCS-7280SR2K-48C6",
             "DCS-7280SR2-48YC6",
             "DCS-7280SR2A-48YC6",
             "DCS-7280SRM-40CX2",
