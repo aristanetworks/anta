@@ -14,6 +14,7 @@ from anta.tests.vxlan import (
     VerifyVxlan1Interface,
     VerifyVxlan1VVTEPIPAddresses,
     VerifyVxlanConfigSanity,
+    VerifyVxlanFloodVtep,
     VerifyVxlanVniBinding,
     VerifyVxlanVtep,
 )
@@ -408,5 +409,110 @@ DATA: AntaUnitTestData = {
             "result": AntaTestStatus.FAILURE,
             "messages": ["Interface: Vxlan1 - Incorrect VVTEP IPv6 address - Expected: fd00:dc:1::1 Actual: fd00:dc:1::2"],
         },
+    },
+    # Genuine revision-1 eAPI result payloads from cEOS 4.37.0F, VLAN 10.
+    (VerifyVxlanFloodVtep, "success-ceos-sw1"): {
+        "eos_data": [{"floodMap": {"10": {"vteps": ["198.51.100.2"]}}}],
+        "inputs": {"vlans": {10: ["198.51.100.2"]}},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyVxlanFloodVtep, "success-ceos-sw2"): {
+        "eos_data": [{"floodMap": {"10": {"vteps": ["198.51.100.1"]}}}],
+        "inputs": {"vlans": {10: ["198.51.100.1"]}},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    # Additional synthetic cases use the captured floodMap/vteps schema.
+    (VerifyVxlanFloodVtep, "success-vlan-range-and-unordered-peers"): {
+        "eos_data": [{"floodMap": {"100": {"vteps": ["3.3.3.3"]}, "101-103": {"vteps": ["11.1.1.1", "11.1.1.2"]}}}],
+        "inputs": {"vlans": {100: ["3.3.3.3"], "101-103": ["11.1.1.2", "11.1.1.1"]}},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyVxlanFloodVtep, "success-mixed-vlan-selection"): {
+        "eos_data": [{"floodMap": {key: {"vteps": ["198.51.100.2"]} for key in ("10", "20", "100", "200", "710", "711")}}],
+        "inputs": {"vlans": {"10,20,100,200,710-711": ["198.51.100.2"]}},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyVxlanFloodVtep, "failure-mixed-vlan-selection"): {
+        "eos_data": [{"floodMap": {"10": {"vteps": ["198.51.100.2"]}, "20": {"vteps": ["198.51.100.1"]}, "710": {"vteps": ["198.51.100.2"]}}}],
+        "inputs": {"vlans": {"10,20,710-711": ["198.51.100.2"]}},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "VLAN: 20 - Missing flood VTEP(s): 198.51.100.2",
+                "VLAN: 20 - Unexpected flood VTEP(s): 198.51.100.1",
+                "VLAN: 711 - Flood list not found",
+            ],
+        },
+    },
+    (VerifyVxlanFloodVtep, "failure-outside-vlan-range"): {
+        "eos_data": [{"floodMap": {"101-103": {"vteps": ["11.1.1.1"]}}}],
+        "inputs": {"vlans": {100: ["11.1.1.1"], 104: ["11.1.1.1"]}},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["VLAN: 100 - Flood list not found", "VLAN: 104 - Flood list not found"]},
+    },
+    (VerifyVxlanFloodVtep, "failure-vlan-range-peer-mismatch"): {
+        "eos_data": [{"floodMap": {"101-103": {"vteps": ["11.1.1.1", "11.1.1.3"]}}}],
+        "inputs": {"vlans": {102: ["11.1.1.1", "11.1.1.2"]}},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": ["VLAN: 102 - Missing flood VTEP(s): 11.1.1.2", "VLAN: 102 - Unexpected flood VTEP(s): 11.1.1.3"],
+        },
+    },
+    (VerifyVxlanFloodVtep, "success-ignore-other-vlans"): {
+        "eos_data": [{"floodMap": {"100": {"vteps": ["3.3.3.3"]}, "101": {"vteps": ["11.1.1.1"]}}}],
+        "inputs": {"vlans": {100: ["3.3.3.3"]}},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyVxlanFloodVtep, "failure-missing-vtep"): {
+        "eos_data": [{"floodMap": {"100": {"vteps": ["11.1.1.1"]}}}],
+        "inputs": {"vlans": {100: ["11.1.1.1", "11.1.1.2"]}},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["VLAN: 100 - Missing flood VTEP(s): 11.1.1.2"]},
+    },
+    (VerifyVxlanFloodVtep, "failure-unexpected-vtep"): {
+        "eos_data": [{"floodMap": {"100": {"vteps": ["11.1.1.3", "11.1.1.2", "11.1.1.1"]}}}],
+        "inputs": {"vlans": {100: ["11.1.1.1"]}},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["VLAN: 100 - Unexpected flood VTEP(s): 11.1.1.2, 11.1.1.3"]},
+    },
+    (VerifyVxlanFloodVtep, "failure-wrong-vlan"): {
+        "eos_data": [{"floodMap": {"100": {"vteps": ["11.1.1.1"]}, "101": {"vteps": ["11.1.1.2"]}}}],
+        "inputs": {"vlans": {100: ["11.1.1.2"], 101: ["11.1.1.1"]}},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "VLAN: 100 - Missing flood VTEP(s): 11.1.1.2",
+                "VLAN: 100 - Unexpected flood VTEP(s): 11.1.1.1",
+                "VLAN: 101 - Missing flood VTEP(s): 11.1.1.1",
+                "VLAN: 101 - Unexpected flood VTEP(s): 11.1.1.2",
+            ],
+        },
+    },
+    (VerifyVxlanFloodVtep, "failure-missing-vlan"): {
+        "eos_data": [{"floodMap": {"100": {"vteps": ["3.3.3.3"]}}}],
+        "inputs": {"vlans": {101: ["11.1.1.1"]}},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["VLAN: 101 - Flood list not found"]},
+    },
+    (VerifyVxlanFloodVtep, "failure-empty-table"): {
+        "eos_data": [{"floodMap": {}}],
+        "inputs": {"vlans": {100: ["3.3.3.3"]}},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["VLAN: 100 - Flood list not found"]},
+    },
+    (VerifyVxlanFloodVtep, "success-empty-flood-list"): {
+        "eos_data": [{"floodMap": {"100": {"vteps": []}}}],
+        "inputs": {"vlans": {100: []}},
+        "expected": {"result": AntaTestStatus.SUCCESS},
+    },
+    (VerifyVxlanFloodVtep, "failure-empty-flood-list"): {
+        "eos_data": [{"floodMap": {"100": {"vteps": []}}}],
+        "inputs": {"vlans": {100: ["3.3.3.3"]}},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["VLAN: 100 - Missing flood VTEP(s): 3.3.3.3"]},
+    },
+    (VerifyVxlanFloodVtep, "failure-expected-empty-flood-list"): {
+        "eos_data": [{"floodMap": {"100": {"vteps": ["3.3.3.3"]}}}],
+        "inputs": {"vlans": {100: []}},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["VLAN: 100 - Unexpected flood VTEP(s): 3.3.3.3"]},
+    },
+    (VerifyVxlanFloodVtep, "failure-empty-output"): {
+        "eos_data": [{}],
+        "inputs": {"vlans": {100: []}},
+        "expected": {"result": AntaTestStatus.FAILURE, "messages": ["VLAN: 100 - Flood list not found"]},
     },
 }

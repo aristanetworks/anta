@@ -22,6 +22,7 @@ from anta.tools import (
     get_failed_logs,
     get_item,
     get_value,
+    get_value_by_range_key,
     is_interface_ignored,
     time_ago,
 )
@@ -628,6 +629,27 @@ def test_is_interface_ignored(input_params: dict[str, Any], expected_output: boo
     interface_value = input_params["interface"]
     ignored_interfaces_value = input_params["ignored_interfaces"]
     assert is_interface_ignored(interface_value, ignored_interfaces_value) == expected_output
+
+
+@pytest.mark.parametrize(
+    ("key", "expected"),
+    [
+        pytest.param("10", "range", id="numeric-start"),
+        pytest.param("11", "exact", id="numeric-exact-priority"),
+        pytest.param("12", "range", id="numeric-end"),
+        pytest.param("13", None, id="numeric-outside"),
+        pytest.param("TC1", "prefixed", id="prefixed-start"),
+        pytest.param("TC3", "prefixed", id="prefixed-end"),
+        pytest.param("TC4", None, id="prefixed-outside"),
+        pytest.param("1", None, id="prefix-mismatch"),
+        pytest.param("11extra", None, id="invalid-key"),
+        pytest.param("20", None, id="invalid-range"),
+    ],
+)
+def test_get_value_by_range_key(key: str, expected: str | None) -> None:
+    """Look up exact keys and inclusive ranges, with or without a prefix."""
+    dictionary = {"10-12": "range", "11": "exact", "TC1-3": "prefixed", "20-22extra": "invalid"}
+    assert get_value_by_range_key(dictionary, key) == expected
 
 
 @pytest.mark.parametrize(

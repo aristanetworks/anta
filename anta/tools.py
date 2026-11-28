@@ -506,7 +506,7 @@ def is_interface_ignored(interface: str, ignored_interfaces: list[str] | None = 
 
 
 def get_value_by_range_key(dictionary: dict[str, Any], key: str, default: Any = None) -> Any:
-    """Get a value from a dictionary where keys represent ranges using the format '<prefix><start>-<end>' (e.g., 'TC0-4').
+    """Get a value from a dictionary where keys represent ranges using the format '<prefix><start>-<end>' (e.g., 'TC0-4' or '10-20').
 
     Returns the supplied default value or None if the key is not found.
 
@@ -515,7 +515,7 @@ def get_value_by_range_key(dictionary: dict[str, Any], key: str, default: Any = 
     dictionary
         A dictionary with keys as either:
             - exact strings (e.g., 'TC1')
-            - range strings in format '<prefix><start>-<end>' (e.g., 'TC2-5')
+            - range strings with an optional prefix (e.g., 'TC2-5' or '10-20')
     key
         The key to look up (e.g., 'TC1').
     default
@@ -553,14 +553,14 @@ def get_value_by_range_key(dictionary: dict[str, Any], key: str, default: Any = 
         return dictionary[key]
 
     # Range match
-    match = re.match(r"([a-zA-Z]+)(\d+)", key)
+    match = re.fullmatch(r"([a-zA-Z]*)(\d+)", key)
     if not match:
         return default
 
     prefix, number = match.group(1), int(match.group(2))
 
     for item, detail in dictionary.items():
-        key_match = re.match(rf"({prefix})(\d+)-(\d+)", item)
+        key_match = re.fullmatch(rf"({prefix})(\d+)-(\d+)", item)
         if key_match and int(key_match.group(2)) <= number <= int(key_match.group(3)):
             return detail
 
