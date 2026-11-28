@@ -1,0 +1,32 @@
+{
+  "eventHandlers": {
+    "SA229Qualification20261124": {
+      "trigger": {
+        "triggerType": "onBoot"
+      },
+      "delay": 20.0,
+      "repeatInterval": 0.0,
+      "maxRepeatActionCount": 1,
+      "action": "sudo ip -all netns exec bash -c 'for i in /sys/class/net/ma*; do ethtool -L \"$(basename \"$i\")\" rx 1; ethtool -L \"$(basename \"$i\")\" combined 1; done' &> /dev/null",
+      "asynchronous": false,
+      "maxActionDuration": 10.0,
+      "terminateActionOnTimeout": false,
+      "thresholdWindow": 0,
+      "thresholdCount": 1,
+      "lastTriggerTime": 1795597859.5651689,
+      "lastDetectionTime": 1795597859.5651698,
+      "triggerCount": 1,
+      "detectionCount": 1,
+      "lastActionTime": 1795597879.5658379,
+      "actionCount": 1,
+      "builtinHandler": false,
+      "builtinHandlerDisabled": false,
+      "pollingCount": 0,
+      "hasSubhandlers": false,
+      "eventSubhandlers": {},
+      "actionKind": "bash",
+      "runUponConfig": true,
+      "disabledManually": false
+    }
+  }
+}
