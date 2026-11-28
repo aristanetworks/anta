@@ -7,14 +7,15 @@
 # pyright: reportAttributeAccessIssue=false
 from __future__ import annotations
 
+import re
 from ipaddress import IPv4Address, IPv6Address
 from typing import TYPE_CHECKING, ClassVar
 
-from pydantic import Field, model_validator
+from pydantic import Field, TypeAdapter, field_validator, model_validator
 
 from anta.custom_types import VlanId, Vni, VxlanSrcIntf
 from anta.models import AntaCommand, AntaTest
-from anta.tools import get_value
+from anta.tools import get_value, get_value_by_range_key
 
 if TYPE_CHECKING:
     from typing import Self
@@ -351,40 +352,59 @@ class VerifyVxlanFloodVtep(AntaTest):
           vlans:
             100:
               - 3.3.3.3
-            101:
+            "101,200,710-711":
               - 11.1.1.1
               - 11.1.1.2
     ```
     """
 
     categories: ClassVar[list[str]] = ["vxlan"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show vxlan flood vtep", ofmt="text")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show vxlan flood vtep", revision=1)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyVxlanFloodVtep test."""
 
-        vlans: dict[VlanId, list[IPv4Address]] = Field(min_length=1)
-        """Mapping of VLAN IDs to their expected flood VTEPs. An empty peer list requires an empty flood list."""
+        vlans: dict[VlanId | str, list[IPv4Address]] = Field(min_length=1)
+        """Mapping of VLAN IDs or comma-separated VLAN ranges to their expected flood VTEPs.
+
+        Each VLAN may only appear once. An empty peer list requires an empty flood list.
+        """
+
+        @field_validator("vlans")
+        @classmethod
+        def expand_vlan_ranges(cls, vlans: dict[VlanId | str, list[IPv4Address]]) -> dict[VlanId | str, list[IPv4Address]]:
+            """Expand VLAN selections to individual IDs and reject invalid or overlapping ranges."""
+            vlan_id_adapter = TypeAdapter(VlanId)
+            expanded: dict[VlanId | str, list[IPv4Address]] = {}
+            for selection, vteps in vlans.items():
+                for token in str(selection).split(","):
+                    match = re.fullmatch(r"(\d+)(?:\s*-\s*(\d+))?", token.strip())
+                    if match is None:
+                        msg = f"Invalid VLAN selection: {selection}"
+                        raise ValueError(msg)
+                    start = vlan_id_adapter.validate_python(match[1])
+                    end = vlan_id_adapter.validate_python(match[2]) if match[2] is not None else start
+                    if start > end:
+                        msg = f"Invalid VLAN range: {token.strip()}"
+                        raise ValueError(msg)
+                    for vlan in range(start, end + 1):
+                        if vlan in expanded:
+                            msg = f"VLAN {vlan} is specified more than once"
+                            raise ValueError(msg)
+                        expanded[vlan] = vteps
+            return expanded
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyVxlanFloodVtep."""
         self.result.is_success()
-        flood_vteps: dict[str, set[str]] = {}
-        vlan = None
-        for line in self.instance_commands[0].text_output.splitlines():
-            if not (fields := line.split()):
-                continue
-            if fields[0].isdigit():
-                vlan = fields.pop(0)
-                flood_vteps[vlan] = set()
-            if vlan is not None:
-                flood_vteps[vlan].update(fields)
+        flood_map = self.instance_commands[0].json_output.get("floodMap", {})
 
         for vlan_id, vteps in self.inputs.vlans.items():
-            if (actual := flood_vteps.get(str(vlan_id))) is None:
+            if (flood_entry := get_value_by_range_key(flood_map, str(vlan_id))) is None:
                 self.result.is_failure(f"VLAN: {vlan_id} - Flood list not found")
                 continue
+            actual = set(flood_entry["vteps"])
             expected = {str(vtep) for vtep in vteps}
             if missing := expected - actual:
                 self.result.is_failure(f"VLAN: {vlan_id} - Missing flood VTEP(s): {', '.join(sorted(missing))}")

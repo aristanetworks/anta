@@ -1625,7 +1625,7 @@ anta.tests.vxlan:
       vlans:
         100:
           - 3.3.3.3
-        101:
+        "101,200,710-711":
           - 11.1.1.1
           - 11.1.1.2
   - VerifyVxlanVniBinding:
