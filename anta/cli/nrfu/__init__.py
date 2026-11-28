@@ -12,6 +12,7 @@ import click
 
 from anta.cli.nrfu import commands
 from anta.cli.utils import AliasedGroup, catalog_options, inventory_options, result_options
+from anta.experimental.cli.nrfu import junit
 from anta.result_manager import ResultManager
 
 if TYPE_CHECKING:
@@ -134,6 +135,7 @@ def nrfu(
 nrfu.add_command(commands.table)
 nrfu.add_command(commands.csv)
 nrfu.add_command(commands.json)
+nrfu.add_command(junit)
 nrfu.add_command(commands.text)
 nrfu.add_command(commands.tpl_report)
 nrfu.add_command(commands.md_report)
