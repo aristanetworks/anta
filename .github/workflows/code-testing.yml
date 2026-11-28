@@ -127,7 +127,7 @@ jobs:
         with:
           python-version: "3.14"
       - name: Install dependencies
-        run: pip install -e ".[cli]" --group doc -e tools/zensical_extensions
+        run: pip install -e ".[cli]" --group doc
       - name: "Build Zensical documentation offline"
         run: zensical build --strict
   benchmarks:

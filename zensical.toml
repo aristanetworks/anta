@@ -22,7 +22,7 @@ extra_javascript = [
   "stylesheets/glightbox-zoom.js",
 ]
 # Included snippets outside docs_dir need explicit watch paths.
-watch = ["README.md", "anta", "examples", "tools/zensical_extensions"]
+watch = ["README.md", "anta", "examples"]
 
 # Navigation
 nav = [
@@ -181,6 +181,9 @@ default = ["stable"]
 [project.plugins.exclude]
 glob = ["scripts/**"]
 
+[project.plugins.git-revision-date-localized]
+type = "date"
+
 [project.plugins.mkdocstrings]
 default_handler = "python"
 custom_templates = "docs/templates"
@@ -219,7 +222,6 @@ canonical_version = "stable"
 [project.markdown_extensions]
 admonition = {}
 attr_list = {}
-"_extensions.zensical_git_dates" = {}
 "zensical.extensions.glightbox" = {}
 codehilite.guess_lang = true
 "pymdownx.arithmatex" = {}
