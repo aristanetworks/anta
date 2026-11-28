@@ -1519,13 +1519,16 @@ class VerifyInterfacesOpticsReceivePower(AntaTest):
     !!! tip
         Set `ignore_shutdown_interfaces: true` to skip administratively shutdown interfaces and avoid false failures.
 
+    !!! tip
+        Set `check_high_threshold: true` to check both low-alarm and high-alarm DOM thresholds.
+        Default checks low-alarm thresholds only.
+
     Expected Results
     ----------------
     * Success: The test will pass if all tested interfaces have their installed transceiver receive power levels
-                above their low-alarm threshold and below their high-alarm threshold, considering the defined tolerance.
+                above their low-alarm threshold, considering the defined tolerance.
     * Failure: The test will fail if any interface reports a receive power level from its transceiver that
-                falls below the lower alarm threshold (after subtracting the tolerance) or
-                rises above the upper alarm threshold (after adding the tolerance).
+                falls below the lower alarm threshold (after subtracting the tolerance).
 
     Examples
     --------
@@ -1539,6 +1542,7 @@ class VerifyInterfacesOpticsReceivePower(AntaTest):
             - Ethernet3/1
           failure_margin: 2
           ignore_shutdown_interfaces: true
+          check_high_threshold: false
     ```
     """
 
@@ -1561,6 +1565,9 @@ class VerifyInterfacesOpticsReceivePower(AntaTest):
         or if the receive power is stornger than the high-alarm threshold minus this margin."""
         ignore_shutdown_interfaces: bool = False
         """If `True`, administratively shutdown interfaces are skipped."""
+        check_high_threshold: bool = False
+        """If 'True', highAlarm and lowAlarm DOM Thresholds will be checked.
+        Otherwise only lowAlarm DOM Thresholds will be checked."""
 
         @model_validator(mode="after")
         def validate_duplicate_interfaces(self) -> Self:
@@ -1650,7 +1657,7 @@ class VerifyInterfacesOpticsReceivePower(AntaTest):
                         f"Expected: >= {effective_low_threshold:.2f}dBm (Alarm: {low_alarm_threshold:.2f}dBm + Margin: {self.inputs.failure_margin}dBm) "
                         f"Actual: {rx_power_value:.2f}dBm"
                     )
-                if is_receiving_light and (rx_power_value > effective_high_threshold):
+                if self.inputs.check_high_threshold and is_receiving_light and (rx_power_value > effective_high_threshold):
                     self.result.is_failure(
                         f"Interface: {interface}{description_str} Status: {int_descriptions[interface]['interfaceStatus']} "
                         f"Channel: {channel} Optic: {int_data.get('mediaType')} - "

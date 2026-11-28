@@ -5429,7 +5429,12 @@ DATA: AntaUnitTestData = {
                 }
             },
         ],
-        "inputs": {"interfaces": ["Ethernet1/1", "Ethernet2/1", "Ethernet3/1"], "ignored_interfaces": ["Ethernet7/1/1"], "failure_margin": 2},
+        "inputs": {
+            "interfaces": ["Ethernet1/1", "Ethernet2/1", "Ethernet3/1"],
+            "ignored_interfaces": ["Ethernet7/1/1"],
+            "failure_margin": 2,
+            "check_high_threshold": True,
+        },
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
@@ -5438,6 +5443,101 @@ DATA: AntaUnitTestData = {
                     "Interface: Ethernet2/1 Status: up Channel: 3 Optic: 100GBASE-SR4 - High receive power detected - "
                     "Expected: <= 15.30dBm (Alarm: 17.30dBm - Margin: 2dBm) Actual: 19.31dBm"
                 ),
+                "Interface: Ethernet3/1 - Receive power details are not found (DOM not supported)",
+            ],
+        },
+    },
+    (VerifyInterfacesOpticsReceivePower, "success-optic-high-rx-check-high-threshold-false"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet1/1": {"displayName": "Ethernet1/1"},
+                    "Ethernet2/1": {
+                        "displayName": "Ethernet2/1",
+                        "vendorSn": "TEST05DA",
+                        "mediaType": "100GBASE-SR4",
+                        "parameters": {
+                            "rxPower": {
+                                "unit": "dBm",
+                                "channels": {"1": -7.08242460465652002, "2": -0.09972101229705288, "3": 19.31236951802751634, "4": -1.4630178822382547},
+                                "threshold": {
+                                    "lowAlarm": -13.29754146925876,
+                                    "lowAlarmOverridden": False,
+                                    "lowWarn": -10.301183562535002,
+                                    "lowWarnOverridden": False,
+                                    "highAlarm": 17.29754146925876,
+                                    "highAlarmOverridden": False,
+                                    "highWarn": 5.301183562535002,
+                                    "highWarnOverridden": False,
+                                },
+                            }
+                        },
+                    },
+                    "Ethernet3/1": {"displayName": "Ethernet3/1"},
+                    "Ethernet7/1/1": {
+                        "displayName": "Ethernet7/1/1",
+                        "vendorSn": "TEST008M",
+                        "mediaType": "40GBASE-SR4",
+                        "parameters": {
+                            "rxPower": {
+                                "unit": "dBm",
+                                "channels": {"1": -7.6019040097864092, "2": 8.3657200643706275, "3": -3.2242819530858995, "4": -2.7018749283906445},
+                                "threshold": {
+                                    "lowAlarm": -12.502636844309393,
+                                    "lowAlarmOverridden": False,
+                                    "lowWarn": -9.500071430798577,
+                                    "lowWarnOverridden": False,
+                                    "highAlarm": 7.29754146925876,
+                                    "highAlarmOverridden": False,
+                                    "highWarn": 5.301183562535002,
+                                    "highWarnOverridden": False,
+                                },
+                            }
+                        },
+                    },
+                    "Ethernet8/1/1": {
+                        "displayName": "Ethernet8/1/1",
+                        "vendorSn": "TEST8M",
+                        "mediaType": "40GBASE-SR4",
+                        "parameters": {
+                            "rxPower": {
+                                "unit": "dBm",
+                                "channels": {"1": -2.6019040097864092, "2": -2.3657200643706275, "3": -3.2242819530858995, "4": -2.7018749283906445},
+                                "threshold": {
+                                    "lowAlarm": -12.502636844309393,
+                                    "lowAlarmOverridden": False,
+                                    "lowWarn": -9.500071430798577,
+                                    "lowWarnOverridden": False,
+                                    "highAlarm": 7.29754146925876,
+                                    "highAlarmOverridden": False,
+                                    "highWarn": 5.301183562535002,
+                                    "highWarnOverridden": False,
+                                },
+                            }
+                        },
+                    },
+                }
+            },
+            {
+                "interfaceDescriptions": {
+                    "Ethernet1/1": {"description": "", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                    "Ethernet2/1": {"description": "", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                    "Ethernet3/1": {"description": "", "lineProtocolStatus": "down", "interfaceStatus": "down"},
+                    "Ethernet7/1/1": {"description": "GZ_CMCC_v6", "lineProtocolStatus": "down", "interfaceStatus": "down"},
+                    "Ethernet8/1/1": {"description": "GZ_CMCC_v6", "lineProtocolStatus": "down", "interfaceStatus": "down"},
+                }
+            },
+        ],
+        "inputs": {
+            "interfaces": ["Ethernet1/1", "Ethernet2/1", "Ethernet3/1"],
+            "ignored_interfaces": ["Ethernet7/1/1"],
+            "failure_margin": 2,
+            "check_high_threshold": False,
+        },
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                "Interface: Ethernet1/1 - Receive power details are not found (DOM not supported)",
                 "Interface: Ethernet3/1 - Receive power details are not found (DOM not supported)",
             ],
         },
@@ -5465,7 +5565,41 @@ DATA: AntaUnitTestData = {
                 }
             },
         ],
-        "inputs": {"failure_margin": 2},
+        "inputs": {"failure_margin": 2, "check_high_threshold": False},
+        "expected": {
+            "result": AntaTestStatus.FAILURE,
+            "messages": [
+                (
+                    "Interface: Ethernet1/1 Status: up Channel: 1 Optic: 100GBASE-SR4 - Low receive power detected - "
+                    "Expected: >= -11.00dBm (Alarm: -13.00dBm + Margin: 2dBm) Actual: -12.00dBm"
+                ),
+            ],
+        },
+    },
+    (VerifyInterfacesOpticsReceivePower, "failure-due-to-margin-check-high-threshold-true"): {
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet1/1": {
+                        "displayName": "Ethernet1/1",
+                        "mediaType": "100GBASE-SR4",
+                        "parameters": {
+                            "rxPower": {
+                                "unit": "dBm",
+                                "channels": {"1": -12.0, "2": 20},
+                                "threshold": {"lowAlarm": -13.0, "highAlarm": 21.0},
+                            }
+                        },
+                    },
+                }
+            },
+            {
+                "interfaceDescriptions": {
+                    "Ethernet1/1": {"description": "Proactive failure test", "lineProtocolStatus": "up", "interfaceStatus": "up"},
+                }
+            },
+        ],
+        "inputs": {"failure_margin": 2, "check_high_threshold": True},
         "expected": {
             "result": AntaTestStatus.FAILURE,
             "messages": [
