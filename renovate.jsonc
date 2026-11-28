@@ -6,6 +6,8 @@
   "dependencyDashboard": {
     "enabled": true
   },
+  // prek runs the YAML configuration; the pre-commit manager maintains hook
+  // revisions and additional_dependencies. pep621 maintains prek itself.
   "enabledManagers": ["pep621", "github-actions", "pre-commit"],
 
   "pre-commit": {

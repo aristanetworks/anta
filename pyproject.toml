@@ -64,7 +64,11 @@ dev = [
   {include-group = "test"},
   {include-group = "lint"},
   {include-group = "tox"},
+  {include-group = "prek"},
   "bumpver>=2026.1132",
+]
+prek = [
+  "prek==0.5.11",
 ]
 tox = [
   "tox>=4.67.15,<5.0.0",
@@ -82,7 +86,6 @@ benchmark = [
 ]
 lint = [
   "codespell>=2.4.3,<2.5.0",
-  "pre-commit>=4.7.0",
   "pyright",
   "ruff>=0.17.5,<0.17.7",
   "types-PyYAML",

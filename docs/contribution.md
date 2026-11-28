@@ -71,7 +71,7 @@ uv sync --locked --python 3.11 --no-default-groups --group test --extra cli
 COLUMNS=165 uv run --no-sync python -m pytest tests/units --no-cov
 ```
 
-CI checks lock freshness and runs this environment in addition to the existing tox checks. Tox continues to resolve dependencies independently across the supported Python versions. Pre-commit continues to manage its own isolated hook environments.
+CI checks lock freshness and runs this environment in addition to the existing tox checks. Tox continues to resolve dependencies independently across the supported Python versions. Prek manages its own isolated hook environments, whose dependencies are not locked by the root project's `uv.lock`.
 
 When changing project metadata or dependency declarations in `pyproject.toml`, regenerate and commit the lock together with the manifest:
 
@@ -161,7 +161,7 @@ uv run --no-default-groups --group test --extra cli pytest tests/units
 
 `--no-default-groups` excludes uv's default `dev` group from dependency selection. By default, `uv run` retains extra packages already installed in the environment.
 
-The `test` group contains the dependencies needed to run pytest. The `benchmark` group adds the benchmark plugins. The `tox` group installs tox with the version constraints for the active Python interpreter. The `dev` group includes the test, lint, and tox groups plus the release versioning tool.
+The `test` group contains the dependencies needed to run pytest. The `benchmark` group adds the benchmark plugins. The `tox` group installs tox with the version constraints for the active Python interpreter. The `prek` group installs the pinned hook runner. The `dev` group includes the test, lint, tox, and prek groups plus the release versioning tool.
 
 Use tox when you want to run the unit tests in the same isolated environments used by CI:
 
@@ -357,15 +357,33 @@ DATA: AntaUnitTestData = {
 
 ## Git Pre-commit hook
 
+ANTA uses [prek](https://prek.j178.dev/) to run the hooks defined in `.pre-commit-config.yaml`. The YAML configuration is retained so Renovate can maintain hook revisions and dependencies.
+
+The whitespace, end-of-file, file-size, and merge-conflict checks use prek's builtin hooks. This repository's hook configuration therefore requires prek.
+
+The `dev` dependency group includes prek. To install only the hook runner and enable it for this checkout, run from the repository root:
+
 ```bash
-pip install pre-commit
-pre-commit install
+pip install --group prek
+prek install
 ```
 
-When running a commit or a pre-commit check:
+If you previously installed the Git hook with pre-commit, run `prek install --force` once to replace it.
+
+Run the hooks manually against staged files, all tracked files matched by the configuration, or selected files:
+
+```bash
+prek run
+prek run --all-files
+prek run --files anta/tests/system.py
+```
+
+Hooks that modify files return a failure. Review and stage their changes, then rerun the checks before committing. The autofix CI workflow runs the same hooks against all matched files and commits any fixes back to the pull request.
+
+When running a commit or `prek run`, the configured checks include:
 
 ``` bash
-❯ pre-commit
+❯ prek run
 trim trailing whitespace.................................................Passed
 fix end of files.........................................................Passed
 check for added large files..............................................Passed
@@ -469,7 +487,7 @@ git diff --exit-code -- docs/snippets
 test -z "$(git status --porcelain -- docs/snippets)"
 ```
 
-The `doc-snippets` pre-commit hook runs the generator for CLI changes, and the autofix workflow commits any updated snippets to the pull request.
+The `doc-snippets` prek hook runs the generator for CLI changes, and the autofix workflow commits any updated snippets to the pull request.
 
 ### Curated class diagram
 
