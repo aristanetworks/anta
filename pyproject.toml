@@ -70,6 +70,7 @@ tox = [
   "tox>=4.67.15,<5.0.0",
 ]
 test = [
+  "beautifulsoup4>=4.14.3",
   "pytest-asyncio>=1.5.0",
   "pytest-cov>=7.1.0",
   "pytest-httpx>=0.36.2",
@@ -93,6 +94,7 @@ lint = [
 ]
 
 doc = [
+  "beautifulsoup4>=4.14.3",
   "griffe >=2.4.1,<2.5",
   "griffe-warnings-deprecated~=1.1.2",
   "mike @ git+https://github.com/squidfunk/mike.git@2d4ad799442f4592db8ad53b179bfb33db8c69ac",

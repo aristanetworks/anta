@@ -72,6 +72,7 @@ repos:
         language: python
         additional_dependencies:
           - anta[cli]
+          - beautifulsoup4>=4.14.3
           - pytest>=9.2.0
           - respx==0.23.1
           - pytest-httpx>=0.36.2
