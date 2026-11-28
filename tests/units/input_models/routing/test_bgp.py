@@ -95,6 +95,7 @@ class TestVerifyBGPPeerCountInput:
         ("address_families"),
         [
             pytest.param([{"afi": "evpn", "num_peers": 2}], id="valid"),
+            pytest.param([{"afi": "evpn", "num_peers": 0}], id="zero-valid"),
         ],
     )
     def test_valid(self, address_families: list[BgpAddressFamily]) -> None:
@@ -104,7 +105,7 @@ class TestVerifyBGPPeerCountInput:
     @pytest.mark.parametrize(
         ("address_families"),
         [
-            pytest.param([{"afi": "evpn", "num_peers": 0}], id="zero-peer"),
+            pytest.param([{"afi": "evpn", "num_peers": -1}], id="negative-peer-count"),
             pytest.param([{"afi": "evpn"}], id="None"),
         ],
     )
